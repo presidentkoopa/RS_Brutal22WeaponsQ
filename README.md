@@ -9,7 +9,30 @@ Target engine: `qzd17.3` = `9afc750917bf54870f2d16b7ba0d00f2b77e6fb5` (GZDoom 4.
 
 ## Status
 
-Step 1 is written. Every claim below cites the engine file and line it rests on.
+**BOTH QUEST PACKS ARE DONE AND SHIPPED (2026-10-10).** Only a headset test is
+outstanding; nothing below is waiting on code.
+
+| pack | file | built |
+|---|---|---|
+| BD22 hands, reload and ballistics | `E:\DOOMWork\BD22_Models_v8.pk3` | 2026-10-10 18:44 |
+| Vanilla VR Plus add-on | `E:\DOOMWork\VanillaVRPlus_VR.pk3` | 2026-10-10 19:45 |
+
+Posed hands on every gun. Reload stock or immersive, ballistics stock or ours,
+both switchable in the options menu. The Vanilla VR Plus pack also carries a fix
+for a crash in that set: with default weapon switching, switching away from the
+M16 or the revolvers overflows the stack. **Never load the two packs together.**
+
+Load orders: `brutal22test6.pk3` then the BD22 pack; or Doom/Doom 2, then the
+owner's `1.0b_Weapons_VanillaVRPlus_v1.2` set, then the Vanilla VR Plus pack.
+
+Sources for both are under `tools/posefix/` — start with its `README.md` and
+`hands/HAND_FITTING.md`; the Vanilla VR Plus half is in `tools/posefix/vplus/`.
+
+**The rest of this file is the ORIGINAL STAGED PROVING PLAN, written 2026-10-03,
+and it is kept for its engine citations, not as a statement of what is left.**
+Every claim below cites the engine file and line it rests on, and that is still
+worth having. The step numbering is historical: step 1 proved the four claims,
+and the reload that step 2 described shipped in both packs above.
 
 This pack is separate from `RS_VR_Reload` on purpose: that one is built on
 `level.HandPos`, `SetModelJoint` and `SetModelFlag`, which are UZDXREMA engine
@@ -112,10 +135,14 @@ also keeps those draws out of every other mod's sequence.
 - The glove licence. The source mod's code is MIT; its README says the art is
   "for education purpose only". Open question, not settled by shipping this.
 
-## What comes next
+## What came next -- DONE, 2026-10-10
 
-Step 2 is the reload with pauses, and it is the first step that needs
-**Vanilla VR Plus**:
+**This section described step 2, the reload with pauses, as the work ahead. It
+shipped.** Both packs carry the reload, and Vanilla VR Plus went from "the thing
+step 2 will need" to a shipped add-on of its own. Kept because the read-only
+warning below still stands and still matters.
+
+The set it reads from, which is **read-only** and sits in the live play rotation:
 
 ```
 D:\SteamLibrary\steamapps\Common\DooM VR\__CurrentRotationDONOTDELETE\1.0b_Weapons_VanillaVRPlus_v1.2\
