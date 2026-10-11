@@ -1,0 +1,18 @@
+version "4.14"
+
+// RS_QuestHands -- hands and physical reload for stock QuestZDoom 17.x.
+// Target engine: qzd17.3 = 9afc750917bf54870f2d16b7ba0d00f2b77e6fb5 (GZDoom 4.14.3).
+// NO ENGINE CHANGES. Everything here runs on the shipping Quest build.
+//
+// Plan and build order: E:/DOOMWork/_reports/QUEST_RELOAD_DIAGNOSIS_2026-10-02.md
+// Source audits:        E:/DOOMWork/_reports/qzd17_stock_audit_2026-10-02/
+
+#include "zscript/qh_metric.zs"
+#include "zscript/qh_grab.zs"
+#include "zscript/qh_surfaces.zs"
+#include "zscript/qh_hands.zs"
+#include "zscript/qh_reload.zs"
+#include "zscript/qh_ride.zs"
+#include "zscript/qh_ballistics.zs"
+#include "zscript/qh_tracer.zs"
+#include "zscript/qh_testgun.zs"

@@ -1,0 +1,182 @@
+// ============================================================================
+// RS_QuestHands -- options
+//
+// STRUCTURE, because this grows. Everything splits three ways:
+//
+//   Hands        -- where each of the four pieces sits. Set once, true for
+//                   every weapon in every set, because it is a property of the
+//                   hand meshes and the controllers.
+//   Steadying    -- the engine's own two-hand behaviour and our guard on it.
+//   Weapon sets  -- ONE SUBMENU PER SET. Reload feel differs between sets
+//                   because their guns differ, so the gesture distances and the
+//                   insert count live here rather than globally.
+//
+// Owner, 2026-10-03: "expect an options menu for all sets we do here." Adding a
+// set means adding a Submenu line below and one OptionMenu block, not rewriting
+// this file.
+//
+// Slider units for hand placement are MODEL units in the hook's frame: X right,
+// Y up, Z back toward the player, 1 unit = 1 cm times the MODELDEF scale.
+// Gesture distances are REAL METRES between the hands, metric-corrected -- see
+// zscript/qh_metric.zs for why those are not the same thing.
+// ============================================================================
+
+AddOptionMenu "OptionsMenu"
+{
+	Submenu "Quest Hands", "QH_Options"
+}
+
+// ---------------------------------------------------------------------------
+OptionMenu "QH_Options"
+{
+	Title "QUEST HANDS"
+
+	StaticText "Do this first, or nothing else means anything", 1
+	Command  "Baseline: zero weapon offsets, scale 1.0", "qh_baseline"
+	Command  "Show current weapon offsets", "qh_baseline_show"
+	StaticText "vr_weaponScale and vr_3dweaponOffset* sit inside the", "DarkGray"
+	StaticText "weapon transform, so whatever you have set moves", "DarkGray"
+	StaticText "every hand with it.", "DarkGray"
+	StaticText ""
+
+	Submenu "Hand placement", "QH_Hands_Menu"
+	Submenu "Steadying",      "QH_Steady_Menu"
+	StaticText ""
+
+	StaticText "Weapon sets", 1
+	Submenu "Vanilla VR Plus", "QH_Set_VVP"
+	StaticText ""
+
+	Submenu "Enhanced ballistics", "QH_Ballistics_Menu"
+	StaticText ""
+
+	StaticText "Diagnostics", 1
+	Command  "Print layer + hand report to console", "qh_report"
+}
+
+// ---------------------------------------------------------------------------
+OptionMenu "QH_Hands_Menu"
+{
+	Title "HAND PLACEMENT"
+
+	StaticText "True for every set. Model units, 1 = 1 cm.", "DarkGray"
+	StaticText ""
+
+	StaticText "Free off hand -- rides the OFF controller", 1
+	Slider  "X  right",        "qh_free_x",     -40, 40, 0.5, 1
+	Slider  "Y  up",           "qh_free_y",     -40, 40, 0.5, 1
+	Slider  "Z  back",         "qh_free_z",     -40, 40, 0.5, 1
+	Slider  "Yaw",             "qh_free_yaw",  -180, 180,  1, 0
+	Slider  "Pitch",           "qh_free_pitch",-180, 180,  1, 0
+	Slider  "Roll",            "qh_free_roll", -180, 180,  1, 0
+	StaticText ""
+
+	StaticText "Carried magazine -- offset from the free hand", 1
+	Slider  "X  right",        "qh_carry_x",    -20, 20, 0.5, 1
+	Slider  "Y  up",           "qh_carry_y",    -20, 20, 0.5, 1
+	Slider  "Z  back",         "qh_carry_z",    -20, 20, 0.5, 1
+	StaticText ""
+
+	StaticText "Gun hand -- rides the MAIN controller", 1
+	Slider  "X  right",        "qh_gun_x",      -40, 40, 0.5, 1
+	Slider  "Y  up",           "qh_gun_y",      -40, 40, 0.5, 1
+	Slider  "Z  back",         "qh_gun_z",      -40, 40, 0.5, 1
+	Slider  "Yaw",             "qh_gun_yaw",   -180, 180,  1, 0
+	Slider  "Pitch",           "qh_gun_pitch", -180, 180,  1, 0
+	Slider  "Roll",            "qh_gun_roll",  -180, 180,  1, 0
+	StaticText "These cancel the chosen frame's own centroid. Change", "DarkGray"
+	StaticText "the frame in MODELDEF and these must change too.", "DarkGray"
+	StaticText ""
+
+	StaticText "Support hand -- rides the MAIN controller", 1
+	Slider  "X  right",        "qh_sup_x",      -40, 40, 0.5, 1
+	Slider  "Y  up",           "qh_sup_y",      -40, 40, 0.5, 1
+	Slider  "Z  back",         "qh_sup_z",      -40, 40, 0.5, 1
+	Slider  "Yaw",             "qh_sup_yaw",   -180, 180,  1, 0
+	Slider  "Pitch",           "qh_sup_pitch", -180, 180,  1, 0
+	Slider  "Roll",            "qh_sup_roll",  -180, 180,  1, 0
+	StaticText ""
+
+	StaticText "Magazine in the support hand", 1
+	Slider  "X  right",        "qh_ride_x",     -20, 20, 0.5, 1
+	Slider  "Y  up",           "qh_ride_y",     -20, 20, 0.5, 1
+	Slider  "Z  back",         "qh_ride_z",     -20, 20, 0.5, 1
+	StaticText "The magazine's travel is measured from the gun mesh.", "DarkGray"
+	StaticText "These only place the hand on it.", "DarkGray"
+}
+
+// ---------------------------------------------------------------------------
+OptionMenu "QH_Steady_Menu"
+{
+	Title "STEADYING"
+
+	StaticText "Reloading takes two hands, so it cannot happen", "DarkGray"
+	StaticText "while you are steadying. The reload waits rather", "DarkGray"
+	StaticText "than cancelling.", "DarkGray"
+	StaticText ""
+
+	Slider  "Stale latch above (metres)", "qh_stale_latch_m", 0.3, 1.5, 0.05, 2
+	StaticText "The engine latches steadying on the grip button,", "DarkGray"
+	StaticText "not on hand distance, and can stick on if you let", "DarkGray"
+	StaticText "go inside a menu. Hands further apart than this are", "DarkGray"
+	StaticText "treated as a stuck flag so the reload is not blocked", "DarkGray"
+	StaticText "forever.", "DarkGray"
+}
+
+// ---------------------------------------------------------------------------
+// ONE BLOCK PER SET. Copy this for the next one.
+OptionMenu "QH_Set_VVP"
+{
+	Title "VANILLA VR PLUS"
+
+	StaticText "Rifle, revolver and shotgun.", "DarkGray"
+	StaticText ""
+
+	StaticText "Shells per insert", 1
+	Slider  "Shells per trip", "qh_shells_per_insert", 1, 4, 1, 0
+	StaticText "Tube-fed guns take one shell per reach by default,", "DarkGray"
+	StaticText "which is eight trips to fill a shotgun. Raise this", "DarkGray"
+	StaticText "and one reach feeds that many before your hand has", "DarkGray"
+	StaticText "to travel again.", "DarkGray"
+	StaticText ""
+
+	StaticText "Reload gestures -- real metres between hands", 1
+	Slider  "Fetch: mag out releases above",  "qh_fetch_m",  0.15, 0.80, 0.01, 2
+	Slider  "Insert: mag in releases below",  "qh_insert_m", 0.05, 0.40, 0.01, 2
+	Slider  "Rack: releases above",           "qh_rack_m",   0.15, 0.80, 0.01, 2
+	StaticText "Keep Insert well below Fetch or the two chatter.", "DarkGray"
+}
+
+// ---------------------------------------------------------------------------
+OptionMenu "QH_Ballistics_Menu"
+{
+	Title "ENHANCED BALLISTICS"
+
+	Option  "Enhanced ballistics", "qh_enhanced", "OnOff"
+	StaticText ""
+	StaticText "OFF is a real off: the loaded mod's own ballistics,", "DarkGray"
+	StaticText "projectiles and puffs, untouched. Nothing here", "DarkGray"
+	StaticText "replaces its actors or changes a shot -- it only adds", "DarkGray"
+	StaticText "to impacts that have already happened.", "DarkGray"
+	StaticText ""
+
+	Slider  "Debris amount", "qh_debris_scale", 0.0, 3.0, 0.1, 1
+	StaticText "0 silences debris and leaves the rest on.", "DarkGray"
+	StaticText ""
+
+	StaticText "Projectile trails", 1
+	Slider  "Trail length (tics)",      "qh_trail_life",  0, 20, 1, 0
+	Slider  "Trail size",               "qh_trail_size",  0.5, 6, 0.5, 1
+	Slider  "Emit every N tics",        "qh_trail_every", 1, 4, 1, 0
+	Slider  "Max trailed projectiles",  "qh_trail_max",   0, 64, 4, 0
+	StaticText "Trails are engine particles, not actors -- an actor", "DarkGray"
+	StaticText "per segment would be hundreds of thinkers a second", "DarkGray"
+	StaticText "off a plasma rifle. Past the cap a projectile just", "DarkGray"
+	StaticText "gets no trail, which is cheaper than a stutter.", "DarkGray"
+	StaticText "Length 0 silences trails and leaves impacts alone.", "DarkGray"
+	StaticText ""
+
+	StaticText "Impacts know what they hit: metal, wood, glass,", "DarkGray"
+	StaticText "liquid, slime, lava, dirt, brick, marble, tile, pipe,", "DarkGray"
+	StaticText "tech, screen and light fixtures.", "DarkGray"
+}

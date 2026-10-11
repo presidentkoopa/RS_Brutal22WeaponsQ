@@ -1,0 +1,11 @@
+[zdl.save]
+port=qzdoom17
+iwad=doom2
+dlgmode=open
+gametype=0
+players=0
+extra=+logfile "E:/DOOMWork/bd22models.log"
+file0=D:/SteamLibrary/steamapps/Common/DooM VR/BD22 ModelDefs/brutal22test6/brutal22test6.pk3
+file1=E:/DOOMWork/RS_BD22_Models.pk3
+[zdl.general]
+conflib=sunrise

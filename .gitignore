@@ -1,0 +1,6 @@
+*.pk3
+*.zip
+_renders/
+__pycache__/
+*.pyc
+tools/posefix/**/out/

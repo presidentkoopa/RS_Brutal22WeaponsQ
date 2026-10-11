@@ -1,0 +1,118 @@
+// ============================================================================
+// SURFACES -- what textures are made of, read by the engine (#16, engine
+// 463098530b). TexMan.GetSurface(tex) answers; RSB_Materials asks it on every
+// landing, and the answer picks impact variants (bullet.metal, rocket.wood...).
+//
+// Converted from RS_Ballistics' old RSBDEFS `material` blocks, pattern for
+// pattern (0 mismatches over Doom 2's 575 textures).
+//   - In a pattern, * matches any run and ? one character. Quote patterns.
+//   - walls = wall textures, flats = flats, any = every texture type. The engine
+//     keys on the texture's own type, so a flat on a UDMF wall answers its flat
+//     rule.
+//   - A later rule or lump wins, so a map pack's SURFACES can reclassify;
+//     `surface none` un-tags.
+//   - A new surface name needs no code: give it `.name` impact variants in
+//     RSBDEFS.
+// ============================================================================
+
+surface metal
+{
+	walls = "METAL*", "SUPPORT*", "SW1MET*", "SW2MET*", "DOOR*", "BIGDOOR1", "BIGDOOR2", "BIGDOOR3", "BIGDOOR4"
+	walls = "EXITDOOR", "PLAT1", "SILVER*", "SHAWN*", "TEK*", "COMP*", "SPACEW*", "PIPE*", "*GRATE*"
+	flats = "FLAT23", "STEP1", "STEP2", "*GRATE*"
+}
+
+surface wood
+{
+	walls = "WOOD*", "BIGDOOR5", "BIGDOOR6", "BIGDOOR7", "PANEL*", "CRATE*", "CRATINY", "CRATELIT", "CRATWIDE"
+	flats = "FLAT5_1", "FLAT5_2", "CRATOP*"
+}
+
+surface glass
+{
+	walls = "*GLASS*", "LITE*"
+}
+
+surface liquid
+{
+	walls = "SFALL*", "BFALL*"
+	flats = "FWATER*", "BLOOD*"
+}
+
+// NUKAGE AND SLIME are a liquid, but they are not WATER, and every toxic pool in Doom was throwing
+// up a pale blue splash because they shared water's. They keep the whole of water's behaviour and
+// change only what comes out: thicker, slower, green, and it hangs a moment longer before it falls.
+// (The wet mark they leave is still colourless -- a surface paint carries four amounts and no tint,
+// which is the one engine field this and blood both need, and it is held.)
+surface slime
+{
+	flats = "NUKAGE*", "SLIME*"
+}
+
+// LAVA IS NOT A LIQUID, whatever the flat list used to say. A round into molten rock does not
+// splash and does not leave the surface WET: it throws lumps that arc, glow and cool, it spits,
+// it lifts embers and it burns the air above it. It is listed after `liquid` on purpose -- a later
+// surface takes its textures back -- and it takes the lava falls with it, which were falling
+// through to no surface at all before.
+surface lava
+{
+	walls = "FIRELAV*", "FIREMAG*"
+	flats = "LAVA*"
+}
+
+surface dirt
+{
+	walls = "ASHWALL*", "ROCK*", "SP_ROCK*"
+	flats = "GRASS*", "RROCK*", "FLAT10"
+}
+
+// ---- BEGIN surface pass (tools/gen_surface_pass.py)
+// THE SURFACE PASS (owner picks 2026-09-15). After metal, wood, glass, liquid and dirt, so these take their
+// textures back (TEK*, COMP*, PIPE*, LITE*). Read from Doom 1 and Doom 2's IWADs; floors checked by eye on
+// rendered sheets. Lava cracks and liquids stay with the liquids pass.
+
+surface brick   // fired brick
+{
+	walls = "BRICK*", "BIGBRIK*", "BRNBIG*", "BRNSMAL*", "BRNPOIS*", "ZZWOLF*", "SW?BRIK"
+	flats = "FLAT8", "RROCK14"
+}
+
+surface marble   // marble and carved stone
+{
+	walls = "MARBLE*", "MARBFAC*", "MARBFACE", "MARBGRAY", "MARBLOD1", "GSTONE*", "GSTFONT*", "GSTGARG"
+	walls = "GSTLION", "GSTSATYR", "GSTVINE*", "SW?MARB", "SW?GSTON", "SW?GARG", "SW?LION", "SW?SATYR"
+	flats = "DEM1_*", "FLOOR7_2", "GATE1", "GATE2", "GATE3"
+}
+
+surface tile   // tiled floors (check in the headset)
+{
+	flats = "FLAT20", "FLAT5", "FLOOR5_*", "FLAT9", "FLAT18"
+}
+
+surface pipe   // pipes (they vent steam)
+{
+	walls = "PIPE1", "PIPE2", "PIPE4", "PIPE6", "PIPES", "PIPEWAL*", "BROWNPIP", "SW?PIPE"
+}
+
+surface tech   // tech panels and wiring (they short out)
+{
+	walls = "COMP2", "COMPBLUE", "COMPOHSO", "COMPSPAN", "COMPTILE", "TEKWALL*", "TEKGREN*", "TEKBRON*"
+	walls = "SPACEW*", "MIDSPACE", "SW?BRCOM", "SW?COMM", "SW?COMP", "SW?TEK", "SW?BLUE"
+	flats = "COMP01"
+}
+
+surface screen   // screens and consoles
+{
+	walls = "COMPSTA1", "COMPSTA2", "COMPTALL", "COMPUTE*", "COMPWERD", "PLANET1", "EXITSIGN", "SW?EXIT"
+	flats = "CONS1_1", "CONS1_5", "CONS1_7"
+}
+
+surface light   // light fixtures (the pop and sparks only)
+{
+	walls = "LITE2", "LITE3", "LITE4", "LITE5", "LITE96", "LITEBLU*", "LITEMET", "LITERED"
+	walls = "LITESTON", "TEKLITE", "TEKLITE2", "BRICKLIT"
+	flats = "TLITE6_1", "TLITE6_4", "TLITE6_5", "TLITE6_6", "FLOOR1_7", "FLAT2", "FLAT17", "FLAT22"
+	flats = "CEIL1_2", "CEIL1_3", "CEIL3_4", "CEIL3_6", "GRNLITE1"
+}
+// ---- END surface pass
+
