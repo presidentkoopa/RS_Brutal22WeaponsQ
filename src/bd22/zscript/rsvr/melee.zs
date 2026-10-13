@@ -17,6 +17,58 @@ class RSVR_MeleeHandler : EventHandler
 {
 	RSVR_Hand hands[MAXPLAYERS];
 
+	// rsvr_axe_keys: the weapon hand's grip arrives as a KEY, not a usercmd button, so its codes
+	// become a synchronised event the same way rsr_grip_keys does in vreload.zs. Every machine
+	// sees the same down and up, so readying a throw is never a local-only decision.
+	bool keyDown[MAXPLAYERS];
+	ui Array<int> axeKeys;
+	ui String axeKeysFrom;
+	ui bool keyIsDown;
+
+	static bool KeyHeld(PlayerPawn mo)
+	{
+		let h = RSVR_MeleeHandler(EventHandler.Find('RSVR_MeleeHandler'));
+		if (!h || !mo || !mo.player)
+			return false;
+		int n = mo.PlayerNumber();
+		return n >= 0 && n < MAXPLAYERS && h.keyDown[n];
+	}
+
+	override void NetworkProcess(ConsoleEvent e)
+	{
+		if (e.Name != "rsvr_axe_grip")
+			return;
+		int n = e.Player;
+		if (n >= 0 && n < MAXPLAYERS && playeringame[n])
+			keyDown[n] = e.Args[0] != 0;
+	}
+
+	override bool InputProcess(InputEvent e)
+	{
+		if (e.Type != InputEvent.Type_KeyDown && e.Type != InputEvent.Type_KeyUp)
+			return false;
+		let me = players[consoleplayer];
+		let cv = CVar.GetCVar('rsvr_axe_keys', me);
+		String keys = cv ? cv.GetString() : "";
+		if (keys != axeKeysFrom)
+		{
+			axeKeysFrom = keys;
+			axeKeys.Clear();
+			Array<String> w;
+			keys.Split(w, " ", TOK_SKIPEMPTY);
+			for (int j = 0; j < w.Size(); j++)
+				axeKeys.Push(w[j].ToInt());
+		}
+		if (axeKeys.Size() == 0 || axeKeys.Find(e.KeyScan) == axeKeys.Size())
+			return false;
+		bool down = e.Type == InputEvent.Type_KeyDown;
+		if (down == keyIsDown)
+			return false;			// key repeat: only the edges are worth a net event
+		keyIsDown = down;
+		EventHandler.SendNetworkEvent("rsvr_axe_grip", down ? 1 : 0, e.KeyScan);
+		return false;				// never eaten: the grip keeps whatever else it does
+	}
+
 	override void WorldTick()
 	{
 		for (int i = 0; i < MAXPLAYERS; i++)
@@ -25,7 +77,15 @@ class RSVR_MeleeHandler : EventHandler
 				continue;
 			if (!hands[i])
 				hands[i] = new('RSVR_Hand');
-			hands[i].Tick(players[i].mo);
+			let mo = players[i].mo;
+			hands[i].Tick(mo);
+			// RSVR_AxeHold lets the axe's Ready state enter its hold loop from the grip. The
+			// hold used to be reachable only from alt-fire, so no other button could ever ready
+			// a throw however the cvars were set (owner, 2026-10-13: throwing should be hold and
+			// release the grip). Only in VR: out of VR the axe keeps BD22's own sideways swing.
+			bool want = RSVR_VRHand.InVR(mo) && RSVR_Hand.HoldDown(mo)
+				&& mo.player.ReadyWeapon && RSVR_Hand.KindOf(mo) == RSVR_Hand.AXE;
+			mo.SetInventory('RSVR_AxeHold', want ? 1 : 0);
 		}
 	}
 
@@ -54,6 +114,35 @@ class RSVR_Hand play
 	const AXE_SWING = 3.0;
 	const SWORD_SWING = 3.5;
 	const THROW_MIN = 2.5;
+	const RISE = 0.55;			// of the blade's speed that may be upward before it is a backswing
+
+	// rsvr_melee_swing scales how hard you have to swing; rsvr_melee_rise is how much of the
+	// motion may point UP before it counts as raising the axe rather than striking with it.
+	// Both are user cvars (CVARINFO.rsvr), read per player so a netgame cannot disagree.
+	clearscope static double Cv(PlayerPawn mo, Name n, double def)
+	{
+		let cv = mo && mo.player ? CVar.GetCVar(n, mo.player) : CVar.FindCVar(n);
+		return cv ? cv.GetFloat() : def;
+	}
+
+	clearscope static int CvI(PlayerPawn mo, Name n, int def)
+	{
+		let cv = mo && mo.player ? CVar.GetCVar(n, mo.player) : CVar.FindCVar(n);
+		return cv ? cv.GetInt() : def;
+	}
+
+	// Is the throw's hold input down? QuestZDoom has no usercmd bit for the WEAPON hand's grip,
+	// so this takes either a button mask (rsvr_axe_hold, default BT_ALTATTACK, how it has always
+	// worked) or raw key codes (rsvr_axe_keys), read the way vreload.zs reads rsr_grip_keys.
+	static bool HoldDown(PlayerPawn mo)
+	{
+		if (!mo || !mo.player)
+			return false;
+		int mask = CvI(mo, 'rsvr_axe_hold', BT_ALTATTACK);
+		if (mask != 0 && (mo.player.cmd.buttons & mask) != 0)
+			return true;
+		return RSVR_MeleeHandler.KeyHeld(mo);
+	}
 
 	// recent samples: blade outer point and player position, newest at [head]
 	double tx[HIST];
@@ -266,11 +355,21 @@ class RSVR_Hand play
 			return;
 		}
 
-		double thr = (k == AXE ? AXE_SWING : SWORD_SWING) * vu / 35.;
-		double speed = ((bout - prevOut) - (mo.pos - prevPos)).Length();
+		double thr = (k == AXE ? AXE_SWING : SWORD_SWING) * vu / 35.
+			* max(0.2, Cv(mo, 'rsvr_melee_swing', 1.0));
+		Vector3 vel = (bout - prevOut) - (mo.pos - prevPos);
+		double speed = vel.Length();
 		double power = speed / thr;
 
-		if (power >= 1)
+		// THE BACKSWING IS NOT A STRIKE. The test used to be speed alone, so raising the axe to
+		// strike was itself a hit -- it landed before the player had swung, and read as the axe
+		// being wildly oversensitive (owner, 2026-10-13). Motion that is mostly upward is the
+		// player winding up, so it does not cut, and it falls through to the calm branch below
+		// so the downswing that follows is a fresh swing with a cleared strike list.
+		double rise = speed > 0 ? vel.z / speed : 0;
+		bool backswing = rise > max(0.05, Cv(mo, 'rsvr_melee_rise', RISE));
+
+		if (power >= 1 && !backswing)
 		{
 			calmTics = 0;
 			swingTics++;
@@ -484,7 +583,7 @@ class RSVR_Hand play
 		mo.SetInventory('RSVR_AxeThrown', 0);
 		if (!vr)
 			return;
-		bool held = (mo.player.cmd.buttons & BT_ALTATTACK) != 0;
+		bool held = HoldDown(mo);
 		mo.SetInventory('RSVR_AxeHolding', held ? 1 : 0);
 		if (held)
 			return;
@@ -602,6 +701,7 @@ class RSVR_Token : Inventory
 }
 
 class RSVR_AxeHolding : RSVR_Token {}
+class RSVR_AxeHold : RSVR_Token {}		// the hold input is down: Ready enters the hold loop
 class RSVR_AxeThrown : RSVR_Token {}
 class RSVR_NotVR : RSVR_Token {}
 

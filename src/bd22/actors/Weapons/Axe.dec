@@ -160,6 +160,10 @@ ACTOR BrutalAxe : BrutalWeapon
 		"####" A 0 A_JumpIfInventory("TossGrenade",1,"TossGrenade")
 		"####" A 0 A_JumpIfInventory("StartDualWield",1,"DualWield")
 		"####" A 0 A_JumpIfInventory("IsRunning",1,"StartSprint")
+		// posefix rsvr: the grip (or whatever rsvr_axe_hold / rsvr_axe_keys names) readies the
+		// throw, not just alt-fire. Added after IsRunning on purpose: "Goto Ready+6" above
+		// counts state entries from Ready, so nothing may be inserted before this point.
+		"####" A 0 A_JumpIfInventory("RSVR_AxeHold", 1, "AltGrip")
 		"####" A 1 A_WeaponReady
 		Goto Ready+6//Loop
 

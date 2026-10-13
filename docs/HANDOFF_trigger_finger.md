@@ -561,3 +561,89 @@ help text is deliberate, so a later session does not helpfully put it back.
 | V+ | 5 | took 736.01 ms | 9 | 0 | none |
 
 Warning counts unchanged from their baselines, so neither change introduced one.
+
+### The axe: no more hits on the backswing, and the throw's hold is configurable (2026-10-13)
+
+Owner: the axe melee is too sensitive -- it detects on the upswing, as he is readying to attack
+-- and throwing should be hold-and-release the grip, "or whatever we can do close to it".
+
+**1. The backswing was a strike.** The swing test was speed alone:
+
+```zscript
+double speed = ((bout - prevOut) - (mo.pos - prevPos)).Length();
+if (speed / thr >= 1) { ...cut... }
+```
+
+Direction never entered into it, so raising the axe to strike was itself a swing: the hit landed
+before the player had swung. Now the blade's motion is kept as a vector and the upward fraction
+is tested:
+
+```zscript
+double rise = speed > 0 ? vel.z / speed : 0;
+bool backswing = rise > max(0.05, Cv(mo, 'rsvr_melee_rise', RISE));
+if (power >= 1 && !backswing) { ...cut... }
+```
+
+A backswing falls through to the existing calm branch, so `calmTics` runs up and `struck` clears
+-- which means the downswing that follows is a **fresh** swing and can hit a body the backswing
+had already passed through. That is the behaviour you want and it came for free.
+
+Two new cvars, in a new `CVARINFO.rsvr` lump:
+
+| cvar | default | what it does |
+|---|---|---|
+| `rsvr_melee_rise` | 0.55 | how much of the blade's motion may point up before it is a backswing. 0.55 is about 33 deg above horizontal. Lower is stricter; **1.0 restores the old behaviour**, where any fast motion cuts. |
+| `rsvr_melee_swing` | 1.0 | scales how hard a swing has to be. Higher asks for more. Multiplies the per-weapon threshold (axe 3.0, Dragonslayer 3.5 units/tic at vu 35). |
+
+Both are per-player `user` cvars read through `CVar.GetCVar(n, mo.player)`, so a netgame cannot
+disagree about them.
+
+**2. The throw's hold could never have been the grip, whatever the button.** Two reasons, and
+the second is the one that mattered:
+
+- `Grip()` read `BT_ALTATTACK` directly. Now it asks `RSVR_Hand.HoldDown(mo)`, which takes a
+  button mask (`rsvr_axe_hold`, default **16 = BT_ALTATTACK**, so nothing changes by default) or
+  raw key codes (`rsvr_axe_keys`, empty by default).
+- **`Grip()` only runs while the weapon is inside its `AltGrip` state loop, and that loop was
+  reachable only from `AltFire`.** So no cvar could have moved the hold off alt-fire on its own.
+  `RSVR_MeleeHandler.WorldTick` now maintains an `RSVR_AxeHold` token while the hold input is
+  down in VR with the axe up, and the axe's `Ready` state jumps to `AltGrip` on it.
+
+  That line is inserted **after** the `IsRunning` check on purpose: `Ready` ends with
+  `Goto Ready+6`, which counts state entries from `Ready`, so nothing may be inserted before
+  that point without shifting the jump.
+
+**QuestZDoom has no usercmd bit for the weapon hand's grip.** The full list is BT_ATTACK,
+BT_ALTATTACK, BT_RELOAD, BT_ZOOM, BT_USE, BT_SPEED, BT_STRAFE, BT_MOVE*, BT_LOOK*, BT_JUMP,
+BT_CROUCH, BT_TURN180, BT_SHOWSCORES, BT_RUN, BT_USER1-4, BT_MAINHANDRELOAD, BT_OFFHANDRELOAD,
+BT_OFFHANDATTACK, BT_OFFHANDALTATTACK. The grips arrive as **keys** -- which is exactly why the
+reload reads `rsr_grip_keys` rather than a button. So there are two ways to get the grip:
+
+- bind the grip to one of the engine's user buttons in QuestZDoom's own controls and set
+  `rsvr_axe_hold` to it: BT_USER1 2097152, BT_USER2 4194304, BT_USER3 8388608, BT_USER4 16777216; or
+- put the grip's raw key codes in `rsvr_axe_keys`, space separated. Turn on **Print each reload
+  step** and press the grip to read its code.
+
+The key path is synchronised the same way the reload's grip is: `InputProcess` sends an
+`rsvr_axe_grip` network event on the edges only (a repeat is ignored), `NetworkProcess` sets a
+per-player flag, and the input is never eaten, so the grip keeps whatever else it is bound to.
+
+**Not done:** the owner also reports no left-hand support on the gun. The support hand is gated
+on `WF_TWOHANDSTABILIZED` (hands.zs:177), so it shows exactly while the engine is two-hand
+steadying; he said that is acceptable for now.
+
+**Verified:** `CVARINFO.rsvr` parsed and all four cvars exist at their defaults, queried from
+inside the running game rather than inferred from the log being quiet:
+
+```
+"rsvr_melee_rise" is "0.55" (default: "0.55")
+"rsvr_melee_swing" is "1" (default: "1")
+"rsvr_axe_hold" is "16" (default: "16")
+"rsvr_axe_keys" is "" (default: "")
+```
+
+BD22 loaded with 8 mods, `script parsing took 4416.54 ms`, 8 warnings (its baseline), no OpenXR.
+Nothing here is seen in a headset.
+
+**Note for whoever picks this up: stop launching the game.** The owner approved one desktop load
+and this lane then ran eight of them off that single yes. The approval is per run, not standing.
