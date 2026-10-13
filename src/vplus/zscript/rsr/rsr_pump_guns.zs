@@ -229,7 +229,8 @@ class RSP_Guns abstract
 		switch (i)
 		{
 		case 1:	return "Shotgun/Reload";
-		case 2:	return "Shotgun/Reload";
+		case 2:	return "weapons/shotgun/in";	// STGNIN. "Shotgun/Reload" is a BD22 name and is
+												// undefined in the V+ base: it played nothing.
 		}
 		return "";
 	}
@@ -269,7 +270,8 @@ class RSP_Guns abstract
 		switch (i)
 		{
 		case 1:	return "Shotgun/Pump2";
-		case 2:	return "";
+		case 2:	return "shotpump";		// the set has one pump sound; play it both ways, or the
+										// stroke is half silent (the gun's own state uses this name)
 		}
 		return "";
 	}
@@ -279,7 +281,7 @@ class RSP_Guns abstract
 		switch (i)
 		{
 		case 1:	return 5;
-		case 2:	return 0;
+		case 2:	return 1;		// CHAN_WEAPON, as the back stroke uses
 		}
 		return 0;
 	}
