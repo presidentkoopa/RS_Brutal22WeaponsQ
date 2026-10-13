@@ -1,0 +1,22 @@
+{
+ "bd": {
+  "actors/Weapons/Rifle.dec": "/tmp/claude-0/-home-claude/688b1996-39a0-5234-911a-a90085ab177b/scratchpad/team/reload/src/actors/Weapons/Rifle.dec",
+  "actors/Weapons/Pistol.dec": "/tmp/claude-0/-home-claude/688b1996-39a0-5234-911a-a90085ab177b/scratchpad/team/reload/src/actors/Weapons/Pistol.dec",
+  "actors/Weapons/SubMachinegun.dec": "/tmp/claude-0/-home-claude/688b1996-39a0-5234-911a-a90085ab177b/scratchpad/team/reload/src/actors/Weapons/SubMachinegun.dec",
+  "actors/Weapons/Mp40.dec": "/tmp/claude-0/-home-claude/688b1996-39a0-5234-911a-a90085ab177b/scratchpad/team/reload/src/actors/Weapons/Mp40.dec",
+  "actors/Weapons/AssaultShotgun.dec": "/tmp/claude-0/-home-claude/688b1996-39a0-5234-911a-a90085ab177b/scratchpad/team/reload/src/actors/Weapons/AssaultShotgun.dec",
+  "actors/Weapons/Railgun.dec": "/tmp/claude-0/-home-claude/688b1996-39a0-5234-911a-a90085ab177b/scratchpad/team/reload/src/actors/Weapons/Railgun.dec",
+  "actors/Weapons/Plasma.dec": "/tmp/claude-0/-home-claude/688b1996-39a0-5234-911a-a90085ab177b/scratchpad/team/reload/src/actors/Weapons/Plasma.dec",
+  "actors/Weapons/Sniper.dec": "/tmp/claude-0/-home-claude/688b1996-39a0-5234-911a-a90085ab177b/scratchpad/team/reload/src/actors/Weapons/Sniper.dec",
+  "actors/Weapons/RocketLauncher.dec": "/tmp/claude-0/-home-claude/688b1996-39a0-5234-911a-a90085ab177b/scratchpad/team/reload/src/actors/Weapons/RocketLauncher.dec",
+  "actors/Weapons/Shotgun.dec": "/tmp/claude-0/-home-claude/688b1996-39a0-5234-911a-a90085ab177b/scratchpad/team/reload_merged/src/actors/Weapons/Shotgun.dec",
+  "actors/Weapons/SSG.dec": "/tmp/claude-0/-home-claude/688b1996-39a0-5234-911a-a90085ab177b/scratchpad/team/reload_merged/src/actors/Weapons/SSG.dec",
+  "actors/Weapons/Revolver.dec": "/tmp/claude-0/-home-claude/688b1996-39a0-5234-911a-a90085ab177b/scratchpad/team/reload_merged/src/actors/Weapons/Revolver.dec",
+  "actors/Weapons/GrenadeLaunch.dec": "/tmp/claude-0/-home-claude/688b1996-39a0-5234-911a-a90085ab177b/scratchpad/team/reload_merged/src/actors/Weapons/GrenadeLaunch.dec"
+ },
+ "vp": {
+  "Decorate/rifle.txt": "/tmp/claude-0/-home-claude/688b1996-39a0-5234-911a-a90085ab177b/scratchpad/team/reload/src/Decorate/rifle.txt",
+  "Decorate/revolver.txt": "/tmp/claude-0/-home-claude/688b1996-39a0-5234-911a-a90085ab177b/scratchpad/team/reload_merged/src/Decorate/revolver.txt",
+  "Decorate/shotty.txt": "/tmp/claude-0/-home-claude/688b1996-39a0-5234-911a-a90085ab177b/scratchpad/team/reload_merged/src/Decorate/shotty.txt"
+ }
+}

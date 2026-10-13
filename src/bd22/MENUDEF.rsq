@@ -1,0 +1,62 @@
+// RS VR hands / reload / ballistics (zscript/rsq, zscript/rsr). v9.
+// Nothing here changes the engine's two-hand steadying.
+AddOptionMenu "OptionsMenu"
+{
+	Submenu "RS VR Hands, Reload, Ballistics", "RSQ_Options"
+}
+
+AddOptionMenu "BrutalMenu"
+{
+	StaticText " "
+	Submenu "RS VR Hands, Reload, Ballistics", "RSQ_Options"
+}
+
+OptionValue "RSR_ReloadMode"
+{
+	1, "VR"
+	0, "Stock (BD22)"
+}
+
+OptionValue "RSQ_Ballistics"
+{
+	0, "Stock (BD22)"
+	1, "Enhanced"
+}
+
+OptionMenu "RSQ_Options"
+{
+	Title "RS VR HANDS, RELOAD, BALLISTICS"
+	Option "VR hands", "rsq_hands", "OnOff"
+	Option "Reloading", "rsr_reload", "RSR_ReloadMode"
+	Slider "Reload assist", "rsr_assist", 0.5, 3.0, 0.1, 1
+	Option "Ballistics", "rsq_ballistics", "RSQ_Ballistics"
+	StaticText " "
+	Option "Reload debug: print key codes", "rsr_debug", "OnOff"
+	StaticText " "
+	StaticText "VR reloading on: SSG, GrenadeLauncher, Revolver, assault rifle, BrutalPistol, BrutalSMG, MP40, AssaultShotgun, RailGun, Plasma_Gun, Sniper, Rocket_Launcher, Shot_Gun.", 1
+	StaticText "Every other gun reloads as stock BD22.", 1
+	StaticText "VR reloading: reload drops the magazine. Take", 1
+	StaticText "a new one with the off-hand trigger, or with the", 1
+	StaticText "off grip at least 50 cm from the gun (closer, the", 1
+	StaticText "grip steadies the gun as usual). Put it under the", 1
+	StaticText "well and push it home. When the gun needs it,", 1
+	StaticText "take the handle or slide with the off trigger,", 1
+	StaticText "pull it all the way back and let go.", 1
+	StaticText " "
+	StaticText "all the way back and let go.", 1
+	StaticText "Pump shotguns, VR: reload, then take a shell", 1
+	StaticText "away from the gun (off trigger, or grip away", 1
+	StaticText "from the gun), put it under the loading port", 1
+	StaticText "and push it in. With your hand on the pump", 1
+	StaticText "(steadied, or the off trigger held on it), pull", 1
+	StaticText "it back and push it forward after each shot.", 1
+	StaticText " "
+	StaticText "Break-open guns and revolvers, VR: reload opens", 1
+	StaticText "the gun. Take a shell or round (off trigger, or", 1
+	StaticText "grip away from the gun), put it in a chamber from", 1
+	StaticText "behind and push it home. Flick the gun shut, or", 1
+	StaticText "push it shut with the off hand.", 1
+	StaticText " "
+	StaticText "VR hands: bring your off hand to the front of the", 1
+	StaticText "gun and squeeze the grip to hold it.", 1
+}

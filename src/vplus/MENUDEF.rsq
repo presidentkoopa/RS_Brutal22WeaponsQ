@@ -1,0 +1,33 @@
+// RS VR hands / reload / ballistics (zscript/rsq, zscript/rsr). v9.
+// Nothing here changes the engine's two-hand steadying.
+AddOptionMenu "OptionsMenu"
+{
+	Submenu "RS VR Hands, Reload, Ballistics", "RSQ_Options"
+}
+
+AddOptionMenu "EDW_Settings"
+{
+	StaticText " "
+	Submenu "RS VR Hands, Reload, Ballistics", "RSQ_Options"
+}
+
+OptionValue "RSR_ReloadMode"
+{
+	1, "VR"
+	0, "Stock"
+}
+
+OptionValue "RSQ_Ballistics"
+{
+	0, "Stock"
+	1, "Enhanced"
+}
+
+OptionMenu "RSQ_Options"
+{
+	Title "RS VR HANDS, RELOAD, BALLISTICS"
+	Option "VR hands", "rsq_hands", "OnOff"
+	Option "Reloading", "rsr_reload", "RSR_ReloadMode"
+	Slider "Reload assist", "rsr_assist", 0.5, 3.0, 0.1, 1
+	Option "Ballistics", "rsq_ballistics", "RSQ_Ballistics"
+}

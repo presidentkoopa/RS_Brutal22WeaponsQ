@@ -1,0 +1,12 @@
+
+// RS real VR reload: Ermac's off hand holding a magazine (ammo_hand frame 3), without his
+// magazine: the gun's own magazine is drawn in it on layer 2201 (RSR, MODELDEF above)
+Model RSQ_Hands
+{
+	Path "models/rsq"
+	Model 0 "ammo_hand.md3"
+	Skin 0 "hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQHN I 0 3
+}

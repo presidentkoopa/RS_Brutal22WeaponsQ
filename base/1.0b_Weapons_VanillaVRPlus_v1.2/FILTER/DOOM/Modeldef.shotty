@@ -1,0 +1,127 @@
+
+//Hud WEAPON SHOTGUN1
+
+Model VR_Shotgun
+{ 
+   Path "Models/Weapons/Hud/guns"
+   Model 0 "shotgun.md3"
+   Skin 0 "WPN-GUNS.png"
+  
+   Scale 1.35 1.35 1.35
+
+//zoffset -10
+//offset 10 10 -5 //desktop
+
+   FrameIndex SHTG A 0 0   FrameIndex SHTG A 1 0
+   FrameIndex SHTG B 0 1   FrameIndex SHTG B 1 1
+   FrameIndex SHTG C 0 2   FrameIndex SHTG C 1 2
+   FrameIndex SHTG D 0 3   FrameIndex SHTG D 1 3
+   FrameIndex SHTG E 0 4   FrameIndex SHTG E 1 4
+   FrameIndex SHTG F 0 5   FrameIndex SHTG F 1 5
+   FrameIndex SHTG G 0 6   FrameIndex SHTG G 1 6
+   FrameIndex SHTG H 0 7   FrameIndex SHTG H 1 7
+   FrameIndex SHTG I 0 8   FrameIndex SHTG I 1 8
+   FrameIndex SHTG J 0 9   FrameIndex SHTG J 1 9
+   FrameIndex SHTG K 0 10   FrameIndex SHTG K 1 10
+   FrameIndex SHTG L 0 11   FrameIndex SHTG L 1 11
+   FrameIndex SHTG M 0 12   FrameIndex SHTG M 1 12
+   FrameIndex SHTG N 0 13   FrameIndex SHTG N 1 13
+   FrameIndex SHTG O 0 14   FrameIndex SHTG O 1 14
+   FrameIndex SHTG P 0 15   FrameIndex SHTG P 1 15
+   FrameIndex SHTG Q 0 16   FrameIndex SHTG Q 1 16
+   FrameIndex SHTG R 0 17   FrameIndex SHTG R 1 17
+   FrameIndex SHTG S 0 18   FrameIndex SHTG S 1 18
+   FrameIndex SHTG T 0 19   FrameIndex SHTG T 1 19
+   FrameIndex SHTG U 0 20   FrameIndex SHTG U 1 20
+   FrameIndex SHTG V 0 21   FrameIndex SHTG V 1 21
+   FrameIndex SHTG W 0 22   FrameIndex SHTG W 1 22
+   FrameIndex SHTG X 0 23   FrameIndex SHTG X 1 23
+   FrameIndex SHTG Y 0 24   FrameIndex SHTG Y 1 24
+   FrameIndex SHTG Z 0 25   FrameIndex SHTG Z 1 25
+
+
+}
+
+//Hud WEAPON SHOTGUN1 FLASH
+
+Model VR_Shotgun
+{ 
+   Path "Models/Weapons/Hud/guns"
+   Model 0 "shotgunf.md3"
+   Skin 0 "muzzleflash.png"
+   Scale 1.35 1.35 1.35
+
+//zoffset -10
+//offset 10 10 -5 //desktop
+
+   FrameIndex SHTF A 0 0   FrameIndex SHTF A 1 0
+   FrameIndex SHTF B 0 1   FrameIndex SHTF B 1 1
+   FrameIndex SHTF C 0 2   FrameIndex SHTF C 1 2
+   FrameIndex SHTF D 0 3   FrameIndex SHTF D 1 3
+   FrameIndex SHTF E 0 4   FrameIndex SHTF E 1 4
+   FrameIndex SHTF F 0 5   FrameIndex SHTF F 1 5
+
+}
+
+//Hud WEAPON SSG
+
+Model VR_SuperShotgun
+{ 
+   Path "Models/Weapons/Hud/guns"
+   Model 0 "ssg.md3"
+   Skin 0 "WPN-GUNS.png"
+  
+   Scale 1.35 1.35 1.35
+
+//zoffset -10
+//offset 20 0 0
+//offset 10 10 -5 //desktop
+
+   FrameIndex SHT2 A 0 0   FrameIndex SHT2 A 1 0
+   FrameIndex SHT2 B 0 1   FrameIndex SHT2 B 1 1
+   FrameIndex SHT2 C 0 2   FrameIndex SHT2 C 1 2
+   FrameIndex SHT2 D 0 3   FrameIndex SHT2 D 1 3
+   FrameIndex SHT2 E 0 4   FrameIndex SHT2 E 1 4
+   FrameIndex SHT2 F 0 5   FrameIndex SHT2 F 1 5
+   FrameIndex SHT2 G 0 6   FrameIndex SHT2 G 1 6
+   FrameIndex SHT2 H 0 7   FrameIndex SHT2 H 1 7
+   FrameIndex SHT2 I 0 8   FrameIndex SHT2 I 1 8
+   FrameIndex SHT2 J 0 9   FrameIndex SHT2 J 1 9
+   FrameIndex SHT2 K 0 10   FrameIndex SHT2 K 1 10
+   FrameIndex SHT2 L 0 11   FrameIndex SHT2 L 1 11
+   FrameIndex SHT2 M 0 12   FrameIndex SHT2 M 1 12
+   FrameIndex SHT2 N 0 13   FrameIndex SHT2 N 1 13
+   FrameIndex SHT2 O 0 14   FrameIndex SHT2 O 1 14
+   FrameIndex SHT2 P 0 15   FrameIndex SHT2 P 1 15
+   FrameIndex SHT2 Q 0 16   FrameIndex SHT2 Q 1 16
+   FrameIndex SHT2 R 0 17   FrameIndex SHT2 R 1 17
+   FrameIndex SHT2 S 0 18   FrameIndex SHT2 S 1 18
+   FrameIndex SHT2 T 0 19   FrameIndex SHT2 T 1 19
+   FrameIndex SHT2 U 0 20   FrameIndex SHT2 U 1 20
+   FrameIndex SHT2 V 0 21   FrameIndex SHT2 V 1 21
+   FrameIndex SHT2 W 0 22   FrameIndex SHT2 W 1 22
+   FrameIndex SHT2 X 0 23   FrameIndex SHT2 X 1 23
+   FrameIndex SHT2 Y 0 24   FrameIndex SHT2 Y 1 24
+
+}
+
+//Hud WEAPON SSG FLASH
+
+Model VR_SuperShotgun
+{ 
+   Path "Models/Weapons/Hud/guns"
+   Model 0 "ssgf.md3"
+   Skin 0 "muzzleflash.png"
+   Scale 1.35 1.35 1.35
+
+//zoffset -10
+//offset 10 10 -5 //desktop
+
+   FrameIndex SHT4 A 0 0   FrameIndex SHT4 A 1 0
+   FrameIndex SHT4 B 0 1   FrameIndex SHT4 B 1 1
+   FrameIndex SHT4 C 0 2   FrameIndex SHT4 C 1 2
+   FrameIndex SHT4 D 0 3   FrameIndex SHT4 D 1 3
+   FrameIndex SHT4 E 0 4   FrameIndex SHT4 E 1 4
+   FrameIndex SHT4 F 0 5   FrameIndex SHT4 F 1 5
+
+}

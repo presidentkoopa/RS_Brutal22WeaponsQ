@@ -1,0 +1,3 @@
+// RSR-BREAK: the real VR reload for break-open guns and revolvers (zscript/rsr/rsr_break.zs).
+// It shares Real reload's options (rsq_reload, rsr_grab_buttons, rsr_magrelease, rsr_pouch, rsr_debug).
+user float rsb_flick_speed = 450;	// deg/s: a turn of the gun hand the way the action closes, this fast (over 3 tics), snaps it shut

@@ -1,0 +1,47 @@
+ACTOR Vanilla_Fist : Fist
+{
+	+WEAPON.NOALERT
+	States
+	{
+	Deselect:
+		TNT1 A 0 A_JumpIf(GetCVAR("evw_fastswitch")==0, 2)
+		PUNG A 1 A_Lower(60)
+		Loop
+		PUNG A 1 A_Lower
+		Loop
+	Select:
+		TNT1 A 0 A_JumpIf(GetCVAR("evw_fastswitch")==0, 2)
+		PUNG A 1 A_Raise(60)
+		Loop
+		PUNG A 1 A_Raise
+		Loop
+	Fire:
+		PUNG B 2
+		PUNG C 2 A_CustomPunch(20 * random(1, 1.25), TRUE, 0, "FistPuff", 65)
+		PUNG D 5
+		PUNG C 4
+		PUNG B 5 A_ReFire
+		Goto Ready
+	}
+}
+
+Actor FistPuff
+{
++NOBLOCKMAP
++NOGRAVITY
++PUFFONACTORS
+-ALLOWPARTICLES
++NOEXTREMEDEATH
+attacksound "weapons/fist/hitwall"
+seesound "weapons/fist/punch"
+mass 1
+	States
+	{
+	Spawn:
+		PUFF A 4 Bright
+		PUFF B 4
+	Melee:
+		PUFF CD 4
+		Stop
+	}
+}

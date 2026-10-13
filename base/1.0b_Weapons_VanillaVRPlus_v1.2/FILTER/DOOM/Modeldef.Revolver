@@ -1,0 +1,176 @@
+//Hud WEAPON PISTOL
+
+Model VR_Revolver
+{ 
+   Path "Models/Weapons/hud/gats"
+   Model 0 "rev.md3"
+   Skin 0 "WPN-REV.png"
+  
+   Scale 1.35 1.35 1.35
+
+//zoffset -10
+//offset 10 10 -5 //desktop
+
+
+   FrameIndex REVL A 0 0   FrameIndex REVL A 1 0
+   FrameIndex REVL B 0 1   FrameIndex REVL B 1 1
+   FrameIndex REVL C 0 2   FrameIndex REVL C 1 2
+   FrameIndex REVL D 0 3   FrameIndex REVL D 1 3
+   FrameIndex REVL E 0 4   FrameIndex REVL E 1 4
+   FrameIndex REVL F 0 5   FrameIndex REVL F 1 5
+   FrameIndex REVL G 0 6   FrameIndex REVL G 1 6
+   FrameIndex REVL H 0 7   FrameIndex REVL H 1 7
+   FrameIndex REVL I 0 8   FrameIndex REVL I 1 8
+   FrameIndex REVL J 0 9   FrameIndex REVL J 1 9
+   FrameIndex REVL K 0 10   FrameIndex REVL K 1 10
+   FrameIndex REVL L 0 11   FrameIndex REVL L 1 11
+   FrameIndex REVL M 0 12   FrameIndex REVL M 1 12
+   FrameIndex REVL N 0 13   FrameIndex REVL N 1 13
+   FrameIndex REVL O 0 14   FrameIndex REVL O 1 14
+   FrameIndex REVL P 0 15   FrameIndex REVL P 1 15
+   FrameIndex REVL Q 0 16   FrameIndex REVL Q 1 16
+   FrameIndex REVL R 0 17   FrameIndex REVL R 1 17
+   FrameIndex REVL S 0 18   FrameIndex REVL S 1 18
+   FrameIndex REVL T 0 19   FrameIndex REVL T 1 19
+   FrameIndex REVL U 0 20   FrameIndex REVL U 1 20
+   FrameIndex REVL V 0 21   FrameIndex REVL V 1 21
+   FrameIndex REVL W 0 22   FrameIndex REVL W 1 22
+   FrameIndex REVL X 0 23   FrameIndex REVL X 1 23
+   FrameIndex REVL Y 0 24   FrameIndex REVL Y 1 24
+   FrameIndex REVL Z 0 25   FrameIndex REVL Z 1 25
+	//draw, cowboy
+   FrameIndex REVO A 0 26   FrameIndex REVO a 1 26
+   FrameIndex REVO B 0 27   FrameIndex REVO b 1 27
+   FrameIndex REVO C 0 28   FrameIndex REVO c 1 28
+   FrameIndex REVO D 0 29   FrameIndex REVO d 1 29
+   FrameIndex REVO E 0 30   FrameIndex REVO e 1 30
+   FrameIndex REVO F 0 31   FrameIndex REVO f 1 31
+   FrameIndex REVO g 0 32   FrameIndex REVO g 1 32
+   FrameIndex REVO h 0 33   FrameIndex REVO h 1 33
+   FrameIndex REVO i 0 34   FrameIndex REVO i 1 34
+   FrameIndex REVO j 0 35   FrameIndex REVO j 1 35
+   FrameIndex REVO k 0 36   FrameIndex REVO k 1 36
+   FrameIndex REVO l 0 37   FrameIndex REVO l 1 37
+   FrameIndex REVO m 0 38   FrameIndex REVO m 1 38
+   FrameIndex REVO n 0 39   FrameIndex REVO n 1 39
+   FrameIndex REVO o 0 40   FrameIndex REVO o 1 40
+
+
+}
+
+//Hud WEAPON PISTOL FLASH
+
+Model VR_Revolver
+{ 
+   Path "Models/Weapons/hud/gats"
+   Model 0 "revF.MD3"
+   Skin 0 "RedFlash.png"
+   Scale 1.35 1.35 1.35
+
+//zoffset -10
+//offset 10 10 -5 //desktop
+
+   FrameIndex REVF A 0 0 FrameIndex REVF A 1 0
+   FrameIndex REVF B 0 1 FrameIndex REVF B 1 1
+   FrameIndex REVF C 0 2 FrameIndex REVF C 1 2
+   FrameIndex REVF D 0 3 FrameIndex REVF D 1 3
+   FrameIndex REVF e 0 4 FrameIndex REVF e 1 4
+   FrameIndex REVF f 0 5 FrameIndex REVF f 1 5
+   FrameIndex REVF g 0 6 FrameIndex REVF g 1 6
+   FrameIndex REVF h 0 7 FrameIndex REVF h 1 7
+   FrameIndex REVF i 0 8 FrameIndex REVF i 1 8
+   FrameIndex REVF j 0 9 FrameIndex REVF j 1 9
+   FrameIndex REVF k 0 10 FrameIndex REVF k 1 10
+
+}
+
+//Hud WEAPON PISTOL
+
+
+//Hud WEAPON PISTOL
+
+Model VR_Revolver2
+{ 
+   Path "Models/Weapons/hud/gats"
+   Model 0 "rev.md3"
+   Skin 0 "WPN-REV2.png"
+  
+   Scale 1.35 1.35 1.35
+
+//zoffset -10
+//offset 10 10 -5 //desktop
+
+
+   FrameIndex REVL A 0 0   FrameIndex REVL A 1 0
+   FrameIndex REVL B 0 1   FrameIndex REVL B 1 1
+   FrameIndex REVL C 0 2   FrameIndex REVL C 1 2
+   FrameIndex REVL D 0 3   FrameIndex REVL D 1 3
+   FrameIndex REVL E 0 4   FrameIndex REVL E 1 4
+   FrameIndex REVL F 0 5   FrameIndex REVL F 1 5
+   FrameIndex REVL G 0 6   FrameIndex REVL G 1 6
+   FrameIndex REVL H 0 7   FrameIndex REVL H 1 7
+   FrameIndex REVL I 0 8   FrameIndex REVL I 1 8
+   FrameIndex REVL J 0 9   FrameIndex REVL J 1 9
+   FrameIndex REVL K 0 10   FrameIndex REVL K 1 10
+   FrameIndex REVL L 0 11   FrameIndex REVL L 1 11
+   FrameIndex REVL M 0 12   FrameIndex REVL M 1 12
+   FrameIndex REVL N 0 13   FrameIndex REVL N 1 13
+   FrameIndex REVL O 0 14   FrameIndex REVL O 1 14
+   FrameIndex REVL P 0 15   FrameIndex REVL P 1 15
+   FrameIndex REVL Q 0 16   FrameIndex REVL Q 1 16
+   FrameIndex REVL R 0 17   FrameIndex REVL R 1 17
+   FrameIndex REVL S 0 18   FrameIndex REVL S 1 18
+   FrameIndex REVL T 0 19   FrameIndex REVL T 1 19
+   FrameIndex REVL U 0 20   FrameIndex REVL U 1 20
+   FrameIndex REVL V 0 21   FrameIndex REVL V 1 21
+   FrameIndex REVL W 0 22   FrameIndex REVL W 1 22
+   FrameIndex REVL X 0 23   FrameIndex REVL X 1 23
+   FrameIndex REVL Y 0 24   FrameIndex REVL Y 1 24
+   FrameIndex REVL Z 0 25   FrameIndex REVL Z 1 25
+	//draw, cowboy
+   FrameIndex REVO A 0 26   FrameIndex REVO a 1 26
+   FrameIndex REVO B 0 27   FrameIndex REVO b 1 27
+   FrameIndex REVO C 0 28   FrameIndex REVO c 1 28
+   FrameIndex REVO D 0 29   FrameIndex REVO d 1 29
+   FrameIndex REVO E 0 30   FrameIndex REVO e 1 30
+   FrameIndex REVO F 0 31   FrameIndex REVO f 1 31
+   FrameIndex REVO g 0 32   FrameIndex REVO g 1 32
+   FrameIndex REVO h 0 33   FrameIndex REVO h 1 33
+   FrameIndex REVO i 0 34   FrameIndex REVO i 1 34
+   FrameIndex REVO j 0 35   FrameIndex REVO j 1 35
+   FrameIndex REVO k 0 36   FrameIndex REVO k 1 36
+   FrameIndex REVO l 0 37   FrameIndex REVO l 1 37
+   FrameIndex REVO m 0 38   FrameIndex REVO m 1 38
+   FrameIndex REVO n 0 39   FrameIndex REVO n 1 39
+   FrameIndex REVO o 0 40   FrameIndex REVO o 1 40
+
+
+}
+
+//Hud WEAPON PISTOL FLASH
+
+Model VR_Revolver2
+{ 
+   Path "Models/Weapons/hud/gats"
+   Model 0 "revF.MD3"
+   Skin 0 "RedFlash.png"
+   Scale 1.35 1.35 1.35
+
+//zoffset -10
+//offset 10 10 -5 //desktop
+
+   FrameIndex REVF A 0 0 FrameIndex REVF A 1 0
+   FrameIndex REVF B 0 1 FrameIndex REVF B 1 1
+   FrameIndex REVF C 0 2 FrameIndex REVF C 1 2
+   FrameIndex REVF D 0 3 FrameIndex REVF D 1 3
+   FrameIndex REVF e 0 4 FrameIndex REVF e 1 4
+   FrameIndex REVF f 0 5 FrameIndex REVF f 1 5
+   FrameIndex REVF g 0 6 FrameIndex REVF g 1 6
+   FrameIndex REVF h 0 7 FrameIndex REVF h 1 7
+   FrameIndex REVF i 0 8 FrameIndex REVF i 1 8
+   FrameIndex REVF j 0 9 FrameIndex REVF j 1 9
+   FrameIndex REVF k 0 10 FrameIndex REVF k 1 10
+
+}
+
+//Hud WEAPON PISTOL
