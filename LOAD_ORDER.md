@@ -68,15 +68,28 @@ Everything switchable is under **Options -> RS VR Hands, Reload, Ballistics**:
 | VR hands | `rsq_hands` | on / off |
 | Reloading | `rsr_reload` | **VR** (1) / Stock (0) |
 | Reload assist | `rsr_assist` | 0.5 .. 3.0, default 1.0 |
+| Where a magazine comes from | `rsr_pouch` | anywhere, 20 cm from the gun (0) / low, 40 cm below the eyes (1) |
 | Ballistics | `rsq_ballistics` | Enhanced (1) / Stock (0) |
 
-Console-only, deliberately not in the menu:
+And in the **Reload: tuning and debug** submenu off that page:
+
+| row | cvar | values |
+|---|---|---|
+| Reload assist | `rsr_assist` | the same slider, repeated so it can be moved while watching the zones |
+| Show the capture zones | `rsr_assist_debug` | on / off, default off |
+| Print each reload step | `rsr_debug` | on / off, default off |
+
+**Everything you need while wearing the headset is in the menu.** A console command is no use
+with a headset on, so the two debug toggles have menu rows rather than being console-only.
+
+Still console-only, because they take a key code or a button mask and no menu widget fits:
 
 | cvar | what it does |
 |---|---|
-| `rsr_assist_debug` | draws every live capture zone as a particle ring. Debug only. |
-| `rsr_debug` | prints each reload step and every key code pressed |
 | `rsr_grip_keys` | the off-hand grip's key codes, default `"443 436"` |
 | `rsr_grab_buttons` | buttons that grab anywhere, default `BT_OFFHANDATTACK` |
 | `rsr_magrelease` | buttons that drop the magazine, default `BT_OFFHANDRELOAD` |
-| `rsr_pouch` | 0 anywhere 20 cm from the gun, 1 low (40 cm below the eyes) |
+| `rsr_eat_grip` | while a reload has the off hand, its grip key does nothing else |
+
+To find your controller's grip codes: turn on **Print each reload step**, press the grip, and
+read the codes it prints, then set `rsr_grip_keys` to them.

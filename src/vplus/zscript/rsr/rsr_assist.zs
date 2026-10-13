@@ -21,7 +21,8 @@
 //
 // rsr_assist (0.5 .. 3.0, default 1.0) scales every radius and tolerance at once, and
 // scales how little of the push counts as home. Per gun, change the numbers in the tables
-// below.
+// below. rsr_assist and rsr_assist_debug BOTH have menu rows (MENUDEF.rsq, "Reload: tuning
+// and debug") -- deliberately, because a console command is no use with a headset on.
 //
 // INDEX SPACES -- the three modules number their guns separately, and each set has its own
 // table, so an index means nothing without its module:
@@ -229,9 +230,10 @@ class RSR_Assist abstract
 
 	// ---- rsr_assist_debug: draw a capture zone
 	//
-	// DEBUG ONLY, off by default, and never a marker a normal player can see: with the cvar
+	// A tuning aid, off by default, switched from the menu because the console cannot be
+	// reached in a headset. It never becomes a marker a player has to look at: with the cvar
 	// off not one particle is spawned. Particles, not actors, so there is nothing in the
-	// world to collide with or pick up.
+	// world to collide with or pick up either way.
 	//
 	// off is the ring's centre as a world offset from mo; su and sv span its plane, already
 	// scaled to the radius (A_SpawnParticle's offsets are world, not turned by the actor's

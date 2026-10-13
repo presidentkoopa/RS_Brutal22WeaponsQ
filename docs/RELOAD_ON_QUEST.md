@@ -92,16 +92,20 @@ disjoint.
 
 ```
 rsr_assist        0.5 .. 3.0, default 1.0   Options -> RS VR Hands, Reload, Ballistics
-rsr_assist_debug  off by default. Console only -- never shown to a normal player.
+rsr_assist_debug  off by default            ... -> Reload: tuning and debug
+rsr_debug         off by default            ... -> Reload: tuning and debug
 ```
+
+Both debug toggles have menu rows **on purpose**: a console command cannot be reached with a
+headset on, so anything needed while testing has to be in the menu.
 
 One number scales everything: radii `base * assist`; angles `min(base * assist, 85)`; pushes and
 strokes `1 - (1 - base) * assist`, so more assist means less of the push is needed.
 
-With `rsr_assist_debug 1`, each live zone draws as a 16-point particle ring at its boundary --
-yellow while carrying, green while inserting. Particles, not actors: nothing to collide with, and
-with the cvar off not one is spawned. This is the only thing in the whole system that draws a
-hint, and it exists for tuning, not for play.
+With **Show the capture zones** on, each live zone draws as a 16-point particle ring at its
+boundary -- yellow while carrying, green while inserting. Particles, not actors: nothing to
+collide with, and with it off not one is spawned. This is the only thing in the whole system
+that draws a hint, and it exists for tuning, not for play.
 
 ### Tuning one gun
 

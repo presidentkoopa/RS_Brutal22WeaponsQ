@@ -423,3 +423,51 @@ change never touched.
 
 Not checked: nothing has been seen in a headset. Every number above is a default chosen from the
 geometry, not from play, so expect the slider to do real work on the first run.
+
+### The debug toggles are in the menu (2026-10-13, later)
+
+Owner: *"i need those as toggleable options in the menus, ok? i shouldn't have to console that
+im wearing a headset."* Correct, and the original "console only, never shown to normal players"
+note was the wrong call -- the person doing the testing is wearing the headset.
+
+New submenu **Options -> RS VR Hands, Reload, Ballistics -> Reload: tuning and debug**
+(`MENUDEF.rsq`, `OptionMenu "RSR_Debug"`), holding:
+
+| row | cvar |
+|---|---|
+| Reload assist | `rsr_assist` -- the same slider again, so it can be moved while the zones are visible |
+| Show the capture zones | `rsr_assist_debug` |
+| Print each reload step | `rsr_debug` |
+
+and short help text for each.
+
+Also added to the main page: **Where a magazine comes from** (`rsr_pouch`: anywhere 20 cm from
+the gun, or low 40 cm below the eyes), which was console-only for no good reason.
+
+Still console-only, because each takes a key code or a button mask and no menu widget fits:
+`rsr_grip_keys`, `rsr_grab_buttons`, `rsr_magrelease`, `rsr_eat_grip`. To read your controller's
+grip codes, turn on **Print each reload step**, press the grip and read what it prints.
+
+Two things fixed in passing:
+
+- **V+ had no debug row and no help text at all.** `noreload.py` had stripped the whole block
+  along with the Reloading row, and restoring just the Reloading row left the pack with an
+  options page of four lines and no instructions. V+ now has its own help text, written for its
+  own guns (assault rifle, super shotgun, both revolvers, pump shotgun) rather than BD22's.
+- **BD22 had a duplicated help line.** `"all the way back and let go."` appeared twice, once
+  correctly at the end of the magazine block and once orphaned after a blank line. Removed the
+  orphan. A note about the revolver's speedloader was added.
+
+Load-tested again after the change, same command as above:
+
+| pack | mods loaded | script parsing | warnings | MENUDEF errors | OpenXR |
+|---|---|---|---|---|---|
+| BD22 | 8 | took 3631.11 ms | 8 | 0 | none |
+| V+ | 5 | took 600.66 ms | 9 | 0 | none |
+
+A MENUDEF mistake only shows at load, which is the reason for the re-test. **Check the "mods
+loaded" column**: an earlier attempt at this test reported a clean parse in 478 ms with zero
+warnings, which looked like a pass and was nothing of the kind -- the shell had split the
+`-file` paths on the colon in `E:/` and the engine loaded no mods at all. A parse time far below
+the usual one, or a warning count of zero, means the bases are missing, not that the pack got
+better.

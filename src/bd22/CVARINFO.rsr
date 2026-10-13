@@ -10,6 +10,8 @@ user bool rsr_debug = false;		// print every key code pressed, and each reload s
 // tolerance of the real VR reload at once, and how little of a push or a stroke counts as
 // done. 1.0 is the shipped feel; 0.5 asks for the old precision; 3.0 is very forgiving.
 user float rsr_assist = 1.0;
-// Draw the capture zones as rings. DEBUG ONLY: with this off not one particle is spawned,
-// and these are particles, never actors, so they are not markers in the world.
+// Draw the capture zones as rings. A tuning aid, not a play feature -- but it IS in the menu
+// (Reload: tuning and debug), because a console command is no use with a headset on. With it
+// off not one particle is spawned, and these are particles, never actors, so nothing becomes
+// a marker in the world.
 user bool rsr_assist_debug = false;
