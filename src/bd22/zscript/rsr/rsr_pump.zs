@@ -803,9 +803,14 @@ class RSP_State play
 		int k = now - ejectTic;
 		int ej = i > 0 ? min(RSP.EJECT_TICS, RSP_Guns.EjectFrames(i)) : 0;
 		bool eject = w && w == ejectWeap && k >= 0 && k < ej;
-		bool shell = active && mode == RSP.LOAD && hand == RSP.INSERT;
+		// The hand's own shell must NOT depend on a weapon state: FreeFeed carries and inserts
+		// with the gun idle (mode NONE), so gating these on `active` hid the shell entirely the
+		// moment the feed stopped needing a loading loop. They follow `hand` instead.
+		bool mine = i > 0 && i == gun;
+		bool shell = mine && hand == RSP.INSERT;
+		bool handShell = mine && hand == RSP.CARRY;
 		let parts = RSR_GunParts(mo.FindInventory('RSR_GunParts'));
-		if (!parts && (shown || shell || eject))
+		if (!parts && (shown || shell || handShell || eject))
 		{
 			mo.GiveInventory('RSR_GunParts', 1);
 			parts = RSR_GunParts(mo.FindInventory('RSR_GunParts'));
@@ -816,7 +821,7 @@ class RSP_State play
 		RSR.SetPart(p, RSP.SHELL, parts, shell, sp, 2);
 		RSR.SetPart(p, RSP.EJECT, parts, eject, sp, 3 + max(k, 0));
 		Actor hands = p.OffhandWeapon;
-		RSR.SetPart(p, RSP.HANDSHELL, hands is 'RSQ_Hands' ? hands : null, active && mode == RSP.LOAD && hand == RSP.CARRY, sp, 2);
+		RSR.SetPart(p, RSP.HANDSHELL, hands is 'RSQ_Hands' ? hands : null, handShell, sp, 2);
 	}
 }
 
@@ -939,10 +944,15 @@ class RSP_Handler : EventHandler
 	clearscope static String FreeHand(Actor mo)
 	{
 		let s = Peek(mo);
-		if (!s || s.mode == RSP.NONE)
+		if (!s)
 			return "";
-		if (s.mode == RSP.LOAD && (s.hand == RSP.CARRY || s.hand == RSP.INSERT))
+		// The shell hold does NOT depend on a weapon state either: FreeFeed carries a shell with
+		// the gun idle, and gating this on the LOAD mode left the hand open round a shell it was
+		// holding. The pump poses below still need a mode, since only a stroke sets `held`.
+		if (s.hand == RSP.CARRY || s.hand == RSP.INSERT)
 			return "RspShell";			// Ermac's one-shell hold (the shell is layer 2210 / 2122)
+		if (s.mode == RSP.NONE)
+			return "";
 		if (s.held && !s.steadied && RSP.SteadyOn())
 			return "AmmoH";				// a closed hand on the pump (the grab; no support hand then)
 		return "";						// free, or steadied: the hands' own (the support hand rides the pump)
@@ -1050,6 +1060,12 @@ class RSP_Handler : EventHandler
 				s.Input(mo);		// the grab's edges and where it was taken, every tic with the gun
 				s.InsertWanted(mo, i);
 				s.FreeFeed(mo, i);	// a shell straight into the port, no reload button, any time
+			}
+			else if (s.mode == RSP.NONE && s.hand != RSP.EMPTY)
+			{
+				// the gun is gone, or VR reloading is off, and the free feed still had a shell
+				s.hand = RSP.EMPTY;
+				s.s = s.sPrev = 0;
 			}
 			if (s.mode != RSP.NONE)
 			{
