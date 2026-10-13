@@ -49,6 +49,18 @@ ACTOR VR_Shotgun : Shotgun
 		SHTG A 0 A_GiveInventory("RSP_LoadStart", 1)
 		SHTG A 0 A_JumpIfInventory("RSP_Go", 1, "RSP_LoadGo")
 		Goto StartReload
+	RSP_Feed:	// RSR-PUMP: a shell the hand pushed home with the gun simply up (rsr_pump.zs
+				// FreeFeed). One pass per credited shell; the set's own items move here.
+		SHTG A 0 A_TakeInventory("RSP_ShellIn", 1)
+		SHTG A 0 A_JumpIfInventory("VR_ShotLoaded", 8, "RSP_FeedEnd")	// the tube is full
+		SHTG A 0 A_JumpIfInventory("VR_Shell", 1, "RSP_Feed1")
+		Goto RSP_FeedEnd												// nothing in reserve
+	RSP_Feed1:
+		SHTG A 0 A_GiveInventory("VR_ShotLoaded", 1)
+		SHTG A 0 A_TakeInventory("VR_Shell", 1)
+	RSP_FeedEnd:
+		SHTG A 0 A_JumpIfInventory("RSP_ShellIn", 1, "RSP_Feed")		// more credits queued
+		Goto Ready
 	RSP_VRIns:	// RSR-PUMP: the VR insert's OWN entry, skipping the set's reload gates.
 				// rsr_pump.zs reads the reload button and refuses before sending us here, so by
 				// this point there is reserve ammo and room in the tube.
@@ -112,6 +124,7 @@ ACTOR VR_Shotgun : Shotgun
 		SHTG A 0 A_TakeInventory("RSP_Auto", 1)
 		Goto RSP_PumpStock
   Ready:
+    SHTG A 0 A_JumpIfInventory("RSP_ShellIn", 1, "RSP_Feed")	// RSR-PUMP: a shell, no button
     SHTG A 0 A_JumpIfInventory("RSP_Insert", 1, "RSP_VRIns")	// RSR-PUMP: the hand insert
     SHTG A 1 A_WeaponReady(WRF_ALLOWRELOAD)
     Loop

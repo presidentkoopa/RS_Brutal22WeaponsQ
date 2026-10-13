@@ -206,7 +206,104 @@ class RSP_State play
 
 	// ---- the pump -----------------------------------------------------------------------------
 
-	// THE VR INSERT'S OWN ENTRY.
+	// =====================================================================================
+	// INSERT A SHELL AT ANY TIME.
+	//
+	// The hand feed is not a weapon state and needs no reload button. With the gun simply up,
+	// loaded or half loaded, mid-fight: grab a shell, bring it to the port, push it home. The
+	// weapon's Ready picks up each RSP_ShellIn and runs the set's OWN per-shell step, so the
+	// set's ammo logic and sounds are untouched. (Owner, 2026-10-13 -- "insert a shell at any
+	// time" means no mode to enter, which the RSP_Insert button entry still made you do.)
+	//
+	// Deliberately NOT folded into LoadTick: that one is driven by the weapon's loading loop and
+	// also owns the pump stroke, and this has to run when the weapon is in no loop at all. The
+	// three hand cases are repeated here rather than shared so that the working loading path
+	// cannot be broken by a change made for this one.
+	// =====================================================================================
+	void FreeFeed(PlayerPawn mo, int i)
+	{
+		if (mode != RSP.NONE)
+			return;				// a loading loop or a pump stroke owns the hand instead
+		gun = i;
+		sPrev = s;
+		latPrev = lat;
+		Input(mo);
+		switch (hand)
+		{
+		case RSP.EMPTY:
+			if (grabPress && !pumpGrab && CanTakeShell(mo))
+			{
+				hand = RSP.CARRY;
+				geo.Buzz(mo);
+				Log(mo, String.Format("took a shell %.0f cm from the gun hand (no reload needed)", offLocal.Length()));
+			}
+			break;
+
+		case RSP.CARRY:
+		{
+			if (!grabDown)
+			{
+				DropShell(mo, geo.OffPoint(RSP_Guns.ShellInHand(gun)));
+				hand = RSP.EMPTY;
+				break;
+			}
+			double sv, side, ang;
+			Vector3 lv;
+			[sv, side, ang, lv] = ShellAtPort();
+			double cap = RSR_Assist.PumpCapture(mo.player, gun);
+			if (side < cap && sv > -max(RSP.ENTER_BEHIND, cap) && sv < cap * 0.3
+				&& ang < RSR_Assist.PumpTilt(mo.player, gun))
+			{
+				hand = RSP.INSERT;
+				s = sPrev = sv;
+				lat = latPrev = lv;
+				geo.Buzz(mo);
+				Log(mo, String.Format("the shell is in the port: %.1f cm, %.1f off the line, %.0f deg", sv, side, ang));
+			}
+			break;
+		}
+
+		case RSP.INSERT:
+		{
+			double sv, side, ang;
+			Vector3 lv;
+			[sv, side, ang, lv] = ShellAtPort();
+			if (!grabDown)
+			{
+				DropShell(mo, InsertPoint());
+				hand = RSP.EMPTY;
+				s = sPrev = 0;
+				break;
+			}
+			double cap = RSR_Assist.PumpCapture(mo.player, gun);
+			double leave = RSR_Assist.Leave(mo.player, cap);
+			if (side > leave || sv < -max(RSP.LEAVE_BEHIND, leave * 1.5))
+			{
+				hand = RSP.CARRY;
+				s = sPrev = 0;
+				Log(mo, "the shell came back out");
+				break;
+			}
+			double depth = RSP_Guns.Depth(gun);
+			s = min(sv, depth);
+			lat = lv;
+			if (s >= min(depth * RSR_Assist.PumpSeatFrac(mo.player, gun), depth - RSP.SEAT))
+			{
+				int credit = clamp(RSR.PlayerInt(mo.player, 'rsr_shell_credit', 1), 1, 4);
+				mo.GiveInventory('RSP_ShellIn', credit);
+				PlaySnd(mo, RSP_Guns.SndShell(gun), RSP_Guns.ChanShell(gun));
+				geo.Buzz(mo);
+				Log(mo, String.Format("shell home (%d credited), gun idle", credit));
+				hand = RSP.EMPTY;
+				s = sPrev = 0;
+			}
+			break;
+		}
+		}
+	}
+
+	// THE VR INSERT'S OWN ENTRY (kept: the reload button still starts the set's own loading
+	// loop, which also lets the pump be worked. FreeFeed above is the no-button path.)
 	//
 	// BD22 does not route its reload button through A_WeaponReady at all -- its shotgun has
 	// WRF_ALLOWRELOAD commented out and uses a "Reloading" token its ACS sets, which its
@@ -952,6 +1049,7 @@ class RSP_Handler : EventHandler
 					s.gun = i;
 				s.Input(mo);		// the grab's edges and where it was taken, every tic with the gun
 				s.InsertWanted(mo, i);
+				s.FreeFeed(mo, i);	// a shell straight into the port, no reload button, any time
 			}
 			if (s.mode != RSP.NONE)
 			{
