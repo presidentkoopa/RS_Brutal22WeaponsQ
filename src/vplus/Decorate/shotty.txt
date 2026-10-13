@@ -79,7 +79,7 @@ ACTOR VR_Shotgun : Shotgun
 	RSP_PGo:
 		SHTG A 0 A_TakeInventory("RSP_Go", 1)
 	RSP_PWait:		// the hand works the pump (rsr_pump.zs moves it, plays shotpump and ejects the shell)
-		SHTG A 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB|WRF_NOSECONDARY)
+		SHTG A 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB|WRF_NOSECONDARY|WRF_ALLOWRELOAD)
 		SHTG A 0 A_GiveInventory("RSP_PTick", 1)
 		SHTG A 0 A_JumpIfInventory("RSP_Back", 1, "RSP_PBack")
 		SHTG A 0 A_JumpIfInventory("RSP_Fwd", 1, "RSP_PFwd")

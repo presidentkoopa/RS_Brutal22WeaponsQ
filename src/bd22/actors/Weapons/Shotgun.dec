@@ -86,7 +86,7 @@ ACTOR Shot_Gun : BrutalWeapon
 	RSP_P1Go:
 		"####" "#" 0 A_TakeInventory("RSP_Go", 1)
 	RSP_P1Wait:	// the hand works the pump (rsr_pump.zs moves it); switching is allowed, as BD22's pump allows
-		"####" "#" 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB|WRF_NOSECONDARY)
+		"####" "#" 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB|WRF_NOSECONDARY|WRF_ALLOWRELOAD)
 		"####" "#" 0 A_GiveInventory("RSP_PTick", 1)
 		"####" "#" 0 A_JumpIfInventory("RSP_Back", 1, "RSP_P1Back")
 		"####" "#" 0 A_JumpIfInventory("RSP_Fwd", 1, "RSP_P1Fwd")
@@ -127,7 +127,7 @@ ACTOR Shot_Gun : BrutalWeapon
 	RSP_P2Go:
 		"####" "#" 0 A_TakeInventory("RSP_Go", 1)
 	RSP_P2Wait:	// the hand works the pump (rsr_pump.zs moves it); switching is allowed, as BD22's pump allows
-		"####" "#" 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB|WRF_NOSECONDARY)
+		"####" "#" 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB|WRF_NOSECONDARY|WRF_ALLOWRELOAD)
 		"####" "#" 0 A_GiveInventory("RSP_PTick", 1)
 		"####" "#" 0 A_JumpIfInventory("RSP_Back", 1, "RSP_P2Back")
 		"####" "#" 0 A_JumpIfInventory("RSP_Fwd", 1, "RSP_P2Fwd")
@@ -162,7 +162,7 @@ ACTOR Shot_Gun : BrutalWeapon
 	RSP_P3Go:
 		"####" "#" 0 A_TakeInventory("RSP_Go", 1)
 	RSP_P3Wait:	// the hand works the pump (rsr_pump.zs moves it); switching is allowed, as BD22's pump allows
-		"####" "#" 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB|WRF_NOSECONDARY)
+		"####" "#" 1 A_WeaponReady(WRF_NOFIRE|WRF_NOBOB|WRF_NOSECONDARY|WRF_ALLOWRELOAD)
 		"####" "#" 0 A_GiveInventory("RSP_PTick", 1)
 		"####" "#" 0 A_JumpIfInventory("RSP_Back", 1, "RSP_P3Back")
 		"####" "#" 0 A_JumpIfInventory("RSP_Fwd", 1, "RSP_P3Fwd")
