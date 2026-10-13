@@ -33,6 +33,14 @@ OptionValue "RSR_Pouch"
 	1, "Low, 40 cm below the eyes"
 }
 
+OptionValue "RSR_ShellCredit"
+{
+	1, "1"
+	2, "2"
+	3, "3"
+	4, "4"
+}
+
 OptionMenu "RSQ_Options"
 {
 	Title "RS VR HANDS, RELOAD, BALLISTICS"
@@ -40,6 +48,7 @@ OptionMenu "RSQ_Options"
 	Option "Reloading", "rsr_reload", "RSR_ReloadMode"
 	Slider "Reload assist", "rsr_assist", 0.5, 3.0, 0.1, 1
 	Option "Where a magazine comes from", "rsr_pouch", "RSR_Pouch"
+	Option "Shells per insert", "rsr_shell_credit", "RSR_ShellCredit"
 	Option "Ballistics", "rsq_ballistics", "RSQ_Ballistics"
 	StaticText " "
 	Submenu "Reload: tuning and debug", "RSR_Debug"

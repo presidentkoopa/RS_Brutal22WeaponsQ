@@ -131,6 +131,7 @@ class RSP_State play
 
 	// the grab (the input rule), read once a tic
 	PlayerInfo who;				// whose cvars the assist reads (OnPump is called without the pawn)
+	bool relPrev;				// the reload button last tic (the VR insert's own entry)
 	int inputTic;
 	bool trigPrev, gripOK;
 	int usedPresses;
@@ -204,6 +205,36 @@ class RSP_State play
 	}
 
 	// ---- the pump -----------------------------------------------------------------------------
+
+	// THE VR INSERT'S OWN ENTRY.
+	//
+	// BD22 does not route its reload button through A_WeaponReady at all -- its shotgun has
+	// WRF_ALLOWRELOAD commented out and uses a "Reloading" token its ACS sets, which its
+	// pump-wait states never look at. So while the gun waited for the pump the reload button
+	// did nothing, and a shell could only go in when the gun was empty and took another path
+	// entirely. Reading the button here and sending the weapon straight to its own RSP_VRIns
+	// label skips every one of the set's gates: a shell goes in ANY TIME up to the cap.
+	// (Owner, 2026-10-13.)
+	//
+	// Refused here rather than in the weapon, so the weapon is never sent out of a pump wait
+	// it cannot come back from.
+	void InsertWanted(PlayerPawn mo, int i)
+	{
+		bool down = (mo.player.cmd.buttons & (BT_RELOAD | BT_MAINHANDRELOAD)) != 0;
+		bool edge = down && !relPrev;
+		relPrev = down;
+		if (!edge || mode == RSP.LOAD)
+			return;
+		class<Inventory> rc = RSP_Guns.Reserve(i);
+		if (rc && mo.CountInv(rc) <= 0)
+			return;								// nothing in reserve to insert
+		class<Inventory> lc = RSP_Guns.Loaded(i);
+		int cap = RSP_Guns.Cap(i);
+		if (lc && cap > 0 && mo.CountInv(lc) >= cap)
+			return;								// the tube is full
+		mo.GiveInventory('RSP_Insert', 1);
+		Log(mo, "reload pressed: the hand insert takes it");
+	}
 
 	// how far a gun-frame point is from the pump's track
 	double PumpDist(Vector3 p)
@@ -550,7 +581,11 @@ class RSP_State play
 			{
 				// home: the weapon runs the set's own per-shell step; the set's own sound
 				shells++;
-				mo.GiveInventory('RSP_ShellIn', 1);
+				// rsr_shell_credit: one shell pushed home counts as this many, 1 to 4, so the
+				// tube can be filled without eight separate inserts. The reserve still pays
+				// for every one of them -- the weapon takes one from reserve per credit.
+				int credit = clamp(RSR.PlayerInt(mo.player, 'rsr_shell_credit', 1), 1, 4);
+				mo.GiveInventory('RSP_ShellIn', credit);
 				PlaySnd(mo, RSP_Guns.SndShell(gun), RSP_Guns.ChanShell(gun));
 				geo.Buzz(mo);
 				Log(mo, String.Format("shell %d home", shells));
@@ -728,7 +763,8 @@ class RSP_PTick : RSP_Call
 
 // what this tells the weapon (the weapon takes them)
 class RSP_Go : RSVR_Token {}
-class RSP_ShellIn : RSVR_Token {}
+class RSP_ShellIn : RSVR_Token { Default { Inventory.MaxAmount 8; } }	// one per credited shell
+class RSP_Insert : RSVR_Token {}		// the reload button: start the hand insert now
 class RSP_Back : RSVR_Token {}
 class RSP_Fwd : RSVR_Token {}
 class RSP_Auto : RSVR_Token {}
@@ -915,6 +951,7 @@ class RSP_Handler : EventHandler
 				if (s.mode == RSP.NONE)
 					s.gun = i;
 				s.Input(mo);		// the grab's edges and where it was taken, every tic with the gun
+				s.InsertWanted(mo, i);
 			}
 			if (s.mode != RSP.NONE)
 			{

@@ -294,6 +294,29 @@ class RSP_Guns abstract
 		return "";
 	}
 
+	// what the tube holds, and its cap. The VR insert needs both so it can refuse before it
+	// sends the weapon anywhere: 1 BD22 Shot_Gun (8 in the tube plus one chambered), 2 the
+	// Vanilla VR Plus VR_Shotgun.
+	clearscope static String Loaded(int i)
+	{
+		switch (i)
+		{
+		case 1:	return "ShotgunAmmo";
+		case 2:	return "VR_ShotLoaded";
+		}
+		return "";
+	}
+
+	clearscope static int Cap(int i)
+	{
+		switch (i)
+		{
+		case 1:	return 9;
+		case 2:	return 8;
+		}
+		return 0;
+	}
+
 	clearscope static String Reserve(int i)
 	{
 		switch (i)

@@ -15,3 +15,7 @@ user float rsr_assist = 1.0;
 // off not one particle is spawned, and these are particles, never actors, so nothing becomes
 // a marker in the world.
 user bool rsr_assist_debug = false;
+
+// Pump shotguns: how many shells one pushed home counts as, 1 to 4. The reserve pays for every
+// one of them; this only saves you inserting eight times to fill a tube.
+user int rsr_shell_credit = 1;
