@@ -318,10 +318,18 @@ class RSP_State play
 		return sv, lv.Length(), acos(clamp(a dot push, -1, 1)), lv;
 	}
 
+	// how far behind the port the shell is led onto the line. It has to be the same reach the
+	// capture zone uses, or raising rsr_assist catches the shell further out than the lead-in
+	// is normalised over and the shell SNAPS onto the line instead of being guided in.
+	double LeadIn()
+	{
+		return max(RSP.ENTER_BEHIND, RSR_Assist.PumpCapture(who, gun));
+	}
+
 	// where the shell going in is drawn (gun frame): led onto the line as it comes in
 	Vector3 InsertPoint()
 	{
-		double f = clamp(-s / RSP.ENTER_BEHIND, 0, 1);
+		double f = clamp(-s / LeadIn(), 0, 1);
 		return RSP_Guns.Port(gun) + RSP_Guns.Push(gun) * s + lat * f;
 	}
 
@@ -437,12 +445,14 @@ class RSP_State play
 			End(mo);
 		gun = i;
 		Input(mo);
+		// The gun WAITS for the hand rather than deciding in this one tic. It used to require
+		// the hand to be on the pump at the instant of the shot -- so you could not fire and
+		// THEN reach for the pump, which is the natural motion -- and anything else fell
+		// straight through to the set's own pump, permanently. BeginPump's waiting mode already
+		// handles this properly: PumpTick holds the gun until the hand works the pump, or until
+		// fire is pressed, which runs the set's own pump. (Owner, 2026-10-13: the pump shotgun
+		// would not let him pump between shots.)
 		bool on = OnPump(false);
-		if (!on && !fromLoad)
-		{
-			Log(mo, "the hand is not on the pump: the set's own pump");
-			return;
-		}
 		BeginPump(mo, w, i, minTics, !on);
 		mo.GiveInventory('RSP_Go', 1);
 	}
@@ -844,7 +854,8 @@ class RSP_Handler : EventHandler
 		{
 			double sv = s.sPrev + (s.s - s.sPrev) * ticfrac;
 			Vector3 lv = s.latPrev + (s.lat - s.latPrev) * ticfrac;
-			Vector3 d = RSP_Guns.Push(i) * sv + lv * clamp(-sv / RSP.ENTER_BEHIND, 0, 1);
+			double lead = max(RSP.ENTER_BEHIND, RSR_Assist.PumpCapture(owner.player, i));
+			Vector3 d = RSP_Guns.Push(i) * sv + lv * clamp(-sv / lead, 0, 1);
 			return t + RSP_Guns.PortHook(i) + RSP.HookOf(i, d), r;
 		}
 		case RSP.EJECT:

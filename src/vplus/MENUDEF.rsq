@@ -1,5 +1,9 @@
 // RS VR hands / reload / ballistics (zscript/rsq, zscript/rsr). v9.
 // Nothing here changes the engine's two-hand steadying.
+//
+// NO StaticText help in here, deliberately and by owner's instruction (asked twice). An
+// options menu is a list of options. How the reload works is documented in the repo:
+// LOAD_ORDER.md and docs/RELOAD_ON_QUEST.md in presidentkoopa/RS_Quest.
 AddOptionMenu "OptionsMenu"
 {
 	Submenu "RS VR Hands, Reload, Ballistics", "RSQ_Options"
@@ -39,56 +43,12 @@ OptionMenu "RSQ_Options"
 	Option "Ballistics", "rsq_ballistics", "RSQ_Ballistics"
 	StaticText " "
 	Submenu "Reload: tuning and debug", "RSR_Debug"
-	StaticText " "
-	StaticText "VR reloading on: the assault rifle, the super", 1
-	StaticText "shotgun, both revolvers and the pump shotgun.", 1
-	StaticText "Every other gun reloads as stock.", 1
-	StaticText " "
-	StaticText "VR reloading: reload drops the magazine. Take", 1
-	StaticText "a new one with the off-hand trigger, or with the", 1
-	StaticText "off grip at least 50 cm from the gun (closer, the", 1
-	StaticText "grip steadies the gun as usual). Put it under the", 1
-	StaticText "well and push it home. When the gun needs it,", 1
-	StaticText "take the handle or slide with the off trigger,", 1
-	StaticText "pull it all the way back and let go.", 1
-	StaticText " "
-	StaticText "The pump shotgun, VR: reload, then take a shell", 1
-	StaticText "away from the gun (off trigger, or grip away", 1
-	StaticText "from the gun), put it under the loading port", 1
-	StaticText "and push it in. With your hand on the pump", 1
-	StaticText "(steadied, or the off trigger held on it), pull", 1
-	StaticText "it back and push it forward after each shot.", 1
-	StaticText " "
-	StaticText "The super shotgun and the revolvers, VR: reload", 1
-	StaticText "opens the gun. Take a shell or a speedloader (off", 1
-	StaticText "trigger, or grip away from the gun), put it in", 1
-	StaticText "from behind and push it home. Flick the gun shut,", 1
-	StaticText "or push it shut with the off hand.", 1
-	StaticText " "
-	StaticText "VR hands: bring your off hand to the front of the", 1
-	StaticText "gun and squeeze the grip to hold it.", 1
 }
 
-// Reachable in a headset on purpose: these used to be console-only, which is no use
-// while the headset is on.
 OptionMenu "RSR_Debug"
 {
 	Title "RELOAD: TUNING AND DEBUG"
 	Slider "Reload assist", "rsr_assist", 0.5, 3.0, 0.1, 1
-	StaticText " "
 	Option "Show the capture zones", "rsr_assist_debug", "OnOff"
 	Option "Print each reload step", "rsr_debug", "OnOff"
-	StaticText " "
-	StaticText "Reload assist scales how close a part has to be", 1
-	StaticText "before the gun takes it, and how far it has to be", 1
-	StaticText "pushed. 1.0 is the shipped feel. Higher is more", 1
-	StaticText "forgiving; 0.5 asks for real precision.", 1
-	StaticText " "
-	StaticText "Show the capture zones draws a ring where each", 1
-	StaticText "part has to go: yellow while you carry it, green", 1
-	StaticText "while it is going in. For tuning, not for play.", 1
-	StaticText " "
-	StaticText "Print each reload step writes every phase and key", 1
-	StaticText "code to the console. Use it to read your", 1
-	StaticText "controller's grip codes for Reload grip keys.", 1
 }

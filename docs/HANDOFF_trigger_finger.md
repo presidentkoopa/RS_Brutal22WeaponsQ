@@ -471,3 +471,93 @@ warnings, which looked like a pass and was nothing of the kind -- the shell had 
 `-file` paths on the colon in `E:/` and the engine loaded no mods at all. A parse time far below
 the usual one, or a warning count of zero, means the bases are missing, not that the pack got
 better.
+
+### The pump shotgun would not pump between shots (2026-10-13, after the first headset test)
+
+Owner, after testing: BD22 is good, but the pump shotgun will not let him physically pump
+between shots, and reloading that one gun is "strange and finicky". He guessed Vanilla VR Plus
+has the same faults. It does -- `rsr_pump.zs` is byte-for-byte identical in both packs.
+
+Two separate faults, both pre-existing, neither introduced by the reload-assist change.
+
+**1. `PumpStart` decided in a single tic and then gave up.** The hook the weapon calls after a
+shot read:
+
+```zscript
+bool on = OnPump(false);
+if (!on && !fromLoad)
+{
+    Log(mo, "the hand is not on the pump: the set's own pump");
+    return;
+}
+```
+
+`OnPump(false)` requires that, *at the instant of the shot*, the off hand is within the pump's
+grab radius AND the grab is already held with `pumpGrab` latched -- and `pumpGrab` is only set
+on the grab PRESS, so the trigger had to be pressed while already at the pump. Fire and then
+reach for the pump, which is the natural motion, and the hook had already passed and handed
+off to BD22's automatic pump for good.
+
+The waiting mode that fixes this was **already written and working**: `BeginPump(..., wait)`
+sets `waitHand`, and `PumpTick` then holds the gun until either the hand works the pump or fire
+is pressed (`!waitHand || (mo.player.cmd.buttons & BT_ATTACK)`). It was reachable only from
+`fromLoad` -- chambering after loading an empty gun -- and from nowhere else. The fix is to stop
+bailing and always begin, in waiting mode when the hand is not there yet.
+
+**Behaviour now:** after a shot the gun waits. Work the pump by hand, or pull the trigger and
+the gun pumps itself. Owner's call, asked and answered 2026-10-13. The cost is that tap-firing
+without ever touching the pump is two trigger pulls per shot instead of one; holding the trigger
+is unchanged, since the fallback fires on `BT_ATTACK` being held.
+
+**2. The magnetic lead-in did not scale with `rsr_assist`.** Two sites normalised it over the
+hardcoded `RSP.ENTER_BEHIND = 8.0`:
+
+```zscript
+clamp(-sv / RSP.ENTER_BEHIND, 0, 1)
+```
+
+At assist 1.0 that coincides with the 8 cm capture radius. At 2.0 the shell is CAUGHT at 16 cm
+while the lead-in is already saturated past 8 cm, so it snaps onto the port line instead of
+being guided onto it -- the slider made the gun feel worse the further it was pushed, which is
+backwards. Both sites now use the same reach as the gate:
+`max(RSP.ENTER_BEHIND, RSR_Assist.PumpCapture(...))`, via a new `RSP_State.LeadIn()` for the
+play path and `owner.player` in the clearscope draw path.
+
+**Still open on the V+ shotgun specifically:** `RSP_Guns.Depth(2)` is **1.5 cm** against BD22's
+6.0, so the V+ shell only travels 1.5 cm into the port and seating is
+`min(1.5 x 0.6, 1.5 - 0.6) = 0.9 cm` either way. That is below hand tremor, so the V+ shell will
+probably seat the instant it is caught rather than reading as a push. Not touched: it wants a
+measurement of that gun's port, not a tolerance change.
+
+**Not investigated yet:** the owner also reports no left-hand support on the pump shotgun. The
+support hand is gated on `WF_TWOHANDSTABILIZED` (hands.zs:177), so it appears exactly while the
+engine is two-hand steadying; he said that is acceptable for now.
+
+### The options menu text is gone
+
+Owner, twice now: get rid of the text dump. Both `MENUDEF.rsq` files are rewritten with no
+StaticText help at all -- 46 lines of it down to 3 (two blank spacers and the one in the parent
+menu hook), 96 lines down to 54. The menu is now just:
+
+```
+RS VR HANDS, RELOAD, BALLISTICS       RELOAD: TUNING AND DEBUG
+  VR hands                              Reload assist
+  Reloading                             Show the capture zones
+  Reload assist                         Print each reload step
+  Where a magazine comes from
+  Ballistics
+  Reload: tuning and debug  ->
+```
+
+How the reload works is documented in the repo instead -- `LOAD_ORDER.md` and
+`docs/RELOAD_ON_QUEST.md` -- and both MENUDEF files carry a header comment saying the absence of
+help text is deliberate, so a later session does not helpfully put it back.
+
+### Load test after both changes
+
+| pack | mods loaded | script parsing | warnings | MENUDEF errors | OpenXR |
+|---|---|---|---|---|---|
+| BD22 | 8 | took 5283.52 ms | 8 | 0 | none |
+| V+ | 5 | took 736.01 ms | 9 | 0 | none |
+
+Warning counts unchanged from their baselines, so neither change introduced one.
