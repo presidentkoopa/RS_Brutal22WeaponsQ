@@ -1,4 +1,4 @@
-# BD22 VR Weapons (Quest)
+# BD22 VR Weapons
 Coordinated, directed and tested by PresidentKoopa
 
 VR weapon pack for **Brutal Doom v22** (`brutal22test6.pk3`) on **QuestZDoom 17.x**. Stock
