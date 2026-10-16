@@ -4,7 +4,7 @@ Coordinated, directed and tested by PresidentKoopa, coded by Claude.
 VR weapon pack for **Brutal Doom v22** (`brutal22test6.pk3`) on **QuestZDoom 17.x**. Stock
 engine, no engine changes.
 
-**Download:** `BD22_Models_1.14.pk3` from the Releases page. Load it after `brutal22test6.pk3`.
+Download from the Releases page. Load it after `brutal22test6.pk3`.
 
 ## Models for
 Pistol, Revolver, SMG, MP40\*\*, Rifle, Shotgun, Super shotgun, Assault shotgun, Minigun,
