@@ -33,8 +33,6 @@ options menu to get them through cheats (give all, idkfa).
 
 Built and tested on PCVR QuestZDoom 17.x.
 
-## Building from source
-`src/` is the pack, unpacked. `python build.py` zips it into `BD22_Models_1.14.pk3`.
 
 ## Credits
 Weapon models: **br_vr** by ajantaju (Brutal Doom VR Weapons, BD v21), made from:
