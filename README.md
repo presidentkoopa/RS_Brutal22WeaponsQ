@@ -1,5 +1,5 @@
 # BD22 VR Weapons
-Coordinated, directed and tested by PresidentKoopa
+Coordinated, directed and tested by PresidentKoopa, coded by Claude.
 
 VR weapon pack for **Brutal Doom v22** (`brutal22test6.pk3`) on **QuestZDoom 17.x**. Stock
 engine, no engine changes.
