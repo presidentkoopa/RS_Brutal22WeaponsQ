@@ -1,6 +1,0 @@
-// RS VR reload / hands / ballistics (zscript/rsq). Options: RSQ_Options in MENUDEF.rsq.
-user int rsq_reload = 0;			// 0: BD22's own reloading. 1: immersive (VR): the gun waits for your hand
-user int rsq_shells = 2;			// immersive: shells / rounds taken in one trip of the hand
-user bool rsq_hands = true;			// VR hands on the controllers
-user bool rsq_debug = false;		// immersive: print the off hand's position while a gun waits
-server bool rsq_ballistics = false;	// enhanced impacts and projectile trails (server: they use playsim random)

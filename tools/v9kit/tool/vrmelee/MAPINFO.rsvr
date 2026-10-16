@@ -1,6 +1,0 @@
-// RS VR melee (posefix): zscript/rsvr/melee.zs
-// RS VR reload, hands and ballistics: zscript/rsq
-gameinfo
-{
-	AddEventHandlers = "RSVR_MeleeHandler", "RSQ_Handler", "RSQ_Ballistics"
-}

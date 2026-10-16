@@ -1,5 +1,0 @@
-// RS VR hands and ballistics: zscript/rsq. Real VR reload: zscript/rsr
-gameinfo
-{
-	AddEventHandlers = "RSQ_Handler", "RSQ_Ballistics", "RSR_Handler", "RSB_Handler", "RSP_Handler"
-}

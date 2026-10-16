@@ -1,0 +1,6 @@
+// RS VR hands / reload / ballistics. Options: RSQ_Options in MENUDEF.rsq. v9.
+user bool rsq_hands = true;			// VR hands on the controllers
+user int rsr_reload = 1;			// Reloading: 1 VR (zscript/rsr, on the guns that have it; the rest stock), 0 stock
+server bool rsq_ballistics = false;	// enhanced impacts and projectile trails (server: they use playsim random)
+user int rsq_punch = 0;			// VR punching: a real punch with either fist lands (zscript/rsq/fists.zs)
+server bool rsq_extra_weapons = false;	// cheats also give the MP40, MG42, Devastator, Hellish launcher, flame cannon (zscript/nosniper)

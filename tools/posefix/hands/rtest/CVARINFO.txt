@@ -1,1 +1,0 @@
-user int rsqtest_mode = 1;
