@@ -2,7 +2,7 @@
 Coordinated, directed and tested by PresidentKoopa, coded by Claude.
 
 VR weapon pack for **Brutal Doom v22** (`brutal22test6.pk3`) on **QuestZDoom 17.x**. Stock
-engine, no engine changes. Fire each gun independently in dual-weild mode.
+engine, no engine changes. Fire each gun independently in dual-wield mode.
 
 Download from the Releases page. Load it after `brutal22test6.pk3`.
 
