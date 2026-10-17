@@ -120,6 +120,7 @@ class RSP_State play
 	Weapon weap;
 	int lastTick;
 	int hand;					// LOAD: EMPTY / CARRY / INSERT
+	bool feedOK;				// 1.43: a grab now would take a shell (rsr/vreload.zs: Use grabs then, as the trigger does)
 	int minTic;					// PUMPING: the set's own refire tic
 	bool done;					// PUMPING: the stroke is done (the gun is ready at minTic)
 	bool waitHand;					// PUMPING after the hand loaded an empty gun: it waits for the hand (fire: the set's own pump)
@@ -552,12 +553,13 @@ class RSP_State play
 		return RSP_Guns.Port(gun) + RSP_Guns.Push(gun) * s + lat * f;
 	}
 
-	bool CanTakeShell(PlayerPawn mo)
+	bool CanTakeShell(PlayerPawn mo, bool quiet = false)
 	{
 		class<Inventory> rc = RSP_Guns.Reserve(gun);
 		if (rc && mo.CountInv(rc) <= 0)
 		{
-			Log(mo, "no shells left to take");
+			if (!quiet)
+				Log(mo, "no shells left to take");
 			return false;
 		}
 		Vector3 palm = geo.OffPoint(RSR.PalmGrab());
@@ -1062,6 +1064,14 @@ class RSP_Handler : EventHandler
 		return s && s.mode != RSP.NONE;
 	}
 
+	// 1.43 rsr/vreload.zs: the Use key grabs a shell now (the free feed would take one)
+	clearscope static bool Feedable(int n)
+	{
+		let h = Get();
+		let s = h && n >= 0 && n < MAXPLAYERS ? h.st[n] : null;
+		return s && (s.feedOK || s.hand != RSP.EMPTY);
+	}
+
 	// rsq/hands.zs: the free hand's state while the hand loads or pumps ("" = the hands' own)
 	clearscope static String FreeHand(Actor mo)
 	{
@@ -1177,6 +1187,7 @@ class RSP_Handler : EventHandler
 			let s = st[n];
 			let w = mo.player.ReadyWeapon;
 			int i = RSP_Guns.Index(w);
+			s.feedOK = false;
 			if (i > 0 && RSR_ReloadHandler.Wanted(mo))
 			{
 				// 2026-10-16: the weapon's spent shell, out of the gun's ejection port
@@ -1191,6 +1202,13 @@ class RSP_Handler : EventHandler
 				s.Input(mo);		// the grab's edges and where it was taken, every tic with the gun
 				s.InsertWanted(mo, i);
 				s.FreeFeed(mo, i);	// a shell straight into the port, no reload button, any time
+				// 1.43 (owner: "with use it just appears in offhand"): where a trigger grab would take a
+				// shell now, the Use key grabs too (the tube has room, the hand is free and away from the port)
+				class<Inventory> lc = RSP_Guns.Loaded(i);
+				int cap = RSP_Guns.Cap(i);
+				s.feedOK = s.hand == RSP.EMPTY && s.geo
+					&& !(s.mode == RSP.LOAD || s.mode == RSP.PUMPING && (s.held || s.pull > 0 || s.backDone))
+					&& !(lc && cap > 0 && mo.CountInv(lc) >= cap) && s.CanTakeShell(mo, true);
 			}
 			else if (s.mode == RSP.NONE && s.hand != RSP.EMPTY)
 			{

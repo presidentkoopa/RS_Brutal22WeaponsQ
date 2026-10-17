@@ -1086,7 +1086,7 @@ class RSR_ReloadHandler : EventHandler
 			if (down)
 			{
 				let us = consoleplayer < MAXPLAYERS ? st[consoleplayer] : null;
-				bool ubusy = us && us.phase != RSR.IDLE || RSP_Handler.Busy(consoleplayer) || RSB_Handler.Busy(consoleplayer) || RSK_M203Handler.Busy(consoleplayer);	// 1.34: the M203 open
+				bool ubusy = us && us.phase != RSR.IDLE || RSP_Handler.Busy(consoleplayer) || RSP_Handler.Feedable(consoleplayer) || RSB_Handler.Busy(consoleplayer) || RSK_M203Handler.Busy(consoleplayer);	// 1.34: the M203 open; 1.43: a shell to take, as the trigger would
 				if (!ubusy)
 					return false;
 				useEaten[k] = true;
