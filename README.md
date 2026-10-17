@@ -30,6 +30,7 @@ options menu to get them through cheats (give all, idkfa).
   slide it shut. Spent cases drop out when the tube opens. Flick-reloading loads it too.
 - Secondary fire: the SMG toggles 3-round burst / full auto. Slug shots for the shotgun and the
   shotvolver (options menu, off by default).
+- Pistol Semi Auto option: one shot per trigger pull (options menu, off by default, any time).
 - Brass ejects from each gun's real ejection port (pistol, rifle, SMG, assault shotgun).
 - Dual Wield support. Flick guns down arcade style to reload when akimbo.
 - Grenade: pull the pin with the off hand. Hold the trigger, swing and release to throw; release

@@ -25,5 +25,6 @@ user int rsr_shell_credit = 1;
 server int rsm_ammo = 0;
 
 // 1.37 secondary fire on the zoom buttons (zscript/rsq/alts.zs): off = BD22 as it was
+server bool rsa_pistol_semi = false;	// pistol: one shot per trigger pull
 server bool rsa_rev_magnum = false;	// revolver: secondary fires a slug
 server bool rsa_sg_slug = false;		// pump shotgun: secondary fires a slug

@@ -4,6 +4,7 @@
 class RSA_Opt_SMG : RSVR_Token {}
 class RSA_Opt_Rev : RSVR_Token {}
 class RSA_Opt_Slug : RSVR_Token {}
+class RSA_Opt_Semi : RSVR_Token {}		// 1.41: the pistol is semi auto
 class RSA_BurstSMG : RSVR_Token {}		// the SMG is on burst
 class RSA_BurstCnt : RSVR_Token { Default { Inventory.MaxAmount 9; } }		// rounds of this burst, main hand
 class RSA_BurstCntOff : RSVR_Token { Default { Inventory.MaxAmount 9; } }	// ...off hand
@@ -16,8 +17,8 @@ class RSA_Handler : EventHandler
 {
 	override void WorldTick()
 	{
-		static const Name cv[] = { 'rsa_rev_magnum', 'rsa_sg_slug' };
-		static const Name tok[] = { 'RSA_Opt_Rev', 'RSA_Opt_Slug' };
+		static const Name cv[] = { 'rsa_rev_magnum', 'rsa_sg_slug', 'rsa_pistol_semi' };
+		static const Name tok[] = { 'RSA_Opt_Rev', 'RSA_Opt_Slug', 'RSA_Opt_Semi' };
 		for (int k = 0; k < cv.Size(); k++)
 		{
 			let c = CVar.FindCVar(cv[k]);
