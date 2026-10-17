@@ -4,7 +4,7 @@ Coordinated, directed and tested by PresidentKoopa, coded by Claude.
 VR weapon pack for **Brutal Doom v22** (`brutal22test6.pk3`) on **QuestZDoom 17.x**. Stock
 engine, no engine changes. Fire each gun independently in dual-wield mode.
 
-Download from the Releases page. Load it after `brutal22test6.pk3`.
+Download from the Releases page. Load it after `brutal22test6.pk3` and the Voxel pack.
 
 ## Models for
 Pistol, Revolver, SMG, MP40\*\*, Rifle, Shotgun, Super shotgun, Assault shotgun, Minigun,
@@ -22,6 +22,7 @@ options menu to get them through cheats (give all, idkfa).
   - slides, charging handles and pumps racked by hand;
   - the pistol slide and the rifle, SMG and assault shotgun bolts lock back when fired dry;
   - shotgun shells through the real loading port, topped off any time.
+- Dual Wield support. Flick guns down arcade style to reload when akimbo.
 - Grenade: pull the pin with the off hand. Hold the trigger, swing and release to throw; release
   while still to cook it. The axe throws the same way.
 - A fist in each hand. The off-hand fist can be selected back after moving a gun there.
