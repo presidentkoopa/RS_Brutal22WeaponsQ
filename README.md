@@ -51,3 +51,9 @@ Weapon models: **br_vr** by ajantaju (Brutal Doom VR Weapons, BD v21), made from
 - VR hands: Ermac (Force Unleashed / Rusted Legacy, MIT)
 - Brutal Doom: Sergeant Mark IV
 - QuestZDoom: Team Beef
+
+## Screenshots
+
+![Hands on the guns](renders/hands_on_guns_1.png)
+![Hands on the guns](renders/hands_on_guns_2.png)
+![Hands on the guns](renders/hands_on_guns_3.png)
