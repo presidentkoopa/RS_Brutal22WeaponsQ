@@ -58,7 +58,6 @@ Weapon models: **br_vr** by ajantaju (Brutal Doom VR Weapons, BD v21), made from
 
 ## Screenshots
 
-![BD22 VR Weapons options menu](renders/options_menu.png)
 ![Hands on the guns](renders/hands_on_guns_1.png)
 ![Hands on the guns](renders/hands_on_guns_2.png)
 ![Hands on the guns](renders/hands_on_guns_3.png)
