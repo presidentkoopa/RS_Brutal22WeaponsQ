@@ -185,7 +185,7 @@ class RSR_State play
 	double grabS;			// where along the handle's track the hand took it
 
 	// the grab (RSR.GripCanGrab; synchronised: rsr_grip network events from
-	// RSR_Handler.InputProcess, and usercmd buttons)
+	// RSR_ReloadHandler.InputProcess, and usercmd buttons)
 	bool netGrip;			// the off grip's key is down
 	bool netUse;			// 1.17 (rsr_use_grab): the Use key, taken over while a reload has the hand, grabs
 	bool gripFree;			// ...and its press could not start steadying (latched at the press)
@@ -606,7 +606,7 @@ class RSR_State play
 		netGrip = false;
 	}
 
-	// after the psprites have ticked (RSR_Handler.WorldTick): what the gun and the layers show
+	// after the psprites have ticked (RSR_ReloadHandler.WorldTick): what the gun and the layers show
 	void Draw(PlayerPawn mo)
 	{
 		let p = mo.player;
@@ -726,7 +726,7 @@ class RSR_Call : Inventory
 	{
 		let mo = PlayerPawn(toucher);
 		if (mo && mo.player)
-			Called(mo, RSR_Handler.StateOf(mo));
+			Called(mo, RSR_ReloadHandler.StateOf(mo));
 		return false;
 	}
 
@@ -739,7 +739,7 @@ class RSR_Start : RSR_Call
 	{
 		let w = mo.player.ReadyWeapon;
 		int i = RSR_Guns.Index(w);
-		if (!s || i <= 0 || !RSR_Handler.Wanted(mo))
+		if (!s || i <= 0 || !RSR_ReloadHandler.Wanted(mo))
 			return;			// the set's own reload
 		s.Begin(mo, w, i);
 		mo.GiveInventory('RSR_Go', 1);
@@ -861,7 +861,7 @@ class RSR_DroppedMag : Actor
 	}
 }
 
-class RSR_Handler : EventHandler
+class RSR_ReloadHandler : EventHandler
 {
 	RSR_State st[MAXPLAYERS];
 	ui Array<int> gripKeys;
@@ -869,9 +869,9 @@ class RSR_Handler : EventHandler
 	ui bool eaten[512];
 	ui bool useEaten[512];
 
-	clearscope static RSR_Handler Get()
+	clearscope static RSR_ReloadHandler Get()
 	{
-		return RSR_Handler(EventHandler.Find('RSR_Handler'));
+		return RSR_ReloadHandler(EventHandler.Find('RSR_ReloadHandler'));
 	}
 
 	static RSR_State StateOf(PlayerPawn mo)
@@ -1086,7 +1086,7 @@ class RSR_Handler : EventHandler
 			if (down)
 			{
 				let us = consoleplayer < MAXPLAYERS ? st[consoleplayer] : null;
-				bool ubusy = us && us.phase != RSR.IDLE || RSP_Handler.Busy(consoleplayer) || RSB_Handler.Busy(consoleplayer) || RSM_Handler.Busy(consoleplayer);	// 1.34: the M203 open
+				bool ubusy = us && us.phase != RSR.IDLE || RSP_Handler.Busy(consoleplayer) || RSB_Handler.Busy(consoleplayer) || RSK_M203Handler.Busy(consoleplayer);	// 1.34: the M203 open
 				if (!ubusy)
 					return false;
 				useEaten[k] = true;
@@ -1109,7 +1109,7 @@ class RSR_Handler : EventHandler
 		if (down)
 		{
 			let s = consoleplayer < MAXPLAYERS ? st[consoleplayer] : null;
-			bool busy = s && s.phase != RSR.IDLE || RSP_Handler.Busy(consoleplayer) || RSB_Handler.Busy(consoleplayer) || RSM_Handler.Busy(consoleplayer);	// RSR-PUMP, RSR-BREAK: their reloads have the hand too
+			bool busy = s && s.phase != RSR.IDLE || RSP_Handler.Busy(consoleplayer) || RSB_Handler.Busy(consoleplayer) || RSK_M203Handler.Busy(consoleplayer);	// RSR-PUMP, RSR-BREAK: their reloads have the hand too
 			eaten[k] = busy && RSR.GrabWith(me) == 1 && RSR.PlayerInt(me, 'rsr_eat_grip', 1) != 0;
 			return eaten[k];
 		}

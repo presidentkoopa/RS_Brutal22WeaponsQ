@@ -372,7 +372,7 @@ class RSB_State play
 	bool, bool Grab(PlayerPawn mo)
 	{
 		let p = mo.player;
-		let rs = RSR_Handler.StateOf(mo);
+		let rs = RSR_ReloadHandler.StateOf(mo);
 		int mask = RSR.GrabMask(p);
 		bool trig = mask != 0 && (p.cmd.buttons & mask) != 0 || rs && rs.netUse;
 		bool trigPress = trig && !trigPrev;
@@ -555,7 +555,7 @@ class RSB_State play
 		hN = 0;
 		grabSrc = 0;
 		gripPress = 0;
-		let rs = RSR_Handler.StateOf(mo);
+		let rs = RSR_ReloadHandler.StateOf(mo);
 		usedPresses = rs ? rs.netPresses : 0;
 		int mask = RSR.GrabMask(mo.player);
 		trigPrev = (mo.player.cmd.buttons & mask) != 0 || rs && rs.netUse;		// a trigger already held is not a new grab
@@ -1124,7 +1124,7 @@ class RSB_Start : RSB_Call
 	{
 		let w = mo.player.ReadyWeapon;
 		int i = RSB_Guns.Index(w);
-		if (!s || i <= 0 || !RSR_Handler.Wanted(mo))
+		if (!s || i <= 0 || !RSR_ReloadHandler.Wanted(mo))
 			return;			// the set's own reload
 		if (s.phase != RSB.IDLE)
 			s.End(mo);
@@ -1274,7 +1274,7 @@ class RSB_Handler : EventHandler
 		return n >= 0 && n < MAXPLAYERS ? h.st[n] : null;
 	}
 
-	// RSR_Handler.InputProcess: a break reload has the off hand (its grip keys are eaten)
+	// RSR_ReloadHandler.InputProcess: a break reload has the off hand (its grip keys are eaten)
 	clearscope static bool Busy(int n)
 	{
 		let h = Get();
@@ -1437,7 +1437,7 @@ class RSB_Handler : EventHandler
 		bool down = (p.cmd.buttons & mask) != 0;
 		bool edge = down && !s.relPrev;
 		s.relPrev = down;
-		if (!edge || s.phase != RSB.IDLE || !RSR_Handler.Wanted(mo))
+		if (!edge || s.phase != RSB.IDLE || !RSR_ReloadHandler.Wanted(mo))
 			return;
 		let w = p.ReadyWeapon;
 		int i = RSB_Guns.Index(w);

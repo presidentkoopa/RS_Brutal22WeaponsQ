@@ -111,7 +111,7 @@ class RSG_State play
 		count = min(count + 1, HIST);
 
 		// the off hand's grab: its trigger, or the grip
-		let rs = RSR_Handler.StateOf(mo);
+		let rs = RSR_ReloadHandler.StateOf(mo);
 		int mask = RSR.PlayerInt(mo.player, 'rsr_grab_buttons', BT_OFFHANDATTACK);
 		bool grab = (mo.player.cmd.buttons & mask) != 0 || rs && rs.netGrip;
 		bool grabPress = grab && !grabPrev;

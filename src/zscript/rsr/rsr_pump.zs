@@ -182,7 +182,7 @@ class RSP_State play
 		geo.Frames(mo);
 		offLocal = geo.offLocal;
 		let p = mo.player;
-		let rs = RSR_Handler.StateOf(mo);
+		let rs = RSR_ReloadHandler.StateOf(mo);
 		int mask = RSR.GrabMask(p);
 		bool trig = (p.cmd.buttons & mask) != 0 || RSP.TestCvar('rsp_test_trigger') || rs && rs.netUse;
 		bool trigPress = trig && !trigPrev;
@@ -630,7 +630,7 @@ class RSP_State play
 	{
 		let w = mo.player.ReadyWeapon;
 		int i = RSP_Guns.Index(w);
-		if (i <= 0 || !RSR_Handler.Wanted(mo))
+		if (i <= 0 || !RSR_ReloadHandler.Wanted(mo))
 			return;			// the set's own reload
 		gun = i;
 		Input(mo);
@@ -653,7 +653,7 @@ class RSP_State play
 	{
 		let w = mo.player.ReadyWeapon;
 		int i = RSP_Guns.Index(w);
-		if (i <= 0 || !RSR_Handler.Wanted(mo))
+		if (i <= 0 || !RSR_ReloadHandler.Wanted(mo))
 			return;			// the set's own pump
 		// the hand's loading ended the set's way (an empty gun full, out of shells): it chambers by
 		// hand, and the hand is at the port, so the gun waits for it (fire: the set's own pump)
@@ -1177,7 +1177,7 @@ class RSP_Handler : EventHandler
 			let s = st[n];
 			let w = mo.player.ReadyWeapon;
 			int i = RSP_Guns.Index(w);
-			if (i > 0 && RSR_Handler.Wanted(mo))
+			if (i > 0 && RSR_ReloadHandler.Wanted(mo))
 			{
 				// 2026-10-16: the weapon's spent shell, out of the gun's ejection port
 				for (int nc = mo.CountInv('RSP_CaseOut'); nc > 0; nc--)

@@ -64,7 +64,7 @@ class RSM abstract play
 		return c;
 	}
 
-	// real reload in VR (as RSR_Handler.Wanted, but the off hand may hold a gun: dual)
+	// real reload in VR (as RSR_ReloadHandler.Wanted, but the off hand may hold a gun: dual)
 	static bool VRReload(PlayerPawn mo)
 	{
 		return mo && mo.player && RSR.PlayerInt(mo.player, 'rsr_reload', 0) == 1 && RSVR_VRHand.InVR(mo)
@@ -152,7 +152,7 @@ class RSM_State play
 		bool trig = (p.cmd.buttons & BT_OFFHANDATTACK) != 0;
 		bool trigPress = trig && !trigPrev;
 		trigPrev = trig;
-		let rs = RSR_Handler.StateOf(mo);
+		let rs = RSR_ReloadHandler.StateOf(mo);
 		bool grab = rs && rs.Grip(mo);
 		bool grabPress = grab && !grabPrev;
 		grabPrev = grab;
@@ -425,13 +425,13 @@ class RSM_Sprites : Actor
 	}
 }
 
-class RSM_Handler : EventHandler
+class RSK_M203Handler : EventHandler
 {
 	RSM_State st[MAXPLAYERS];
 
-	clearscope static RSM_Handler Get()
+	clearscope static RSK_M203Handler Get()
 	{
-		return RSM_Handler(EventHandler.Find('RSM_Handler'));
+		return RSK_M203Handler(EventHandler.Find('RSK_M203Handler'));
 	}
 
 	clearscope static RSM_State Peek(Actor mo)
@@ -522,7 +522,7 @@ class RSM_Handler : EventHandler
 			Sync(mo, 'RSM_Dual', dual);
 			if (mo.health <= 0)
 				s.Reset();
-			s.active = vr && !dual && RSM.IsRifle(p.ReadyWeapon) && RSR_Handler.Wanted(mo);
+			s.active = vr && !dual && RSM.IsRifle(p.ReadyWeapon) && RSR_ReloadHandler.Wanted(mo);
 			if (s.active)
 				s.Tick(mo);
 			else

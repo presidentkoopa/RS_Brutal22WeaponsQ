@@ -168,7 +168,7 @@ class RSQ_Hands : Weapon
 	static void Upkeep(PlayerPawn mo)
 	{
 		let p = mo.player;
-		if (!p || p.playerstate != PST_LIVE || mo.health <= 0 || !Shown(mo) && !RSR_Handler.WantsHands(mo))
+		if (!p || p.playerstate != PST_LIVE || mo.health <= 0 || !Shown(mo) && !RSR_ReloadHandler.WantsHands(mo))
 			return;
 		let h = Weapon(mo.FindInventory('RSQ_Hands'));
 		if (!h)
@@ -190,13 +190,13 @@ class RSQ_Hands : Weapon
 		let s = RSQ_Handler.StateOf(mo);
 		int carry = s ? s.carry : 0;
 		// a real reload (rsr/vreload.zs) has the off hand: it says what the free hand shows
-		String rsr = RSR_Handler.FreeHand(mo);
+		String rsr = RSR_ReloadHandler.FreeHand(mo);
 		if (rsr == "")
 			rsr = RSP_Handler.FreeHand(mo);	// RSR-PUMP: the pump shotguns' loading and pump (rsr/rsr_pump.zs)
 		if (rsr == "")
 			rsr = RSB_Handler.FreeHand(mo);	// RSR-BREAK
 		if (rsr == "")
-			rsr = RSM_Handler.FreeHand(mo);	// 1.30 RSR-M203: the rifle's launcher (rsr/rsr_m203.zs)
+			rsr = RSK_M203Handler.FreeHand(mo);	// 1.30 RSR-M203: the rifle's launcher (rsr/rsr_m203.zs)
 		if (rsr == "" && mo.CountInv('RSG_RingHand') > 0)
 			rsr = "RsgRing";				// the VR grenade's ring, pinched (rsg/grenade.zs)
 		int i = on ? RSQ_HandTable.Index(p.ReadyWeapon) : 0;
@@ -258,7 +258,7 @@ class RSQ_Hands : Weapon
 		String sp = RSQ_HandTable.Support(i);
 		if (i == 18 && p.ReadyWeapon is 'PuristRifle')
 			sp = "B";		// 1.30: purist's rifle has no launcher: its handguard grip as before
-		else if (i == 18 && RSM_Handler.TriggerGrip(mo))
+		else if (i == 18 && RSK_M203Handler.TriggerGrip(mo))
 			sp = (p.cmd.buttons & BT_OFFHANDATTACK) ? "M2" : "M1";	// 1.31: finger on the M203's trigger (squeezed)
 		invoker.SetLayer(p, RSQ_Layers.SUPPORT, gs, hold && sp != "" ? "Sup" .. sp : "Hidden");
 	}
@@ -445,10 +445,10 @@ class RSQ_Hands : Weapon
 			return bt, br;
 		}
 		// 1.30 RSR-M203: the rifle launcher's tube and round (rsr/rsr_m203.zs)
-		if (RSM_Handler.Places(Owner, layer))
+		if (RSK_M203Handler.Places(Owner, layer))
 		{
 			Vector3 mt, mr;
-			[mt, mr] = RSM_Handler.Place(Owner, translation, rotation, layer, ticfrac);
+			[mt, mr] = RSK_M203Handler.Place(Owner, translation, rotation, layer, ticfrac);
 			return mt, mr;
 		}
 		// RSR-PUMP: the pump shotguns' layers (rsr/rsr_pump.zs)
@@ -462,7 +462,7 @@ class RSQ_Hands : Weapon
 		if (layer >= RSR.LAYER_FIRST && layer <= RSR.LAYER_LAST || layer == RSR.HANDMAG || layer == RSQ_Layers.FREEHAND)
 		{
 			Vector3 t, r;
-			[t, r] = RSR_Handler.Place(Owner, translation, rotation, layer, ticfrac);
+			[t, r] = RSR_ReloadHandler.Place(Owner, translation, rotation, layer, ticfrac);
 			if (layer != RSQ_Layers.FREEHAND)
 				return t, r;
 			translation = t;
@@ -489,7 +489,7 @@ class RSQ_Hands : Weapon
 		bool gunHand = layer == RSQ_Layers.GUNHAND;
 		Vector3 hook = gunHand ? RSQ_HandTable.GunHook(i) : RSQ_HandTable.SupportHook(i);
 		Vector3 hookTurn = gunHand ? RSQ_HandTable.GunRot(i) : RSQ_HandTable.SupportRot(i);
-		if (!gunHand && i == 18 && !(o.ReadyWeapon is 'PuristRifle') && RSM_Handler.TriggerGrip(Owner))
+		if (!gunHand && i == 18 && !(o.ReadyWeapon is 'PuristRifle') && RSK_M203Handler.TriggerGrip(Owner))
 		{
 			hook = (0, 0, 0);		// 1.31: the trigger grip is baked in place (MODELDEF.rsm RQ2S)
 			hookTurn = (0, 0, 0);
@@ -537,7 +537,7 @@ class RSQ_Hands : Weapon
 		if (!gunHand)
 		{
 			frameMove += RSP_Handler.SupportShift(Owner, ticfrac);	// RSR-PUMP: the support hand rides the pump
-			frameMove += RSM_Handler.SupportShift(Owner, ticfrac);	// 1.30 RSR-M203: ...and the launcher's tube
+			frameMove += RSK_M203Handler.SupportShift(Owner, ticfrac);	// 1.30 RSR-M203: ...and the launcher's tube
 		}
 		Vector3 t, r;
 		[t, r] = RSQ_Turn.Place(hook, hookTurn, gunTurnNow, frameTurn, frameMove, RSQ_GunMoves.Pivot(i));
