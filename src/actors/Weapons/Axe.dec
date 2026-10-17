@@ -278,8 +278,8 @@ ACTOR BrutalAxe : BrutalWeapon
 		"####" A 0
 		"####" A 0 A_TakeInventory("Axe/Hit", 1)
 		"####" E 1 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
-		"####" E 0 A_JumpIfInventory("FiredSecondary",1,"CancelFire")
-		"####" E 0 A_JumpIfInventory("FiredPrimary",1,"Hold")
+		"####" E 0 A_JumpIf((OverlayID() != 1000000 && CountInv("FiredSecondary") > 0) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 134217728) != 0), "CancelFire")
+		"####" E 0 A_JumpIf((OverlayID() != 1000000 && CountInv("FiredPrimary") > 0) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 67108864) != 0), "Hold")
 		"####" F 1
 		"####" G 1 A_PlaySound("Axe/Swing", 1)
 		"####" "#" 0 A_Quake(2,6,0,12,"")
@@ -305,8 +305,8 @@ ACTOR BrutalAxe : BrutalWeapon
 		5XEG A 0 A_JumpIfInventory("PowerAlienBloodOnVisor",1,2)
 		AXEG A 0
 		"####" MNOP 1 A_WeaponReady(WRF_NOBOB|WRF_ALLOWZOOM)
-		"####" "#" 0 A_JumpIfInventory("FiredPrimary",1,"Fire")
-		"####" "#" 0 A_JumpIfInventory("FiredSecondary",1,"AltFire")
+		"####" "#" 0 A_JumpIf((OverlayID() != 1000000 && CountInv("FiredPrimary") > 0) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 67108864) != 0), "Fire")
+		"####" "#" 0 A_JumpIf((OverlayID() != 1000000 && CountInv("FiredSecondary") > 0) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 134217728) != 0), "AltFire")
 		Goto Ready
 	
 	DM:
@@ -346,8 +346,8 @@ ACTOR BrutalAxe : BrutalWeapon
 		"####" A 0
 		"####" A 0 A_TakeInventory("Axe/Hit", 1)
 		"####" E 1 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
-		"####" E 0 A_JumpIfInventory("FiredPrimary",1,"CancelFire")
-		"####" E 0 A_JumpIfInventory("FiredSecondary",1,"AltHold")
+		"####" E 0 A_JumpIf((OverlayID() != 1000000 && CountInv("FiredPrimary") > 0) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 67108864) != 0), "CancelFire")
+		"####" E 0 A_JumpIf((OverlayID() != 1000000 && CountInv("FiredSecondary") > 0) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 134217728) != 0), "AltHold")
 		4XEA A 0 A_JumpIfInventory("IsPlayingAsPurist", 1,6)
 		1XEA A 0 A_JumpIfInventory("PowerBloodOnVisor",1,5)
         2XEA A 0 A_JumpIfInventory("PowerBlueBloodOnVisor",1,4)
@@ -382,8 +382,8 @@ ACTOR BrutalAxe : BrutalWeapon
 		5XEG A 0 A_JumpIfInventory("PowerAlienBloodOnVisor",1,2)
 		AXEG A 0
 		"####" MNOP 1 A_WeaponReady(WRF_NOBOB|WRF_ALLOWZOOM)
-		"####" "#" 0 A_JumpIfInventory("FiredPrimary",1,"Fire")
-		"####" "#" 0 A_JumpIfInventory("FiredSecondary",1,"AltFire")
+		"####" "#" 0 A_JumpIf((OverlayID() != 1000000 && CountInv("FiredPrimary") > 0) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 67108864) != 0), "Fire")
+		"####" "#" 0 A_JumpIf((OverlayID() != 1000000 && CountInv("FiredSecondary") > 0) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 134217728) != 0), "AltFire")
 		Goto Ready
 		
 	DM2:

@@ -19,3 +19,11 @@ user bool rsr_assist_debug = false;
 // Pump shotguns: how many shells one pushed home counts as, 1 to 4. The reserve pays for every
 // one of them; this only saves you inserting eight times to fill a tube.
 user int rsr_shell_credit = 1;
+
+// 1.30 the rifle's M203 (zscript/rsr/rsr_m203.zs): what a hand-loaded round costs. 0 a rocket (as
+// BD22's own launcher reload), 1 a hand grenade. A server setting: it changes what you have.
+server int rsm_ammo = 0;
+
+// 1.37 secondary fire on the zoom buttons (zscript/rsq/alts.zs): off = BD22 as it was
+server bool rsa_rev_magnum = false;	// revolver: secondary fires a slug
+server bool rsa_sg_slug = false;		// pump shotgun: secondary fires a slug

@@ -373,8 +373,8 @@ class RSB_State play
 	{
 		let p = mo.player;
 		let rs = RSR_Handler.StateOf(mo);
-		int mask = RSB.PlayerInt(p, 'rsr_grab_buttons', BT_OFFHANDATTACK);
-		bool trig = mask != 0 && (p.cmd.buttons & mask) != 0;
+		int mask = RSR.GrabMask(p);
+		bool trig = mask != 0 && (p.cmd.buttons & mask) != 0 || rs && rs.netUse;
 		bool trigPress = trig && !trigPrev;
 		trigPrev = trig;
 		bool steady = (p.WeaponState & WF_TWOHANDSTABILIZED) != 0;
@@ -557,8 +557,8 @@ class RSB_State play
 		gripPress = 0;
 		let rs = RSR_Handler.StateOf(mo);
 		usedPresses = rs ? rs.netPresses : 0;
-		int mask = RSB.PlayerInt(mo.player, 'rsr_grab_buttons', BT_OFFHANDATTACK);
-		trigPrev = (mo.player.cmd.buttons & mask) != 0;		// a trigger already held is not a new grab
+		int mask = RSR.GrabMask(mo.player);
+		trigPrev = (mo.player.cmd.buttons & mask) != 0 || rs && rs.netUse;		// a trigger already held is not a new grab
 		lastTick = mo.Level.maptime;
 		SetChambers(mo);
 		SetPhase(mo, RSB.OPENING);
@@ -1433,7 +1433,7 @@ class RSB_Handler : EventHandler
 	void Lever(PlayerPawn mo, RSB_State s)
 	{
 		let p = mo.player;
-		int mask = RSB.PlayerInt(p, 'rsr_magrelease', BT_OFFHANDRELOAD);
+		int mask = RSB.PlayerInt(p, 'rsr_magrelease', (1 << 28));
 		bool down = (p.cmd.buttons & mask) != 0;
 		bool edge = down && !s.relPrev;
 		s.relPrev = down;

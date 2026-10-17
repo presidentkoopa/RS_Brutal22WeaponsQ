@@ -25,6 +25,12 @@ options menu to get them through cheats (give all, idkfa).
   - slides, charging handles and pumps racked by hand;
   - the pistol slide and the rifle, SMG and assault shotgun bolts lock back when fired dry;
   - shotgun shells through the real loading port, topped off any time.
+- Kitbash M4 + M203: the rifle's secondary fire launches the underbarrel grenade. In VR, hold the
+  off trigger on the tube to unlatch, slide it forward, grab a 40 mm round and push it in, then
+  slide it shut. Spent cases drop out when the tube opens. Flick-reloading loads it too.
+- Secondary fire: the SMG toggles 3-round burst / full auto. Slug shots for the shotgun and the
+  shotvolver (options menu, off by default).
+- Brass ejects from each gun's real ejection port (pistol, rifle, SMG, assault shotgun).
 - Dual Wield support. Flick guns down arcade style to reload when akimbo.
 - Grenade: pull the pin with the off hand. Hold the trigger, swing and release to throw; release
   while still to cook it. The axe throws the same way.
@@ -57,6 +63,8 @@ Weapon models: **br_vr** by ajantaju (Brutal Doom VR Weapons, BD v21), made from
 - QuestZDoom: Team Beef
 
 ## Screenshots
+
+![Kitbash M4 + M203](renders/m4_m203.png)
 
 ![Hands on the guns](renders/hands_on_guns_1.png)
 ![Hands on the guns](renders/hands_on_guns_2.png)

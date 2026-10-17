@@ -91,6 +91,8 @@ class RSQ_GunSide : Inventory
 	TrgQ: RQGT Q -1; Stop;
 	SqzQ: RQGU Q -1; Stop;
 	SupA: RQSP A -1; Stop;
+	SupM1: RQ2S A -1; Stop;	// 1.31 RSR-M203: the off hand on the launcher, finger on its trigger
+	SupM2: RQ2S B -1; Stop;	// ...squeezed
 	SupB: RQSP B -1; Stop;
 	SupC: RQSP C -1; Stop;
 	SupD: RQSP D -1; Stop;
@@ -193,6 +195,8 @@ class RSQ_Hands : Weapon
 			rsr = RSP_Handler.FreeHand(mo);	// RSR-PUMP: the pump shotguns' loading and pump (rsr/rsr_pump.zs)
 		if (rsr == "")
 			rsr = RSB_Handler.FreeHand(mo);	// RSR-BREAK
+		if (rsr == "")
+			rsr = RSM_Handler.FreeHand(mo);	// 1.30 RSR-M203: the rifle's launcher (rsr/rsr_m203.zs)
 		if (rsr == "" && mo.CountInv('RSG_RingHand') > 0)
 			rsr = "RsgRing";				// the VR grenade's ring, pinched (rsg/grenade.zs)
 		int i = on ? RSQ_HandTable.Index(p.ReadyWeapon) : 0;
@@ -252,6 +256,10 @@ class RSQ_Hands : Weapon
 		String gl = tf != "" ? ((p.cmd.buttons & BT_ATTACK) ? "Sqz" .. tf : "Trg" .. tf) : "Gun" .. g;
 		invoker.SetLayer(p, RSQ_Layers.GUNHAND, gs, own != "" ? own : i > 0 && g != "" ? gl : "Hidden");
 		String sp = RSQ_HandTable.Support(i);
+		if (i == 18 && p.ReadyWeapon is 'PuristRifle')
+			sp = "B";		// 1.30: purist's rifle has no launcher: its handguard grip as before
+		else if (i == 18 && RSM_Handler.TriggerGrip(mo))
+			sp = (p.cmd.buttons & BT_OFFHANDATTACK) ? "M2" : "M1";	// 1.31: finger on the M203's trigger (squeezed)
 		invoker.SetLayer(p, RSQ_Layers.SUPPORT, gs, hold && sp != "" ? "Sup" .. sp : "Hidden");
 	}
 
@@ -436,6 +444,13 @@ class RSQ_Hands : Weapon
 			[bt, br] = RSB_Handler.Place(Owner, translation, rotation, layer, ticfrac);
 			return bt, br;
 		}
+		// 1.30 RSR-M203: the rifle launcher's tube and round (rsr/rsr_m203.zs)
+		if (RSM_Handler.Places(Owner, layer))
+		{
+			Vector3 mt, mr;
+			[mt, mr] = RSM_Handler.Place(Owner, translation, rotation, layer, ticfrac);
+			return mt, mr;
+		}
 		// RSR-PUMP: the pump shotguns' layers (rsr/rsr_pump.zs)
 		if (RSP_Handler.Places(Owner, layer))
 		{
@@ -474,6 +489,16 @@ class RSQ_Hands : Weapon
 		bool gunHand = layer == RSQ_Layers.GUNHAND;
 		Vector3 hook = gunHand ? RSQ_HandTable.GunHook(i) : RSQ_HandTable.SupportHook(i);
 		Vector3 hookTurn = gunHand ? RSQ_HandTable.GunRot(i) : RSQ_HandTable.SupportRot(i);
+		if (!gunHand && i == 18 && !(o.ReadyWeapon is 'PuristRifle') && RSM_Handler.TriggerGrip(Owner))
+		{
+			hook = (0, 0, 0);		// 1.31: the trigger grip is baked in place (MODELDEF.rsm RQ2S)
+			hookTurn = (0, 0, 0);
+		}
+		if (!gunHand && i == 18 && o.ReadyWeapon is 'PuristRifle')
+		{
+			hook = (-0.090, -1.390, 11.380);	// 1.30: purist's rifle (no launcher): the handguard grip as before
+			hookTurn = (0, 0, 0);
+		}
 
 		// The renderer turns every HUD model by its own layer's offset: yaw x / 4,
 		// pitch (y - WEAPONTOP) / -4 (hw_weapon.cpp, RenderHUDModel's call). The gun
@@ -510,7 +535,10 @@ class RSQ_Hands : Weapon
 		}
 
 		if (!gunHand)
+		{
 			frameMove += RSP_Handler.SupportShift(Owner, ticfrac);	// RSR-PUMP: the support hand rides the pump
+			frameMove += RSM_Handler.SupportShift(Owner, ticfrac);	// 1.30 RSR-M203: ...and the launcher's tube
+		}
 		Vector3 t, r;
 		[t, r] = RSQ_Turn.Place(hook, hookTurn, gunTurnNow, frameTurn, frameMove, RSQ_GunMoves.Pivot(i));
 		// the renderer still adds this layer's own turn on top: take it back out
@@ -544,6 +572,8 @@ class RSQ_Hands : Weapon
 	RsbShell: RQHN J -1; Stop;	// RSR-BREAK: Ermac's hold of one shell (ammo_hand 1), round the gun's own round
 	RsbCell: RQHN L -1; Stop;	// RSR-BREAK: Ermac's hold of a cell (ammo_hand 5), round the gun's own speedloader
 	RsgRing: RQHR A -1; Stop;
+	RsmRound: RQ2H A -1; Stop;	// 1.30 RSR-M203: Ermac's open grip (ammo_hand 3) round a 40 mm round
+	RsmGrip: RQ2H B -1; Stop;	// ...the same grip, the round on the gun
 	// dual wield (rsq/dualhands.zs): the gun hand as a layer CALLED BY A GUN must use weapon
 	// states (an inventory item's states are refused for a weapon caller), so they live here
 	DTrgA: RQGT A -1; Stop;

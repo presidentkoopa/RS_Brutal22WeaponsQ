@@ -55,6 +55,7 @@ class RSR abstract
 	const SEAT = 0.6;			// home within this
 	const GRAB_HANDLE = 7.0;	// the hand within this of the handle takes it
 	const LEAVE_HANDLE = 12.0;	// the hand further than this from the handle's track lets go
+	const LOCK_TUG = 1.5;		// 1.23: cm the hand pulls a locked-back slide/bolt to release it
 	const RACKED = 0.85;		// of the handle's travel: far enough back to chamber a round
 	const SPRING = 4.0;			// cm a released handle goes forward per tic
 	const DROP_TICS = 4;
@@ -68,6 +69,20 @@ class RSR abstract
 	{
 		let cv = CVar.GetCVar(n, p);
 		return cv ? cv.GetInt() : def;
+	}
+
+	// 1.17 (owner): "Grab ammo with" (rsr_grab_with): 0 the off trigger, 1 the off grip (away
+	// from the engine's steadying range, as 1.14), 2 the Use key (intercepted only while a reload
+	// has the hand). One of the three, never a mix. The grenade ring keeps the off trigger.
+	clearscope static int GrabWith(PlayerInfo p)
+	{
+		return PlayerInt(p, 'rsr_grab_with', 0);
+	}
+
+	// the usercmd buttons that grab: the off trigger, only when it is the chosen way
+	clearscope static int GrabMask(PlayerInfo p)
+	{
+		return GrabWith(p) == 0 ? PlayerInt(p, 'rsr_grab_buttons', BT_OFFHANDATTACK) : 0;
 	}
 
 	clearscope static double Float(Name n, double def)
@@ -172,6 +187,7 @@ class RSR_State play
 	// the grab (RSR.GripCanGrab; synchronised: rsr_grip network events from
 	// RSR_Handler.InputProcess, and usercmd buttons)
 	bool netGrip;			// the off grip's key is down
+	bool netUse;			// 1.17 (rsr_use_grab): the Use key, taken over while a reload has the hand, grabs
 	bool gripFree;			// ...and its press could not start steadying (latched at the press)
 	int netPresses;			// grip presses that grab
 	int usedPresses;
@@ -182,6 +198,7 @@ class RSR_State play
 	double d, dPrev;		// the magazine at the well: cm out of home along the axis
 	double pull, pullPrev;	// the handle: cm back
 	bool slideLock;			// 1.13: the pistol ran dry, its slide is locked back until racked
+	bool lockedGrab;		// 1.23: the handle was taken with the slide/bolt locked back
 	int lockGun;			// the gun the locked slide belongs to (the reload may be idle)
 	bool wellShown, handShown;
 	Vector3 offLocal;		// the off hand, gun frame cm (the desktop test draws with it)
@@ -259,10 +276,10 @@ class RSR_State play
 	// the off hand is holding on: its trigger anywhere, or a grip that grabbed (RSR.GripCanGrab)
 	bool Grip(PlayerPawn mo)
 	{
-		int mask = RSR.PlayerInt(mo.player, 'rsr_grab_buttons', BT_OFFHANDATTACK);
+		int mask = RSR.GrabMask(mo.player);
 		bool trig = (RSVR_VRHand.Buttons(mo) & mask) != 0;
 		bool grip = netGrip && gripFree && !RSVR_VRHand.Steadied(mo);
-		return trig || grip;
+		return trig || grip || netUse;
 	}
 
 	// where the magazine in the hand is against the well: depth (cm out of home along the
@@ -338,6 +355,7 @@ class RSR_State play
 		backSounded = false;
 		d = dPrev = 0;
 		pull = pullPrev = 0;
+		lockedGrab = false;
 		wellShown = handShown = false;
 		usedPresses = netPresses;
 		gripPrev = Grip(mo);		// a grip already held is not a new grab
@@ -490,6 +508,12 @@ class RSR_State play
 					racked = false;
 					backSounded = false;
 					pull = pullPrev = 0;
+					// 1.23 (owner): taking a slide that is locked back must not close it. It stays
+					// open in the hand; a short tug back racks it (the sound), letting go then
+					// sends it home. A slide (no separate bolt) is drawn all the way back meanwhile.
+					lockedGrab = slideLock;
+					if (lockedGrab && RSR_Guns.BoltRatio(i) <= 0)
+						pull = pullPrev = RSR_Guns.Travel(i);
 					Buzz(mo);
 					SetPhase(mo, RSR.PULL);
 				}
@@ -503,6 +527,21 @@ class RSR_State play
 			double s = rel dot pd;
 			double side = (rel - pd * s).Length();
 			double travel = RSR_Guns.Travel(i);
+			if (lockedGrab)
+			{
+				// the slide (or bolt) is held open by the lock; the hand's tug back releases it
+				pull = RSR_Guns.BoltRatio(i) <= 0 ? travel : clamp(s - grabS, 0, travel);
+				if (!racked && s - grabS >= RSR.LOCK_TUG)
+				{
+					racked = true;
+					backSounded = true;
+					PlaySnd(mo, RSR_Guns.SndBack(i));
+					Buzz(mo);
+				}
+				if (!g || side > RSR_Assist.Leave(mo.player, RSR_Assist.MagGrab(mo.player, i)) * 1.2)
+					SetPhase(mo, RSR.RELEASED);
+				break;
+			}
 			pull = clamp(s - grabS, 0, travel);
 			if (!backSounded && pull >= RSR_Guns.BackAt(i) * travel)
 			{
@@ -520,6 +559,15 @@ class RSR_State play
 		}
 
 		case RSR.RELEASED:
+			if (lockedGrab && !racked)
+			{
+				// let go without the tug: it is still locked open, waiting for the hand
+				pull = pullPrev = 0;
+				lockedGrab = false;
+				slideLock = true;
+				SetPhase(mo, RSR.CHARGE);
+				break;
+			}
 			pull = max(0, pull - RSR.SPRING);
 			if (pull <= 0)
 			{
@@ -554,6 +602,7 @@ class RSR_State play
 		weap = null;
 		wellShown = handShown = false;
 		d = dPrev = pull = pullPrev = 0;
+		lockedGrab = false;
 		netGrip = false;
 	}
 
@@ -577,7 +626,8 @@ class RSR_State play
 			int loaded = ma ? mo.CountInv(ma) : 1;
 			if (!active && loaded <= 0 && RSR.IsReadyFrame(psp, i))
 				slideLock = true;
-			if (active && (phase == RSR.PULL || phase == RSR.RELEASED) || !active && loaded > 0)
+			// 1.23: a locked slide taken in the hand stays locked until the tug racks it
+			if (active && (phase == RSR.PULL || phase == RSR.RELEASED) && (!lockedGrab || racked) || !active && loaded > 0)
 				slideLock = false;
 		}
 		else if (!active)
@@ -817,6 +867,7 @@ class RSR_Handler : EventHandler
 	ui Array<int> gripKeys;
 	ui String gripKeysFrom;
 	ui bool eaten[512];
+	ui bool useEaten[512];
 
 	clearscope static RSR_Handler Get()
 	{
@@ -951,7 +1002,7 @@ class RSR_Handler : EventHandler
 	void MagRelease(PlayerPawn mo, RSR_State s)
 	{
 		let p = mo.player;
-		int mask = RSR.PlayerInt(p, 'rsr_magrelease', BT_OFFHANDRELOAD);
+		int mask = RSR.PlayerInt(p, 'rsr_magrelease', (1 << 28));
 		bool down = (RSVR_VRHand.Buttons(mo) & mask) != 0;
 		bool edge = down && !s.relPrev;
 		s.relPrev = down;
@@ -975,7 +1026,21 @@ class RSR_Handler : EventHandler
 
 	override void NetworkProcess(ConsoleEvent e)
 	{
+		if (e.Name == "rsr_use")
+		{
+			int un = e.Player;
+			if (un < 0 || un >= MAXPLAYERS || !playeringame[un])
+				return;
+			if (!st[un])
+				st[un] = new('RSR_State');
+			st[un].netUse = e.Args[0] != 0;
+			return;
+		}
 		if (e.Name != "rsr_grip")
+			return;
+		// 1.15 (owner): the grip kept starting the engine's two-hand steadying when reaching for a
+		// shell near the gun, so it grabs only when "Grab ammo with" is set to the grip (1.17).
+		if (e.Player < 0 || e.Player >= MAXPLAYERS || RSR.GrabWith(players[e.Player]) != 1)
 			return;
 		int n = e.Player;
 		if (n < 0 || n >= MAXPLAYERS || !playeringame[n])
@@ -1013,6 +1078,29 @@ class RSR_Handler : EventHandler
 		let me = players[consoleplayer];
 		if (RSR.Debug(me))
 			Console.Printf("rsr key %s %d (%s)", down ? "down" : "up", k, e.KeyString);
+		// 1.17 (owner): "Intercept Use key". While a reload has the off hand, the Use key is the
+		// grab (held = holding, like the off trigger) and does not reach doors or switches.
+		// Any other time Use is untouched.
+		if (k >= 0 && k < 512 && RSR.GrabWith(me) == 2 && IsUseKey(k))
+		{
+			if (down)
+			{
+				let us = consoleplayer < MAXPLAYERS ? st[consoleplayer] : null;
+				bool ubusy = us && us.phase != RSR.IDLE || RSP_Handler.Busy(consoleplayer) || RSB_Handler.Busy(consoleplayer) || RSM_Handler.Busy(consoleplayer);	// 1.34: the M203 open
+				if (!ubusy)
+					return false;
+				useEaten[k] = true;
+				EventHandler.SendNetworkEvent("rsr_use", 1, k);
+				return true;
+			}
+			if (useEaten[k])
+			{
+				useEaten[k] = false;
+				EventHandler.SendNetworkEvent("rsr_use", 0, k);
+				return true;
+			}
+			return false;
+		}
 		if (!IsGripKey(me, k))
 			return false;
 		EventHandler.SendNetworkEvent("rsr_grip", down ? 1 : 0, k);
@@ -1021,13 +1109,20 @@ class RSR_Handler : EventHandler
 		if (down)
 		{
 			let s = consoleplayer < MAXPLAYERS ? st[consoleplayer] : null;
-			bool busy = s && s.phase != RSR.IDLE || RSP_Handler.Busy(consoleplayer) || RSB_Handler.Busy(consoleplayer);	// RSR-PUMP, RSR-BREAK: their reloads have the hand too
-			eaten[k] = busy && RSR.PlayerInt(me, 'rsr_eat_grip', 1) != 0;
+			bool busy = s && s.phase != RSR.IDLE || RSP_Handler.Busy(consoleplayer) || RSB_Handler.Busy(consoleplayer) || RSM_Handler.Busy(consoleplayer);	// RSR-PUMP, RSR-BREAK: their reloads have the hand too
+			eaten[k] = busy && RSR.GrabWith(me) == 1 && RSR.PlayerInt(me, 'rsr_eat_grip', 1) != 0;
 			return eaten[k];
 		}
 		bool was = eaten[k];
 		eaten[k] = false;
 		return was;		// only an up whose down was eaten
+	}
+
+	ui bool IsUseKey(int k)
+	{
+		Array<int> keys;
+		Bindings.GetAllKeysForCommand(keys, "+use");
+		return keys.Find(k) != keys.Size();
 	}
 
 	ui bool IsGripKey(PlayerInfo me, int k)

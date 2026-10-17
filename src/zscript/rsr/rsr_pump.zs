@@ -183,8 +183,8 @@ class RSP_State play
 		offLocal = geo.offLocal;
 		let p = mo.player;
 		let rs = RSR_Handler.StateOf(mo);
-		int mask = RSR.PlayerInt(p, 'rsr_grab_buttons', BT_OFFHANDATTACK);
-		bool trig = (p.cmd.buttons & mask) != 0 || RSP.TestCvar('rsp_test_trigger');
+		int mask = RSR.GrabMask(p);
+		bool trig = (p.cmd.buttons & mask) != 0 || RSP.TestCvar('rsp_test_trigger') || rs && rs.netUse;
 		bool trigPress = trig && !trigPrev;
 		trigPrev = trig;
 		steadied = RSP.Steadied(mo);
@@ -357,7 +357,7 @@ class RSP_State play
 	// it cannot come back from.
 	void InsertWanted(PlayerPawn mo, int i)
 	{
-		bool down = (mo.player.cmd.buttons & (BT_RELOAD | BT_MAINHANDRELOAD)) != 0;
+		bool down = (mo.player.cmd.buttons & (BT_RELOAD | (1 << 20))) != 0;
 		bool edge = down && !relPrev;
 		relPrev = down;
 		if (!edge || mode == RSP.LOAD)

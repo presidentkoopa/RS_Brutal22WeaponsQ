@@ -56,7 +56,7 @@ ACTOR GrenadeLauncher : BrutalWeapon
 	Inspect:
 		2RLN A 0 A_JumpIfInventory("IsPlayingAsPurist", 1,"Ready")
 		SHTN A 0 A_JumpIfInventory("DoInspect",1,"ContinueInspect")
-		SHTN A 0 A_JumpIfInventory("FiredSecondary",1,"ContinueInspect")
+		SHTN A 0 A_JumpIf((OverlayID() != 1000000 && CountInv("FiredSecondary") > 0) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 134217728) != 0), "ContinueInspect")
 		GRLN A 0 A_JumpIfInventory("ExecuteDownedEnemy", 1, "DoExecution")
 		GRLN A 0 A_JumpIfInventory("Kicking",1,"DoKick")
 		GRLN A 0 A_JumpIfInventory("Salute1", 1, "Salute")
@@ -66,7 +66,7 @@ ACTOR GrenadeLauncher : BrutalWeapon
 		GRLN A 0 A_JumpIfInventory("IsRunning", 1, "StartSprint")
 		GRLN A 6 A_WeaponReady(WRF_ALLOWZOOM)
 		GRLN A 0 A_JumpIfInventory("Unloading", 1, "Unload")
-		GRLN A 0 A_JumpIfInventory("Reloading", 1, "Reload")
+		GRLN A 0 A_JumpIf(OverlayID() != 1000000 && CountInv("Reloading") > 0, "Reload")
 		GRLN A 0 A_GiveInventory("DoInspect",1)
 		GRLN A 1 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
 		GRLN A 0 A_TakeInventory("DoInspect",1)
@@ -202,7 +202,7 @@ ACTOR GrenadeLauncher : BrutalWeapon
 		"####" A 0 A_JumpIfInventory("IsRunning", 1, "StartSprint")
 		"####" A 1 A_WeaponReady//(WRF_ALLOWRELOAD)
 		"####" A 0 A_JumpIfInventory("Unloading", 1, "Unload")
-		"####" A 0 A_JumpIfInventory("Reloading", 1, "Reload")
+		"####" A 0 A_JumpIf(OverlayID() != 1000000 && CountInv("Reloading") > 0, "Reload")
 		Goto Ready
 
 	Deselect:
@@ -225,14 +225,14 @@ ACTOR GrenadeLauncher : BrutalWeapon
 		Goto NoAmmo
 		"####" "#" 0 A_TakeInventory("GLAmmo", 1)
 		"####" "#" 0 A_JumpIfInventory("NoReloading",1,"NoReload")
-		"####" "#" 0 A_JumpIfInventory("FiredSecondary",1,"ResumeAltFireFrame")
+		"####" "#" 0 A_JumpIf((OverlayID() != 1000000 && CountInv("FiredSecondary") > 0) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 134217728) != 0), "ResumeAltFireFrame")
 		Goto ResumeFireFrame
 
 	NoReload:
 		"####" "#" 0 A_JumpIfInventory("AmmoRocket", 1, 1)
 		Goto NoAmmo
 		"####" "#" 0 A_TakeInventory("AmmoRocket", 1,TIF_NOTAKEINFINITE)
-		"####" "#" 0 A_JumpIfInventory("FiredSecondary",1,"ResumeAltFireFrame")
+		"####" "#" 0 A_JumpIf((OverlayID() != 1000000 && CountInv("FiredSecondary") > 0) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 134217728) != 0), "ResumeAltFireFrame")
 	ResumeFireFrame:
 		"####" A 0
 		"####" A 0 A_FireCustomMissile("ShortGrenade2", 0, 1, 0, 0)
@@ -368,7 +368,7 @@ ACTOR GrenadeLauncher : BrutalWeapon
 		GRL2 "[" 0 offset(9,32) A_WeaponReady(WRF_NOBOB)
 		GRLN A 0 A_JumpIfInventory("Kicking",1,"DoKick")
 		GRLN A 0 A_JumpIfInventory("Taunting",1,"Taunt")
-		GRLN A 0 A_JumpIfInventory("Reloading",1,"Reload")
+		GRLN A 0 A_JumpIf(OverlayID() != 1000000 && CountInv("Reloading") > 0, "Reload")
 		GRL2 "[" 0 offset(-9,32) A_GiveInventory("UsedStamina", 5)
 		GRL2 "[" 0 offset(9,33) A_SpawnItemEx("FootStep", 0, 0, 2, 0, 0, -4)
 		GRL2 "[" 1 offset(9,34) A_SetPitch(pitch +0.5)

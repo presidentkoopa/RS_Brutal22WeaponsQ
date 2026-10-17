@@ -101,7 +101,7 @@ ACTOR DSweap : BrutalWeapon
 		DSLC DD 1 A_SetAngle(angle+2)	// posefix: was TNT1 AA 1 A_SetAngle(angle+2)
 		TNT1 A 0 A_TakeInventory("FiredPrimary", 1)
 		DSLC D 5	// posefix: was TNT1 A 5
-		DSLC DDDDDDDD 1 A_JumpIfInventory("FiredPrimary", 1, "Attack2")	// posefix: was TNT1 AAAAAAAA 1 A_JumpIfInventory("FiredPrimary", 1, "Attack2")
+		DSLC DDDDDDDD 1 A_JumpIf((OverlayID() != 1000000 && CountInv("FiredPrimary") > 0) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 67108864) != 0), "Attack2")	// posefix: was TNT1 AAAAAAAA 1 A_JumpIf((OverlayID() != 1000000 && CountInv("FiredPrimary") > 0) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 67108864) != 0), "Attack2")
 		DSLC D 1 Offset(-64, 128)
 		DSLC D 1 Offset(-32, 64)
 		DSLC DCBA 1 A_SetAngle(angle-2)
