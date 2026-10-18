@@ -282,6 +282,16 @@ ACTOR Revolver : BrutalWeapon 5874
 		"####" K 2 A_WEAPONREADY(WRF_NOBOB|WRF_NOFIRE|WRF_ALLOWZOOM|WRF_ALLOWRELOAD)
 		"####" A 0 A_JumpIfInventory("RevolverAmmo",1,2)
 		Goto Ready3
+	// 1.92: Hammering MUST follow here. The jump above is BD22's numeric "+2" into Hammering's
+	// second frame; 1.85 put the slug between them and every shot looped the slug forever.
+	Hammering:
+		"####" LMNOP 1 A_WEAPONREADY(WRF_NOBOB|WRF_NOFIRE|WRF_ALLOWZOOM|WRF_ALLOWRELOAD)
+		"####" A 0 A_PlaySound("Revolver/Hammer", 5)
+		"####" QRSTUVW 1 A_WEAPONREADY(WRF_NOBOB|WRF_NOFIRE|WRF_ALLOWZOOM)
+		"####" A 0 A_Takeinventory("NeedToHammer",1)
+		"####" A 0 A_JumpIf(((OverlayID() != 1000000 && CountInv("RSA_Magnum") > 0) || (OverlayID() == 1000000 && CountInv("RSA_MagnumOff") > 0)) && ((OverlayID() != 1000000 && ((GetPlayerInput(INPUT_BUTTONS) & 32) != 0 || CountInv("FiredSecondary") > 0)) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 134217728) != 0)), "Fire")	// 1.37 rsa: cocked for the slug, secondary still held: fire it
+		"####" A 0 A_Refire
+		Goto Ready3
 
 	// 1.37 rsa (owner: "a Dirty Harry"): secondary fire is a slug: one heavy round where the
 	// shotvolver throws its pellets, the same cartridge (its pellets' whole damage, on one point)
@@ -312,14 +322,6 @@ ACTOR Revolver : BrutalWeapon 5874
 		"####" "#" 0 A_GiveInventory("RSA_MagnumOff", 1)
 		Goto Fire
 
-	Hammering:
-		"####" LMNOP 1 A_WEAPONREADY(WRF_NOBOB|WRF_NOFIRE|WRF_ALLOWZOOM|WRF_ALLOWRELOAD)
-		"####" A 0 A_PlaySound("Revolver/Hammer", 5)
-		"####" QRSTUVW 1 A_WEAPONREADY(WRF_NOBOB|WRF_NOFIRE|WRF_ALLOWZOOM)
-		"####" A 0 A_Takeinventory("NeedToHammer",1)
-		"####" A 0 A_JumpIf(((OverlayID() != 1000000 && CountInv("RSA_Magnum") > 0) || (OverlayID() == 1000000 && CountInv("RSA_MagnumOff") > 0)) && ((OverlayID() != 1000000 && ((GetPlayerInput(INPUT_BUTTONS) & 32) != 0 || CountInv("FiredSecondary") > 0)) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 134217728) != 0)), "Fire")	// 1.37 rsa: cocked for the slug, secondary still held: fire it
-		"####" A 0 A_Refire
-		Goto Ready3
 	
 	DM:
 		"####" B 1 BRIGHT A_FireBullets (20, 7, 7, 22, "ShotgunPuffDM", FBF_NORANDOM)  //Revopuff is the og
