@@ -1,3 +1,5 @@
+![BD22 VR Weapons](renders/hero.gif)
+
 # BD22 VR Weapons
 
 ![BD22 VR Weapons options menu](renders/options_menu.png)
