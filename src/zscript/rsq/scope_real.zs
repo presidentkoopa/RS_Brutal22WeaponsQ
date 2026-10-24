@@ -57,10 +57,14 @@ class RSQ_ScopeReal : EventHandler
 
 	// The camera texture, declared in ANIMDEFS.rsq. Eight characters, because
 	// ParseCameraTexture looks the name up with TEXMAN_ShortNameOnly and a longer one would
-	// never be found again. TexMan.SetCameraToTexture wants it as a String and A_ChangeModel
-	// as a Name, so it is written twice here and the two MUST stay the same.
+	// never be found again.
+	//
+	// ONE constant, and a String. A second one as a Name is "Bad type for constant
+	// definiton": a ZScript const takes int, float, double, string or bool and nothing
+	// else, so a name literal is refused outright. A_ChangeModel wants a Name and takes
+	// this String by the implicit conversion -- which also means the two spellings can
+	// never drift apart.
 	const TEXNAME = "RSQSCOPE";
-	const TEXNAME_N = 'RSQSCOPE';
 
 	// THE SIGHT PICTURE, in centimetres in the weapon controller's frame.
 	//   RELIEF   how far behind the glass the eye may be and still be looking through it. A
@@ -216,7 +220,7 @@ class RSQ_ScopeReal : EventHandler
 		//   skin     'None'  stores a null texture id, which the same function treats as "fall
 		//                    through to the MODELDEF SurfaceSkin". That is the way back.
 		w.A_ChangeModel('None', 0, "", 'None', surface, "",
-			on ? TEXNAME_N : 'None', CMDL_USESURFACESKIN);
+			on ? Name(TEXNAME) : Name("None"), CMDL_USESURFACESKIN);
 	}
 
 	private void ClearSkin()
