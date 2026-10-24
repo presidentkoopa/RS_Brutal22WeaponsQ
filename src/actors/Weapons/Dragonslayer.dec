@@ -71,6 +71,8 @@ ACTOR DSweap : BrutalWeapon
 		Loop
 
 	Fire:
+		// swung by hand in VR (zscript/rsvr/melee.zs); the canned swing would cut twice
+		TNT1 A 0 A_JumpIfInventory("RSVR_NoSwing", 1, "Ready")
 		TNT1 A 0
 		DSLC ABCD 1
 	Hold:

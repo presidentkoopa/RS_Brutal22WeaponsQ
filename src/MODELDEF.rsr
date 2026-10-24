@@ -1000,12 +1000,38 @@ Model Sniper
 	// reprojected to 0..1 (tool/md3_carve_surface.py --project-only) so REAL mode can
 	// render a camera texture through them, which means they no longer sample the
 	// authored skin at all. scope_real.zs swaps this for the camera texture when REAL.
-	SurfaceSkin 0 10 "scope_glass.png"
+	SurfaceSkin 0 10 "rsr_clear.png"
 	Scale -10.4850 10.4850 10.4850
 	Offset -0.2816 -44.5467 0.0
 	ZOffset -6.3157
 	NoInterpolation
 	FrameIndex X21G A 0 0
+
+	// EVERY sprite this actor names, keyed -- the zero-tic ones included. A 0-tic
+	// state still SETS the psprite sprite, and every "####" state after it inherits
+	// that sprite, so an unkeyed 0-tic DEAG / PISP / PLAY in the sprint chain leaves
+	// the gun pointing at a sprite with no model for the whole of the next fire
+	// sequence. "Does this state draw?" is the wrong test; "can anything inherit
+	// this sprite?" is the right one, and with "####" the answer is always yes.
+	FrameIndex	DEAG	A	0	0
+	FrameIndex	PISP	A	0	0
+	FrameIndex	PLAY	A	0	0
+	// EVERY sprite this gun can show must be keyed or the model silently stops
+	// drawing and the 2D sprite takes over -- and because the chain is full of "####"
+	// (keep the current sprite), one gap takes every state after it with it. SNIP is
+	// BD22's own 2D sniper sprite and the gun lives on it for ~15 tics after each shot;
+	// SINP is a typo of SNIP in BD22's source, and a typo'd sprite is still a state the
+	// gun reaches. All point at the ready frame: the mesh has one frame.
+	FrameIndex	SNIP	B	0	0
+	FrameIndex	SNIP	C	0	0
+	FrameIndex	SNIP	D	0	0
+	FrameIndex	SINP	D	0	0
+	FrameIndex	X21R	X	0	0
+	FrameIndex	X21R	Y	0	0
+	FrameIndex	X21R	Z	0	0
+	FrameIndex	X21R	[	0	0
+	FrameIndex	X21R	\	0	0
+	FrameIndex	X21R	]	0	0
 	// X21F / P21F: the FIRING pose, same single mesh frame as the ready pose. Without
 	// these the model silently stops drawing the instant the gun fires and the 2D sprite
 	// shows for the whole rest of the sequence, because every state after it is "####"
@@ -1106,7 +1132,7 @@ Model Sniper
 	// reprojected to 0..1 (tool/md3_carve_surface.py --project-only) so REAL mode can
 	// render a camera texture through them, which means they no longer sample the
 	// authored skin at all. scope_real.zs swaps this for the camera texture when REAL.
-	SurfaceSkin 0 10 "scope_glass.png"
+	SurfaceSkin 0 10 "rsr_clear.png"
 	Scale -10.4850 10.4850 10.4850
 	Offset -0.2816 -44.5467 0.0
 	ZOffset -6.3157
@@ -1133,7 +1159,7 @@ Model Sniper
 	// reprojected to 0..1 (tool/md3_carve_surface.py --project-only) so REAL mode can
 	// render a camera texture through them, which means they no longer sample the
 	// authored skin at all. scope_real.zs swaps this for the camera texture when REAL.
-	SurfaceSkin 0 10 "scope_glass.png"
+	SurfaceSkin 0 10 "rsr_clear.png"
 	Scale -10.4850 10.4850 10.4850
 	Offset -0.2816 -44.5467 0.0
 	ZOffset -6.3157

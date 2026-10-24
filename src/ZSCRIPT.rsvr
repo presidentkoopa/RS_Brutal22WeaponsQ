@@ -19,8 +19,10 @@ version "4.10"
 // must come first -- scope_real.zs reads RSQ_ScopeTable. If another lane also lists
 // scope.zs the duplicate is harmless: the parser keeps one entry per include path
 // (zcc_parser.cpp AddInclude).
+#include "zscript/rsq/ruger.zs"
 #include "zscript/rsq/scope.zs"
 #include "zscript/rsq/scope_real.zs"
+#include "zscript/rsq/steady.zs"
 #include "zscript/rsq/alts.zs"
 #include "zscript/rsq/casings.zs"
 #include "zscript/rsq/dualtable.zs"

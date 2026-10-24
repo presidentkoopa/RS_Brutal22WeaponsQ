@@ -153,6 +153,36 @@ Model RSQ_GunSide
 	FrameIndex RQRT B 0 0
 }
 
+// THE MODULAR SCOPE. Not part of any gun's mesh: its own model, on a layer we own, placed
+// per gun by RSQ_ScopeTable. A gun takes a scope by declaring where the glass goes and which
+// way the bore points -- nothing is carved, welded or re-UVd per weapon ever again.
+//
+// It is drawn on OUR layer for a reason beyond tidiness: hw_weapon.cpp:946 takes
+// ModifyBobLayer3D from each layer's OWN caller class, and a gun from the host mod is a
+// DECORATE actor that cannot override a ZScript virtual -- so the gun's own model can never be
+// repositioned by us, and anything that has to move relative to the gun has to be our layer.
+// That is what makes the stabilised sight possible at all.
+//
+// Scale 10.485 is the scale the Leupold was authored at (its lens reads 1.38 cm across, which
+// is what it measures on the gun). Offset cancels RenderHUDModel's fixed translate(0,5,30) so
+// the model's origin -- the centre of the ocular glass -- lands exactly on the controller,
+// which is the frame RSQ_ScopeTable.Lens is measured in.
+Model RSQ_GunSide
+{
+	Path "models/rsq/scope"
+	Model 0 "scope_leupold.md3"
+	SurfaceSkin 0 0 "leupold_vx1.png"
+	SurfaceSkin 0 1 "leupold_vx1.png"
+	// The glass is CLEAR, not a painted lens. The scope texture is body metal -- there is no
+	// lens art anywhere in it to map to, which is why the authored glass UVs sprawled across
+	// the whole atlas. So you look THROUGH the tube at the world, and the collimated dot
+	// floats in it. rsq/scope_real.zs swaps this for the camera texture in REAL mode.
+	SurfaceSkin 0 2 "rsr_clear.png"
+	Scale -10.4850 10.4850 10.4850
+	Offset 0.0 -30.0 -5.0
+	FrameIndex RQSC A 0 0
+}
+
 // debris: A-D chips, E-H chunks, I-L clods (world actor, map units)
 
 Model RSQ_Debris

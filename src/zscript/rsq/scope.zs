@@ -32,6 +32,13 @@ class RSQ_ScopeLayers abstract
 	// reload on exactly the two guns getting scopes. Taken in the pack: 2100-2111, 2120-2123,
 	// 2130-2131, 2200-2203, 2210, 2300-2301. Free: 2112-2119, 2124-2129.
 	const RETICLE = 2112;		// RSQ_GunSide, main controller: the collimated reticle
+	const SCOPE = 2113;		// RSQ_GunSide, main controller: the modular scope itself
+
+	// The modular scope's MODELDEF Scale (models/rsq/scope in MODELDEF.rsq). ModifyBobLayer3D
+	// translations are in MODEL units, i.e. centimetres DIVIDED by this -- the reticle quad is
+	// Scale 1 so raw cm worked there, and reusing that here put the scope 9.24 x 10.485 = 97 cm
+	// above the rifle. Roughly three feet, which is exactly what it looked like.
+	const MODELSCALE = 10.4850;
 }
 
 class RSQ_ScopeTable abstract
@@ -80,6 +87,40 @@ class RSQ_ScopeTable abstract
 		return i > 0 && i < v.Size() ? v[i] : 1.0;
 	}
 
+	// 1 = this gun WEARS the modular scope (models/rsq/scope, drawn on our own layer) and its
+	// built-in one is cleared in MODELDEF. 0 = it keeps its own scope and we only light its
+	// glass. The difference is not cosmetic: hw_weapon.cpp takes ModifyBobLayer3D from each
+	// layer's own caller, and a host-mod gun is a DECORATE actor that cannot override it, so a
+	// scope we do not draw is a scope we cannot move -- and cannot stabilise.
+	clearscope static int Mounted(int i)
+	{
+		// BOTH keep their own scope for now. Mounting the modular one on the Ruger meant
+		// clearing its built-in scope first, and when the modular layer did not appear the
+		// gun had no scope at all -- a working thing traded for an unproven one. The modular
+		// scope stays built and stays off until it is proven on a gun that HAS no scope.
+		static const int v[] = { 0, 0, 0 };
+		return i > 0 && i < v.Size() ? v[i] : 0;
+	}
+
+	// which MD3 surface is the glass, for REAL mode to render into. On a gun wearing the
+	// modular scope this is the modular model's own glass, which is always surface 2.
+	// Is ANY gun wearing our scope? While this is false the whole feature is inert -- no
+	// layers created, and nothing of ours runs inside the renderer's per-layer hook, where a
+	// fault costs every hand in the game rather than just the scope.
+	clearscope static bool AnyMounted()
+	{
+		for (int i = 1; i < 3; i++)
+			if (Mounted(i) != 0)
+				return true;
+		return false;
+	}
+
+	clearscope static int GlassSurface(int i)
+	{
+		static const int v[] = { -1, 1, 2 };
+		return i > 0 && i < v.Size() ? v[i] : -1;
+	}
+
 	// the cvar that chooses this gun's mode: 0 dot, 1 real
 	clearscope static Name ModeCVar(int i)
 	{
@@ -98,8 +139,13 @@ class RSQ_Scope abstract
 	// ANGLES are plain fields and ui may read play data -- so the basis is rebuilt here with
 	// trig instead. AttackAngle is the world yaw MINUS 90 and AttackPitch is negated, which
 	// is the engine's own convention (p_map.cpp adds the 90 back everywhere it uses them).
-	clearscope static void Basis(PlayerPawn mo, out Vector3 fwd, out Vector3 right, out Vector3 up)
+	// RETURNS the three axes rather than filling `out` parameters. An out Vector3 is
+	// "REGT_ADDROF not implemented for vectors" the first time it is CALLED -- the JIT
+	// cannot take the address of a vector, so it compiles clean, loads clean and then
+	// dies at run time. (out <struct> is a different thing and is fine.)
+	clearscope static Vector3, Vector3, Vector3 Basis(PlayerPawn mo)
 	{
+		Vector3 fwd, right, up;
 		double yaw = mo.AttackAngle + 90.0;
 		double pit = -mo.AttackPitch;
 		double rol = mo.AttackRoll;
@@ -111,6 +157,7 @@ class RSQ_Scope abstract
 		Vector3 u0 = (fwd cross r0);
 		right = r0 * cr + u0 * sr;
 		up = (right cross fwd);
+		return fwd, right, up;
 	}
 
 	// Where the eye is, in the hand's own frame, in centimetres. The view point is the pawn's
@@ -131,8 +178,28 @@ class RSQ_Scope abstract
 		if (cv && cv.GetFloat() > 0)
 			vu = cv.GetFloat();
 		Vector3 f, r, u;
-		Basis(mo, f, r, u);
+		[f, r, u] = Basis(mo);
 		// map units -> cm in the hand frame
+		return ((d dot f) * 100.0 / vu, -(d dot r) * 100.0 / vu, (d dot u) * 100.0 / vu);
+	}
+
+	// The OFF hand in the gun's own frame, cm. Same chain as the eye; the gun hand is this
+	// frame's origin, so this vector IS the two-hand baseline a braced rifle points along.
+	clearscope static Vector3 OffInHandFrame(PlayerPawn mo)
+	{
+		if (!mo || !mo.player)
+			return (0, 0, 0);
+		Vector3 d = mo.OffhandPos - mo.AttackPos;
+		double ps = mo.Level.pixelstretch;
+		if (ps <= 0)
+			ps = 1.2;
+		d.z *= ps;
+		double vu = 34.0;
+		let cv = CVar.FindCVar('vr_vunits_per_meter');
+		if (cv && cv.GetFloat() > 0)
+			vu = cv.GetFloat();
+		Vector3 f, r, u;
+		[f, r, u] = Basis(mo);
 		return ((d dot f) * 100.0 / vu, -(d dot r) * 100.0 / vu, (d dot u) * 100.0 / vu);
 	}
 
@@ -141,7 +208,10 @@ class RSQ_Scope abstract
 	clearscope static Vector3, bool DotAt(PlayerPawn mo, int i)
 	{
 		Vector3 P = RSQ_ScopeTable.Lens(i);
-		Vector3 A = RSQ_ScopeTable.Axis(i);
+		// The steadied bore when the off hand is bracing it, the gun's own otherwise. The
+		// scope, the dot and the shot all ask here, so they cannot disagree about where this
+		// rifle is pointing.
+		Vector3 A = RSQ_Steady.Bore(mo, RSQ_ScopeTable.Axis(i));
 		double al = A.Length();
 		if (al <= 0)
 			return P, false;

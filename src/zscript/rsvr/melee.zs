@@ -118,6 +118,13 @@ class RSVR_MeleeHandler : EventHandler
 			bool twoUp = RSVR_VRHand.InVR(mo) && mo.player.ReadyWeapon
 				&& RSVR_Hand.KindOf(mo) == RSVR_Hand.AXE && RSVR_VRHand.Steadied(mo);
 			mo.SetInventory('RSVR_AxeTwo', twoUp ? 1 : 0);
+			// 2026-10-24 (owner, for the third time): the chainsaw and the Dragonslayer
+			// are SWUNG, not triggered. While this is set their own Fire states hold, so
+			// the only thing that cuts is the blade going through something. The trigger
+			// still revs the saw -- it just does not swing it for you.
+			int mk = RSVR_Hand.KindOf(mo);
+			bool natural = RSVR_VRHand.InVR(mo) && (mk == RSVR_Hand.SAW || mk == RSVR_Hand.SWORD);
+			mo.SetInventory('RSVR_NoSwing', natural ? 1 : 0);
 		}
 	}
 
@@ -140,11 +147,15 @@ class RSVR_Hand play
 	const HIST = 6;
 	const AXE = 1;
 	const SWORD = 2;
+	const SAW = 3;
 
 	// swing speed (m/s at the blade's outer point, relative to the player's own
 	// movement) that counts as a blow, and the slowest release that throws
 	const AXE_SWING = 3.0;
 	const SWORD_SWING = 3.5;
+	// a running chain cuts on contact, so it asks far less of the swing than a blade
+	// being driven through something does
+	const SAW_SWING = 1.4;
 	const THROW_MIN = 2.5;
 	const RISE = 0.15;			// of the blade's speed that may be upward before it is a backswing (about 9 degrees)
 
@@ -225,6 +236,7 @@ class RSVR_Hand play
 	transient SpriteID s4XEG;
 	transient SpriteID s5XEG;
 	transient SpriteID sDSLA;
+	transient SpriteID sSAWG, s1AWG, s2AWG, s3AWG, sPAWG;
 
 	//------------------------------------------------------------------
 	// the blade, in the held model's own units (BrutalAxe.md3 frame 5 = AXEG A,
@@ -233,6 +245,8 @@ class RSVR_Hand play
 	{
 		if (k == AXE)
 			return (44, 0, 26);		// top of the axe head
+		if (k == SAW)
+			return (41.9, -2.2, -7.3);	// where the bar leaves the body (measured)
 		return (38, 0, 16);			// Dragonslayer: guard
 	}
 
@@ -240,6 +254,9 @@ class RSVR_Hand play
 	{
 		if (k == AXE)
 			return (55, 0, 16);		// the axe's cutting edge
+		if (k == SAW)
+			return (103.8, -2.2, -3.6);	// the bar's tip; the whole bar cuts, so the
+										// sweep between these two IS the cutting edge
 		return (90, 0, 159);		// Dragonslayer: point
 	}
 
@@ -259,6 +276,11 @@ class RSVR_Hand play
 		s4XEG = Actor.GetSpriteIndex('4XEG');
 		s5XEG = Actor.GetSpriteIndex('5XEG');
 		sDSLA = Actor.GetSpriteIndex('DSLA');
+		sSAWG = Actor.GetSpriteIndex('SAWG');
+		s1AWG = Actor.GetSpriteIndex('1AWG');
+		s2AWG = Actor.GetSpriteIndex('2AWG');
+		s3AWG = Actor.GetSpriteIndex('3AWG');
+		sPAWG = Actor.GetSpriteIndex('PAWG');
 		spritesSet = true;
 	}
 
@@ -272,6 +294,8 @@ class RSVR_Hand play
 			return AXE;
 		if (n == 'DSweap')
 			return SWORD;
+		if (n == 'Chain_saw')
+			return SAW;
 		return 0;
 	}
 
@@ -287,6 +311,8 @@ class RSVR_Hand play
 		SpriteID s = psp.Sprite;
 		if (k == SWORD)
 			return s == sDSLA;
+		if (k == SAW)		// SAWG and BD22's blood-spattered copies of it
+			return s == sSAWG || s == s1AWG || s == s2AWG || s == s3AWG || s == sPAWG;
 		// AXE2 is the same axe drawn at the TWO-HANDED placement (MODELDEF, Axe.dec
 		// TwoHand). poseFrame tells Place which transform the blade sits in.
 		poseFrame = s == sAXE2 ? 1 : 0;
@@ -403,7 +429,7 @@ class RSVR_Hand play
 			return;
 		}
 
-		double thr = (k == AXE ? AXE_SWING : SWORD_SWING) * vu / 35.
+		double thr = (k == AXE ? AXE_SWING : k == SAW ? SAW_SWING : SWORD_SWING) * vu / 35.
 			* max(0.2, Cv(mo, 'rsvr_melee_swing', 1.0));
 		// 1.11 (owner: "goes insane with attacks just when I move around"). The blade is measured
 		// in the BODY's own frame (from the pawn, turned by the pawn's angle), so walking,
@@ -414,14 +440,23 @@ class RSVR_Hand play
 		Vector3 vel = rel - prevRel;
 		prevRel = rel;
 		double speed = vel.Length();
-		double power = speed / thr;
+		// thr comes off cvars; a zero vr_vunits_per_meter would divide by zero here too
+		double power = 0;
+		if (thr > 0)
+			power = speed / thr;
 
 		// THE BACKSWING IS NOT A STRIKE. The test used to be speed alone, so raising the axe to
 		// strike was itself a hit -- it landed before the player had swung, and read as the axe
 		// being wildly oversensitive (owner, 2026-10-13). Motion that is mostly upward is the
 		// player winding up, so it does not cut, and it falls through to the calm branch below
 		// so the downswing that follows is a fresh swing with a cleared strike list.
-		double rise = speed > 0 ? vel.z / speed : 0;
+		// A PLAIN IF, not a ternary. "speed > 0 ? vel.z / speed : 0" reads as guarded and is
+		// not: the JIT does not short-circuit a ternary, so the division runs even when speed
+		// is zero and the VM aborts -- which is exactly what happened with the sword in hand
+		// during bullet time, where a tic can pass with the blade not having moved at all.
+		double rise = 0;
+		if (speed > 0)
+			rise = vel.z / speed;
 		// 2026-10-16 (owner): NO hits on the upswing. Only a level or downward blade cuts
 		// (rsvr_melee_up, default 0.15: about 9 degrees up at most; it was 0.55, about 33).
 		// 1.11 (owner): "swinging an axe DOWNWARD meaningfully". A blow must now point down by at
@@ -596,6 +631,16 @@ class RSVR_Hand play
 			// half an AxeAttack on top when the edge bites with both hands behind it
 			if (TwoHandedBite(mo, dir, edge))
 				Launch(mo, 'RSVR_AxeHalf', p, dir);
+		}
+		else if (k == SAW)
+		{
+			// BD22 cuts differently across than down, and it has an actor for each. The
+			// swing itself picks: mostly vertical travel is a vertical cut.
+			double up = abs(dir.z);
+			Name hit = up > 0.6 ? 'SawDamageVertical' : 'SawDamageHorizontal';
+			Launch(mo, hit, p, dir);
+			if (power >= 1.8)
+				Launch(mo, up > 0.6 ? 'SawDamageVertical2' : 'SawDamageHorizontal2', p, dir);
 		}
 		else
 		{
@@ -886,7 +931,8 @@ class RSVR_AxeHold : RSVR_Token {}		// the hold input is down: Ready enters the 
 class RSVR_AxeThrown : RSVR_Token {}
 class RSVR_AxeTrig : RSVR_Token {}
 class RSVR_AxeVRThrow : RSVR_Token {}
-class RSVR_AxeTwo : RSVR_Token {}		// both hands on the haft: the shifted placement
+class RSVR_AxeTwo : RSVR_Token {}
+class RSVR_NoSwing : RSVR_Token {}	// the blade is swung by hand: the trigger does not attack		// both hands on the haft: the shifted placement
 class RSVR_NotVR : RSVR_Token {}
 
 // a projectile the engine counts as a shot: spawning it buzzes the weapon hand

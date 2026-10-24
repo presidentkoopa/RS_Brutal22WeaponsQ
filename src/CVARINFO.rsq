@@ -15,3 +15,6 @@ user bool rsq_flick = true;		// 1.17 Flick to reload: a gun in each hand, snap a
 // row in that table and a cvar here and nothing else.
 user int rsq_scope_sniper = 0;
 user int rsq_scope_railgun = 0;
+
+// 2026-10-23: the Mini-14 Ranch is a semi-automatic rifle. Off gives BD22 original behaviour.
+user int rsq_ruger_semi = 1;

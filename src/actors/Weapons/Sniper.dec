@@ -4,11 +4,11 @@ ACTOR Sniper : BrutalWeapon
 	Weapon.AmmoType1 "SniperAmmo"
 	Weapon.AmmoType2 "xm21Ammo"
 	weapon.selectionorder 900
-	// 2026-10-23 (owner: "it fires 100000 times a second"). The Mini-14 Ranch is
-	// SEMI-AUTO. Only the first cooldown state carries WRF_NOFIRE; every A_WeaponReady
-	// after it allows firing, so a held trigger re-entered Fire on the next tic. BD22
-	// never showed it: its sniper was played scoped, and Fire jumps to Fire2 when Zoomed.
-	+WEAPON.NOAUTOFIRE
+	// Semi-auto is an OPTION now (rsq_ruger_semi, default on). +WEAPON.NOAUTOFIRE is a
+	// DECORATE flag and cannot be toggled from a menu, so zscript/rsq/ruger.zs holds
+	// bNoAutoFire from the cvar each tic instead -- the same way rsq/fists.zs holds
+	// bNoHandSwitch on the fists. The Mini-14 Ranch is semi-automatic, so ON is the
+	// honest default; OFF restores BD22 original behaviour.
 	-INVENTORY.UNDROPPABLE
 	Inventory.Pickupmessage "$GOTSNIPER"
 	Obituary "$OBBD_SNIPER"
@@ -272,33 +272,33 @@ ACTOR Sniper : BrutalWeapon
 		"####" A 0 A_SetANgle(angle+0.1)
 		"####" A 0 A_JumpIf(OverlayID() != 1000000 && CountInv("Reloading") > 0, "Reload")
 		"####" A 0 A_JumpIfInventory("Kicking",1,"DoKick")
-		"####" C 1 A_WeaponReady(WRF_NOFIRE|WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
+		"####" C 2 A_WeaponReady(WRF_NOFIRE|WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
 		"####" A 0 A_SetANgle(angle+0.1)
 		"####" A 0 A_JumpIf(OverlayID() != 1000000 && CountInv("Reloading") > 0, "Reload")
 		"####" A 0 A_JumpIfInventory("Kicking",1,"DoKick")
 		P21G A 0 A_JumpIfInventory("IsPlayingAsPurist",1,2)
 		X21G A 0 A_ClearReFire
-		"####" A 1 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
+		"####" A 2 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
 		"####" A 0 A_SetANgle(angle+0.1)
 		"####" A 0 A_JumpIf(OverlayID() != 1000000 && CountInv("Reloading") > 0, "Reload")
 		"####" A 0 A_JumpIfInventory("Kicking",1,"DoKick")
 		"####" A 0 A_JumpIfInventory("TossGrenade",1,"TossGrenade")
-		"####" A 1 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
+		"####" A 2 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
 		"####" A 0 A_SetANgle(angle+0.1)
 		"####" A 0 A_JumpIf(OverlayID() != 1000000 && CountInv("Reloading") > 0, "Reload")
 		"####" A 0 A_JumpIfInventory("Kicking",1,"DoKick")
 		"####" A 0 A_JumpIfInventory("TossGrenade",1,"TossGrenade")
-		"####" A 1 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
+		"####" A 2 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
 		"####" A 0 A_SetANgle(angle+0.1)
 		"####" A 0 A_JumpIf(OverlayID() != 1000000 && CountInv("Reloading") > 0, "Reload")
 		"####" A 0 A_JumpIfInventory("Kicking",1,"DoKick")
 		"####" A 0 A_JumpIfInventory("TossGrenade",1,"TossGrenade")
-		"####" A 1 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
+		"####" A 2 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
 		"####" A 0 A_SetANgle(angle+0.1)
 		"####" A 0 A_JumpIf(OverlayID() != 1000000 && CountInv("Reloading") > 0, "Reload")
 		"####" A 0 A_JumpIfInventory("Kicking",1,"DoKick")
 		"####" A 0 A_JumpIfInventory("TossGrenade",1,"TossGrenade")
-		"####" A 1 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
+		"####" A 2 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
 		"####" A 0 A_SetANgle(angle+0.1)
 		"####" A 5 A_WeaponReady(WRF_ALLOWRELOAD|WRF_ALLOWZOOM)
 		"####" A 0 A_SetANgle(angle+0.1)

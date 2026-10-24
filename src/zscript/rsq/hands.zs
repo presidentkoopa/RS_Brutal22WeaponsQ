@@ -122,6 +122,7 @@ class RSQ_GunSide : Inventory
 	// Its own sprite, so it carries its own flat quad in MODELDEF and nothing about it is tied
 	// to the hand meshes; ModifyBobLayer3D puts it on the glass every rendered frame. Bright,
 	// because a reflex dot is light on glass and not paint on it.
+	ScopeModel: RQSC A -1; Stop;	// the modular scope (MODELDEF.rsq); the sprite is a blank
 	ScopeDot: RQRT A -1 Bright; Stop;
 	ScopeRing: RQRT B -1 Bright; Stop;	// the same dot inside a ring; no option selects it yet
 	Hidden: TNT1 A -1; Stop;
@@ -322,7 +323,24 @@ class RSQ_Hands : Weapon
 			}
 		}
 		else
-			invoker.SetLayer(p, RSQ_ScopeLayers.RETICLE, gs, sci > 0 ? "ScopeDot" : "Hidden");
+		{
+			// DotAt is clearscope, so play can ask whether there is a sight picture at all and
+			// hide the layer for real. It used to be thrown far enough away to clip, because
+			// the hook that knew was ui and the state that could hide it was play.
+			bool see = sci > 0 && RSQ_ScopeTable.AnyMounted() && RSQ_Scope.DotOk(mo, sci);
+			invoker.SetLayer(p, RSQ_ScopeLayers.RETICLE, gs, see ? "ScopeDot" : "Hidden");
+		}
+
+		// THE MODULAR SCOPE. Independent of Dot/Real: it is the physical sight, so it is
+		// there whichever way the glass is being used. A gun wears one by having Mounted()
+		// set and its own scope cleared in MODELDEF -- nothing here changes per weapon.
+		// NOT gated on VR. The scope is the gun's physical sight, and the gun's own one is
+		// cleared in MODELDEF for a weapon that wears this -- so gating it on VR would leave a
+		// bare rail on the desktop. Only the OPTICS (the collimated dot, the see-through
+		// render) are VR-only, because only they need a hand and an eye position.
+		int smi = RSQ_ScopeTable.Index(p.ReadyWeapon);
+		bool wears = smi > 0 && RSQ_ScopeTable.Mounted(smi) != 0;
+		invoker.SetLayer(p, RSQ_ScopeLayers.SCOPE, gs, wears ? "ScopeModel" : "Hidden");
 	}
 
 	// "Fist" while the gun layer shows one of BD22's punch / fist sprites (the fists, and a quick
@@ -522,7 +540,14 @@ class RSQ_Hands : Weapon
 		// RSR_Guns.WellHook reproduces (L, U, -F) of each gun's magazine axis to three decimals.
 		// (the Taken() test is the same stand-down as in A_RSQ_Layers: while the id belongs to
 		// another lane this case must not shadow that lane's branch below)
-		if (layer == RSQ_ScopeLayers.RETICLE && !RSQ_Layers.Taken(RSQ_ScopeLayers.RETICLE))
+		// HARD OFF while no gun wears our scope. This hook is called by the renderer for EVERY
+		// layer, and a VM abort inside it does not just lose this layer -- it takes the whole
+		// per-layer pass with it, so every hand on every gun loses its placement. That is exactly
+		// what happened: DotAt -> Basis had an out Vector3, which the JIT cannot take the address
+		// of, so it aborted the moment it was called and wrecked every grip in the game. One
+		// function failing, thirty guns broken. Until the scope is proven, nothing here runs.
+		if (layer == RSQ_ScopeLayers.RETICLE && RSQ_ScopeTable.AnyMounted()
+			&& !RSQ_Layers.Taken(RSQ_ScopeLayers.RETICLE))
 		{
 			let mo = PlayerPawn(Owner);
 			let so = mo ? mo.player : null;
@@ -540,6 +565,27 @@ class RSQ_Hands : Weapon
 			if (!ok)
 				return translation + (0, 0, DOT_FARAWAY), rotation;
 			return translation + (d.y, d.z, -d.x), rotation;
+		}
+		// The modular scope sits with its origin -- the centre of its ocular glass -- on the
+		// gun's declared lens point. Same (L, U, -F) conversion as the reticle; its MODELDEF
+		// Offset already cancels the fixed translate so the origin starts on the controller.
+		//
+		// Rotation is left alone deliberately. Both declared bore axes are within a degree of
+		// straight forward -- RailGun (0.9998, 0.0149, 0.0152), Sniper (1.0000, -0.0040,
+		// 0.0038) -- which is inside the meshes' own build tolerance, so turning the model by
+		// that would be precision theatre. A gun with a genuinely canted rail needs this
+		// computed from Axis(i), and should not be given one until it is.
+		if (layer == RSQ_ScopeLayers.SCOPE)
+		{
+			let mo = PlayerPawn(Owner);
+			let so = mo ? mo.player : null;
+			int si = so ? RSQ_ScopeTable.Index(so.ReadyWeapon) : 0;
+			if (si <= 0 || RSQ_ScopeTable.Mounted(si) == 0)
+				return translation, rotation;
+			// cm -> model units: divide by the model's own Scale. The general law is
+			// (L/xscale, U/zscale, -F/yscale); this model is uniform, so one divisor.
+			Vector3 L = RSQ_ScopeTable.Lens(si) / RSQ_ScopeLayers.MODELSCALE;
+			return translation + (L.y, L.z, -L.x), rotation;
 		}
 		// RSR-BREAK: the break-open / revolver reload's layers (rsr/rsr_break.zs)
 		if (RSB_Handler.Owns(Owner, layer))

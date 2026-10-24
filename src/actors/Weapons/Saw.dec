@@ -168,6 +168,9 @@ Actor Chain_saw : BrutalWeapon
 		Goto Ready
 
 	Fire:
+		// swung by hand in VR (zscript/rsvr/melee.zs). The trigger still revs it --
+		// Ready keeps the engine sound -- it just does not swing the bar for you.
+		"####" A 0 A_JumpIfInventory("RSVR_NoSwing", 1, "Ready")
 		"####" A 0 A_AlertMonsters
 		"####" A 0 A_StopSound(6)
 		"####" A 0 A_TakeInventory("ChainsawHitRed", 1)
