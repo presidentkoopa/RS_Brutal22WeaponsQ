@@ -43,55 +43,94 @@ options menu to get them through cheats (give all, idkfa).
 - A gun in each hand uses stock reload so the action isn't interrupted.
 - VR reloading works on the main-hand weapon when the off hand is the fist.
 - Purist mode: models and hands, no reloading (as Brutal Doom intends).
+- **Scopes you actually look through.** The railgun and the Ruger Mini-14 each take a
+  sight, picked per gun in the options menu:
+  - **Dot** -- a collimated red dot. It is not painted on the glass: it is placed every
+    frame so your eye, the dot and the bore stay in one line, so it slides across the lens
+    as you move your head and keeps pointing at what the gun is pointing at, the way a real
+    reflex sight does. No magnification, no cost.
+  - **Real** -- the view down the bore, magnified, rendered into the gun's own glass. It
+    switches on only when your eye is actually behind the eyepiece, so it costs nothing
+    while the gun is at your side.
+- The railgun's secondary fire is free: its scope used to live there.
 
 Built and tested on PCVR QuestZDoom 17.x.
 
 
-## What's new in 1.95
+## What's new in 1.96b
 
-**Melee**
-- **Chainsaw has a trigger finger.** The hand's index finger is on the saw's trigger and squeezes
+Replaces 1.95 and includes everything in it.
+
+### Scopes
+
+The railgun and the Ruger Mini-14 take a sight, chosen per gun under
+**RS Weapon Options -> Sniper Scope / Railgun Scope**.
+
+**Dot** is a collimated red dot. A reticle painted on the glass has parallax -- move your head
+and it slides off whatever the gun is pointing at, which is backwards. This one is placed every
+rendered frame at the point on the lens where your eye, the dot and the bore line up, so the
+dot travels across the glass as you move and the sight picture stays honest, exactly as a real
+reflex sight behaves. It does not magnify and it costs nothing.
+
+**Real** renders the view down the bore into the gun's own scope glass, magnified. It only
+turns on when your eye is genuinely behind the eyepiece, and holds on a little past that so it
+cannot flicker; with the gun at your side the scope is not drawn and costs nothing at all.
+
+A scope is a component, not a per-gun feature: a weapon joins by declaring four numbers
+measured from its own mesh -- where the glass is, which way the bore points, how wide the lens
+is, and how much it magnifies.
+
+The railgun's **secondary fire is now free** -- the scope used to be bound to it.
+
+### The Ruger Mini-14 Ranch
+
+- **It drew as a flat sprite the moment you fired.** The firing pose used a sprite no model was
+  keyed to, and because every state after it inherits that sprite, the whole shot and recoil
+  played in 2D. Keyed, so it stays a model.
+- **It fired continuously.** It had no semi-automatic flag, so a held trigger fired again on
+  the very next tic. It is semi-auto now, one shot per pull, as a Mini-14 should be.
+- Its woodgrain and metal are darker.
+
+### Melee
+
+- **Chainsaw has a trigger finger.** The index finger sits on the saw's trigger and squeezes
   when you fire, like every other weapon.
 - **Two-handed axe.** Bring the off hand onto the haft and the grip shifts up toward the head;
-  a blow that lands with the cutting edge leading does extra damage at shorter range. Two hands
-  on the haft alone is not enough — the edge has to lead.
-- **Axe lock-on and throw.** Held in one hand, hold the throw button and the axe paints the
-  monster you are looking at; release during the swing to throw it at the painted target. A
-  two-handed axe is not thrown — let go with the off hand first.
+  a blow landing with the cutting edge leading does extra damage at shorter range. Two hands on
+  the haft alone is not enough -- the edge has to lead.
+- **Axe lock-on and throw.** In one hand, hold the throw and the axe paints the monster you are
+  looking at; release during the swing to throw at it. A two-handed axe is not thrown -- let go
+  with the off hand first.
 - **Melee poses fixed.** The sword is held like a baseball bat, the axe with the hands spread
-  and the weapon hand at the head, and the chainsaw's support hand no longer splays away from
-  the saw.
+  and the weapon hand at the head, and the chainsaw's support hand no longer splays away.
 
-**Punching**
+### Punching
+
 - **Punches open doors and work switches**, at the fist's own reach, with either hand.
 - The off hand can punch while the main hand holds a gun.
 
-**Reloading**
-- **Free charge** (`rsr_freecharge`, on by default). Take the charging handle or slide with no
-  reload running, to crack the action and look in the chamber. It is a look, not a rack: no
-  ammo moves and nothing is given to the weapon.
-- **The Use key works when the weapon isn't the fist**, so doors and switches still open with a
-  gun in hand.
+### Reloading
 
-**The sniper is back**, with the Ruger Mini-14 Ranch measured in from its own mesh, and a
-darker texture.
+- **Free charge** (on by default). Take the charging handle or slide with no reload running, to
+  crack the action and look in the chamber. It is a look, not a rack: no ammo moves and nothing
+  is given to the weapon.
+- **The Use key works with a gun in hand**, not only with the fist.
 
 ### Fixes
-- **Dual wield could strand a reload.** Run the main-hand gun dry, go dual, come back to one
-  gun, pick up ammo — and no magazine could ever be seated again. The off-hand slot kept a
-  stale copy of a weapon that was no longer there.
-- **The pistol and SMG racked when they shouldn't.** A charge token left over from an earlier
-  reload survived into the next one, so a gun that still had rounds in it asked to be charged.
-  The rule is now the real one: rack only if the gun was reloaded completely empty.
-- **The SMG racked twice** — a phantom rack after the magazine was already home.
-- **Punch detection read its own history wrong.** The sample buffer is a ring, and it was being
-  read as if it were a list, so the oldest sample was compared instead of the newest.
-- **Flick reload with a single rifle** reloaded nothing.
-- **Thrown grenades dribbled.** The throw speed was computed from map units per tic as if it
-  were metres per second.
-- **A new map starts clean.** Hand state, reload state and grenade fuses were keyed on an
-  absolute level time that restarts at zero on a level change.
 
+- **Dual wield could strand a reload for good.** Run the main-hand gun dry, go dual, come back
+  to one gun, pick up ammo -- and no magazine could ever be seated again. The off-hand slot had
+  kept a stale copy of a weapon that was no longer there.
+- **The pistol and SMG racked when they should not.** A charge token left over from an earlier
+  reload survived into the next, so a gun that still had rounds asked to be charged. The rule is
+  the real one now: rack only after reloading a completely empty gun.
+- **The SMG racked twice** -- a phantom rack after the magazine was already home.
+- **Punch detection read its own history wrong**, comparing the oldest sample instead of the
+  newest, so a twitch could register as a blow.
+- **Flick reload did nothing with a single rifle.**
+- **Thrown grenades dribbled** -- the throw speed was computed in the wrong units.
+- **A new map starts clean.** Hand, reload and grenade-fuse state were keyed on a level time
+  that restarts at zero.
 
 ## Credits
 Weapon models: **br_vr** by ajantaju (Brutal Doom VR Weapons, BD v21), made from:
