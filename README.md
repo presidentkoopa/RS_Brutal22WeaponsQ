@@ -43,16 +43,6 @@ options menu to get them through cheats (give all, idkfa).
 - A gun in each hand uses stock reload so the action isn't interrupted.
 - VR reloading works on the main-hand weapon when the off hand is the fist.
 - Purist mode: models and hands, no reloading (as Brutal Doom intends).
-- **Scopes you actually look through.** The railgun and the Ruger Mini-14 each take a
-  sight, picked per gun in the options menu:
-  - **Dot** -- a collimated red dot. It is not painted on the glass: it is placed every
-    frame so your eye, the dot and the bore stay in one line, so it slides across the lens
-    as you move your head and keeps pointing at what the gun is pointing at, the way a real
-    reflex sight does. No magnification, no cost.
-  - **Real** -- the view down the bore, magnified, rendered into the gun's own glass. It
-    switches on only when your eye is actually behind the eyepiece, so it costs nothing
-    while the gun is at your side.
-- The railgun's secondary fire is free: its scope used to live there.
 
 Built and tested on PCVR QuestZDoom 17.x.
 
@@ -60,27 +50,6 @@ Built and tested on PCVR QuestZDoom 17.x.
 ## What's new in 1.96b
 
 Replaces 1.95 and includes everything in it.
-
-### Scopes
-
-The railgun and the Ruger Mini-14 take a sight, chosen per gun under
-**RS Weapon Options -> Sniper Scope / Railgun Scope**.
-
-**Dot** is a collimated red dot. A reticle painted on the glass has parallax -- move your head
-and it slides off whatever the gun is pointing at, which is backwards. This one is placed every
-rendered frame at the point on the lens where your eye, the dot and the bore line up, so the
-dot travels across the glass as you move and the sight picture stays honest, exactly as a real
-reflex sight behaves. It does not magnify and it costs nothing.
-
-**Real** renders the view down the bore into the gun's own scope glass, magnified. It only
-turns on when your eye is genuinely behind the eyepiece, and holds on a little past that so it
-cannot flicker; with the gun at your side the scope is not drawn and costs nothing at all.
-
-A scope is a component, not a per-gun feature: a weapon joins by declaring four numbers
-measured from its own mesh -- where the glass is, which way the bore points, how wide the lens
-is, and how much it magnifies.
-
-The railgun's **secondary fire is now free** -- the scope used to be bound to it.
 
 ### The Ruger Mini-14 Ranch
 
