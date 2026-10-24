@@ -33,6 +33,22 @@ class RSQ_Layers abstract
 	const GUNHAND = 2100;	// RSQ_GunSide, main controller
 	const SUPPORT = 2101;	// RSQ_GunSide, main controller
 	const FREEHAND = 2200;	// RSQ_Hands, off controller
+
+	// 2026-10-23: ONE PSPRITE ID HOLDS ONE CALLER. Several lanes hand out layer ids in this
+	// range -- the hands here, the real reload (rsr/vreload.zs), break-open (rsr_break.zs),
+	// the pump (rsr_pump.zs), the M203 (rsr_m203.zs) -- and a clash between them is silent:
+	// both owners SetPsprite the same id every tic and whichever ran last wins, so one of the
+	// two features simply stops working with nothing in the log. Anything claiming a NEW id
+	// asks here first. Free as of today: 2112-2119, 2124-2129, and 2132 upward.
+	clearscope static bool Taken(int id)
+	{
+		return id == GUNHAND || id == SUPPORT || id == FREEHAND
+			|| id >= RSR.LAYER_FIRST && id <= RSR.LAYER_LAST || id == RSR.HANDMAG
+			|| id >= RSB.LAYER_FIRST && id <= RSB.LAYER_LAST
+			|| id == RSB.HANDROUND || id == RSB.HANDROUND2
+			|| id >= RSP.LAYER_FIRST && id <= RSP.LAYER_LAST || id == RSP.HANDSHELL
+			|| id >= RSM.LAYER_FIRST && id <= RSM.LAYER_LAST;
+	}
 }
 
 class RSQ_GunSide : Inventory
@@ -102,12 +118,22 @@ class RSQ_GunSide : Inventory
 	SupF: RQSP F -1; Stop;
 	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
 	Nade: RQGN A -1; Stop;	// Ermac's ammo hand round the VR grenade
+	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.DOT).
+	// Its own sprite, so it carries its own flat quad in MODELDEF and nothing about it is tied
+	// to the hand meshes; ModifyBobLayer3D puts it on the glass every rendered frame. Bright,
+	// because a reflex dot is light on glass and not paint on it.
+	ScopeDot: RQRT A -1 Bright; Stop;
+	ScopeRing: RQRT B -1 Bright; Stop;	// the same dot inside a ring; no option selects it yet
 	Hidden: TNT1 A -1; Stop;
 	}
 }
 
 class RSQ_Hands : Weapon
 {
+	// 2026-10-23: where the scope reticle's quad is parked when there is no sight picture.
+	// Centimetres back along the model's own z (see ModifyBobLayer3D), so it clips away.
+	const DOT_FARAWAY = 1000000.0;
+
 	// How the ready weapon's model frame has moved the gun (RSQ_GunMoves), for
 	// ModifyBobLayer3D: looked up in play by A_RSQ_Layers when the gun layer
 	// changes frame, read by the renderer.
@@ -126,6 +152,7 @@ class RSQ_Hands : Weapon
 	int offMesh, offMeshPrev;			// the off fist's punch frame
 	int offPunchTic;					// -1 idle; the off-hand trigger punch's tic
 	bool offTrigPrev;	// sprites where BD22's own hand model shows (taunts, grabs, carries)
+	bool dotClash;		// the scope reticle's layer id clashes with another lane's: said once
 
 	override void BeginPlay()
 	{
@@ -272,6 +299,30 @@ class RSQ_Hands : Weapon
 		else if (i == 18 && RSK_M203Handler.TriggerGrip(mo))
 			sp = (p.cmd.buttons & BT_OFFHANDATTACK) ? "M2" : "M1";	// 1.31: finger on the M203's trigger (squeezed)
 		invoker.SetLayer(p, RSQ_Layers.SUPPORT, gs, hold && sp != "" ? "Sup" .. sp : "Hidden");
+
+		// 2026-10-23: the VR scope's reticle (rsq/scope.zs). WHETHER the layer is there is this
+		// tic's business; WHERE it sits is ModifyBobLayer3D's, per rendered frame. It exists
+		// only while the ready weapon has a row in RSQ_ScopeTable, that gun's own mode cvar says
+		// DOT, and we are in VR -- out of VR there is nothing to collimate against and no layer.
+		// A gun with a scope needs a table row and a cvar and nothing here.
+		int sci = RSVR_VRHand.InVR(mo) ? RSQ_ScopeTable.Index(p.ReadyWeapon) : 0;
+		if (sci > 0 && RSQ.PlayerInt(mo, RSQ_ScopeTable.ModeCVar(sci), 0) != 0)
+			sci = 0;		// REAL mode: the glass is rendered into (rsq/scope_real.zs), no reticle
+		// The reticle originally took 2102, which is RSR.WELLMAG (rsr/vreload.zs) -- the
+		// magazine at the well, on exactly the two guns that have scopes (RSR_Guns.Index:
+		// RailGun 6, Sniper 8). One psprite id holds one caller, so that would have killed
+		// reloading on both guns with nothing in the log. DOT is 2112 now and this guard is
+		// quiet; it stays as the general safeguard for the next lane that claims an id.
+		if (RSQ_Layers.Taken(RSQ_ScopeLayers.DOT))
+		{
+			if (!invoker.dotClash)
+			{
+				invoker.dotClash = true;
+				Console.Printf("RSQ scope: reticle layer %d is already a reload layer; the dot is off until RSQ_ScopeLayers.DOT (rsq/scope.zs) moves to a free id (2112-2119, 2124-2129).", RSQ_ScopeLayers.DOT);
+			}
+		}
+		else
+			invoker.SetLayer(p, RSQ_ScopeLayers.DOT, gs, sci > 0 ? "ScopeDot" : "Hidden");
 	}
 
 	// "Fist" while the gun layer shows one of BD22's punch / fist sprites (the fists, and a quick
@@ -453,6 +504,43 @@ class RSQ_Hands : Weapon
 	// added to it. The free hand keeps Ermac's own placement on its controller.
 	override Vector3, Vector3 ModifyBobLayer3D(Vector3 translation, Vector3 rotation, int layer, double ticfrac)
 	{
+		// 2026-10-23: THE VR SCOPE'S COLLIMATED DOT (rsq/scope.zs). It is placed here, per
+		// rendered FRAME, and not from a tic hook, because holding still against the world while
+		// the head moves is the entire point of it: a dot sampled at tic rate visibly lags.
+		// This case is FIRST because the RSR reload branch below claims a range of layer ids.
+		//
+		// UNITS. DotAt() answers in the weapon controller's frame, centimetres, (forward, left,
+		// up). A ModifyBobLayer3D translation is applied by r_data/models.cpp RenderHUDModel
+		// AFTER objectToWorldMatrix.scale(xscale, zscale, yscale) and after the renderer's own
+		// 0.01 shrink of the controller frame -- so one unit is one centimetre divided by that
+		// layer's own MODELDEF scale, on the model axes (x left, y up, z back):
+		//     (x, y, z) = (L / xscale, U / zscale, -F / yscale)
+		// The reticle's quad is Scale -1.0 1.0 1.0, the same as the hand meshes, so every
+		// divisor is 1 and the conversion is just (L, U, -F). Corroborated by the pack's own
+		// rsr/vreload.zs DeskShift, which turns F,L,U cm into exactly
+		// (-c.y / scale.x, c.z / scale.z, -c.x / scale.y) -- same mapping, same divisors, and
+		// RSR_Guns.WellHook reproduces (L, U, -F) of each gun's magazine axis to three decimals.
+		// (the Taken() test is the same stand-down as in A_RSQ_Layers: while the id belongs to
+		// another lane this case must not shadow that lane's branch below)
+		if (layer == RSQ_ScopeLayers.DOT && !RSQ_Layers.Taken(RSQ_ScopeLayers.DOT))
+		{
+			let mo = PlayerPawn(Owner);
+			let so = mo ? mo.player : null;
+			int si = so ? RSQ_ScopeTable.Index(so.ReadyWeapon) : 0;
+			if (si <= 0)
+				return translation, rotation;
+			Vector3 d;
+			bool ok;
+			[d, ok] = RSQ_Scope.DotAt(mo, si);
+			// No sight picture (the eye is off the glass, or behind the objective end). The
+			// layer's STATE is the honest way to hide it, but a state is play data and this hook
+			// is ui and returns a translation and nothing else, so the quad is thrown far enough
+			// away to clip instead -- ten kilometres behind the controller, which in practice is
+			// behind the near plane. A_RSQ_Layers above does the tic-rate hiding it can.
+			if (!ok)
+				return translation + (0, 0, DOT_FARAWAY), rotation;
+			return translation + (d.y, d.z, -d.x), rotation;
+		}
 		// RSR-BREAK: the break-open / revolver reload's layers (rsr/rsr_break.zs)
 		if (RSB_Handler.Owns(Owner, layer))
 		{

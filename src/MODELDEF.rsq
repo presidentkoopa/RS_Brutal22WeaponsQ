@@ -121,6 +121,38 @@ Model RSQ_Hands
 	FrameIndex RQHR A 1 0
 }
 
+// The VR scope's collimated reticle (zscript/rsq/scope.zs, layer RSQ_ScopeLayers.DOT).
+//
+// It is a MODEL and not a sprite on purpose. A psprite layer only reaches
+// Weapon.ModifyBobLayer3D -- the hook that places a layer in the controller's 3D frame -- when
+// it resolves to a model: hw_weapon.cpp:927 does "if (!smf) continue;" in the 3D pass and
+// :842 does "if (smf) continue;" in the 2D one. A sprite layer would get only the 2D
+// screen-space bob, i.e. a crosshair painted on the screen, which is the parallax-locked thing
+// a collimated sight exists to avoid.
+//
+// Offset 0.0 -30.0 -5.0 cancels RenderHUDModel's fixed translate(0, 5, 30) at Scale -1 1 1, so
+// the quad's origin sits exactly ON the weapon controller -- the frame RSQ_ScopeTable.Lens is
+// measured in. Check: model origin (0,0,0) -> p = (0,-5,-30) -> 0.01*((0,-5,-30)+(0,5,30)) = 0.
+Model RSQ_GunSide
+{
+	Path "models/rsq"
+	Model 0 "rsq_dot.md3"
+	Skin 0 "RQRTA0.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -30.0 -5.0
+	FrameIndex RQRT A 0 0
+}
+
+Model RSQ_GunSide
+{
+	Path "models/rsq"
+	Model 0 "rsq_dot.md3"
+	Skin 0 "RQRTB0.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -30.0 -5.0
+	FrameIndex RQRT B 0 0
+}
+
 // debris: A-D chips, E-H chunks, I-L clods (world actor, map units)
 
 Model RSQ_Debris

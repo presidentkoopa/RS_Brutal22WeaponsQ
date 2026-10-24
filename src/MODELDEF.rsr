@@ -1,3 +1,10 @@
+// 2026-10-23 RS VR scopes, REAL mode: XM21.md3 now carries the Ruger's ocular lens as
+// its own surface 10 "ScopeGlass" (carved out of 3 leupold_scope by
+// kit/tool/md3_carve_surface.py), so every block that uses that mesh needs a
+// SurfaceSkin for index 10 -- the blocks that hide the scope must hide the glass too or
+// a disc of lens floats beside the dropped magazine. THIS FILE IS GENERATED: gen_rsr.py
+// has to learn the scope surface, or the next regenerate drops these lines again.
+
 // RS real VR reload (zscript/rsr/vreload.zs, team/reload/tools/gen_rsr.py): BD22/Rifle.
 // The gun's own model and frames; pieces shown or hidden by a clear skin (HUD models
 // are alpha-tested at gl_mask_threshold, so a clear surface is not drawn).
@@ -639,7 +646,11 @@ Model RailGun
 	Path "models/bd/RailGun"
 	Model 0 "RailGun.md3"
 	SurfaceSkin 0 0 "RailGun.png"
-	SurfaceSkin 0 1 "RailGun.png"
+	// The lens wears its own glass tile, not the gun atlas: both scope lenses were
+	// reprojected to 0..1 (tool/md3_carve_surface.py --project-only) so REAL mode can
+	// render a camera texture through them, which means they no longer sample the
+	// authored skin at all. scope_real.zs swaps this for the camera texture when REAL.
+	SurfaceSkin 0 1 "scope_glass.png"
 	SurfaceSkin 0 2 "RailGun.png"
 	SurfaceSkin 0 3 "RailGun.png"
 	SurfaceSkin 0 4 "rsr_clear.png"
@@ -985,11 +996,23 @@ Model Sniper
 	SurfaceSkin 0 7 "leupold_vx1.png"
 	SurfaceSkin 0 8 "mini14.png"
 	SurfaceSkin 0 9 "mini14.png"
+	// The lens wears its own glass tile, not the gun atlas: both scope lenses were
+	// reprojected to 0..1 (tool/md3_carve_surface.py --project-only) so REAL mode can
+	// render a camera texture through them, which means they no longer sample the
+	// authored skin at all. scope_real.zs swaps this for the camera texture when REAL.
+	SurfaceSkin 0 10 "scope_glass.png"
 	Scale -10.4850 10.4850 10.4850
 	Offset -0.2816 -44.5467 0.0
 	ZOffset -6.3157
 	NoInterpolation
 	FrameIndex X21G A 0 0
+	// X21F / P21F: the FIRING pose, same single mesh frame as the ready pose. Without
+	// these the model silently stops drawing the instant the gun fires and the 2D sprite
+	// shows for the whole rest of the sequence, because every state after it is "####"
+	// and inherits X21F. gen_rsr.py knows ready_sprites only; it needs the fire sprites
+	// too or a regenerate drops this.
+	FrameIndex	X21F	A	0	0
+	FrameIndex	P21F	A	0	0
 	FrameIndex X21G B 0 0
 	FrameIndex X21G C 0 0
 	FrameIndex X21G D 0 0
@@ -1079,6 +1102,11 @@ Model Sniper
 	SurfaceSkin 0 7 "leupold_vx1.png"
 	SurfaceSkin 0 8 "mini14.png"
 	SurfaceSkin 0 9 "mini14.png"
+	// The lens wears its own glass tile, not the gun atlas: both scope lenses were
+	// reprojected to 0..1 (tool/md3_carve_surface.py --project-only) so REAL mode can
+	// render a camera texture through them, which means they no longer sample the
+	// authored skin at all. scope_real.zs swaps this for the camera texture when REAL.
+	SurfaceSkin 0 10 "scope_glass.png"
 	Scale -10.4850 10.4850 10.4850
 	Offset -0.2816 -44.5467 0.0
 	ZOffset -6.3157
@@ -1101,6 +1129,11 @@ Model Sniper
 	SurfaceSkin 0 7 "leupold_vx1.png"
 	SurfaceSkin 0 8 "mini14.png"
 	SurfaceSkin 0 9 "mini14.png"
+	// The lens wears its own glass tile, not the gun atlas: both scope lenses were
+	// reprojected to 0..1 (tool/md3_carve_surface.py --project-only) so REAL mode can
+	// render a camera texture through them, which means they no longer sample the
+	// authored skin at all. scope_real.zs swaps this for the camera texture when REAL.
+	SurfaceSkin 0 10 "scope_glass.png"
 	Scale -10.4850 10.4850 10.4850
 	Offset -0.2816 -44.5467 0.0
 	ZOffset -6.3157
@@ -1123,6 +1156,7 @@ Model RSR_GunParts
 	SurfaceSkin 0 7 "rsr_clear.png"
 	SurfaceSkin 0 8 "rsr_clear.png"
 	SurfaceSkin 0 9 "rsr_clear.png"
+	SurfaceSkin 0 10 "rsr_clear.png"
 	Scale -10.4850 10.4850 10.4850
 	Offset -0.2816 -44.5467 0.0
 	ZOffset -6.3157
@@ -1145,6 +1179,7 @@ Model RSR_GunParts
 	SurfaceSkin 0 7 "rsr_clear.png"
 	SurfaceSkin 0 8 "rsr_clear.png"
 	SurfaceSkin 0 9 "rsr_clear.png"
+	SurfaceSkin 0 10 "rsr_clear.png"
 	Scale -10.4850 10.4850 10.4850
 	Offset -0.2816 -44.5467 0.0
 	ZOffset -6.3157
@@ -1167,6 +1202,7 @@ Model RSR_GunParts
 	SurfaceSkin 0 7 "rsr_clear.png"
 	SurfaceSkin 0 8 "rsr_clear.png"
 	SurfaceSkin 0 9 "rsr_clear.png"
+	SurfaceSkin 0 10 "rsr_clear.png"
 	Scale -10.4850 10.4850 10.4850
 	Offset -0.2816 -44.5467 0.0
 	ZOffset -6.3157
@@ -1189,6 +1225,7 @@ Model RSQ_Hands
 	SurfaceSkin 0 7 "rsr_clear.png"
 	SurfaceSkin 0 8 "rsr_clear.png"
 	SurfaceSkin 0 9 "rsr_clear.png"
+	SurfaceSkin 0 10 "rsr_clear.png"
 	Scale -10.4850 10.4850 10.4850
 	Offset -0.2816 -44.5467 0.0
 	ZOffset -6.3157
@@ -1211,6 +1248,7 @@ Model RSR_DroppedMag
 	SurfaceSkin 0 7 "rsr_clear.png"
 	SurfaceSkin 0 8 "rsr_clear.png"
 	SurfaceSkin 0 9 "rsr_clear.png"
+	SurfaceSkin 0 10 "rsr_clear.png"
 	Scale 3.6362 3.6362 3.6362
 	Offset -0.0084 -30.3444 0.0
 	ZOffset -5.4471

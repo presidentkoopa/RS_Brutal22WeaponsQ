@@ -417,7 +417,31 @@ Actor RailGun : BrutalWeapon
 		RAIL A 0 A_PlaySound("Plasma/BeepBeep", 6) 
 		Goto Ready
 
+	// 2026-10-23: ALT FIRE ON THE RAILGUN IS DELIBERATELY FREE.
+	//
+	// Secondary fire used to be the scope zoom. The scope is now the RSQ scope component
+	// (zscript/rsq/scope.zs; rsq_scope_railgun chooses Dot or Real, MENUDEF.rsq "Railgun
+	// Scope"), so alt fire no longer zooms -- and NOTHING has replaced it. The owner has not
+	// chosen what secondary fire should do on this weapon, so do not invent one here: this
+	// state exists to swallow the press and hand the weapon back to Ready.
+	//
+	// The old zoom entry is kept verbatim immediately below as ZoomAltFire, and every zoom
+	// state it leads to (ToggleAim, HoldAim, NoAim, ZoomedRecoil, HoldZoomedRecoil,
+	// SuddenStopAim, SuddenStopAim2, UnloadedAltFire, UnloadedToggleAim, UnloadedNoAim,
+	// UnloadedToggleNoAim, ToggleNoAim) is untouched, so every label that other states Goto
+	// still resolves and every relative jump still counts the same states. Nothing gives the
+	// "Zoomed" token from this weapon any more, so that whole subtree is dead at runtime while
+	// remaining alive to the parser.
+	//
+	// The one tic below is not padding: Ready re-tests the secondary button, so a zero-tic
+	// return would spin Ready -> AltFire -> Ready with no tic in it while the button is held.
 	AltFire:
+		RAIL A 0 A_Takeinventory("FiredSecondary",1)
+		RAIL A 0 A_Takeinventory("ZoomHold",1)
+		RAIL A 1 A_WeaponReady(WRF_NOSECONDARY)
+		Goto Ready
+
+	ZoomAltFire:
 		RAIL A 0
 		2HTN E 0 A_JumpIfInventory("IsPlayingAsPurist", 1,"PuristWarning")
 		TNT1 A 0 A_SetCrosshair(41)

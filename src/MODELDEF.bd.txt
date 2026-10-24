@@ -1942,6 +1942,8 @@ Model RailGun
    Path "models/bd/RailGun"
    Model 0 "RailGun.md3"
    Skin 0 "RailGun.png"
+   // the scope glass is its own surface and its own tile (see MODELDEF.rsr)
+   SurfaceSkin 0 1 "scope_glass.png"
    Scale -1.0 1.0 1.0
    Offset 0.0 0.0 0.0
    NoInterpolation

@@ -14,6 +14,13 @@ version "4.10"
 #include "zscript/rsq/fistmoves.zs"
 #include "zscript/rsq/dualhands.zs"
 #include "zscript/rsq/flick.zs"
+// RS VR scopes: the per-gun table and the collimated DOT (scope.zs, shared), then the
+// magnified see-through REAL mode that renders into the glass (scope_real.zs). scope.zs
+// must come first -- scope_real.zs reads RSQ_ScopeTable. If another lane also lists
+// scope.zs the duplicate is harmless: the parser keeps one entry per include path
+// (zcc_parser.cpp AddInclude).
+#include "zscript/rsq/scope.zs"
+#include "zscript/rsq/scope_real.zs"
 #include "zscript/rsq/alts.zs"
 #include "zscript/rsq/casings.zs"
 #include "zscript/rsq/dualtable.zs"

@@ -40,6 +40,13 @@ OptionValue "RSR_Pouch"
 	1, "Low, 40 cm below the eyes"
 }
 
+// 2026-10-23: the VR scopes (zscript/rsq/scope.zs), per gun
+OptionValue "RSQ_ScopeMode"
+{
+	0, "Dot"
+	1, "Real"
+}
+
 OptionValue "RSR_ShellCredit"
 {
 	1, "1"
@@ -60,6 +67,8 @@ OptionMenu "RSQ_Options"
 	Option "Shotgun Slugshot Alt Fire", "rsa_sg_slug", "OnOff"
 	Option "Shotvolver Slugshot Alt Fire", "rsa_rev_magnum", "OnOff"
 	Option "Rifle Underbarrel Ammo", "rsm_ammo", "RSM_Ammo"
+	Option "Sniper Scope", "rsq_scope_sniper", "RSQ_ScopeMode"
+	Option "Railgun Scope", "rsq_scope_railgun", "RSQ_ScopeMode"
 	Option "Ballistics", "rsq_ballistics", "RSQ_Ballistics"
 	StaticText " "
 	Submenu "Voxel Options", "RSQ_VoxelOptions"
