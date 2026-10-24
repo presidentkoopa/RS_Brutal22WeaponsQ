@@ -118,7 +118,7 @@ class RSQ_GunSide : Inventory
 	SupF: RQSP F -1; Stop;
 	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
 	Nade: RQGN A -1; Stop;	// Ermac's ammo hand round the VR grenade
-	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.DOT).
+	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
 	// Its own sprite, so it carries its own flat quad in MODELDEF and nothing about it is tied
 	// to the hand meshes; ModifyBobLayer3D puts it on the glass every rendered frame. Bright,
 	// because a reflex dot is light on glass and not paint on it.
@@ -313,16 +313,16 @@ class RSQ_Hands : Weapon
 		// RailGun 6, Sniper 8). One psprite id holds one caller, so that would have killed
 		// reloading on both guns with nothing in the log. DOT is 2112 now and this guard is
 		// quiet; it stays as the general safeguard for the next lane that claims an id.
-		if (RSQ_Layers.Taken(RSQ_ScopeLayers.DOT))
+		if (RSQ_Layers.Taken(RSQ_ScopeLayers.RETICLE))
 		{
 			if (!invoker.dotClash)
 			{
 				invoker.dotClash = true;
-				Console.Printf("RSQ scope: reticle layer %d is already a reload layer; the dot is off until RSQ_ScopeLayers.DOT (rsq/scope.zs) moves to a free id (2112-2119, 2124-2129).", RSQ_ScopeLayers.DOT);
+				Console.Printf("RSQ scope: reticle layer %d is already a reload layer; the dot is off until RSQ_ScopeLayers.RETICLE (rsq/scope.zs) moves to a free id (2112-2119, 2124-2129).", RSQ_ScopeLayers.RETICLE);
 			}
 		}
 		else
-			invoker.SetLayer(p, RSQ_ScopeLayers.DOT, gs, sci > 0 ? "ScopeDot" : "Hidden");
+			invoker.SetLayer(p, RSQ_ScopeLayers.RETICLE, gs, sci > 0 ? "ScopeDot" : "Hidden");
 	}
 
 	// "Fist" while the gun layer shows one of BD22's punch / fist sprites (the fists, and a quick
@@ -522,7 +522,7 @@ class RSQ_Hands : Weapon
 		// RSR_Guns.WellHook reproduces (L, U, -F) of each gun's magazine axis to three decimals.
 		// (the Taken() test is the same stand-down as in A_RSQ_Layers: while the id belongs to
 		// another lane this case must not shadow that lane's branch below)
-		if (layer == RSQ_ScopeLayers.DOT && !RSQ_Layers.Taken(RSQ_ScopeLayers.DOT))
+		if (layer == RSQ_ScopeLayers.RETICLE && !RSQ_Layers.Taken(RSQ_ScopeLayers.RETICLE))
 		{
 			let mo = PlayerPawn(Owner);
 			let so = mo ? mo.player : null;

@@ -31,7 +31,7 @@ class RSQ_ScopeLayers abstract
 	// for their VR reload. One psprite id holds one caller; sharing it would have killed the
 	// reload on exactly the two guns getting scopes. Taken in the pack: 2100-2111, 2120-2123,
 	// 2130-2131, 2200-2203, 2210, 2300-2301. Free: 2112-2119, 2124-2129.
-	const DOT = 2112;		// RSQ_GunSide, main controller: the collimated reticle
+	const RETICLE = 2112;		// RSQ_GunSide, main controller: the collimated reticle
 }
 
 class RSQ_ScopeTable abstract
