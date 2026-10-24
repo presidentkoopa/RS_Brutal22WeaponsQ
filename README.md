@@ -47,6 +47,52 @@ options menu to get them through cheats (give all, idkfa).
 Built and tested on PCVR QuestZDoom 17.x.
 
 
+## What's new in 1.95
+
+**Melee**
+- **Chainsaw has a trigger finger.** The hand's index finger is on the saw's trigger and squeezes
+  when you fire, like every other weapon.
+- **Two-handed axe.** Bring the off hand onto the haft and the grip shifts up toward the head;
+  a blow that lands with the cutting edge leading does extra damage at shorter range. Two hands
+  on the haft alone is not enough — the edge has to lead.
+- **Axe lock-on and throw.** Held in one hand, hold the throw button and the axe paints the
+  monster you are looking at; release during the swing to throw it at the painted target. A
+  two-handed axe is not thrown — let go with the off hand first.
+- **Melee poses fixed.** The sword is held like a baseball bat, the axe with the hands spread
+  and the weapon hand at the head, and the chainsaw's support hand no longer splays away from
+  the saw.
+
+**Punching**
+- **Punches open doors and work switches**, at the fist's own reach, with either hand.
+- The off hand can punch while the main hand holds a gun.
+
+**Reloading**
+- **Free charge** (`rsr_freecharge`, on by default). Take the charging handle or slide with no
+  reload running, to crack the action and look in the chamber. It is a look, not a rack: no
+  ammo moves and nothing is given to the weapon.
+- **The Use key works when the weapon isn't the fist**, so doors and switches still open with a
+  gun in hand.
+
+**The sniper is back**, with the Ruger Mini-14 Ranch measured in from its own mesh, and a
+darker texture.
+
+### Fixes
+- **Dual wield could strand a reload.** Run the main-hand gun dry, go dual, come back to one
+  gun, pick up ammo — and no magazine could ever be seated again. The off-hand slot kept a
+  stale copy of a weapon that was no longer there.
+- **The pistol and SMG racked when they shouldn't.** A charge token left over from an earlier
+  reload survived into the next one, so a gun that still had rounds in it asked to be charged.
+  The rule is now the real one: rack only if the gun was reloaded completely empty.
+- **The SMG racked twice** — a phantom rack after the magazine was already home.
+- **Punch detection read its own history wrong.** The sample buffer is a ring, and it was being
+  read as if it were a list, so the oldest sample was compared instead of the newest.
+- **Flick reload with a single rifle** reloaded nothing.
+- **Thrown grenades dribbled.** The throw speed was computed from map units per tic as if it
+  were metres per second.
+- **A new map starts clean.** Hand state, reload state and grenade fuses were keyed on an
+  absolute level time that restarts at zero on a level change.
+
+
 ## Credits
 Weapon models: **br_vr** by ajantaju (Brutal Doom VR Weapons, BD v21), made from:
 - Grenade by Gomuz; MP40 by Krystian; Shotgun by serg-654; Beretta M9 by damkung13

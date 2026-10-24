@@ -960,3 +960,262 @@ Model AssaultShotgun
 	NoInterpolation
 	FrameIndex RQAM C 0 4
 }
+
+
+
+// RS real VR reload: BD22/Sniper drawn as the Ruger Mini-14 Ranch (1.93).
+// The sniper is a weapon again (zscript/nosniper/nosniper.zs). Placement solved through
+// team/reload_merged/tools/rgeo.py: Scale for a 95.25 cm rifle, Offset / ZOffset to sit
+// where BD22/Rifle's body sits. Pieces shown or hidden by a clear skin, as every other gun.
+// Surfaces: 0 round 1 bolt 2 charging handle 3 scope 4 mag release 5 magazine 6 safety
+//           7 scope rings 8 trigger 9 body
+
+// the whole gun, on BD22's own sprite runs
+Model Sniper
+{
+	Path "models/bd/XM21"
+	Model 0 "XM21.md3"
+	SurfaceSkin 0 0 "223_rem.png"
+	SurfaceSkin 0 1 "mini14.png"
+	SurfaceSkin 0 2 "mini14.png"
+	SurfaceSkin 0 3 "leupold_vx1.png"
+	SurfaceSkin 0 4 "mini14.png"
+	SurfaceSkin 0 5 "mini14.png"
+	SurfaceSkin 0 6 "mini14.png"
+	SurfaceSkin 0 7 "leupold_vx1.png"
+	SurfaceSkin 0 8 "mini14.png"
+	SurfaceSkin 0 9 "mini14.png"
+	Scale -10.4850 10.4850 10.4850
+	Offset -0.2816 -44.5467 0.0
+	ZOffset -6.3157
+	NoInterpolation
+	FrameIndex X21G A 0 0
+	FrameIndex X21G B 0 0
+	FrameIndex X21G C 0 0
+	FrameIndex X21G D 0 0
+	FrameIndex X21G E 0 0
+	FrameIndex X21G F 0 0
+	FrameIndex X21R A 0 0
+	FrameIndex X21R B 0 0
+	FrameIndex X21R C 0 0
+	FrameIndex X21R D 0 0
+	FrameIndex X21R E 0 0
+	FrameIndex X21R F 0 0
+	FrameIndex X21R G 0 0
+	FrameIndex X21R H 0 0
+	FrameIndex X21R I 0 0
+	FrameIndex X21R J 0 0
+	FrameIndex X21R K 0 0
+	FrameIndex X21R L 0 0
+	FrameIndex X21R M 0 0
+	FrameIndex X21R N 0 0
+	FrameIndex X21R O 0 0
+	FrameIndex X21R P 0 0
+	FrameIndex X21R Q 0 0
+	FrameIndex X21R R 0 0
+	FrameIndex X21R S 0 0
+	FrameIndex X21R T 0 0
+	FrameIndex X21R U 0 0
+	FrameIndex X21R V 0 0
+	FrameIndex X21R W 0 0
+	FrameIndex X22R A 0 0
+	FrameIndex X22R B 0 0
+	FrameIndex X22R C 0 0
+	FrameIndex X22R D 0 0
+	FrameIndex X22R E 0 0
+	FrameIndex X22R F 0 0
+	FrameIndex X22R G 0 0
+	FrameIndex X22R H 0 0
+	FrameIndex X22R I 0 0
+	FrameIndex X22R J 0 0
+	FrameIndex X22R K 0 0
+	FrameIndex X22R L 0 0
+	FrameIndex X22R M 0 0
+	FrameIndex X22R N 0 0
+	FrameIndex X22R O 0 0
+	FrameIndex X22R P 0 0
+	FrameIndex X22R Q 0 0
+	FrameIndex X22R R 0 0
+	FrameIndex X22R S 0 0
+	FrameIndex X23R A 0 0
+	FrameIndex X23R B 0 0
+	FrameIndex X23R C 0 0
+	FrameIndex X23R D 0 0
+	FrameIndex X23R E 0 0
+	FrameIndex X23R F 0 0
+	FrameIndex X23R G 0 0
+	FrameIndex X23R H 0 0
+	FrameIndex X23R I 0 0
+	FrameIndex X23R J 0 0
+	FrameIndex X23R K 0 0
+	FrameIndex X23R L 0 0
+	FrameIndex X23R M 0 0
+	FrameIndex X21S A 0 0
+	FrameIndex X21S B 0 0
+	FrameIndex X21S C 0 0
+	FrameIndex X21S D 0 0
+	FrameIndex X21S E 0 0
+	FrameIndex X21S F 0 0
+	FrameIndex X21S G 0 0
+	FrameIndex X21S H 0 0
+	FrameIndex X21A A 0 0
+	FrameIndex X21A B 0 0
+	FrameIndex X21A C 0 0
+	FrameIndex P21G A 0 0
+}
+
+// RQKM A: without its magazine
+Model Sniper
+{
+	Path "models/bd/XM21"
+	Model 0 "XM21.md3"
+	SurfaceSkin 0 0 "223_rem.png"
+	SurfaceSkin 0 1 "mini14.png"
+	SurfaceSkin 0 2 "mini14.png"
+	SurfaceSkin 0 3 "leupold_vx1.png"
+	SurfaceSkin 0 4 "mini14.png"
+	SurfaceSkin 0 5 "rsr_clear.png"
+	SurfaceSkin 0 6 "mini14.png"
+	SurfaceSkin 0 7 "leupold_vx1.png"
+	SurfaceSkin 0 8 "mini14.png"
+	SurfaceSkin 0 9 "mini14.png"
+	Scale -10.4850 10.4850 10.4850
+	Offset -0.2816 -44.5467 0.0
+	ZOffset -6.3157
+	NoInterpolation
+	FrameIndex RQKM A 0 0
+}
+
+// RQKM B: without its charging handle and bolt (they are on their own layers)
+Model Sniper
+{
+	Path "models/bd/XM21"
+	Model 0 "XM21.md3"
+	SurfaceSkin 0 0 "223_rem.png"
+	SurfaceSkin 0 1 "rsr_clear.png"
+	SurfaceSkin 0 2 "rsr_clear.png"
+	SurfaceSkin 0 3 "leupold_vx1.png"
+	SurfaceSkin 0 4 "mini14.png"
+	SurfaceSkin 0 5 "mini14.png"
+	SurfaceSkin 0 6 "mini14.png"
+	SurfaceSkin 0 7 "leupold_vx1.png"
+	SurfaceSkin 0 8 "mini14.png"
+	SurfaceSkin 0 9 "mini14.png"
+	Scale -10.4850 10.4850 10.4850
+	Offset -0.2816 -44.5467 0.0
+	ZOffset -6.3157
+	NoInterpolation
+	FrameIndex RQKM B 0 0
+}
+
+// RQKP A: the magazine alone, at the gun (main controller)
+Model RSR_GunParts
+{
+	Path "models/bd/XM21"
+	Model 0 "XM21.md3"
+	SurfaceSkin 0 0 "rsr_clear.png"
+	SurfaceSkin 0 1 "rsr_clear.png"
+	SurfaceSkin 0 2 "rsr_clear.png"
+	SurfaceSkin 0 3 "rsr_clear.png"
+	SurfaceSkin 0 4 "rsr_clear.png"
+	SurfaceSkin 0 5 "mini14.png"
+	SurfaceSkin 0 6 "rsr_clear.png"
+	SurfaceSkin 0 7 "rsr_clear.png"
+	SurfaceSkin 0 8 "rsr_clear.png"
+	SurfaceSkin 0 9 "rsr_clear.png"
+	Scale -10.4850 10.4850 10.4850
+	Offset -0.2816 -44.5467 0.0
+	ZOffset -6.3157
+	NoInterpolation
+	FrameIndex RQKP A 0 0
+}
+
+// RQKP B: the charging handle alone
+Model RSR_GunParts
+{
+	Path "models/bd/XM21"
+	Model 0 "XM21.md3"
+	SurfaceSkin 0 0 "rsr_clear.png"
+	SurfaceSkin 0 1 "rsr_clear.png"
+	SurfaceSkin 0 2 "mini14.png"
+	SurfaceSkin 0 3 "rsr_clear.png"
+	SurfaceSkin 0 4 "rsr_clear.png"
+	SurfaceSkin 0 5 "rsr_clear.png"
+	SurfaceSkin 0 6 "rsr_clear.png"
+	SurfaceSkin 0 7 "rsr_clear.png"
+	SurfaceSkin 0 8 "rsr_clear.png"
+	SurfaceSkin 0 9 "rsr_clear.png"
+	Scale -10.4850 10.4850 10.4850
+	Offset -0.2816 -44.5467 0.0
+	ZOffset -6.3157
+	NoInterpolation
+	FrameIndex RQKP B 0 0
+}
+
+// RQKP C: the bolt alone. BoltRatio is 1.0 -- a Mini-14's bolt rides with the op rod.
+Model RSR_GunParts
+{
+	Path "models/bd/XM21"
+	Model 0 "XM21.md3"
+	SurfaceSkin 0 0 "rsr_clear.png"
+	SurfaceSkin 0 1 "mini14.png"
+	SurfaceSkin 0 2 "rsr_clear.png"
+	SurfaceSkin 0 3 "rsr_clear.png"
+	SurfaceSkin 0 4 "rsr_clear.png"
+	SurfaceSkin 0 5 "rsr_clear.png"
+	SurfaceSkin 0 6 "rsr_clear.png"
+	SurfaceSkin 0 7 "rsr_clear.png"
+	SurfaceSkin 0 8 "rsr_clear.png"
+	SurfaceSkin 0 9 "rsr_clear.png"
+	Scale -10.4850 10.4850 10.4850
+	Offset -0.2816 -44.5467 0.0
+	ZOffset -6.3157
+	NoInterpolation
+	FrameIndex RQKP C 0 0
+}
+
+// RQKP A: the magazine alone, in the off hand (off controller)
+Model RSQ_Hands
+{
+	Path "models/bd/XM21"
+	Model 0 "XM21.md3"
+	SurfaceSkin 0 0 "rsr_clear.png"
+	SurfaceSkin 0 1 "rsr_clear.png"
+	SurfaceSkin 0 2 "rsr_clear.png"
+	SurfaceSkin 0 3 "rsr_clear.png"
+	SurfaceSkin 0 4 "rsr_clear.png"
+	SurfaceSkin 0 5 "mini14.png"
+	SurfaceSkin 0 6 "rsr_clear.png"
+	SurfaceSkin 0 7 "rsr_clear.png"
+	SurfaceSkin 0 8 "rsr_clear.png"
+	SurfaceSkin 0 9 "rsr_clear.png"
+	Scale -10.4850 10.4850 10.4850
+	Offset -0.2816 -44.5467 0.0
+	ZOffset -6.3157
+	NoInterpolation
+	FrameIndex RQKP A 0 0
+}
+
+// RQKW A: the dropped magazine, world scale
+Model RSR_DroppedMag
+{
+	Path "models/bd/XM21"
+	Model 0 "XM21.md3"
+	SurfaceSkin 0 0 "rsr_clear.png"
+	SurfaceSkin 0 1 "rsr_clear.png"
+	SurfaceSkin 0 2 "rsr_clear.png"
+	SurfaceSkin 0 3 "rsr_clear.png"
+	SurfaceSkin 0 4 "rsr_clear.png"
+	SurfaceSkin 0 5 "mini14.png"
+	SurfaceSkin 0 6 "rsr_clear.png"
+	SurfaceSkin 0 7 "rsr_clear.png"
+	SurfaceSkin 0 8 "rsr_clear.png"
+	SurfaceSkin 0 9 "rsr_clear.png"
+	Scale 3.6362 3.6362 3.6362
+	Offset -0.0084 -30.3444 0.0
+	ZOffset -5.4471
+	NoInterpolation
+	USEACTORPITCH
+	USEACTORROLL
+	FrameIndex RQKW A 0 0
+}

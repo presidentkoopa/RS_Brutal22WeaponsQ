@@ -38,6 +38,19 @@ class RSQ_Dual : EventHandler
 		return false;
 	}
 
+	// which gun this is the off-hand copy OF, or -1. IsCopy only says "some copy";
+	// rsq/hands.zs has to know WHICH, to tell a real dual wield from one left behind.
+	static int CopyIndex(Weapon w)
+	{
+		for (int i = 0; w && i < RSQ_DualTable.COUNT; i++)
+		{
+			class<Actor> cc = RSQ_DualTable.Copy(i);
+			if (cc && w is cc)
+				return i;
+		}
+		return -1;
+	}
+
 	static bool IsCopy(Weapon w)
 	{
 		for (int i = 0; w && i < RSQ_DualTable.COUNT; i++)

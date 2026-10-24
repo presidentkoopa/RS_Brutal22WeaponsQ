@@ -45,16 +45,23 @@ class RSQ_Flick : EventHandler
 				continue;
 			let mo = players[n].mo;
 			let p = mo.player;
-			bool on = RSVR_VRHand.InVR(mo) && p.playerstate == PST_LIVE && mo.health > 0
-				&& RSQ.PlayerInt(mo, 'rsq_flick', 1) != 0 && mo.CountInv('IsPlayingAsPurist') == 0
-				&& IsGun(p.OffhandWeapon);	// 1.21: a gun in the off hand flicks, whatever the main hand holds
+			bool live = RSVR_VRHand.InVR(mo) && p.playerstate == PST_LIVE && mo.health > 0
+				&& RSQ.PlayerInt(mo, 'rsq_flick', 1) != 0 && mo.CountInv('IsPlayingAsPurist') == 0;
+			bool on = live && IsGun(p.OffhandWeapon);	// 1.21: a gun in the off hand flicks, whatever the main hand holds
+			// 2026-10-23: with ONE rifle the whole flick was off, so "flick down to reload both
+			// barrels" (1.30) only ever worked while dual wielding -- and a lone rifle is the
+			// common case. A single rifle now flicks for its LAUNCHER ONLY: the magazine stays
+			// the hand reload's, exactly as the header says, and the flick gets the M203.
+			bool loneM203 = live && !on && RSM.IsAnyRifle(p.ReadyWeapon);
 			double ps = mo.Level.pixelstretch;
 			if (ps <= 0)
 				ps = 1.2;
 			for (int h = 0; h < 2; h++)
 			{
 				// the main gun flicks only when the off hand has a gun too (one gun alone: VR reload)
-				if (!on || h == 0 && !IsGun(p.ReadyWeapon))
+				bool run = on && (h != 0 || IsGun(p.ReadyWeapon));
+				bool m203Only = !run && h == 0 && loneM203;	// a lone rifle: the launcher only
+				if (!run && !m203Only)
 				{
 					count[n][h] = 0;
 					armed[n][h] = false;
@@ -74,7 +81,10 @@ class RSQ_Flick : EventHandler
 				if (before - e < FLICK_DEG)
 					continue;
 				armed[n][h] = false;
-				Reload(p, h);
+				if (m203Only)
+					RSM.FlickLoad(mo, false);	// the magazine stays the hand reload's
+				else
+					Reload(p, h);
 			}
 		}
 	}

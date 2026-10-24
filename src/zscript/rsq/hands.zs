@@ -90,6 +90,8 @@ class RSQ_GunSide : Inventory
 	SqzP: RQGU P -1; Stop;
 	TrgQ: RQGT Q -1; Stop;
 	SqzQ: RQGU Q -1; Stop;
+	TrgR: RQGT R -1; Stop;
+	SqzR: RQGU R -1; Stop;
 	SupA: RQSP A -1; Stop;
 	SupM1: RQ2S A -1; Stop;	// 1.31 RSR-M203: the off hand on the launcher, finger on its trigger
 	SupM2: RQ2S B -1; Stop;	// ...squeezed
@@ -176,7 +178,16 @@ class RSQ_Hands : Weapon
 			mo.GiveInventory('RSQ_Hands', 1);
 			h = Weapon(mo.FindInventory('RSQ_Hands'));
 		}
-		if (h && !p.OffhandWeapon && p.PendingWeapon == WP_NOCHANGE)
+		// 2026-10-23 (owner: empty gun -> dual -> back to one gun -> no reload ever again).
+		// The real reload only runs while the off hand IS these hands (vreload.zs Wanted),
+		// and this used to re-arm them only when the slot was EMPTY. A stale dual copy --
+		// one whose gun is not the gun in the main hand -- sits in the slot forever, so the
+		// slot is neither empty nor RSQ_Hands and reloading dies silently for EVERY gun.
+		// A copy that matches the ready weapon is a real dual wield and is left alone.
+		let off = p.OffhandWeapon;
+		bool stale = off && !(off is 'RSQ_Hands')
+			&& RSQ_Dual.CopyIndex(off) != RSQ_Dual.GunIndex(p.ReadyWeapon);
+		if (h && (!off || stale) && p.PendingWeapon == WP_NOCHANGE)
 			p.PendingWeapon = h;
 	}
 
@@ -330,10 +341,14 @@ class RSQ_Hands : Weapon
 		{
 			offPunchTic = -1;
 			offMesh = 0;
-			let w = p.ReadyWeapon;
-			Name wn = w ? w.GetClassName() : 'None';
-			bool noGun = !w || w.bMELEEWEAPON || wn == 'Melee_Attacks' || wn == 'BrutalAxe' || wn == 'Chain_saw' || wn == 'DSweap';
-			if (!press || !freeFist || !noGun)
+			// 2026-10-23 (owner: "yes -- that way we can punch open switches n shit"): the off
+			// trigger now punches with a GUN in the main hand too. It is also the reload's grab,
+			// so POSITION decides instead of the weapon: a hand up at the gun is reaching for
+			// ammo, a hand out away from it is a punch. freeFist already rules out the support
+			// grip and any reload that has the hand.
+			if (!press || !freeFist)
+				return;
+			if (RSVR_VRHand.SteadyGap(mo) < 30.0)	// cm: at the gun, so that press is the reload's
 				return;
 			offPunchTic = 0;
 			mo.A_StartSound("Melee/Swing", CHAN_AUTO, CHANF_OVERLAP);
@@ -355,6 +370,7 @@ class RSQ_Hands : Weapon
 				a.pitch = -asin(clamp(dir.z, -1, 1));
 				a.vel = dir * 16;
 			}
+			RSQ_Fists.PunchUse(mo, RSVR_VRHand.OffPos(mo), dir);
 		}
 		offPunchTic++;
 	}
@@ -487,8 +503,13 @@ class RSQ_Hands : Weapon
 		if (i <= 0)
 			return translation, rotation;
 		bool gunHand = layer == RSQ_Layers.GUNHAND;
-		Vector3 hook = gunHand ? RSQ_HandTable.GunHook(i) : RSQ_HandTable.SupportHook(i);
-		Vector3 hookTurn = gunHand ? RSQ_HandTable.GunRot(i) : RSQ_HandTable.SupportRot(i);
+		// 2026-10-23: a weapon may be gripped somewhere else in two hands. GunHookTwo
+		// defaults to GunHook for every gun, so only the axe moves.
+		bool two = Owner && Owner.CountInv('RSVR_AxeTwo') > 0;
+		Vector3 hook = gunHand ? (two ? RSQ_HandTable.GunHookTwo(i) : RSQ_HandTable.GunHook(i))
+			: RSQ_HandTable.SupportHook(i);
+		Vector3 hookTurn = gunHand ? (two ? RSQ_HandTable.GunRotTwo(i) : RSQ_HandTable.GunRot(i))
+			: RSQ_HandTable.SupportRot(i);
 		if (!gunHand && i == 18 && !(o.ReadyWeapon is 'PuristRifle') && RSK_M203Handler.TriggerGrip(Owner))
 		{
 			hook = (0, 0, 0);		// 1.31: the trigger grip is baked in place (MODELDEF.rsm RQ2S)

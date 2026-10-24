@@ -203,6 +203,20 @@ class RSR_State play
 	bool wellShown, handShown;
 	Vector3 offLocal;		// the off hand, gun frame cm (the desktop test draws with it)
 
+	// 1.93: FREE CHARGE (rsr_freecharge). The handle taken with NO reload running, so the
+	// action can be cracked open on a loaded gun and let go again: a press check. Its own
+	// small machine, so the reload's phase and WorldTick's RSR_Tick watchdog are untouched.
+	// It is a LOOK, not a rack: nothing is given to the weapon, so no ammo moves, nothing
+	// chambers and no reload is ended. It uses the gun's own track (RSR_Guns.Grab, Pull,
+	// Travel) and the handle and bolt layers the reload already owns.
+	int fcGun;				// the gun whose handle is held, 0 = none
+	double fcPull, fcPullPrev;	// cm back along the track, as the reload's pull
+	double fcGrabS;			// where along the track the hand took it
+	bool fcHeld;			// the hand has it (false with fcPull > 0: springing home)
+	bool fcBackSounded;
+	bool fcPrev;			// the grab last tic
+	int fcUsed;				// grip presses already spent here
+
 	// this tic's controller frames (world unit vectors; the engine mirrors the left hand,
 	// AttackDir / OffhandDir include it, so these are the frames the layers are drawn in)
 	Vector3 F, L, U, oF, oL, oU;
@@ -302,7 +316,12 @@ class RSR_State play
 		String res = RSR_Guns.Reserve(i);
 		class<Inventory> rc = res;
 		if (rc && mo.CountInv(rc) <= 0)
+		{
+			if (RSR.Debug(mo.player))
+				Console.Printf("rsr t%d gun %d: no magazine to take, reserve %s is empty",
+					mo.Level.maptime, i, res);
 			return false;
+		}
 		Vector3 hand = OffPoint(RSR.PalmGrab());
 		if ((hand - RSR_Guns.MagCentre(i)).Length() < RSR.POUCH_MIN)
 			return false;
@@ -349,6 +368,7 @@ class RSR_State play
 	// the weapon's Reload reached RSR_Start and the real reload takes it
 	void Begin(PlayerPawn mo, Weapon w, int i)
 	{
+		FreeChargeDrop();		// 1.93: a reload takes the handle back from a free charge
 		gun = i;
 		weap = w;
 		racked = false;
@@ -585,6 +605,107 @@ class RSR_State play
 		gripPrev = g;
 	}
 
+	// 1.93: FREE CHARGE, run every tic from WorldTick while no reload has the off hand. It
+	// moves the handle (and the bolt that follows it) along the gun's own track and plays the
+	// set's own back and forward sounds. It gives the weapon NOTHING, so it cannot chamber a
+	// round, cannot change ammo and cannot end a reload: a short pull cracks the action open
+	// and springs back, and a full pull here is still only a look.
+	void FreeCharge(PlayerPawn mo)
+	{
+		let p = mo.player;
+		int i = RSR_Guns.Index(p.ReadyWeapon);
+
+		// springing home. It finishes wherever it is, so the handle is never left stuck back;
+		// a gun put away mid-spring simply drops it.
+		if (fcGun > 0 && !fcHeld)
+		{
+			if (fcGun != i || mo.health <= 0)
+			{
+				FreeChargeDrop();
+				return;
+			}
+			fcPullPrev = fcPull;
+			fcPull = max(0, fcPull - RSR.SPRING);
+			if (fcPull <= 0)
+			{
+				if (fcBackSounded)
+					PlaySnd(mo, RSR_Guns.SndFwd(fcGun));
+				FreeChargeDrop();
+			}
+			return;
+		}
+
+		// the gun must be idle and ours, with a handle of its own. Any module's reload owns the
+		// off hand while it runs: the same list InputProcess checks before eating a grip key.
+		int pn = mo.PlayerNumber();
+		bool free = RSR.PlayerInt(p, 'rsr_freecharge', 0) != 0
+			&& phase == RSR.IDLE && !slideLock && i > 0 && mo.health > 0
+			&& RSR_ReloadHandler.Wanted(mo)
+			&& RSR_Guns.HasHandle(i) && RSR_Guns.Travel(i) > 0
+			&& !RSP_Handler.Busy(pn) && !RSB_Handler.Busy(pn) && !RSK_M203Handler.Busy(pn);
+		if (free)
+		{
+			// never mid-animation: only from one of the gun's own ready frames
+			let psp = p.FindPSprite(PSP_WEAPON);
+			free = psp && RSR.IsReadyFrame(psp, i);
+		}
+		if (!free)
+		{
+			if (fcGun > 0)
+				fcHeld = false;		// it springs home next tic
+			fcUsed = netPresses;	// a press made while ineligible is not banked
+			return;
+		}
+
+		Frames(mo);
+		bool g = Grip(mo);
+		bool press = (g && !fcPrev) || netPresses != fcUsed && !RSVR_VRHand.Steadied(mo);
+		fcUsed = netPresses;
+		fcPrev = g;
+
+		Vector3 pd = RSR_Guns.Pull(i);
+		Vector3 rel = OffPoint(RSR.PalmGrab()) - RSR_Guns.Grab(i);
+		double s = rel dot pd;
+		double side = (rel - pd * s).Length();
+		double travel = RSR_Guns.Travel(i);
+
+		if (fcGun <= 0)
+		{
+			if (press && rel.Length() < RSR_Assist.MagGrab(p, i))
+			{
+				fcGun = i;
+				fcGrabS = s;
+				fcPull = fcPullPrev = 0;
+				fcBackSounded = false;
+				fcHeld = true;
+				Buzz(mo);
+				if (RSR.Debug(p))
+					Console.Printf("rsr t%d gun %d: free charge taken", mo.Level.maptime, i);
+			}
+			return;
+		}
+
+		fcPullPrev = fcPull;
+		fcPull = clamp(s - fcGrabS, 0, travel);
+		if (!fcBackSounded && fcPull >= RSR_Guns.BackAt(i) * travel)
+		{
+			fcBackSounded = true;
+			PlaySnd(mo, RSR_Guns.SndBack(i));
+			Buzz(mo);
+		}
+		if (!g || side > RSR_Assist.Leave(p, RSR_Assist.MagGrab(p, i)) * 1.2)
+			fcHeld = false;
+	}
+
+	void FreeChargeDrop()
+	{
+		fcGun = 0;
+		fcHeld = false;
+		fcBackSounded = false;
+		fcPull = fcPullPrev = 0;
+		fcUsed = netPresses;
+	}
+
 	// the weapon left the reload (switched away, died, ...): put everything away
 	void Abort(PlayerPawn mo)
 	{
@@ -633,6 +754,8 @@ class RSR_State play
 		else if (!active)
 			slideLock = false;
 		lockGun = slideLock ? i : 0;
+		// 1.93: a free charge has the handle on its own layer, outside any reload
+		bool fc = !active && fcGun > 0 && fcGun == i && (fcHeld || fcPull > 0);
 
 		if (psp && i > 0)
 		{
@@ -677,6 +800,11 @@ class RSR_State play
 				psp.Sprite = Actor.GetSpriteIndex(gs);
 				psp.Frame = nm && mo.CountInv(nm) > 0 ? 2 : 1;	// no slide (and no magazine if it is out)
 			}
+			else if (fc && RSR.IsReadyFrame(psp, i))
+			{
+				psp.Sprite = Actor.GetSpriteIndex(gs);		// 1.93: free charge -- the gun
+				psp.Frame = 1;								// without its handle / slide
+			}
 			else if (!active && RSR_Guns.NoMag(i) != "")
 			{
 				// no magazine in the gun (left mid-reload, or the set's own unload): its
@@ -691,14 +819,14 @@ class RSR_State play
 		}
 
 		let parts = RSR_GunParts(mo.FindInventory('RSR_GunParts'));
-		if (!parts && (active || slideLock))
+		if (!parts && (active || slideLock || fc))
 		{
 			mo.GiveInventory('RSR_GunParts', 1);
 			parts = RSR_GunParts(mo.FindInventory('RSR_GunParts'));
 		}
-		int gi = active ? gun : slideLock ? lockGun : 0;
+		int gi = active ? gun : slideLock ? lockGun : fc ? fcGun : 0;
 		Name sp = gi > 0 ? RSR_Guns.SprPart(gi) : 'TNT1';
-		bool handle = (active && (phase == RSR.PULL || phase == RSR.RELEASED) || slideLock) && RSR_Guns.HandleLayers(gi);
+		bool handle = (active && (phase == RSR.PULL || phase == RSR.RELEASED) || slideLock || fc) && RSR_Guns.HandleLayers(gi);
 		RSR.SetPart(p, RSR.WELLMAG, parts, active && wellShown, sp, 0);
 		RSR.SetPart(p, RSR.HANDLE, parts, handle, sp, 1);
 		RSR.SetPart(p, RSR.BOLT, parts, handle && RSR_Guns.BoltRatio(gi) > 0, sp, 2);
@@ -740,7 +868,17 @@ class RSR_Start : RSR_Call
 		let w = mo.player.ReadyWeapon;
 		int i = RSR_Guns.Index(w);
 		if (!s || i <= 0 || !RSR_ReloadHandler.Wanted(mo))
+		{
+			// say why: this used to fail silently, and a stale off-hand weapon killed
+			// reloading for the rest of the life with nothing on screen to show it
+			if (RSR.Debug(mo.player))
+			{
+				let oh = mo.player.OffhandWeapon;
+				Console.Printf("rsr t%d: reload refused (gun %d, off hand %s)",
+					mo.Level.maptime, i, oh ? oh.GetClassName() : 'none');
+			}
 			return;			// the set's own reload
+		}
 		s.Begin(mo, w, i);
 		mo.GiveInventory('RSR_Go', 1);
 	}
@@ -867,7 +1005,8 @@ class RSR_ReloadHandler : EventHandler
 	ui Array<int> gripKeys;
 	ui String gripKeysFrom;
 	ui bool eaten[512];
-	ui bool useEaten[512];
+	ui bool useEaten[512];	// the Use press was SWALLOWED (the door must not get it)
+	ui bool useSent[512];	// ...and, separately, whether rsr_use was sent, so the release always is
 
 	clearscope static RSR_ReloadHandler Get()
 	{
@@ -945,10 +1084,14 @@ class RSR_ReloadHandler : EventHandler
 		case RSR.HANDLE:
 			if (s.slideLock && s.lockGun > 0)	// 1.13: locked back, all the way (a rifle's handle stays home)
 				return t + RSR_Guns.HandleHook(s.lockGun) * (RSR_Guns.BoltRatio(s.lockGun) > 0 ? 0 : RSR_Guns.Travel(s.lockGun)), r;
+			if (s.phase == RSR.IDLE && s.fcGun > 0)		// 1.93: free charge, outside a reload
+				return t + RSR_Guns.HandleHook(s.fcGun) * (s.fcPullPrev + (s.fcPull - s.fcPullPrev) * ticfrac), r;
 			return t + RSR_Guns.HandleHook(i) * (s.pullPrev + (s.pull - s.pullPrev) * ticfrac), r;
 		case RSR.BOLT:
 			if (s.slideLock && s.lockGun > 0)	// 1.13: the bolt locked back
 				return t + RSR_Guns.HandleHook(s.lockGun) * (RSR_Guns.BoltRatio(s.lockGun) * RSR_Guns.Travel(s.lockGun)), r;
+			if (s.phase == RSR.IDLE && s.fcGun > 0)		// 1.93: free charge, outside a reload
+				return t + RSR_Guns.HandleHook(s.fcGun) * (RSR_Guns.BoltRatio(s.fcGun) * (s.fcPullPrev + (s.fcPull - s.fcPullPrev) * ticfrac)), r;
 			return t + RSR_Guns.HandleHook(i) * (RSR_Guns.BoltRatio(i) * (s.pullPrev + (s.pull - s.pullPrev) * ticfrac)), r;
 		case RSR.HANDMAG:
 			return t + RSR_Guns.HandHook(i) + DeskShift(owner, s, RSR_Guns.Scale(i)), r;
@@ -967,6 +1110,21 @@ class RSR_ReloadHandler : EventHandler
 			return (0, 0, 0);
 		Vector3 c = s.offLocal;		// F L U cm
 		return (-c.y / scale.x, c.z / scale.z, -c.x / scale.y);
+	}
+
+	// 2026-10-23 (owner): a new map starts clean. Level.maptime restarts at 0, so anything
+	// still half-done across an exit is timed against a clock that no longer exists, and some
+	// of it could never finish. This is the quiet put-away -- NOT Abort(), which drops the
+	// magazine or shell into the world and would litter the new map. Fires for a loaded
+	// savegame too, which is wanted.
+	override void WorldLoaded(WorldEvent e)
+	{
+		for (int n = 0; n < MAXPLAYERS; n++)
+		{
+			if (!playeringame[n] || !players[n].mo || !st[n])
+				continue;
+			st[n].End(players[n].mo);
+		}
 	}
 
 	override void WorldTick()
@@ -993,6 +1151,7 @@ class RSR_ReloadHandler : EventHandler
 				}
 			}
 			MagRelease(mo, s);
+			s.FreeCharge(mo);		// 1.93: the handle outside a reload (a press check)
 			s.Draw(mo);
 		}
 	}
@@ -1086,17 +1245,35 @@ class RSR_ReloadHandler : EventHandler
 			if (down)
 			{
 				let us = consoleplayer < MAXPLAYERS ? st[consoleplayer] : null;
-				bool ubusy = us && us.phase != RSR.IDLE || RSP_Handler.Busy(consoleplayer) || RSP_Handler.Feedable(consoleplayer) || RSB_Handler.Busy(consoleplayer) || RSK_M203Handler.Busy(consoleplayer);	// 1.34: the M203 open; 1.43: a shell to take, as the trigger would
-				if (!ubusy)
+				// 2026-10-23 (owner: "cannot open door or use switches when the weapon isn't
+				// loaded"): a reload that is RUNNING owns the Use key -- it must not open the door
+				// behind the gun. But Feedable means only that a shell COULD be taken, which on a
+				// part-empty gun is nearly always true, so Use was being swallowed the whole time
+				// and doors stopped working. Split the two: a running reload still eats the press;
+				// the merely-available ones are TOLD about it and let it through, so the same press
+				// loads a shell when the hand is at the gun and opens the door when it is not.
+				bool running = us && us.phase != RSR.IDLE || RSP_Handler.Busy(consoleplayer)
+					|| RSB_Handler.Busy(consoleplayer) || RSK_M203Handler.Busy(consoleplayer);	// 1.34: the M203 open
+				bool offers = RSP_Handler.Feedable(consoleplayer)	// 1.43: a shell to take, as the trigger would
+					|| RSG_Handler.WantsGrab(consoleplayer);		// 2026-10-23: the grenade's ring wants it too
+				if (!running && !offers)
 					return false;
-				useEaten[k] = true;
 				EventHandler.SendNetworkEvent("rsr_use", 1, k);
+				useSent[k] = true;
+				if (!running)
+					return false;		// sent, not swallowed: the door still gets this press
+				useEaten[k] = true;
 				return true;
+			}
+			// the release always goes out if the press did, or netUse would latch on for good
+			if (useSent[k])
+			{
+				useSent[k] = false;
+				EventHandler.SendNetworkEvent("rsr_use", 0, k);
 			}
 			if (useEaten[k])
 			{
 				useEaten[k] = false;
-				EventHandler.SendNetworkEvent("rsr_use", 0, k);
 				return true;
 			}
 			return false;

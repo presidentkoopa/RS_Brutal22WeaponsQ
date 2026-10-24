@@ -517,12 +517,23 @@ class RSP_State play
 			Vector3 lv1 = rel1 - (0, 1, 0) * sv1;
 			return sv1, lv1.Length(), acos(clamp(abs(a1.x), 0, 1)), lv1;
 		}
-		return ShellAtPort0();
+		// 1.93: ZScript cannot forward a multi-value return as one expression. This compiled with
+		// "Incorrect number of return values. Got 1, but expected 4", so only the first value was
+		// carried and side, ang and lv reached the caller as whatever its own locals held. The
+		// UNDERSIDE port (k = 0) is the one that came through here; the side port returns inline
+		// above, which is why that one behaved. Destructure, then return all four.
+		double sv, side, ang;
+		Vector3 lv;
+		[sv, side, ang, lv] = ShellAtPort0();
+		return sv, side, ang, lv;
 	}
 
 	double, double, double, Vector3 ShellAtPort()
 	{
-		return ShellAtPortK(portSel);
+		double sv, side, ang;		// 1.93: as ShellAtPortK -- no tail-forwarding a 4-value return
+		Vector3 lv;
+		[sv, side, ang, lv] = ShellAtPortK(portSel);
+		return sv, side, ang, lv;
 	}
 
 	double, double, double, Vector3 ShellAtPort0()
@@ -849,6 +860,12 @@ class RSP_State play
 				return;
 			}
 		}
+		// 2026-10-23: minTic is an ABSOLUTE future tic, and Level.maptime restarts at 0 on a
+		// level change -- a deadline stored before an exit can never be reached, so the stroke
+		// never completed and the gun stayed in PUMPING until a weapon switch aborted it. No
+		// refire time is anywhere near ten seconds, so a deadline that far out is a restart.
+		if (minTic > now + 350)
+			minTic = now;
 		if (done && now >= minTic)
 		{
 			Log(mo, "ready (the set's own refire time)");
@@ -1172,6 +1189,21 @@ class RSP_Handler : EventHandler
 			return (0, 0, 0);
 		Vector3 c = s.offLocal;
 		return (-c.y / scale.x, c.z / scale.z, -c.x / scale.y);
+	}
+
+	// 2026-10-23 (owner): a new map starts clean. Level.maptime restarts at 0, so anything
+	// still half-done across an exit is timed against a clock that no longer exists, and some
+	// of it could never finish. This is the quiet put-away -- NOT Abort(), which drops the
+	// magazine or shell into the world and would litter the new map. Fires for a loaded
+	// savegame too, which is wanted.
+	override void WorldLoaded(WorldEvent e)
+	{
+		for (int n = 0; n < MAXPLAYERS; n++)
+		{
+			if (!playeringame[n] || !players[n].mo || !st[n])
+				continue;
+			st[n].End(players[n].mo);
+		}
 	}
 
 	override void WorldTick()

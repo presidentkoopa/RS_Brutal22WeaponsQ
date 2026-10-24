@@ -22,6 +22,14 @@ ACTOR BrutalPistol : BrutalWeapon
 	RSR_Out:
 		PIST E 0 A_TakeInventory("RSR_Go", 1)
 		PIST E 0 A_JumpIfInventory("HasUnloadedPistol", 1, "RSR_Wait")	// no magazine in the gun
+		// 2026-10-23 (owner: ran dry, then no reload would put a magazine in the hand
+		// again). An EMPTY magazine must be CHANGED, not racked. Reloading with the
+		// reserve at zero still hands out RSR_Charge (RSR_FillGo gives it before the
+		// fill is known to have added anything, and RSR_FillA then falls through having
+		// added nothing), and the token is kept when the gun is put away -- so the line
+		// below would skip this magazine step for every reload from then on.
+		PIST E 0 A_JumpIfInventory("BDPistolAmmo", 1, 2)	// rounds in the gun: the charge shortcut is honest
+		PIST E 0 A_TakeInventory("RSR_Charge", 1)
 		PIST E 0 A_JumpIfInventory("RSR_Charge", 1, "RSR_Filled")	// a magazine in, the handle still to pull
 		PIST E 0 A_GiveInventory("RSR_MagOut", 1)	// the magazine drops out (its own sound)
 	RSR_Unload:		// its rounds are held aside (a chambered round stays); they come back when a magazine is home,

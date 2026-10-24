@@ -11,6 +11,9 @@
 // does the same. Either way: BD22's thrown axe (ThrowedAxe, or
 // ThrowedAxeStrong with berserk) leaves the hand with the hand's speed.
 //
+// Two hands on the haft (the engine's own steadying) and the edge leading the swing
+// add a half-strength bite, about 1.5x; a two-handed axe cannot be thrown.
+//
 // The trigger keeps BD22's own chop. Outside VR nothing here does anything and
 // the axe's alt-fire is BD22's sideways swing.
 
@@ -70,6 +73,26 @@ class RSVR_MeleeHandler : EventHandler
 		return false;				// never eaten: the grip keeps whatever else it does
 	}
 
+	// 2026-10-23 (owner): a new map starts clean, as the reload handlers now do. The hand
+	// keeps the blade's last position in the BODY's frame, and the first tic of a new map
+	// would otherwise difference it against where the blade was in the old one -- a large
+	// bogus velocity, which is a phantom swing on spawn. The teleport guard in Tick catches
+	// most of that (a jump over 64 units, or a yaw change over 12 degrees) but neither is
+	// guaranteed across an exit. The lock-on goes too: its target and ring were actors of
+	// the old level.
+	override void WorldLoaded(WorldEvent e)
+	{
+		for (int n = 0; n < MAXPLAYERS; n++)
+		{
+			keyDown[n] = false;	// a grip held through the exit is not a throw readied here
+			if (!hands[n])
+				continue;
+			hands[n].Reset();
+			hands[n].Unlock();
+			hands[n].kind = 0;	// so the next Tick re-reads the weapon rather than trusting it
+		}
+	}
+
 	override void WorldTick()
 	{
 		for (int i = 0; i < MAXPLAYERS; i++)
@@ -91,6 +114,10 @@ class RSVR_MeleeHandler : EventHandler
 			bool trigThrow = RSVR_VRHand.InVR(mo) && RSR.PlayerInt(mo.player, 'rsg_vr', 1) != 0
 				&& mo.player.ReadyWeapon && RSVR_Hand.KindOf(mo) == RSVR_Hand.AXE;
 			mo.SetInventory('RSVR_AxeVRThrow', trigThrow ? 1 : 0);
+			// both hands on the haft: Axe.dec swaps to the shifted placement
+			bool twoUp = RSVR_VRHand.InVR(mo) && mo.player.ReadyWeapon
+				&& RSVR_Hand.KindOf(mo) == RSVR_Hand.AXE && RSVR_VRHand.Steadied(mo);
+			mo.SetInventory('RSVR_AxeTwo', twoUp ? 1 : 0);
 		}
 	}
 
@@ -167,6 +194,9 @@ class RSVR_Hand play
 	Vector3 prevRel;		// 1.11: the blade tip in the BODY's frame last tic (forward, left, up)
 	double lastAngle;
 	int settle;
+	Actor lockTarget;	// the monster painted while a throw is readied
+	Actor lockRing;
+	int poseFrame;		// 0 = one hand, 1 = the two-handed placement
 	int swingTics;
 	int calmTics;
 	int whooshWait;
@@ -188,6 +218,7 @@ class RSVR_Hand play
 
 	transient bool spritesSet;
 	transient SpriteID sAXEG;
+	transient SpriteID sAXE2;
 	transient SpriteID s1XEG;
 	transient SpriteID s2XEG;
 	transient SpriteID s3XEG;
@@ -221,6 +252,7 @@ class RSVR_Hand play
 	void InitSprites()
 	{
 		sAXEG = Actor.GetSpriteIndex('AXEG');
+		sAXE2 = Actor.GetSpriteIndex('AXE2');	// the two-handed placement
 		s1XEG = Actor.GetSpriteIndex('1XEG');
 		s2XEG = Actor.GetSpriteIndex('2XEG');
 		s3XEG = Actor.GetSpriteIndex('3XEG');
@@ -255,7 +287,10 @@ class RSVR_Hand play
 		SpriteID s = psp.Sprite;
 		if (k == SWORD)
 			return s == sDSLA;
-		return s == sAXEG || s == s1XEG || s == s2XEG || s == s3XEG || s == s4XEG || s == s5XEG;
+		// AXE2 is the same axe drawn at the TWO-HANDED placement (MODELDEF, Axe.dec
+		// TwoHand). poseFrame tells Place which transform the blade sits in.
+		poseFrame = s == sAXE2 ? 1 : 0;
+		return s == sAXEG || s == sAXE2 || s == s1XEG || s == s2XEG || s == s3XEG || s == s4XEG || s == s5XEG;
 	}
 
 	static double CVarF(Name n, double def)
@@ -288,9 +323,14 @@ class RSVR_Hand play
 	// the jDoom 90 degree turn, vr_weaponScale; local x right, y up, -z forward.
 	Vector3 Place(Vector3 m)
 	{
-		double f = 0.01 * (ws * m.x - 30 - oz);
+		// The two-handed block moves the model, so the blade must move with it or the
+		// hits stay where the one-handed axe was. Offset.y comes off forward, and
+		// ZOffset off up measured against the shipped block's -5.
+		double sf = poseFrame == 1 ? 8.9584 : 0.0;
+		double su = poseFrame == 1 ? -17.2631 : 0.0;
+		double f = 0.01 * (ws * m.x - 30 - oz - sf);
 		double r = 0.01 * (-ws * m.y + ox);
-		double u = 0.01 * (ws * m.z + oy);
+		double u = 0.01 * (ws * m.z + oy + su);
 		Vector3 w = fF * f + fR * r + fU * u;
 		w.z /= ps;
 		return fH + w * vu;
@@ -331,6 +371,7 @@ class RSVR_Hand play
 		if (k != kind)
 		{
 			Reset();
+			Unlock();	// the axe went away: so does the paint
 			kind = k;
 		}
 		if (k == 0 || !ReadyPose(mo, k) || !Frame(mo))
@@ -472,6 +513,11 @@ class RSVR_Hand play
 			dz.Push(dir.z);
 		}
 
+		// The axe is bladed on ONE side. BladeIn is the top of the head and BladeOut the
+		// cutting edge, so this is where the edge points this tic -- what the two-handed
+		// bite is scored against.
+		Vector3 edge = b1 - a1;
+
 		// strike after the search: the hits spawn gore and kill things
 		for (int i = 0; i < victims.Size(); i++)
 		{
@@ -479,7 +525,7 @@ class RSVR_Hand play
 			if (!t || t.health <= 0)
 				continue;
 			struck.Push(t);
-			Strike(mo, k, t, (hx[i], hy[i], hz[i]), (dx[i], dy[i], dz[i]), power);
+			Strike(mo, k, t, (hx[i], hy[i], hz[i]), (dx[i], dy[i], dz[i]), power, edge);
 		}
 	}
 
@@ -506,7 +552,22 @@ class RSVR_Hand play
 		return tr.HitType == TRACE_HitNone || tr.HitType == TRACE_HitActor;
 	}
 
-	void Strike(PlayerPawn mo, int k, Actor t, Vector3 at, Vector3 dir, double power)
+	// Both hands on the haft AND the cutting edge leading the blow. Two hands alone is
+	// not the reward: the axe has an edge on one side, so what is paid for is landing
+	// it (owner, 2026-10-23, in place of a flat 2x for holding it). Two hands is the
+	// engine's own WF_TWOHANDSTABILIZED, the same flag hands.zs draws the support hand
+	// from, so the damage and the hands the player sees can never disagree.
+	static bool TwoHandedBite(PlayerPawn mo, Vector3 dir, Vector3 edge)
+	{
+		if (!RSVR_VRHand.Steadied(mo))
+			return false;
+		double el = edge.Length(), dl = dir.Length();
+		if (el <= 0 || dl <= 0)
+			return false;
+		return ((dir / dl) dot (edge / el)) >= clamp(Cv(mo, 'rsvr_axe_edge', 0.5), -1.0, 1.0);
+	}
+
+	void Strike(PlayerPawn mo, int k, Actor t, Vector3 at, Vector3 dir, double power, Vector3 edge)
 	{
 		// start BD22's attack just inside the body, at the height the blade met it
 		double rx = at.x - t.pos.x;
@@ -532,6 +593,9 @@ class RSVR_Hand play
 				Launch(mo, 'AxeAttackNoDecal', p, dir);
 			if (power >= 2.4)
 				Launch(mo, 'AxeAttack', p, dir);
+			// half an AxeAttack on top when the edge bites with both hands behind it
+			if (TwoHandedBite(mo, dir, edge))
+				Launch(mo, 'RSVR_AxeHalf', p, dir);
 		}
 		else
 		{
@@ -606,11 +670,18 @@ class RSVR_Hand play
 		// the trigger path (Axe.dec TrigGrip, VR throwing on) holds with the trigger, like the grenade
 		bool held = mo.CountInv('RSVR_AxeTrig') > 0 ? (mo.player.cmd.buttons & BT_ATTACK) != 0 : HoldDown(mo);
 		mo.SetInventory('RSVR_AxeHolding', held ? 1 : 0);
-		if (held)
-			return;
 		let h = RSVR_MeleeHandler.HandOf(mo);
+		if (held)
+		{
+			// winding up: paint what the hand is pointing at
+			if (h)
+				h.LockTick(mo);
+			return;
+		}
 		if (h && h.Throw(mo))
 			mo.SetInventory('RSVR_AxeThrown', 1);
+		if (h)
+			h.Unlock();	// thrown or not, the paint goes with the release
 	}
 
 	// a world point in the body's own frame: forward, left, up (map units)
@@ -621,9 +692,80 @@ class RSVR_Hand play
 		return (d.x * c + d.y * s, -d.x * s + d.y * c, d.z);
 	}
 
+	// Drop the paint and take the ring down.
+	void Unlock()
+	{
+		if (lockRing)
+			lockRing.Destroy();
+		lockRing = null;
+		lockTarget = null;
+	}
+
+	// While the throw is held: paint the monster the hand points at. A lock STAYS locked
+	// until it dies, is lost from sight, or leaves a much wider cone than the one that
+	// took it -- otherwise it flickers off every time the arm moves to wind up. Same
+	// shape as the Quest ShieldSaw's disc locks (ssq/disc.zs).
+	void LockTick(PlayerPawn mo)
+	{
+		if (!Frame(mo) || KindOf(mo) != AXE)
+		{
+			Unlock();
+			return;
+		}
+		double cone = clamp(Cv(mo, 'rsvr_axe_lock_cone', 16.0), 1.0, 90.0);
+		double range = clamp(Cv(mo, 'rsvr_axe_lock_range', 1200.0), 64.0, 8192.0);
+		Vector3 from = fH;
+		Vector3 aim = fF;
+		if (lockTarget)
+		{
+			Vector3 to = lockTarget.pos + (0, 0, lockTarget.height * 0.5) - from;
+			double dist = to.Length();
+			bool keep = lockTarget.health > 0 && dist > 1 && dist <= range * 1.5
+				&& acos(clamp((to / dist) dot aim, -1, 1)) <= cone * 2.2
+				&& mo.CheckSight(lockTarget);
+			if (!keep)
+				Unlock();
+		}
+		if (!lockTarget)
+		{
+			Actor best = null;
+			double bestAng = cone;
+			let it = BlockThingsIterator.CreateFromPos(from.x, from.y, from.z - range, range * 2.0, range, false);
+			while (it.Next())
+			{
+				Actor t = it.thing;
+				if (!t || t == mo || t.player || !t.bISMONSTER || !t.bSHOOTABLE
+					|| t.bFRIENDLY || t.bDORMANT || t.health <= 0)
+					continue;
+				Vector3 to = t.pos + (0, 0, t.height * 0.5) - from;
+				double dist = to.Length();
+				if (dist < 1 || dist > range)
+					continue;
+				double ang = acos(clamp((to / dist) dot aim, -1, 1));
+				if (ang >= bestAng || !mo.CheckSight(t))
+					continue;
+				bestAng = ang;
+				best = t;
+			}
+			if (best)
+			{
+				lockTarget = best;
+				lockRing = Actor.Spawn('RSVR_AxeLock', best.pos + (0, 0, best.height * 0.5), ALLOW_REPLACE);
+				Buzz(mo);	// the hand says the paint landed
+			}
+		}
+		if (lockRing && lockTarget)
+			lockRing.SetOrigin(lockTarget.pos + (0, 0, lockTarget.height * 0.5), true);
+	}
+
 	bool Throw(PlayerPawn mo)
 	{
 		if (KindOf(mo) != AXE || !Frame(mo))
+			return false;
+		// A two-handed axe is not thrown (owner, 2026-10-23). Let go with the off hand and
+		// it is one-handed again, so the throw is back -- the rule follows the grip, and
+		// the same flag that pays the damage withholds the throw.
+		if (RSVR_VRHand.Steadied(mo))
 			return false;
 
 		// fastest step of the axe's edge over the last few tics: people slow
@@ -656,7 +798,17 @@ class RSVR_Hand play
 		Vector3 from = Place(AxeHead());
 		if (!Clear(mo, fH, from))
 			from = fH;
-		dir = AimAssist(mo, from, dir, spd);
+		// a painted target takes the throw; with nothing painted, the old 8-degree assist
+		if (lockTarget && lockTarget.health > 0)
+		{
+			Vector3 to = lockTarget.pos + (0, 0, lockTarget.height * 0.5) - from;
+			double tt = to.Length() / spd;
+			to.z += 0.5 * mo.GetGravity() * tt * tt;
+			if (to.Length() > 0)
+				dir = to.Unit();
+		}
+		else
+			dir = AimAssist(mo, from, dir, spd);
 
 		Name cname = mo.CountInv('PowerStrength') > 0 ? 'ThrowedAxeStrong' : 'ThrowedAxe';
 		class<Actor> cls = cname;
@@ -734,6 +886,7 @@ class RSVR_AxeHold : RSVR_Token {}		// the hold input is down: Ready enters the 
 class RSVR_AxeThrown : RSVR_Token {}
 class RSVR_AxeTrig : RSVR_Token {}
 class RSVR_AxeVRThrow : RSVR_Token {}
+class RSVR_AxeTwo : RSVR_Token {}		// both hands on the haft: the shifted placement
 class RSVR_NotVR : RSVR_Token {}
 
 // a projectile the engine counts as a shot: spawning it buzzes the weapon hand
@@ -754,5 +907,30 @@ class RSVR_Buzz : Actor
 	Spawn:
 		TNT1 A 1;
 		Stop;
+	}
+}
+
+// The ring painted on the monster the axe is aimed at while a throw is readied. The art is
+// the Quest ShieldSaw's own lock mark (ssq/disc.zs SSQ_LockMark), carried here under our
+// own sprite name so the two mods never share a lump -- which is what ShieldSaw did with
+// the saber's UBLK frames. 48x48 drawn at 0.35, billboarded so it is never seen edge-on.
+class RSVR_AxeLock : Actor
+{
+	Default
+	{
+		+NOINTERACTION
+		+NOBLOCKMAP
+		+NOGRAVITY
+		+NOTONAUTOMAP
+		+FORCEXYBILLBOARD
+		RenderStyle "Add";
+		Alpha 0.95;
+		Scale 0.35;
+	}
+	States
+	{
+	Spawn:
+		RQLK ABCD 3 Bright;
+		Loop;
 	}
 }

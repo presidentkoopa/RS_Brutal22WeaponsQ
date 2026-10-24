@@ -6,6 +6,12 @@ user int rsr_pouch = 0;				// where a new magazine is taken: 0 anywhere 20 cm fr
 user bool rsr_eat_grip = true;		// while a reload has the off hand, its grip key does nothing else (rthumb is +speed in some layouts)
 user bool rsr_debug = false;		// print every key code pressed, and each reload step
 
+// 1.93: take the charging handle / slide with no reload running, so the action can be cracked
+// open on a loaded gun and let go again (a press check). A look, not a rack: no ammo moves and
+// nothing chambers. Needs "Grab ammo with" set to the trigger or the grip, because the Use key
+// is only taken over while a reload has the off hand.
+user bool rsr_freecharge = false;
+
 // Reload assist (zscript/rsr/rsr_assist.zs): one number scales every capture radius and
 // tolerance of the real VR reload at once, and how little of a push or a stroke counts as
 // done. 1.0 is the shipped feel; 0.5 asks for the old precision; 3.0 is very forgiving.

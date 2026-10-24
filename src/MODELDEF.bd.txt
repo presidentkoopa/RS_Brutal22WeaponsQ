@@ -3194,6 +3194,23 @@ Model ThrowedAxeStrong
 }
 
 // BrutalAxeOnWall -- axe stuck in a wall: head forward (pitched down 51) into the wall, handle toward the thrower
+// 2026-10-23: the axe held in TWO hands. Same mesh and same frame as the block above; only
+// the placement differs, so the weapon hand grips under the head instead of at the butt and
+// the blade comes back toward the player. Keyed on frame B because MODELDEF blocks are
+// picked by (sprite, frame), and AXEG A..U are every one already taken by the block above.
+// Solved in kit team/melee_hands/work/axe_shift.py: head grip 0.00 cm from the controller.
+Model BrutalAxe
+{
+   Path "models/bd/BrutalAxe"
+   Model 0 "BrutalAxe.md3"
+   Skin 0 "BrutalAxe.png"
+   Scale -1.0 1.0 1.0
+   Offset 0.0 8.9584 0.0
+   NoInterpolation
+   ZOffset -22.2631
+   FrameIndex	AXE2	A	0	5
+}
+
 Model BrutalAxeOnWall
 {
    Path "models/bd/BrutalAxe"

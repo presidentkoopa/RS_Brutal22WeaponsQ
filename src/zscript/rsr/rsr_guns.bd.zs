@@ -4,6 +4,10 @@
 
 class RSR_Guns abstract
 {
+	// 1.93: the Ruger Mini-14 Ranch, measured from models/bd/XM21/XM21.md3 through rgeo.py
+	// (index 8). Every other index is still the generator's. Re-run gen_rsr.py when the
+	// gun goes through the real reload survey and these are what it should reproduce.
+
 	clearscope static int Count() { return 9; }
 
 	clearscope static int Index(Weapon w)
@@ -35,7 +39,7 @@ class RSR_Guns abstract
 		case 5:	return (15.600, 0.000, -4.200);
 		case 6:	return (22.100, 0.000, -3.500);
 		case 7:	return (12.600, 0.000, -10.000);
-		case 8:	return (11.600, 0.600, 3.200);
+		case 8:	return (13.094, 0.244, 4.909);	// 1.93 Ruger (was (11.600, 0.600, 3.200))
 		case 9:	return (-12.200, 2.200, 6.700);
 		}
 		return (0, 0, 0);
@@ -53,7 +57,7 @@ class RSR_Guns abstract
 		case 5:	return (-0.000, 0.002, 1.000);
 		case 6:	return (0.001, -0.000, 1.000);
 		case 7:	return (-0.192, 0.132, 0.973);
-		case 8:	return (-0.066, -0.149, 0.987);
+		case 8:	return (-0.093, -0.003, 0.996);	// 1.93 Ruger (was (-0.066, -0.149, 0.987))
 		case 9:	return (-0.000, 0.932, -0.362);
 		}
 		return (0, 0, 0);
@@ -71,7 +75,7 @@ class RSR_Guns abstract
 		case 5:	return 0.90;
 		case 6:	return 4.40;
 		case 7:	return 3.60;
-		case 8:	return 5.30;
+		case 8:	return 5.90;	// 1.93 Ruger (was 5.30)
 		case 9:	return 9.10;
 		}
 		return 0;
@@ -88,7 +92,7 @@ class RSR_Guns abstract
 		case 5:	return 11.80;
 		case 6:	return 10.10;
 		case 7:	return 12.50;
-		case 8:	return 17.37;
+		case 8:	return 13.20;	// 1.93 Ruger (was 17.37)
 		case 9:	return 22.59;
 		}
 		return 0;
@@ -105,7 +109,7 @@ class RSR_Guns abstract
 		case 5:	return (14.803, -0.113, -2.882);
 		case 6:	return (21.035, 0.043, -7.475);
 		case 7:	return (18.946, -0.000, -14.794);
-		case 8:	return (12.381, 0.533, -9.588);
+		case 8:	return (13.554, 0.257, -0.027);	// 1.93 Ruger (was (12.381, 0.533, -9.588))
 		case 9:	return (-11.955, -8.010, 11.389);
 		}
 		return (0, 0, 0);
@@ -123,7 +127,7 @@ class RSR_Guns abstract
 		case 5:	return (-0.577, 3.877, 4.202);
 		case 6:	return (-0.419, 3.857, 5.100);
 		case 7:	return (-5.958, 3.656, 5.045);
-		case 8:	return (-1.428, 4.182, 9.594);
+		case 8:	return (-0.703, 3.900, 7.946);	// 1.93 Ruger (was (-1.428, 4.182, 9.594))
 		case 9:	return (-0.911, 18.899, -9.154);
 		}
 		return (0, 0, 0);
@@ -141,7 +145,7 @@ class RSR_Guns abstract
 		case 5:	return (3.877, 8.402, 16.177);
 		case 6:	return (3.857, 8.600, 22.519);
 		case 7:	return (3.656, 15.045, 18.558);
-		case 8:	return (2.653, 4.736, 9.650);
+		case 8:	return (0.349, 0.134, 1.301);	// 1.93 Ruger (was (2.653, 4.736, 9.650))
 		case 9:	return (16.699, -15.854, -11.289);
 		}
 		return (0, 0, 0);
@@ -159,7 +163,7 @@ class RSR_Guns abstract
 		case 5:	return (-0.002, -1.000, -0.000);
 		case 6:	return (0.000, -1.000, 0.001);
 		case 7:	return (-0.132, -0.973, -0.192);
-		case 8:	return (0.110, -0.731, -0.049);
+		case 8:	return (0.000, -0.095, -0.009);	// 1.93 Ruger (was (0.110, -0.731, -0.049))
 		case 9:	return (-0.932, 0.362, -0.000);
 		}
 		return (0, 0, 0);
@@ -194,7 +198,7 @@ class RSR_Guns abstract
 		case 5:	return (11.700, -0.700, -0.800);
 		case 6:	return (0.000, 0.000, 0.000);
 		case 7:	return (0.000, 0.000, 0.000);
-		case 8:	return (-4.600, -0.300, 10.200);
+		case 8:	return (13.854, -2.495, 4.366);	// 1.93 Ruger (was (-4.600, -0.300, 10.200))
 		case 9:	return (0.000, 0.000, 0.000);
 		}
 		return (0, 0, 0);
@@ -211,7 +215,7 @@ class RSR_Guns abstract
 		case 5:	return (-1.000, 0.000, 0.000);
 		case 6:	return (-1.000, 0.000, 0.000);
 		case 7:	return (-1.000, 0.000, 0.000);
-		case 8:	return (-1.000, 0.000, -0.000);
+		case 8:	return (-0.999, -0.053, 0.007);	// 1.93 Ruger (was (-1.000, 0.000, -0.000))
 		case 9:	return (-1.000, 0.000, 0.000);
 		}
 		return (0, 0, 0);
@@ -228,7 +232,7 @@ class RSR_Guns abstract
 		case 5:	return 10.20;
 		case 6:	return 0.00;
 		case 7:	return 0.00;
-		case 8:	return 7.60;
+		case 8:	return 9.50;	// 1.93 Ruger (was 7.60)
 		case 9:	return 0.00;
 		}
 		return 0;
@@ -246,7 +250,7 @@ class RSR_Guns abstract
 		case 5:	return (0.000, 0.000, 1.000);
 		case 6:	return (0.000, 0.000, 1.000);
 		case 7:	return (0.000, 0.000, 1.000);
-		case 8:	return (0.000, -0.000, 0.741);
+		case 8:	return (-0.005, 0.001, 0.095);	// 1.93 Ruger (was (0.000, -0.000, 0.741))
 		case 9:	return (0.000, 0.000, 1.000);
 		}
 		return (0, 0, 0);
@@ -263,7 +267,7 @@ class RSR_Guns abstract
 		case 5:	return 0.000;
 		case 6:	return 0.000;
 		case 7:	return 0.000;
-		case 8:	return 0.000;
+		case 8:	return 1.000;	// 1.93 Ruger (was 0.000)
 		case 9:	return 0.000;
 		}
 		return 0;
@@ -350,7 +354,7 @@ class RSR_Guns abstract
 		case 5:	return (-1.000, 1.000, 1.000);
 		case 6:	return (-1.000, 1.000, 1.000);
 		case 7:	return (-1.000, 1.000, 1.000);
-		case 8:	return (-1.350, 1.350, 1.350);
+		case 8:	return (-10.485, 10.485, 10.485);	// 1.93 Ruger (was (-1.350, 1.350, 1.350))
 		case 9:	return (-1.000, 1.000, 1.000);
 		}
 		return (0, 0, 0);
@@ -368,7 +372,7 @@ class RSR_Guns abstract
 		case 5:	return (0.000, 0.000, -5.000);
 		case 6:	return (0.000, 0.000, -5.000);
 		case 7:	return (0.000, 0.000, -5.000);
-		case 8:	return (6.499, -3.835, 10.913);
+		case 8:	return (-0.282, -44.547, -6.316);	// 1.93 Ruger (was (6.499, -3.835, 10.913))
 		case 9:	return (0.000, 0.000, -5.000);
 		}
 		return (0, 0, 0);
@@ -648,7 +652,7 @@ class RSR_GunSprites : Actor
 		RQZP A 0;
 		RQZW A 0;
 		RQKM AB 0;	// BD22/Sniper
-		RQKP AB 0;
+		RQKP ABC 0;	// 1.93: C is the bolt, which the Ruger has and the old mesh did not
 		RQKW A 0;
 		RQDM A 0;	// BD22/Rocket_Launcher
 		RQDP A 0;

@@ -17,3 +17,16 @@ user int rsvr_axe_hold = 16;
 // Empty by default. Turn on Print each reload step (rsr_debug) and press your grip to read its
 // code, then put it here.
 user string rsvr_axe_keys = "";
+
+// Two-handed axe: how squarely the cutting edge must lead the swing before the second
+// hand is worth anything. 0.5 is about 60 degrees off the edge; 1.0 demands a perfect
+// edge-on blow, 0 pays for any direction. The axe is bladed on one side, so holding it
+// with both hands is not the reward -- landing the edge is (owner, 2026-10-23).
+user float rsvr_axe_edge = 0.5;
+
+// Axe lock-on (one-handed throw). Hold the throw and the axe paints the monster your
+// hand is pointing at; release into the throw and it goes there. The cone is how far
+// off your aim a target may be to be picked up; a lock already made is kept out to
+// a little over twice that before it drops, so it does not flicker as you wind up.
+user float rsvr_axe_lock_cone = 16.0;
+user float rsvr_axe_lock_range = 1200.0;

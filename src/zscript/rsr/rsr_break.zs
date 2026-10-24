@@ -1393,6 +1393,21 @@ class RSB_Handler : EventHandler
 		return s.tR0, s.tR1, s.tR2;
 	}
 
+	// 2026-10-23 (owner): a new map starts clean. Level.maptime restarts at 0, so anything
+	// still half-done across an exit is timed against a clock that no longer exists, and some
+	// of it could never finish. This is the quiet put-away -- NOT Abort(), which drops the
+	// magazine or shell into the world and would litter the new map. Fires for a loaded
+	// savegame too, which is wanted.
+	override void WorldLoaded(WorldEvent e)
+	{
+		for (int n = 0; n < MAXPLAYERS; n++)
+		{
+			if (!playeringame[n] || !players[n].mo || !st[n])
+				continue;
+			st[n].End(players[n].mo);
+		}
+	}
+
 	override void WorldTick()
 	{
 		int now = Level.maptime;

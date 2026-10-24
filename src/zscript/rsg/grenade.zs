@@ -11,6 +11,33 @@ class RSG_Handler : EventHandler
 {
 	RSG_State st[MAXPLAYERS];
 
+	// 2026-10-23: rsr/vreload.zs InputProcess asks this before it decides what to do with the Use
+	// key. A grenade in the hand wants the ring, so Use has to reach the grenade too. Reads the
+	// field Step() set this tic, the way RSP_Handler.Busy and RSB_Handler.Busy do.
+	clearscope static bool WantsGrab(int n)
+	{
+		let h = RSG_Handler(EventHandler.Find('RSG_Handler'));
+		if (!h || n < 0 || n >= MAXPLAYERS)
+			return false;
+		let s = h.st[n];
+		return s && s.wantGrab;
+	}
+
+	// 2026-10-23 (owner): a new map starts clean. Level.maptime restarts at 0, so anything
+	// still half-done across an exit is timed against a clock that no longer exists, and some
+	// of it could never finish. This is the quiet put-away -- NOT Abort(), which drops the
+	// magazine or shell into the world and would litter the new map. Fires for a loaded
+	// savegame too, which is wanted.
+	override void WorldLoaded(WorldEvent e)
+	{
+		for (int n = 0; n < MAXPLAYERS; n++)
+		{
+			if (!playeringame[n] || !players[n].mo || !st[n])
+				continue;
+			st[n].Reset(players[n].mo);
+		}
+	}
+
 	override void WorldTick()
 	{
 		for (int n = 0; n < MAXPLAYERS; n++)
@@ -36,6 +63,8 @@ class RSG_State play
 	const RING_U = 4.18;
 
 	RSR_State geo;
+	bool wantGrab;		// 2026-10-23: a grenade is in hand and wants the off-hand grab (read from
+						// ui by RSG_Handler.WantsGrab, as the other modules' Busy() are)
 	bool armed;			// pin out
 	bool ringHeld;
 	bool ringKept;		// the pulled ring is still in the off hand (until its grab lets go)
@@ -43,7 +72,7 @@ class RSG_State play
 	int cookTic;
 	bool trigPrev, grabPrev;
 	int gripPrevPresses;
-	double hx[HIST], hy[HIST], hz[HIST], px[HIST], py[HIST], pz[HIST];
+	double hx[HIST], hy[HIST], hz[HIST];	// the hand in the BODY's frame: forward, left, up
 	int head, count;
 
 	static class<Actor> Cls(Name n) { class<Actor> c = n; return c; }
@@ -89,6 +118,7 @@ class RSG_State play
 	void Step(PlayerPawn mo)
 	{
 		bool want = Wanted(mo);
+		wantGrab = want;
 		mo.SetInventory('RSG_VR', want ? 1 : 0);
 		if (!want)
 		{
@@ -103,17 +133,31 @@ class RSG_State play
 			geo = new('RSR_State');
 		geo.Frames(mo);
 
-		// the hand's path, for the throw
+		// The hand's path, for the throw. 2026-10-23: this kept the hand in WORLD space and took
+		// the pawn's movement out a tic later -- the method rsq/fists.zs threw out in 1.5, because
+		// a TURN swings the hand round the player and the controller's sample lands a tic apart
+		// from the body's. Turning read as a throw and a real throw read weak. Measured in the
+		// BODY'S OWN FRAME instead (forward, left, up), as the fists are: walking, strafing and
+		// turning now move nothing.
 		head = (head + 1) % HIST;
-		Vector3 hp = RSVR_VRHand.HandPos(mo);
-		hx[head] = hp.x; hy[head] = hp.y; hz[head] = hp.z;
-		px[head] = mo.pos.x; py[head] = mo.pos.y; pz[head] = mo.pos.z;
+		Vector3 hp = RSVR_VRHand.HandPos(mo) - mo.pos;
+		double bc = cos(mo.angle), bs = sin(mo.angle);
+		hx[head] = hp.x * bc + hp.y * bs;
+		hy[head] = -hp.x * bs + hp.y * bc;
+		hz[head] = hp.z;
 		count = min(count + 1, HIST);
 
-		// the off hand's grab: its trigger, or the grip
+		// the off hand's grab: whatever "Grab ammo with" is set to. 2026-10-23: this read
+		// rsr_grab_buttons raw and never looked at netUse, so with the Use key chosen (1.17,
+		// rsr_grab_with 2) the ring could not be taken at all -- the pin pull was simply dead.
+		// RSR.GrabMask is the same rule the reload uses: the trigger only when it is the choice.
+		// The grip is taken PLAIN here, without the reload's gripFree guard: that guard exists so a
+		// grip press near a GUN does not fight the engine's two-hand steadying, and the ring sits
+		// 7.6 cm from the gun hand -- well inside the 50 cm steadying range -- so the guard would
+		// make the grip mode structurally unable to ever reach the ring. There is no gun to steady.
 		let rs = RSR_ReloadHandler.StateOf(mo);
-		int mask = RSR.PlayerInt(mo.player, 'rsr_grab_buttons', BT_OFFHANDATTACK);
-		bool grab = (mo.player.cmd.buttons & mask) != 0 || rs && rs.netGrip;
+		int mask = RSR.GrabMask(mo.player);
+		bool grab = (mo.player.cmd.buttons & mask) != 0 || rs && (rs.netGrip || rs.netUse);
 		bool grabPress = grab && !grabPrev;
 		grabPrev = grab;
 		if (!grab)
@@ -171,6 +215,15 @@ class RSG_State play
 		}
 
 		int cooked = now - cookTic;
+		// 2026-10-23: Level.maptime restarts at 0 on a level change, so a fuse lit before an
+		// exit reads as a hugely negative cook, never reaches FUSE, and the live grenade sits
+		// in the hand for good -- it can neither go off nor be re-pinned. Re-base the cook
+		// rather than latch; the player keeps the grenade and loses only the burn.
+		if (cooked < 0)
+		{
+			cookTic = now;
+			cooked = 0;
+		}
 		if (cooked >= FUSE)
 		{
 			Boom(mo);
@@ -180,7 +233,8 @@ class RSG_State play
 			Throw(mo, cooked, false);
 	}
 
-	// the fastest step of the hand over the last tics, less the player's own movement
+	// the fastest step of the hand over the last tics, in the BODY'S frame (forward, left, up),
+	// so the player's own walking and turning are already out of it
 	Vector3 Swing(out double best)
 	{
 		best = 0;
@@ -189,12 +243,11 @@ class RSG_State play
 		{
 			int a = (head - i + HIST) % HIST, b = (head - i - 1 + HIST) % HIST;
 			Vector3 v = (hx[a] - hx[b], hy[a] - hy[b], hz[a] - hz[b]);
-			Vector3 m = (px[a] - px[b], py[a] - py[b], pz[a] - pz[b]);
-			double rel = (v - m).Length();
+			double rel = v.Length();
 			if (rel > best)
 			{
 				best = rel;
-				vel = v - m;
+				vel = v;
 			}
 		}
 		return vel;
@@ -210,8 +263,15 @@ class RSG_State play
 		class<Actor> gc = Cls('HandGrenade');
 		if (!gc)
 			return false;
-		Vector3 dir = best > 0.01 ? vel.Unit() : geo.F;
-		double spd = clamp(best * 2.2, 3, 32);
+		// Swing() is in the body's frame: turn it back into the world before it is a direction.
+		double bc = cos(mo.angle), bs = sin(mo.angle);
+		Vector3 world = (vel.x * bc - vel.y * bs, vel.x * bs + vel.y * bc, vel.z);
+		Vector3 dir = best > 0.01 ? world.Unit() : geo.F;
+		// 2026-10-23: was clamp(best * 2.2, 3, 32). best is map units per TIC, so a brisk 2.5 m/s
+		// throw is 2.43 units/tic and came out at speed 5 -- a dribble, and the ceiling of 32 was
+		// unreachable at any human arm speed. Matched to the axe throw in rsvr/melee.zs, which
+		// works: a floor you can feel, and a reachable top end.
+		double spd = clamp(best * 3.0, 14, 42);
 		let g = Actor.Spawn(gc, RSVR_VRHand.HandPos(mo), ALLOW_REPLACE);
 		if (!g)
 			return false;

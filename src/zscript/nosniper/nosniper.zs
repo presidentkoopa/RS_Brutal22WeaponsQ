@@ -6,7 +6,7 @@
 class RSQ_NoSniper : EventHandler
 {
 	static const Name gone[] = {
-		'Sniper', 'PuristSniper',									// sniper rifle
+	//	'Sniper', 'PuristSniper',									// 1.93: BACK ON (and its instead[] row below)
 		'MP40', 'PuristMP40',										// MP40
 		'MG42', 'PuristMG42',										// MG42 "buzzsaw"
 		'Devastator', 'PuristDevastator',							// Devastator
@@ -14,7 +14,7 @@ class RSQ_NoSniper : EventHandler
 		'FlameCannon', 'PuristFlameCannon', 'DualFlameCannon'		// flame cannon
 	};
 	static const Name instead[] = {
-		'Rifle', 'PuristRifle',
+	//	'Rifle', 'PuristRifle',										// 1.93: the sniper's stand-in, off with it
 		'BrutalSMG', 'PuristSMG',
 		'Minigun', 'PuristMinigun',
 		'Rocket_Launcher', 'PuristRocket_Launcher',
@@ -24,9 +24,10 @@ class RSQ_NoSniper : EventHandler
 
 	// 1.6 (owner): "Allow extra weapons with cheats" (rsq_extra_weapons, menu). On, these come
 	// back through cheats (give all, idkfa, give <name>): the MP40, the MG42 "buzzsaw", the flame cannon, the
-	// Devastator and the Hellish missile launcher. The sniper stays out for good (owner,
-	// 2026-10-16: its model is gone from the pack). Maps still spawn the
-	// stand-ins either way.
+	// Devastator and the Hellish missile launcher. Maps still spawn the stand-ins either way.
+	// 1.93 (owner): the SNIPER IS BACK ON. Its rows in gone[] / instead[] and its SniperAmmo
+	// line are commented out, so it is a normal weapon again and needs no cheat. It was only
+	// switched off on 2026-10-16 because its model had gone from the pack.
 	static const Name extra[] = { 'MP40', 'PuristMP40', 'MG42', 'PuristMG42', 'Devastator', 'PuristDevastator',
 		'HellishMissileLauncher', 'PuristHellishMissileLauncher', 
 		'FlameCannon', 'PuristFlameCannon', 'DualFlameCannon' };
@@ -69,8 +70,8 @@ class RSQ_NoSniper : EventHandler
 				return;
 			}
 		}
-		if (n == 'SniperAmmo')				e.Replacement = Find('Clip2');			// sniper
-		else if (n == 'MP40Spawner')		e.Replacement = Find('BrutalSMG');		// MP40
+	//	if (n == 'SniperAmmo')				e.Replacement = Find('Clip2');			// 1.93: sniper ammo is itself again
+		if (n == 'MP40Spawner')				e.Replacement = Find('BrutalSMG');		// MP40 (1.93: chain head now)
 		else if (n == 'MG42Spawner')		e.Replacement = Find('Minigun');		// MG42
 		else if (n == 'DevastatorSpawner')	e.Replacement = Find('Rocket_Launcher');	// Devastator
 		else if (n == 'HMLSpawner')			e.Replacement = Find('Rocket_Launcher');	// Hellish

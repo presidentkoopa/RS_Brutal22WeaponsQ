@@ -139,6 +139,14 @@ ACTOR BrutalAxe : BrutalWeapon
 
 	
 	
+	// the axe in two hands: the AXE2 sprite is the shifted placement (MODELDEF), and
+	// melee.zs reads the sprite to know which one is live. Falls back to Ready the
+	// moment the off hand lets go.
+	TwoHand:
+		AXE2 A 1 A_WeaponReady
+		"####" "#" 0 A_JumpIfInventory("RSVR_AxeTwo", 1, "TwoHand")
+		Goto Ready
+
 	Select:
 		TNT1 A 0 A_Giveinventory("GoSpecial",1)
 		TNT1 A 0 A_GiveInventory("TokenCleaner")
@@ -175,6 +183,10 @@ ACTOR BrutalAxe : BrutalWeapon
 		// throw, not just alt-fire. Added after IsRunning on purpose: "Goto Ready+6" above
 		// counts state entries from Ready, so nothing may be inserted before this point.
 		"####" A 0 A_JumpIfInventory("RSVR_AxeHold", 1, "AltGrip")
+		// 2026-10-23: both hands on the haft -> the AXE2 sprite, which MODELDEF draws at the
+		// two-handed placement. After the AxeHold jump on purpose: "Goto Ready+6" counts
+		// state entries from Ready, so nothing may be inserted above this point.
+		"####" A 0 A_JumpIfInventory("RSVR_AxeTwo", 1, "TwoHand")
 		"####" A 1 A_WeaponReady
 		Goto Ready+6//Loop
 
@@ -587,6 +599,26 @@ ACTOR AxeAttackNoDecal : AxeAttack
 	Decal "none" 
 	Speed 40 
 	+RIPPER 
+	states
+	{
+	Spawn:
+	Crash:
+	Death:
+	XDeath:
+	Melee:
+		TNT1 A 1
+		Stop
+	}
+}
+
+// Half an AxeAttack. The two-handed axe adds one of these when the cutting edge leads
+// the swing (zscript/rsvr/melee.zs TwoHandedBite): 22.5 + 11.5, about 1.5x in all.
+// Stripped states like AxeAttackNoDecal so the extra bite does not double the sparks,
+// the quake or the clang.
+ACTOR RSVR_AxeHalf : AxeAttack
+{
+	Decal "none"
+	Damage (random(10,13))
 	states
 	{
 	Spawn:

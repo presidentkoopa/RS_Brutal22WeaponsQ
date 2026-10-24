@@ -505,6 +505,21 @@ class RSK_M203Handler : EventHandler
 		return t + RSM_Geo.FwdHook() * pl, r;
 	}
 
+	// 2026-10-23 (owner): a new map starts clean. Level.maptime restarts at 0, so anything
+	// still half-done across an exit is timed against a clock that no longer exists, and some
+	// of it could never finish. This is the quiet put-away -- NOT Abort(), which drops the
+	// magazine or shell into the world and would litter the new map. Fires for a loaded
+	// savegame too, which is wanted.
+	override void WorldLoaded(WorldEvent e)
+	{
+		for (int n = 0; n < MAXPLAYERS; n++)
+		{
+			if (!playeringame[n] || !players[n].mo || !st[n])
+				continue;
+			st[n].Reset();
+		}
+	}
+
 	override void WorldTick()
 	{
 		for (int n = 0; n < MAXPLAYERS; n++)

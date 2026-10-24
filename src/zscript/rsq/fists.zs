@@ -14,6 +14,32 @@ class RSQ_Fists : EventHandler
 
 	static Class<Actor> Cls(Name n) { class<Actor> c = n; return c; }
 
+	// 2026-10-23 (owner: "that way we can punch open switches n shit"): a blow that lands on a
+	// switch or any usable line works it, at the fist's own reach instead of the engine's 64-unit
+	// use range -- you hit the thing where your arm actually is.
+	//
+	// The LINE'S SPECIAL decides, not its texture. There is no script query for the SWITCHES list,
+	// and a line with no special is not usable however it is painted; a line WITH one is usable
+	// whatever texture it wears. TRF_ABSPOSITION so the three "offsets" are the coordinates: with
+	// OverrideAttackPosDir on (always, in VR) a non-zero offset otherwise reads uninitialised stack
+	// (p_map.cpp:5181, DVector3 startpos declared and never set).
+	const USE_REACH = 30.0;		// map units from the fist
+
+	static void PunchUse(PlayerPawn mo, Vector3 from, Vector3 dir)
+	{
+		if (!mo || RSQ.PlayerInt(mo, 'rsq_punch_use', 1) == 0)
+			return;
+		FLineTraceData d;
+		double ang = VectorAngle(dir.x, dir.y);
+		double pit = -asin(clamp(dir.z, -1, 1));
+		if (!mo.LineTrace(ang, USE_REACH, pit, TRF_ABSPOSITION, from.z, from.x, from.y, d))
+			return;
+		if (d.HitType != TRACE_HitWall || !d.HitLine || d.HitLine.special == 0)
+			return;
+		if (!d.HitLine.Activate(mo, d.LineSide, SPAC_Use))
+			d.HitLine.Activate(mo, d.LineSide, SPAC_Push);	// some lines are push, not use
+	}
+
 	override void WorldTick()
 	{
 		for (int n = 0; n < MAXPLAYERS; n++)
@@ -111,9 +137,14 @@ class RSQ_FistHand play
 		}
 		if (speed < thr || v.x / speed < FORWARD || lf < FRONT * vu)
 			return;
+		// 2026-10-23: fx is a RING -- the live samples are at head, head-1, ... modulo HIST,
+		// which is how grenade.zs, melee.zs and flick.zs all read theirs. Indexing it
+		// linearly read stale entries from the last time the fists were out (count resets
+		// to 0 but fx is never cleared) and missed live ones, so `back` could be a leftover
+		// 0 and this test passed on any twitch for the first few tics after drawing them.
 		double back = lf;
 		for (int i = 0; i < count; i++)
-			back = min(back, fx[i]);
+			back = min(back, fx[(head - i + HIST) % HIST]);
 		if (lf - back < JAB_LEN * vu)
 			return;
 
@@ -132,6 +163,7 @@ class RSQ_FistHand play
 		a.angle = VectorAngle(dir.x, dir.y);
 		a.pitch = -asin(clamp(dir.z, -1, 1));
 		a.vel = dir * REACH;
+		RSQ_Fists.PunchUse(mo, hand, dir);
 		mo.A_StartSound("Melee/Swing", CHAN_AUTO, CHANF_OVERLAP);
 	}
 }

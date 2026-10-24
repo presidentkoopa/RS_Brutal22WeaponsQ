@@ -52,6 +52,8 @@ Model RSQ_GunSide
 	FrameIndex RQGU P 0 41	// trigger squeezed
 	FrameIndex RQGT Q 0 42	// index finger on the trigger
 	FrameIndex RQGU Q 0 43	// trigger squeezed
+	FrameIndex RQGT R 0 44	// index finger on the trigger
+	FrameIndex RQGU R 0 45	// trigger squeezed
 }
 
 Model RSQ_GunSide
