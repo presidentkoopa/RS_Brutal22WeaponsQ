@@ -46,6 +46,13 @@ options menu to get them through cheats (give all, idkfa).
 
 Built and tested on PCVR QuestZDoom 17.x.
 
+## Versions
+
+Public releases are numbered 1.9x and are the only tags on this repo; `main` is always
+the latest public release plus any fixes on their way to the next one. Work in progress lives
+on the `dev` branch under internal 2.x numbers. There is no public 2.0 until that work is
+finished and played, so a 2.x number in a commit message is not a release.
+
 
 ## What's new in 1.96b
 
