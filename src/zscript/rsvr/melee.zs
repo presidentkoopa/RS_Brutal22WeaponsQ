@@ -421,7 +421,13 @@ class RSVR_Hand play
 		// being wildly oversensitive (owner, 2026-10-13). Motion that is mostly upward is the
 		// player winding up, so it does not cut, and it falls through to the calm branch below
 		// so the downswing that follows is a fresh swing with a cleared strike list.
-		double rise = speed > 0 ? vel.z / speed : 0;
+		// A PLAIN IF, not a ternary. "speed > 0 ? vel.z / speed : 0" reads as guarded and is
+		// not: the JIT does not short-circuit a ternary, so the division runs even when speed
+		// is zero and the VM aborts -- which is exactly what happened with the sword in hand
+		// during bullet time, where a tic can pass with the blade not having moved at all.
+		double rise = 0;
+		if (speed > 0)
+			rise = vel.z / speed;
 		// 2026-10-16 (owner): NO hits on the upswing. Only a level or downward blade cuts
 		// (rsvr_melee_up, default 0.15: about 9 degrees up at most; it was 0.55, about 33).
 		// 1.11 (owner): "swinging an axe DOWNWARD meaningfully". A blow must now point down by at
