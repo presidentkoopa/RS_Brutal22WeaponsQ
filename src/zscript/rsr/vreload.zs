@@ -888,7 +888,8 @@ class RSR_Start : RSR_Call
 	{
 		let w = mo.player.ReadyWeapon;
 		int i = RSR_Guns.Index(w);
-		if (!s || i <= 0 || !RSR_ReloadHandler.Wanted(mo))
+		if (!s || i <= 0 || !RSR_ReloadHandler.Wanted(mo)
+			|| RSQ_Counters.IsNonStd(w) && !RSQ_Counters.NonStdOn(mo))	// 1.99x: "Reload Non-Standard Guns" off
 		{
 			// say why: this used to fail silently, and a stale off-hand weapon killed
 			// reloading for the rest of the life with nothing on screen to show it
@@ -1065,6 +1066,21 @@ class RSR_ReloadHandler : EventHandler
 		return mo && mo.player && RSR.PlayerInt(mo.player, 'rsr_reload', 0) == 1 && RSVR_VRHand.InVR(mo);
 	}
 
+	// 1.99x item 10: which of Ermac's ammo_hand holds takes the part. Frame 3 (his chaingun magazine,
+	// "RsrHold") for every gun but the two whose part is a big block: the Nuker's warhead block and the
+	// Hellish launcher's drum take frame 6, his BFG pod hold ("RsrHoldPod"). Each part was fitted to its
+	// frame's own contact patch (translation only), so TopInHand / HandHook belong to that frame.
+	clearscope static String HoldState(int i)
+	{
+		switch (i)
+		{
+		case 15:
+		case 16:
+			return "RsrHoldPod";
+		}
+		return "RsrHold";
+	}
+
 	// rsq/hands.zs: the free hand's state while a reload has it ("" = not busy)
 	clearscope static String FreeHand(Actor mo)
 	{
@@ -1079,7 +1095,7 @@ class RSR_ReloadHandler : EventHandler
 		{
 		case RSR.CARRY:
 		case RSR.INSERT:
-			return "RsrHold";		// Ermac's hold, round the magazine (layer 2201 is the magazine)
+			return RSR_ReloadHandler.HoldState(s.gun);	// Ermac's hold, round the magazine (layer 2201 is the magazine)
 		case RSR.PULL:
 		case RSR.RELEASED:
 			return "AmmoH";			// a closed hand round the handle

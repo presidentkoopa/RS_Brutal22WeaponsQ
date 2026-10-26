@@ -30,9 +30,17 @@ class RSQ_Counters : EventHandler
 				if (!mag || !res || !empty || !fill || !nomag) continue;
 				bool held = w && w.GetClassName() == GUN[g];
 				int r = mo.CountInv(res);
-				if (!held || !RSR_ReloadHandler.WantsHands(mo))
+				if (!held || !RSR_ReloadHandler.WantsHands(mo) || !NonStdOn(mo))
 				{
 					mo.TakeInventory(empty, 1);
+					// 1.99x "Reload Non-Standard Guns" off: no magazine left out of the gun either
+					// (a reload switched off half way), and the counter starts again from the
+					// reserve when it is switched back on
+					if (held && !NonStdOn(mo))
+					{
+						mo.TakeInventory(nomag, 1);
+						inited[pn][g] = false;
+					}
 					lastRes[pn][g] = r;
 					continue;
 				}
@@ -56,6 +64,26 @@ class RSQ_Counters : EventHandler
 				lastRes[pn][g] = r;
 			}
 		}
+	}
+
+	// 1.99x (owner): "Reload Non-Standard Guns" (rsq_reload_nonstd). Non-standard = the guns in GUN[]:
+	// Brutal Doom gives them no reload (parsed from brutal22test6: MG42, MiniGun, IncendiaryLauncher,
+	// Unmaker, Devastator, NukeLauncher, HellishMissileLauncher have no Reload state; Flamethrower2's
+	// "Reload" is only its dry-ready loop; the BD21 Machinegun's reloads only its grenade). Off: these
+	// guns are Brutal Doom's -- no counter, no empty guard, and RSR_Start refuses them (vreload.zs).
+	static bool IsNonStd(Weapon w)
+	{
+		if (!w)
+			return false;
+		// the same nine as GUN[] (a static function cannot read the handler's static array on 17.3)
+		Name n = w.GetClassName();
+		return n == 'MG42' || n == 'Flamethrower2' || n == 'IncendiaryLauncher' || n == 'Machinegun' || n == 'Unmaker'
+			|| n == 'Devastator' || n == 'NukeLauncher' || n == 'HellishMissileLauncher' || n == 'Minigun';
+	}
+
+	static bool NonStdOn(PlayerPawn mo)
+	{
+		return RSQ.PlayerInt(mo, 'rsq_reload_nonstd', 1) != 0;
 	}
 
 	static void SetCount(PlayerPawn mo, class<Inventory> it, int n)

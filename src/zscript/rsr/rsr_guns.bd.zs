@@ -184,12 +184,12 @@ class RSR_Guns abstract
 		case 8:	return (-0.703, 3.900, 7.946);	// 1.93 Ruger (was (-1.428, 4.182, 9.594))
 		case 9:	return (-0.911, 18.899, -9.154);
 		case 10:	return (-0.590, -5.238, -1.178);
-		case 11:	return (-0.700, 3.900, 11.201);
+		case 11:	return (10.500, 3.518, -1.909);	// 1.99x item 10: Ermac ammo_hand 3 fitted to the canister (was under it)
 		case 12:	return (-0.700, 21.467, -2.274);
 		case 13:	return (-1.481, 4.252, -6.901);
 		case 14:	return (-0.700, 10.899, -3.672);
-		case 15:	return (5.079, 3.848, 18.055);
-		case 16:	return (-0.708, 27.978, -2.221);
+		case 15:	return (4.299, 15.519, 3.125);	// 1.99x item 10: Ermac ammo_hand 6 (BFG pod hold) fitted to the block (was 18 cm above the palm)
+		case 16:	return (3.989, 29.117, -10.283);	// 1.99x item 10: Ermac ammo_hand 6 fitted to the drum (was 28 cm off)
 		case 17:	return (-0.327, -0.077, -7.170);
 		case 18:	return (-0.696, 3.710, -14.212);
 		}
@@ -211,12 +211,12 @@ class RSR_Guns abstract
 		case 8:	return (0.349, 0.134, 1.301);	// 1.93 Ruger (was (2.653, 4.736, 9.650))
 		case 9:	return (16.699, -15.854, -11.289);
 		case 10:	return (-8.353, -7.771, 14.516);
-		case 11:	return (3.890, 15.741, 29.189);
+		case 11:	return (3.508, 2.631, 17.989);	// 1.99x item 10: Ermac ammo_hand 3 fitted to the canister (was under it)
 		case 12:	return (21.730, 3.133, 25.019);
 		case 13:	return (3.637, -14.230, 13.269);
 		case 14:	return (-0.351, -11.976, 18.579);
-		case 15:	return (3.593, 3.132, 28.480);
-		case 16:	return (15.184, -7.135, -4.397);
+		case 15:	return (14.203, -10.441, 29.189);	// 1.99x item 10: Ermac ammo_hand 6 (BFG pod hold) fitted to the block (was 18 cm above the palm)
+		case 16:	return (16.323, -15.197, -9.094);	// 1.99x item 10: Ermac ammo_hand 6 fitted to the drum (was 28 cm off)
 		case 17:	return (4.256, 15.696, 33.744);
 		case 18:	return (3.991, -1.917, 15.035);
 		}

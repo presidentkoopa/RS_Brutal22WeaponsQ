@@ -681,6 +681,7 @@ class RSQ_Hands : Weapon
 	AmmoH: RQHN H -1; Stop;		// a closed hand
 	RspShell: RQUN A -1; Stop;	// RSR-PUMP: Ermac's one-shell hold (ammo_hand frame 1), round the gun's own shell
 	RsrHold: RQHN I -1; Stop;	// real reload: Ermac's hold, round the gun's own magazine (rsr)
+	RsrHoldPod: RQHN M -1; Stop;	// 1.99x: Ermac's BFG pod hold (ammo_hand 6), round the Nuker block / Hellish drum
 	RsbShell: RQHN J -1; Stop;	// RSR-BREAK: Ermac's hold of one shell (ammo_hand 1), round the gun's own round
 	RsbCell: RQHN L -1; Stop;	// RSR-BREAK: Ermac's hold of a cell (ammo_hand 5), round the gun's own speedloader
 	RsgRing: RQHR A -1; Stop;

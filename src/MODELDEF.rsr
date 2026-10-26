@@ -911,6 +911,7 @@ Model RSQ_Hands
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQHN I 0 3
+	FrameIndex RQHN M 0 6	// 1.99x: the pod hold (Nuker, Hellish)
 }
 
 // 1.13: the gun without its magazine AND its handle / bolt (locked back on its own layer)
