@@ -170,3 +170,101 @@ First check: the Depot's `sets/bd22q_1.97/src` and `main`'s `src/` are **byte-id
    frame stale. Off the scope it costs nothing.
 6. Free charge default and PuristSniper model: still yours to call. PLAN records free charge
    "stays off"; PuristSniper "stays out".
+
+---
+
+# Round 2/3 (2026-10-26, afternoon/evening): branch `lane-b-1.99x`
+
+Rig: QuestZDoom 17.3 (`tools/rig/build/rig`, "QZDoom version 4.14.3"), doom2 -> brutal22test6 ->
+BD_VoxelPack -> pack, `flock -o -s /home/claude/rig.lock`, at most 2 engines. Evidence in
+`/home/claude/lane_b_out/` (r3_*, r3fix_*), logs in `/home/claude/lane_b_rig/logs/` (r3*, cmp3_r3fix_*).
+Round 2 was interrupted at 14:06 and the container restarted once mid round 3: every run in flight
+then was voided and re-run.
+
+## 1. Done (measured)
+
+### "All of the hand poses are off": FOUND and FIXED (`44792ab`)
+- The round-2 1.92 comparison (`pose_vs_192_*.png`) showed real, deterministic differences on 21 of
+  26 guns at rest. They were not bob phase: the last 3 settled frames of each build are 0-8 px apart,
+  1.92 vs ours 360-4328 px.
+- Ruled out, file by file: handtable rows (identical for every 1.92 gun except the deliberate ones
+  below), MODELDEF hand blocks, `hand.md3` (frames 0-43 vertex-identical; 1.95 only appended 44-45),
+  the free hand's MODELDEF and layer state (probe: same sprite/frame on every layer).
+- Bisected in the rig (the `1.92` tag is byte-identical to `BD22Q_192.pk3`): already present in 1.95.
+  1.95 with 1.92's `MODELDEF.*` still differs; **1.95 with 1.92's `gunmoves.zs` alone renders the
+  Plasma pixel-identical to 1.92** (0 px).
+- Cause: 1.95 (413b3cc) switched off the Sniper's six recoil rows in `RSQ_GunMoves.Frame` by keying
+  them to gun 0. A probe that called `Frame()` for every (gun, sprite, frame) in the table showed
+  670 of 2680 lookups for OTHER guns returning a different row than 1.92 (e.g. Plasma at rest:
+  turn 3.10 / move 9.18 instead of 0). `FollowGun` feeds that to the gun and support hand layers,
+  so every hand sat off its fit. Measured, not explained: why key 0 does this on 17.3's VM was not
+  isolated (same loop, same arrays). Keyed to 99 (no gun) all 2680 lookups equal 1.92's.
+- After (`r3fix_<Class>.png` = this build alone; comparison numbers vs the round-2 1.92 frames):
+  19 guns 0-1 px from 1.92 (were 360-4328). Remaining differences are all deliberate (table below).
+
+### Flamethrower (owner: "the flamethrower is wrong")
+- At rest, steadied (off grip at the gun), firing and after firing, this build vs 1.92:
+  rest 8 px, steadied 3 px, i.e. identical. Firing / after firing differ only in the flame and
+  smoke particles (random), the hand and gun are the same (`r3_flamethrower_{rest,steady,firing,afterfire}.png`).
+- Round 2's Flamethrower2_* tiles were rendered BEFORE the fix, with the gunmoves bug present; their
+  hand differences are this bug.
+- So what the owner sees is **1.92's own Flamethrower pose** (a separate prototype scored it 3 of 12
+  grip rules: support hand 5 cm inside the gun, index 8 cm off the trigger) plus, in builds up to
+  9ab84cb, the gunmoves offset. Not re-posed here (no new hand poses; the hand fitter is for that).
+
+### Item 3: dual wield and flick reload, driven in the rig (real input: +user3, +attack/+oh_attack, controller pitch)
+- Pistol Start gives the off-hand pistol; Dual key -> `RSQ_Off_BrutalPistol` in the off hand; both
+  fire per hand (mag 16 -> 12 each); off controller snapped from +30 to -30 deg in one tic -> the OFF
+  pistol alone reloads (BD22 Reload, offmag 12 -> 16, reserve Clip1 60 -> 56); main controller the
+  same -> the MAIN pistol alone (12 -> 16, 56 -> 52); Dual key again -> fist. Identical to 1.92 on the
+  same input (reserve 60/56/52). No VM abort, no crash. `r3_dual_flick.png`, `r3_dual_flick.log`.
+- Machinegun launcher (M203): rig `m203.py GUN=mg` on this build: latch, open 9.7 cm, round in,
+  "shut: loaded" (log `m203mg.log`, `r3_m203mg_side_lb3.log`).
+
+### Item 14 (Machinegun 40 mm height): headset evidence
+- Side view with the tube open and the round home, main 1.99 vs this build
+  (`r3_item14_mg_m203_seated.png`, sequence `r3_item14_mg_m203_sequence.png`). The round sits on
+  the tube's bore line (RSM_Geo gun 2: bore U -6.517, from the mesh with ZOffset -5, `41d1c3b`).
+  No change this round; main and this build are the same here.
+
+### Items 16/17 (axe and sword): headset evidence
+- Rig, Two-Handed Steadying OFF (`vr_two_handed_weapons false`), off grip held 22 cm from the
+  weapon: axe `RSVR_MeleeTwo 1, RSVR_AxeTwo 1`, engine steadying 0; sword `RSVR_MeleeTwo 1`,
+  steadying 0. Released: all 0. One controller drives it. `r3_item16_melee_twohand.png`.
+  With steadying ON the axe also reports steadied 1 (the engine's grab, as documented: menu row).
+- Swings (0.3 m/tic, 3 directions): UP: no swing sound, no cut, axe and sword; DOWN: Axe/Swing,
+  Melee/SwingStrong; SIDE: the same. Logs `r3_item16_17_{axens,swordns}.log` (QZSND lines).
+
+### Item 20 (voxel casing scale): headset evidence
+- Rifle, "Spent casings" voxels ON: EmptyBrass scale 0.153 (BD22 with no pack: 0.150); OFF (3D
+  mesh lend): 1.000 with the real-size mesh, as designed. `r3_item20_vox1.log`, `r3_item20_nopack.log`.
+
+## 2. Not done
+- No new hand poses for guns whose 1.92 pose is itself bad (Flamethrower, see above): for the fitter.
+- Round 1's seven "wrong gun" cmp2 tiles: superseded by the r3fix set (every gun's held class is
+  printed on its tile and logged by LBW), not re-shot separately.
+- The six un-refitted in-hand parts (item 10) and the other owner calls: unchanged.
+
+## 3. Open
+- Why gun key 0 misreads on 17.3 is not explained (measured only). `gunmoves.zs` now says so; keep 0 out of `key[]`.
+- The gunmoves generator (`rsq_gunmoves_gen.py`, depot_import) was not re-run; 413b3cc's key edit was by hand.
+
+## 4. Owner questions (unchanged unless noted)
+1. Item 10: the six un-refitted in-hand parts (`item10_candidates.png`, row "now").
+2. Free-charge default; PuristSniper model.
+3. Item 19: which BFG sound is wrong.
+4. NEW: the Flamethrower at rest is now exactly 1.92's. Is it 1.92's pose you dislike (then it goes
+   to the hand fitter), or was it the offset this round fixed?
+
+## Every gun at rest vs 1.92 (this build, `r3fix_*`)
+| Gun | Result |
+|---|---|
+| AssaultShotgun, BFG10k, BIG_FUCKING_GUN, BrutalPistol, BrutalSMG, Devastator, Flamethrower2, GrenadeLauncher, HellishMissileLauncher, MG42, MP40, Minigun, Plasma_Gun, Revolver, Rifle, Rocket_Launcher, SSG, Shot_Gun, Unmaker | same as 1.92 (0-1 px); 16 of them were off before `44792ab` (gunmoves key 0) |
+| IncendiaryLauncher | differs on purpose: grip 2 cm forward (item 9, owner) |
+| NukeLauncher | differs on purpose: hands from the BFG (item 7) |
+| RailGun | grip same; scope glass / dot (1.96b) |
+| Sniper | 1.92 had no Sniper (drew a Rifle); XM21 mesh since 1.95 |
+| BrutalAxe | 1.95 two-handed placement tables (164 px, owner 2026-10-23) |
+| Chain_saw | 2 cm left + trigger finger (item 8, 1.95) |
+| DSweap | not a 1.92 weapon fit (Dragonslayer fit 2026-10-23) |
+| Flamethrower2 (1.92 itself) | 1.92's pose is the one a prototype scored 3/12: for the hand fitter |
