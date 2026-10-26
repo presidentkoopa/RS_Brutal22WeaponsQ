@@ -10,7 +10,7 @@ class RSQ_Counters : EventHandler
 	static const Name GUN[] = { 'MG42', 'Flamethrower2', 'IncendiaryLauncher', 'Machinegun', 'Unmaker', 'Devastator', 'NukeLauncher', 'HellishMissileLauncher', 'Minigun' };
 	static const Name MAG[] = { 'RSQ_Mag_MG42', 'RSQ_Mag_Flamethrower2', 'RSQ_Mag_IncendiaryLauncher', 'RSQ_Mag_Machinegun', 'RSQ_Mag_Unmaker', 'RSQ_Mag_Devastator', 'RSQ_Mag_NukeLauncher', 'RSQ_Mag_HellishMissileLauncher', 'RSQ_Mag_Minigun' };
 	static const Name RES[] = { 'Clip2', 'Gas', 'AmmoM202', 'Clip2', 'SoulAmmo', 'DevastatorAmmo', 'Nuke', 'MiniHellRocketAmmo', 'Clip2' };
-	static const int CAP[] = { 200, 200, 6, 100, 60, 50, 1, 6, 100 };
+	static const int CAP[] = { 100, 200, 6, 100, 60, 50, 1, 6, 100 };
 	int lastRes[MAXPLAYERS][9];
 	bool inited[MAXPLAYERS][9];
 
@@ -21,6 +21,7 @@ class RSQ_Counters : EventHandler
 			if (!playeringame[pn]) continue;
 			PlayerPawn mo = players[pn].mo;
 			if (!mo) continue;
+			M202Carry(mo);
 			let w = players[pn].ReadyWeapon;
 			for (int g = 0; g < GUN.Size(); g++)
 			{
@@ -81,6 +82,25 @@ class RSQ_Counters : EventHandler
 			|| n == 'Devastator' || n == 'NukeLauncher' || n == 'HellishMissileLauncher' || n == 'Minigun';
 	}
 
+	// 1.99x (owner, 2026-10-26): "a player can carry 48 incendiary rockets". BD22 declares AmmoM202 with
+	// Inventory.MaxAmount 4 and Ammo.BackpackMaxAmount 4 (brutal22test6 actors/Weapons/IncendiaryLauncher.dec),
+	// and a pack cannot redefine BD22's actor. But the engine caps a pickup at the OWNED item's MaxAmount
+	// (Ammo.HandlePickup), and a backpack only ever raises it (BackpackItem.CreateCopy: MaxAmount <
+	// BackpackMaxAmount), so the owned item's field is the whole carry limit. It is set every tic, so it
+	// holds after a backpack, a level change and a saved game (MaxAmount is saved; this repairs a save from
+	// an older build). Always on, VR reloading or not: it is the carry limit, not the reload.
+	// BackpackMaxAmount is LEFT AT BD22's 4 on purpose: BackpackItem.DetachFromOwner drops any ammo whose
+	// MaxAmount EQUALS its BackpackMaxAmount back to the default (4) and cuts the rockets to 4, so 48/48
+	// would lose 44 rockets whenever a backpack leaves the inventory. With 48/4 a backpack changes nothing,
+	// so the carry is 48 with or without one. The cylinder stays 6 (CAP[]).
+	const M202_CARRY = 48;
+	static void M202Carry(PlayerPawn mo)
+	{
+		let am = Inventory(mo.FindInventory('AmmoM202'));
+		if (am && am.MaxAmount < M202_CARRY)
+			am.MaxAmount = M202_CARRY;
+	}
+
 	static bool NonStdOn(PlayerPawn mo)
 	{
 		return RSQ.PlayerInt(mo, 'rsq_reload_nonstd', 1) != 0;
@@ -94,7 +114,7 @@ class RSQ_Counters : EventHandler
 	}
 }
 
-class RSQ_Mag_MG42 : Inventory { Default { Inventory.MaxAmount 200; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Mag_MG42 : Inventory { Default { Inventory.MaxAmount 100; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_NoMag_MG42 : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_Empty_MG42 : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_Fill_MG42 : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }

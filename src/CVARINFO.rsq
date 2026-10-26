@@ -14,7 +14,7 @@ user bool rsq_flick = true;		// 1.17 Flick to reload: a gun in each hand, snap a
 // the gun's own glass, no magnification) or 1 REAL (the view down the bore rendered into it).
 // RSQ_ScopeTable.ModeCVar() maps the table index to these names, so a new scoped gun needs a
 // row in that table and a cvar here and nothing else.
-user int rsq_scope_sniper = 0;
+user int rsq_scope_sniper = 1;	// 1.99x (owner): the Ruger's scope defaults to Real
 user int rsq_scope_railgun = 0;
 
 // 1.97: roster
