@@ -268,3 +268,11 @@ then was voided and re-run.
 | Chain_saw | 2 cm left + trigger finger (item 8, 1.95) |
 | DSweap | not a 1.92 weapon fit (Dragonslayer fit 2026-10-23) |
 | Flamethrower2 (1.92 itself) | 1.92's pose is the one a prototype scored 3/12: for the hand fitter |
+
+## Gated test pk3 (round 3)
+`/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r3.pk3`, built from `1953013` (src identical to
+`44792ab`), sha256 `7061efe3ab4e948214cdf32b659e3bfab69f9702e736c1c847d6457d57e150d9`.
+Gate (`lane_b_rig/sweep.sh`, logs `sw_r3_*`): all 31 classes given, selected (held class logged),
+fired, alt-fired, reload button pressed, fired again; class BDoomer, rsr_reload 1, ballistics 2.
+0 pack script errors, 0 VM aborts, 0 crashes. The only error lines are BD_VoxelPack's own (four
+voxeldef lines, DeathSphereHealth), present with no pack too. Not yet on the owner's headset.
