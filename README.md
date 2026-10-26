@@ -75,6 +75,12 @@ These are behind the **Ballistics** switch. Stock is Brutal Doom's own.
   real ejection port, as 3D casings.
 
 ### Fixes
+- **Guns no longer spin round your shoulder.** Recoil kept adding to itself during reloads and
+  turned the gun. It now kicks and settles.
+- **No muzzle flash or gunshot echo without a shot.** Footsteps, kicks and the reload buzz were being
+  taken for gunshots.
+- **Brutal Doom's own ricochet, glass, sparks and magazine-drop sounds are back.** Some of the
+  pack's sound files had the same short names and were playing in their place.
 - **Fire rates:** QuestZDoom 17.3 lets a held trigger re-fire some guns faster than Brutal Doom
   does on PC: the pistol, the pump shotgun, the Incendiary Launcher and the dual pistols. They're
   held to PC's rate now. The Ruger is one shot per pull.
