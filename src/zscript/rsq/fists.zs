@@ -89,6 +89,7 @@ class RSQ_FistHand play
 	const RECOCK = 0.08;	// m back towards the body re-arms the fist
 	const HIST = 6;			// tics of history (about 0.17 s)
 	const REACH = 16.0;		// map units per tic the strike travels (it lives 2 tics)
+	const JUMP = 0.5;		// m in one tic (17.5 m/s): faster than any arm, so the frame moved
 
 	double fx[HIST], fy[HIST], fz[HIST];	// the hand in the body frame: forward, left, up
 	int head, count;
@@ -114,6 +115,17 @@ class RSQ_FistHand play
 		double ll = -d.x * s + d.y * c;
 		double lu = d.z;
 
+		// 1.99x (owner: "a bang sound when I load into a map"): about 15 tics into every map the
+		// engine re-syncs its VR yaw to the new map (gl_openvr.cpp resetDoomYaw), and the hand's
+		// world position turns round the body in ONE tic -- rig: lf -10.2 -> +10.2, ll -8.5 -> +8.5,
+		// 26 units, about 27 m/s. That read as a jab: Melee/Swing and a punch on every map load.
+		// No hand moves JUMP in a tic (a hard jab is under 0.3 m), so a step that big is the frame
+		// changing, not the arm: the history starts again from here.
+		if (count > 0 && (lf - fx[head], ll - fy[head], lu - fz[head]).Length() > JUMP * vu)
+		{
+			count = 0;
+			ready = false;
+		}
 		int prev = head;
 		head = (head + 1) % HIST;
 		fx[head] = lf; fy[head] = ll; fz[head] = lu;

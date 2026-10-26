@@ -397,7 +397,10 @@ class RSQ_Hands : Weapon
 			// so POSITION decides instead of the weapon: a hand up at the gun is reaching for
 			// ammo, a hand out away from it is a punch. freeFist already rules out the support
 			// grip and any reload that has the hand.
-			if (!press || !freeFist)
+			// 1.99x: behind rsq_punch, as the owner decided (2026-10-25: "off-hand punch stays behind
+			// rsq_punch, off by default"). It was not: with the option off, an off-trigger press away
+			// from the gun still swung (Melee/Swing) and punched -- 1.92 never did that with a gun out.
+			if (!press || !freeFist || RSQ.PlayerInt(mo, 'rsq_punch', 0) == 0)
 				return;
 			if (RSVR_VRHand.SteadyGap(mo) < 30.0)	// cm: at the gun, so that press is the reload's
 				return;
