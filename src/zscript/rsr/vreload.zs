@@ -293,7 +293,11 @@ class RSR_State play
 		int mask = RSR.GrabMask(mo.player);
 		bool trig = (RSVR_VRHand.Buttons(mo) & mask) != 0;
 		bool grip = netGrip && gripFree && !RSVR_VRHand.Steadied(mo);
-		return trig || grip || netUse;
+		// F11 (R1): a steadied gun is re-aimed at the off hand, so a grip can never be on a handle
+		// beside the gun hand. In grip mode the off trigger takes the handle (as on the M203 tube).
+		bool atHandle = (phase == RSR.CHARGE || phase == RSR.PULL) && RSR.GrabWith(mo.player) == 1
+			&& (RSVR_VRHand.Buttons(mo) & BT_OFFHANDATTACK) != 0;
+		return trig || grip || netUse || atHandle;
 	}
 
 	// where the magazine in the hand is against the well: depth (cm out of home along the
@@ -310,12 +314,23 @@ class RSR_State play
 		return -along, side, acos(c);
 	}
 
+	// F11 R3: the rounds held aside when the magazine came out (RSR_Held_<gun>, given by the gun's
+	// RSR_Unload) -- they go back in when a magazine is home, so they are a magazine to take.
+	int HeldRounds(PlayerPawn mo)
+	{
+		if (!mo.player || !mo.player.ReadyWeapon)
+			return 0;
+		String hn = "RSR_Held_" .. mo.player.ReadyWeapon.GetClassName();
+		class<Inventory> hc = hn;
+		return hc ? mo.CountInv(hc) : 0;
+	}
+
 	bool CanTakeMag(PlayerPawn mo)
 	{
 		int i = gun;
 		String res = RSR_Guns.Reserve(i);
 		class<Inventory> rc = res;
-		if (rc && mo.CountInv(rc) <= 0)
+		if (rc && mo.CountInv(rc) <= 0 && HeldRounds(mo) <= 0)
 		{
 			if (RSR.Debug(mo.player))
 				Console.Printf("rsr t%d gun %d: no magazine to take, reserve %s is empty",
@@ -368,6 +383,9 @@ class RSR_State play
 	// the weapon's Reload reached RSR_Start and the real reload takes it
 	void Begin(PlayerPawn mo, Weapon w, int i)
 	{
+		// F11: a token left by a reload that was switched away from must not end this one.
+		mo.TakeInventory('RSR_Done', 999);
+		mo.TakeInventory('RSR_Seated', 999);
 		FreeChargeDrop();		// 1.93: a reload takes the handle back from a free charge
 		gun = i;
 		weap = w;
@@ -709,6 +727,8 @@ class RSR_State play
 	// the weapon left the reload (switched away, died, ...): put everything away
 	void Abort(PlayerPawn mo)
 	{
+		mo.TakeInventory('RSR_Done', 999);	// F11: see Begin
+		mo.TakeInventory('RSR_Seated', 999);
 		if (phase == RSR.DROP || phase == RSR.INSERT)
 			Fall(mo, RSR_Guns.MagCentre(gun) - RSR_Guns.Axis(gun) * d);
 		else if (phase == RSR.CARRY)
@@ -725,6 +745,7 @@ class RSR_State play
 		d = dPrev = pull = pullPrev = 0;
 		lockedGrab = false;
 		netGrip = false;
+		netUse = false;		// F11: a release lost in a menu must not latch the grab
 	}
 
 	// after the psprites have ticked (RSR_ReloadHandler.WorldTick): what the gun and the layers show

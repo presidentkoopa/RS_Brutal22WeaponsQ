@@ -49,6 +49,16 @@ class RSM abstract play
 		return w && w.GetClassName() == 'Rifle';
 	}
 
+	// 1.97: the guns with a launcher the module works: 1 the rifle, 2 the BD21 Machinegun (c2q/bd22_mg.py)
+	clearscope static int GunOf(Weapon w)
+	{
+		if (!w) return 0;
+		Name n = w.GetClassName();
+		if (n == 'Rifle') return 1;
+		if (n == 'Machinegun') return 2;
+		return 0;
+	}
+
 	clearscope static bool IsAnyRifle(Weapon w)
 	{
 		return w && (w.GetClassName() == 'Rifle' || w.GetClassName() == 'RSQ_Off_Rifle');
@@ -91,6 +101,7 @@ class RSM abstract play
 
 class RSM_State play
 {
+	int gun;					// 1.97: RSM.GunOf (1 rifle, 2 machinegun)
 	double pull, pullPrev;		// cm the tube is forward
 	bool unlatched;
 	bool held;					// the hand has the tube
@@ -120,15 +131,15 @@ class RSM_State play
 	// the palm's distance from the tube (where it is now)
 	double TubeDist(Vector3 p)
 	{
-		double f0 = RSM_Geo.TUBE_REAR + pull;
-		double f1 = RSM_Geo.TUBE_FRONT + pull;
+		double f0 = RSM_Geo.TubeRear(gun) + pull;
+		double f1 = RSM_Geo.TubeFront(gun) + pull;
 		double f = clamp(p.x, f0, f1);
-		return (p - (f, RSM_Geo.AXIS_L, RSM_Geo.AXIS_U)).Length();
+		return (p - (f, RSM_Geo.AxisL(gun), RSM_Geo.AxisU(gun))).Length();
 	}
 
 	double Side(Vector3 p)
 	{
-		return ((0, p.y, p.z) - (0, RSM_Geo.AXIS_L, RSM_Geo.AXIS_U)).Length();
+		return ((0, p.y, p.z) - (0, RSM_Geo.AxisL(gun), RSM_Geo.AxisU(gun))).Length();
 	}
 
 	void Reset()
@@ -204,14 +215,14 @@ class RSM_State play
 				grabS = palm.x;
 				np = 0;
 			}
-			else if (np > RSM_Geo.TRAVEL)
+			else if (np > RSM_Geo.TravelOf(gun))
 			{
-				grabS = palm.x - RSM_Geo.TRAVEL;
-				np = RSM_Geo.TRAVEL;
+				grabS = palm.x - RSM_Geo.TravelOf(gun);
+				np = RSM_Geo.TravelOf(gun);
 			}
 			pull = np;
 		}
-		if (!isOpen && pull >= RSM.OPEN_FRAC * RSM_Geo.TRAVEL)
+		if (!isOpen && pull >= RSM.OPEN_FRAC * RSM_Geo.TravelOf(gun))
 		{
 			isOpen = true;
 			Snd(mo, "GrenadeLauncher/Open");
@@ -223,7 +234,7 @@ class RSM_State play
 			}
 			Log(mo, "open");
 		}
-		if (isOpen && pull <= RSM.SHUT_FRAC * RSM_Geo.TRAVEL)
+		if (isOpen && pull <= RSM.SHUT_FRAC * RSM_Geo.TravelOf(gun))
 		{
 			pull = 0;
 			isOpen = held = unlatched = false;
@@ -248,8 +259,8 @@ class RSM_State play
 		// the round
 		Vector3 mid = geo.OffPoint(RSM_Geo.RoundInHand());
 		Vector3 nose = geo.OffDirInGun(RSM_Geo.RoundAxisInHand());
-		double rear = mid.x - nose.x * RSM_Geo.ROUND_LEN / 2;
-		double seatF = RSM_Geo.TUBE_REAR + pull + RSM_Geo.ROUND_SEAT;
+		double rear = mid.x - nose.x * RSM_Geo.RoundLen(gun) / 2;
+		double seatF = RSM_Geo.TubeRear(gun) + pull + RSM_Geo.RoundSeat(gun);
 		switch (hand)
 		{
 		case RSM.EMPTY:
@@ -259,7 +270,7 @@ class RSM_State play
 			let ac = RSM.AmmoClass();
 			if (!ac || mo.CountInv(ac) <= 0)
 				break;
-			Vector3 breech = ((RSM_Geo.FRAME_FRONT + seatF) / 2, RSM_Geo.AXIS_L, RSM_Geo.AXIS_U);
+			Vector3 breech = ((RSM_Geo.FrameFront(gun) + seatF) / 2, RSM_Geo.AxisL(gun), RSM_Geo.AxisU(gun));
 			if ((palm - breech).Length() < RSM.POUCH_MIN)
 				break;
 			hand = RSM.CARRY;
@@ -277,10 +288,10 @@ class RSM_State play
 			}
 			double ang = acos(clamp(nose.x, -1, 1));
 			if (Side(mid) < RSM.ENTER_SIDE && ang < RSM.ENTER_ANGLE
-				&& mid.x > RSM_Geo.FRAME_FRONT - 4 && mid.x < seatF + RSM_Geo.ROUND_LEN / 2 + 2)
+				&& mid.x > RSM_Geo.FrameFront(gun) - 4 && mid.x < seatF + RSM_Geo.RoundLen(gun) / 2 + 2)
 			{
 				hand = RSM.INSERT;
-				rr = rrPrev = clamp(rear, RSM_Geo.FRAME_FRONT - RSM_Geo.ROUND_LEN, seatF);
+				rr = rrPrev = clamp(rear, RSM_Geo.FrameFront(gun) - RSM_Geo.RoundLen(gun), seatF);
 				geo.Buzz(mo);
 				Log(mo, "round in the breech");
 			}
@@ -288,9 +299,9 @@ class RSM_State play
 		}
 		case RSM.INSERT:
 		{
-			rr = clamp(rear, RSM_Geo.FRAME_FRONT - RSM_Geo.ROUND_LEN, seatF);
+			rr = clamp(rear, RSM_Geo.FrameFront(gun) - RSM_Geo.RoundLen(gun), seatF);
 			bool home = rr >= seatF - RSM.SEAT;
-			if (!grab && rr >= seatF - RSM_Geo.ROUND_LEN / 2)
+			if (!grab && rr >= seatF - RSM_Geo.RoundLen(gun) / 2)
 				home = true;			// let go half in: it slides home
 			if (home)
 			{
@@ -310,7 +321,7 @@ class RSM_State play
 				Log(mo, "let the round go");
 				break;
 			}
-			if (Side(mid) > RSM.LEAVE_SIDE || mid.x < RSM_Geo.FRAME_FRONT - 10)
+			if (Side(mid) > RSM.LEAVE_SIDE || mid.x < RSM_Geo.FrameFront(gun) - 10)
 			{
 				hand = RSM.CARRY;
 				Log(mo, "round out of the breech");
@@ -324,7 +335,7 @@ class RSM_State play
 	// breech to the ground when the tube opens
 	void CaseOut(PlayerPawn mo)
 	{
-		Vector3 at = (RSM_Geo.FRAME_FRONT + 3, RSM_Geo.AXIS_L, RSM_Geo.AXIS_U - 1);
+		Vector3 at = (RSM_Geo.FrameFront(gun) + 3, RSM_Geo.AxisL(gun), RSM_Geo.AxisU(gun) - 1);
 		Vector3 pos = RSVR_VRHand.HandPos(mo) + geo.FromGun(at);
 		let a = Actor.Spawn('RSM_SpentCase', pos);
 		if (!a)
@@ -348,7 +359,7 @@ class RSM_State play
 			if (noTubeFrom.Size() == 0)
 			{
 				Array<Name> f, t;
-				RSM_NoTube.Names(f, t);
+				if (gun == 2) RSM_NoTube.NamesMG(f, t); else RSM_NoTube.Names(f, t);
 				for (int k = 0; k < f.Size(); k++)
 				{
 					noTubeFrom.Push(Actor.GetSpriteIndex(f[k]));
@@ -372,8 +383,8 @@ class RSM_State play
 			mo.GiveInventory('RSR_GunParts', 1);
 			parts = RSR_GunParts(mo.FindInventory('RSR_GunParts'));
 		}
-		RSR.SetPart(p, RSM.TUBE, parts, swapped, 'RQ2P', 0);
-		RSR.SetPart(p, RSM.ROUND, parts, round, 'RQ2P', 1);
+		RSR.SetPart(p, RSM.TUBE, parts, swapped, gun == 2 ? 'RQ3P' : 'RQ2P', 0);
+		RSR.SetPart(p, RSM.ROUND, parts, round, gun == 2 ? 'RQ3P' : 'RQ2P', 1);
 	}
 }
 
@@ -418,6 +429,10 @@ class RSM_Sprites : Actor
 	Spawn:
 		RQ2T A 0;
 		RQ2P AB 0;
+		RQ3P AB 0;	// 1.97: the Machinegun's tube and round
+		QU00 A 0;
+		QU01 A 0;
+		QU02 A 0;
 		RQ2H AB 0;
 		RQ2S AB 0;
 		RQ2C A 0;
@@ -481,7 +496,7 @@ class RSK_M203Handler : EventHandler
 		let s = Peek(owner);
 		if (!s || !s.active)
 			return (0, 0, 0);
-		return RSM_Geo.FwdHook() * (s.pullPrev + (s.pull - s.pullPrev) * ticfrac);
+		return RSM_Geo.FwdHook(s.gun) * (s.pullPrev + (s.pull - s.pullPrev) * ticfrac);
 	}
 
 	clearscope static bool Places(Actor owner, int layer)
@@ -496,13 +511,13 @@ class RSK_M203Handler : EventHandler
 			return t, r;
 		double pl = s.pullPrev + (s.pull - s.pullPrev) * ticfrac;
 		if (layer == RSM.TUBE)
-			return t + RSM_Geo.FwdHook() * pl, r;
+			return t + RSM_Geo.FwdHook(s.gun) * pl, r;
 		if (s.hand == RSM.INSERT)
 		{
 			double rv = s.rrPrev + (s.rr - s.rrPrev) * ticfrac;
-			return t + RSM_Geo.FwdHook() * (rv - RSM_Geo.TUBE_REAR - RSM_Geo.ROUND_SEAT), r;
+			return t + RSM_Geo.FwdHook(s.gun) * (rv - RSM_Geo.TubeRear(s.gun) - RSM_Geo.RoundSeat(s.gun)), r;
 		}
-		return t + RSM_Geo.FwdHook() * pl, r;
+		return t + RSM_Geo.FwdHook(s.gun) * pl, r;
 	}
 
 	// 2026-10-23 (owner): a new map starts clean. Level.maptime restarts at 0, so anything
@@ -537,7 +552,14 @@ class RSK_M203Handler : EventHandler
 			Sync(mo, 'RSM_Dual', dual);
 			if (mo.health <= 0)
 				s.Reset();
-			s.active = vr && !dual && RSM.IsRifle(p.ReadyWeapon) && RSR_ReloadHandler.Wanted(mo);
+			int gn = RSM.GunOf(p.ReadyWeapon);	// 1.97
+			if (gn != s.gun)
+			{
+				s.Reset();
+				s.gun = gn;
+				s.noTubeFrom.Clear(); s.noTubeTo.Clear();
+			}
+			s.active = vr && !dual && gn > 0 && RSR_ReloadHandler.Wanted(mo);
 			if (s.active)
 				s.Tick(mo);
 			else

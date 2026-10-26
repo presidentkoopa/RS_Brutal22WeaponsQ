@@ -458,13 +458,7 @@ class RSB_State play
 		double side = (rel - bk * along).Length();
 		Vector3 u = t - b;
 		double ul = u.Length();
-		// 2026-10-24: a real if. This read as guarded and was not -- the JIT evaluates both
-		// arms of a ternary, so u / ul ran even when ul was zero. Latent since it shipped:
-		// it needs the grabbed part to not have moved at all in a tic, which bullet time
-		// makes far more likely. The same shape aborted the sword mid-swing.
-		double ang = 180;
-		if (ul > 0)
-			ang = acos(clamp((u / ul) dot bk, -1, 1));
+		double ang = ul > 0 ? acos(clamp((u / ul) dot bk, -1, 1)) : 180;
 		return -along, side, ang;
 	}
 

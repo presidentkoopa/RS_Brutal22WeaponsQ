@@ -1,112 +1,132 @@
 ![BD22 VR Weapons](renders/hero.gif)
 
-# BD22 VR Weapons
+# BD22 VR Weapons 1.99
 
-![BD22 VR Weapons options menu](renders/options_menu.png)
+Brutal Doom v22 in VR, with your hands.
 
 Coordinated, directed and tested by PresidentKoopa, coded by Claude.
 
-VR weapon pack for **Brutal Doom v22** (`brutal22test6.pk3`) on **QuestZDoom 17.x**. Stock
-engine, no engine changes. Fire each gun independently in dual-wield mode.
+A VR weapon pack for **Brutal Doom v22** (`brutal22test6.pk3`) on **QuestZDoom 17.3**, built for
+**standalone Quest**. It runs on the stock engine with no engine changes. It's an add-on: Brutal
+Doom stays Brutal Doom. It replaces none of its guns, every gun fires at Brutal Doom's own rate
+and does its own damage, and with the options off it plays exactly as Brutal Doom shipped.
 
-Download from the Releases page. Load it after `brutal22test6.pk3` and the Voxel pack.
+## Install
 
-## Models for
-Pistol, Revolver, SMG, MP40\*\*, Rifle, Shotgun, Super shotgun, Assault shotgun, Minigun,
-MG42 buzzsaw\*\*, Grenade launcher, Incendiary launcher, Rocket launcher, Nuke launcher,
-Devastator\*\*, Hellish missile launcher\*\*, Plasma gun, Railgun, BFG, BFG10k, Unmaker,
-Flamethrower, Flame cannon\*\*, Axe, Chainsaw, Fists, Grenades
+Download the pk3 from the Releases page and load, in this order:
 
-\*\* = hidden from the player's roster. Turn on "Allow extra weapons with cheats" in the
-options menu to get them through cheats (give all, idkfa).
+```
+doom2.wad  ->  brutal22test6.pk3  ->  BD_VoxelPack.pk3  ->  BD22_VR-Reloaded_1.99.pk3
+```
 
-## Features
-- Posed VR hands on every weapon: hand on the grip, finger on the trigger, support hand.
-- Manual, immersive reloading (when enabled):
-  - magazines out and in;
-  - slides, charging handles and pumps racked by hand;
-  - the pistol slide and the rifle, SMG and assault shotgun bolts lock back when fired dry;
-  - shotgun shells through the real loading port, topped off any time.
-- Kitbash M4 + M203: the rifle's secondary fire launches the underbarrel grenade. In VR, hold the
-  off trigger on the tube to unlatch, slide it forward, grab a 40 mm round and push it in, then
-  slide it shut. Spent cases drop out when the tube opens. Flick-reloading loads it too.
-- Secondary fire: the SMG toggles 3-round burst / full auto. Slug shots for the shotgun and the
-  shotvolver (options menu, off by default).
-- Pistol Semi Auto option: one shot per trigger pull (options menu, off by default, any time).
-- Brass ejects from each gun's real ejection port (pistol, rifle, SMG, assault shotgun).
-- Dual Wield support. Flick guns down arcade style to reload when akimbo.
-- Grenade: pull the pin with the off hand. Hold the trigger, swing and release to throw; release
-  while still to cook it. The axe throws the same way.
-- A fist in each hand. The off-hand fist can be selected back after moving a gun there.
-- VR punching (physical jabs and hooks), VR throwing and VR reloading can each be turned on/off.
-- Left-handed support.
-- A gun in each hand uses stock reload so the action isn't interrupted.
-- VR reloading works on the main-hand weapon when the off hand is the fist.
-- Purist mode: models and hands, no reloading (as Brutal Doom intends).
+Use Doom 2, not Freedoom: the voxel pack names Doom 2's own sprites.
 
-Built and tested on PCVR QuestZDoom 17.x.
+To build it yourself: `python build.py` zips `src/` into `BD22_VR-Reloaded_<VERSION>.pk3`.
 
-## Versions
+## What's new in 1.99
 
-Public releases are numbered 1.9x and are the only tags on this repo; `main` is always
-the latest public release plus any fixes on their way to the next one. Work in progress lives
-on the `dev` branch under internal 2.x numbers. There is no public 2.0 until that work is
-finished and played, so a 2.x number in a commit message is not a release.
+### Every gun reloads by hand
+Every gun that isn't a melee weapon reloads with your hands: **23 guns**. The BFG and BFG10k stay
+as Brutal Doom made them.
 
+| How it reloads | Guns |
+|---|---|
+| Magazine | Rifle, Pistol, SMG, MP40, Assault Shotgun, Railgun, Plasma Gun, Ruger, Rocket Launcher, Machinegun (100-round box) |
+| Drum, canister or box | MG42 belt drum, Flamethrower canister, Unmaker skull, Minigun ammo box, Hellish launcher's rear drum |
+| Cylinder | Incendiary Launcher (six shots) |
+| Bay or block | Devastator loading bay, Nuker warhead block |
+| Pump | Shotgun |
+| Break-open | Super Shotgun, Grenade Launcher, Shotvolver, slug revolver, and the 40 mm under the Rifle and the Machinegun |
 
-## What's new in 1.96b
+Pull the part out with your off hand, reach to your belt for a fresh one, and push it home.
 
-Replaces 1.95 and includes everything in it.
+Brutal Doom never reloads most of the heavy guns at all. On those, the part you swap was cut out
+of the gun's own model, and it counts down Brutal Doom's own ammo. The ammo you carry and the
+damage you do are still exactly Brutal Doom's.
 
-### The Ruger Mini-14 Ranch
+### Throwing the axe
+- Hold the throw and a **lock-on ring** goes on the monster your hand points at. It's the same
+  mark as the ShieldSaw and the QuestSaber.
+- If you let go without throwing, the ring **stays on for a second**. Pick the hold back up and
+  you're still locked.
+- The throw **blends your arm's swing with where your hand points**, as the ShieldSaw does.
 
-- **It drew as a flat sprite the moment you fired.** The firing pose used a sprite no model was
-  keyed to, and because every state after it inherits that sprite, the whole shot and recoil
-  played in 2D. Keyed, so it stays a model.
-- **It fired continuously.** It had no semi-automatic flag, so a held trigger fired again on
-  the very next tic. It is semi-auto now, one shot per pull, as a Mini-14 should be.
-- Its woodgrain and metal are darker.
+### New guns from Brutal Doom 21
+- **BD21 Machinegun** (M249 with an underbarrel 40 mm). Off by default:
+  "Machinegun replaces MG42".
+- **Slug revolver**. Off by default: "Slug revolver replaces Shotvolver".
 
 ### Melee
+- **Gun bash**: your kick key bashes with the gun you're holding. It uses Brutal Doom's own kick
+  damage.
+- **Pistol whip**: swing a pistol or revolver into something.
+- **Butt strike**: drive the stock forward with both hands. Works on all eight guns with a stock.
+  Off by default.
+- **Real punching** with either fist. Punching a switch or a door works it. Off by default.
 
-- **Chainsaw has a trigger finger.** The index finger sits on the saw's trigger and squeezes
-  when you fire, like every other weapon.
-- **Two-handed axe.** Bring the off hand onto the haft and the grip shifts up toward the head;
-  a blow landing with the cutting edge leading does extra damage at shorter range. Two hands on
-  the haft alone is not enough -- the edge has to lead.
-- **Axe lock-on and throw.** In one hand, hold the throw and the axe paints the monster you are
-  looking at; release during the swing to throw at it. A two-handed axe is not thrown -- let go
-  with the off hand first.
-- **Melee poses fixed.** The sword is held like a baseball bat, the axe with the hands spread
-  and the weapon hand at the head, and the chainsaw's support hand no longer splays away.
-
-### Punching
-
-- **Punches open doors and work switches**, at the fist's own reach, with either hand.
-- The off hand can punch while the main hand holds a gun.
-
-### Reloading
-
-- **Free charge** (on by default). Take the charging handle or slide with no reload running, to
-  crack the action and look in the chamber. It is a look, not a rack: no ammo moves and nothing
-  is given to the weapon.
-- **The Use key works with a gun in hand**, not only with the fist.
+### Every gun shoots like itself
+These are behind the **Ballistics** switch. Stock is Brutal Doom's own.
+- **Recoil** for 22 guns, each worked out from its own cartridge and weight. In VR it moves the
+  gun in your hands, never your view.
+- **Muzzle flash** light for 18 guns, and an echo for 14 that sounds different indoors and
+  outdoors.
+- **Visible rounds in flight** for 11 guns, at their real speed.
+- **Impact sounds** per surface, **ricochets** off shallow angles, and **brass** from each gun's
+  real ejection port, as 3D casings.
 
 ### Fixes
+- **Fire rates:** QuestZDoom 17.3 lets a held trigger re-fire some guns faster than Brutal Doom
+  does on PC: the pistol, the pump shotgun, the Incendiary Launcher and the dual pistols. They're
+  held to PC's rate now. The Ruger is one shot per pull.
+- **Rounds you pull out stay yours:** pull a part-full magazine with no reserve left, and its
+  rounds go back in when you seat it again.
+- **Incendiary Launcher:** pressing reload did nothing. Fixed.
+- **Flamethrower:** it returned to the wrong frame after firing. Fixed.
+- **Dot scope:** it could stop the game's scripts running, on the Railgun and the Ruger. Fixed.
+- **Ruger:** it drew 2D sprites while firing. Fixed.
+- **Purist Rifle:** it fired the M203. Fixed.
+- **Grip-mode charging handle:** a racked handle could not be grabbed. Fixed.
+- **Axe alt-fire hold:** it did nothing for players upgrading from older builds. Fixed.
+- The pk3 is about **30 MB**: models are LZMA-compressed, as 1.96b's were.
 
-- **Dual wield could strand a reload for good.** Run the main-hand gun dry, go dual, come back
-  to one gun, pick up ammo -- and no magazine could ever be seated again. The off-hand slot had
-  kept a stale copy of a weapon that was no longer there.
-- **The pistol and SMG racked when they should not.** A charge token left over from an earlier
-  reload survived into the next, so a gun that still had rounds asked to be charged. The rule is
-  the real one now: rack only after reloading a completely empty gun.
-- **The SMG racked twice** -- a phantom rack after the magazine was already home.
-- **Punch detection read its own history wrong**, comparing the oldest sample instead of the
-  newest, so a twitch could register as a blow.
-- **Flick reload did nothing with a single rifle.**
-- **Thrown grenades dribbled** -- the throw speed was computed in the wrong units.
-- **A new map starts clean.** Hand, reload and grenade-fuse state were keyed on a level time
-  that restarts at zero.
+## Everything else
+- Posed VR hands on every weapon: hand on the grip, finger on the trigger, support hand.
+- Slides, charging handles, bolts and pumps racked by hand. Pistol slides and rifle, SMG and
+  assault shotgun bolts lock back when fired dry.
+- Shotgun shells go in through the real loading port, and you can top off any time.
+- Kitbash M4 + M203. In VR: unlatch the tube, slide it forward, push a round in, slide it shut.
+- SMG alt fire toggles 3-round burst or full auto. Slug shots for the shotgun and the Shotvolver
+  are menu options, off by default.
+- Pistol Semi Auto option: one shot per trigger pull.
+- Dual wield, with each gun fired independently. Flick a gun down to reload when you're using two.
+- Grenades: pull the pin with your off hand, swing and release to throw, or release while still
+  to cook it.
+- Left-handed support. Purist mode gives you models and hands, without reloading.
+
+## Options
+**Options → BD22 VR Weapons.** Here you'll find reloading (VR or Brutal Doom's stock reload), what
+grabs the ammo, where a new magazine comes from, checking the chamber by hand, the scopes,
+ballistics and recoil, real casings, throwing, punching, gun bash and butt strike, the dual-wield
+and voxel pages, and a tuning and debug page for reloading.
+
+Every option defaults to how Brutal Doom behaves, or to the gentler setting, except the VR hands
+and reloading themselves. Set Reloading to "Stock (BD22)" and every gun reloads the way it always
+did.
+
+## Known gaps
+- The Minigun's ammo box in your hand is the small box off the gun. A bigger one is planned.
+- The Minigun throws its brass from the body: its model has no ejection port.
+- QuestZDoom 17.3 can't do recoil roll or the backward shove. Those need engine support this pack
+  doesn't have.
+
+## Versions
+Public releases are numbered 1.9x and are the only tags on this repo. `main` is always the latest
+public release plus any fixes on their way to the next one. Work in progress lives on the `dev`
+branch under internal 2.x numbers.
+
+This build is generated by the RSQ Weapon Depot. Every number in it is measured off a model or
+parsed out of Brutal Doom's own code, and `src/README.txt` (shipped inside the pk3) has the long
+version.
 
 ## Credits
 Weapon models: **br_vr** by ajantaju (Brutal Doom VR Weapons, BD v21), made from:

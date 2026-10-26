@@ -12,7 +12,17 @@ class RSM_Geo abstract
 	const ROUND_LEN = 8.550;
 	const ROUND_SEAT = 0.400;		// cm the seated round's rear sits in front of the tube's rear
 
-	clearscope static Vector3 FwdHook() { return (0.0000, 0.0000, -1.0000); }
+	// 1.97: per gun -- 1 = the rifle (the numbers above), 2 = the BD21 Machinegun (c2q/bd22_mg.py, measured on
+	// its own mesh at MGN1 A: tube F 29.27..63.86, travel 9.69 (card 9.50), bore L -0.07 U -1.52)
+	clearscope static double AxisL(int gun) { return gun == 2 ? -0.068 : AXIS_L; }
+	clearscope static double AxisU(int gun) { return gun == 2 ? -1.517 : AXIS_U; }
+	clearscope static double FrameFront(int gun) { return gun == 2 ? 29.272 : FRAME_FRONT; }
+	clearscope static double TubeRear(int gun) { return gun == 2 ? 29.272 : TUBE_REAR; }
+	clearscope static double TubeFront(int gun) { return gun == 2 ? 63.856 : TUBE_FRONT; }
+	clearscope static double TravelOf(int gun) { return gun == 2 ? 9.694 : TRAVEL; }
+	clearscope static double RoundLen(int gun) { return gun == 2 ? 8.550 : ROUND_LEN; }
+	clearscope static double RoundSeat(int gun) { return gun == 2 ? 0.400 : ROUND_SEAT; }
+	clearscope static Vector3 FwdHook(int gun) { return gun == 2 ? (0.0000, 0.0000, -1.0000) : (0.0000, 0.0000, -1.0000); }
 	clearscope static Vector3 RoundInHand() { return (-1.930, 4.560, -4.500); }	// the round's middle, off hand frame
 	clearscope static Vector3 RoundAxisInHand() { return (0, 0, 1); }			// its nose (up the grip)
 }
@@ -20,6 +30,13 @@ class RSM_Geo abstract
 // 1.33: the rifle's sprites and their no-tube twins (MODELDEF.rsm), for while the tube is out
 class RSM_NoTube abstract
 {
+	// 1.97: the Machinegun's sprites and their no-tube twins (MODELDEF.rsm)
+	static void NamesMG(out Array<Name> from, out Array<Name> to)
+	{
+		from.Push('MGN1'); to.Push('QU00');
+		from.Push('MGN2'); to.Push('QU01');
+		from.Push('MGS1'); to.Push('QU02');
+	}
 	static void Names(out Array<Name> from, out Array<Name> to)
 	{
 		from.Push('2IFG'); to.Push('QT00');
