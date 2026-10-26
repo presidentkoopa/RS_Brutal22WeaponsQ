@@ -95,6 +95,22 @@ These are behind the **Ballistics** switch. Stock is Brutal Doom's own.
 - **Axe alt-fire hold:** it did nothing for players upgrading from older builds. Fixed.
 - The pk3 is about **30 MB**: models are LZMA-compressed, as 1.96b's were.
 
+### Fixes from the owner's 1.99 headset pass
+- **Recoil is gone.** It turned the gun model, so the gun spun around the shoulder and pulled
+  away from the hands. Hold poses at rest match 1.92 again.
+- **The Nuker uses the BFG's hands.** It is the same model, so it gets the same grip and trigger
+  finger, fitted to its size.
+- **Chainsaw** grip hand moved 2 cm left. **Incendiary Launcher** grip hand moved 2 cm forward.
+- **Minigun:** the box holds 100 rounds and reloads. At 200 it could never be emptied below
+  Brutal Doom's own reserve, so a reload never started.
+- **Machinegun:** the 40 mm round, its latch and the hands sat 5 cm high. Fixed.
+- **MG42, Flamethrower, Unmaker:** the gun no longer jumps 5 cm when a reload starts.
+- **Axe and sword** cut only on a down or side swing, never an upswing, and need a harder swing.
+  Turn off "Two-Handed Steadying" to hold them with one controller: grip with your off hand near
+  the blade and you get the two-handed pose. Guns lose steadying too while it is off.
+- **Spent casings with the voxel pack** are normal size again (a shell was drawn at four times
+  Brutal Doom's size).
+
 ## Everything else
 - Posed VR hands on every weapon: hand on the grip, finger on the trigger, support hand.
 - Slides, charging handles, bolts and pumps racked by hand. Pistol slides and rifle, SMG and
@@ -112,7 +128,7 @@ These are behind the **Ballistics** switch. Stock is Brutal Doom's own.
 ## Options
 **Options → BD22 VR Weapons.** Here you'll find reloading (VR or Brutal Doom's stock reload), what
 grabs the ammo, where a new magazine comes from, checking the chamber by hand, the scopes,
-ballistics and recoil, real casings, throwing, punching, gun bash and butt strike, the dual-wield
+ballistics, real casings, throwing, punching, gun bash and butt strike, the dual-wield
 and voxel pages, and a tuning and debug page for reloading.
 
 Every option defaults to how Brutal Doom behaves, or to the gentler setting, except the VR hands
@@ -120,6 +136,8 @@ and reloading themselves. Set Reloading to "Stock (BD22)" and every gun reloads 
 did.
 
 ## Known gaps
+- Still open from the headset pass: a bang when a map loads, the BFG's sounds, and the
+  magazine-in-hand poses on the guns that gained reloads in 1.99.
 - The Minigun's ammo box in your hand is the small box off the gun. A bigger one is planned.
 - The Minigun throws its brass from the body: its model has no ejection port.
 - QuestZDoom 17.3 can't do recoil roll or the backward shove. Those need engine support this pack
