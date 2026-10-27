@@ -1047,3 +1047,31 @@ One method for every gun (owner): the drawn wrist stays pinned where the approve
 - Revolver2 does not inherit Revolver: its shots keep BD22's origin (no Revolver2 muzzle row).
 - The fitter snapshot in `tools/handfit/fbx_fitter/` lacks its lane data. `bake_gun.py` and `rebake.py` need `RSQ_HANDS_TOOL` = a full checkout.
 - Item 5 (Shot_Gun etc.) was dropped by the coordinator: the shotgun and heavy lanes have them.
+## Heavies lane (branch hands-heavies, 2026-10-27 10:07-11:22): RIG ONLY, NOT HEADSET-CONFIRMED
+Method: the four approved guns' one method (wrist pinned, gun moves to the FBX hand, every table rides with it). Tools in
+`tools/handfit/heavies/`: `fit_hv.py` (1.92 hold -> FBX pistol hand re-seated -> curls/squeeze -> bake + palm-under support,
+writes `tools/handfit/port/fits/<Gun>_hv.json`), `port_hv.py` (runs `port/port_gun.py` unchanged with a heavies registry; adds
+break-open switch-case rows, the M32's Offset-without-ZOffset, Minigun recoil fit without the spinning barrels), `sheet_hv.py`
+(2 engine runs per gun: eye run give/select/rest/steady/fire/alt-fire/reload button/fire + script-error scan; side run),
+`compose_hv.py` (sheet), `surf_hv.py` (surface listing used to name trigger/bore surfaces). Hand sprites RQV1-RQV8 (new).
+
+### 1. Done (measured; rig only)
+- **GrenadeLauncher (M79), row 8**: 1.92 hold re-seated (17.9 deg off the start), index solved to the trigger (pad 0.39 cm from
+  the trigger face, squeeze 0.60 cm, max penetration 0.67 cm), palm-under support (pen 0.48, palm gap 1.5 cm). Gun moved
+  (Offset -4.954 -4.624, ZOffset -14.013, aim = pistol r5); rsb case 2 Hinge/Axis/PushRef/Offset, recoil rows 30-32, muzzle
+  row added. Commit 039ce08 (re-ported on the current base after the rebase conflicted; the fit is unchanged).
+- **Rocket_Launcher (RPG), row 19**: ported, but **flagged**: index pad 2.05 cm short of the trigger (M/R/P-only curl; the run
+  that would solve the index timed out under machine load). rsr case 9 moved (Grab moved too although HasHandle is false: unused).
+  Commit 039ce08.
+- Rig: see `/home/claude/lane_b_out/hands_heavies.png` and the per-gun result below.
+
+### 2. Open / flagged / not reached
+- **Plasma_Gun**: 1.92 hold re-seats badly (index pad 7.6 cm from the trigger, pen 1.95 cm); the index re-solve was killed. Not ported.
+  Next: start it like the RailGun from a finished gun's solved placement (fit_hv.START).
+- **RailGun**: 1.92 hold re-seated 41 deg off with the index 6.2 cm away; restarted from batch 3's MP40 placement (fit_hv.START):
+  stage 2 good (start pen 0.65, pad 0.51 cm). Curl/bake/port/scope check not finished in the time box.
+- **MG42, Machinegun, Minigun, IncendiaryLauncher**: not reached (fits not run; registry dry-run of port_hv.py passes for all).
+  Machinegun has no 1.92 hold (starts from the MG42's, fit_hv.HV) and its under-barrel launcher uses rsr_m203 gun 2 tables
+  that port_gun.py does not move yet: needs ToGun/FromGun for gun 2 before it is ported.
+- Support: only RQFS B (palm-under) exists as an FBX support pose; the Minigun / MG42 handlebar has no FBX pose.
+- The machine ran 2 cores at load 5-6 (three lanes fitting): a fit took 8-25 min, not 2.
