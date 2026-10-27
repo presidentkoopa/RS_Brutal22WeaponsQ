@@ -68,3 +68,9 @@ Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning mat
     - the **Shotvolver** (BD22 `Revolver`).
 
     Drop `Revolver2` (BD21's slug revolver) and the "Shotvolver Swap for Revolver" option that swaps it in. The Shotvolver's slug alt fire, if any, stays on the Shotvolver.
+
+## FlameCannon hands (owner, 2026-10-27 16:08)
+21. The FlameCannon is worn on the arm, so it gets no grip pose.
+    - **Measured** (FlameCannon.md3, 1 surface, 5085 verts): the housing runs x 11.9 to 78.5. A forearm-shaped mesh sits inside it, with a hose running back from it.
+    - **Gun hand:** the arm sits inside the housing. The wrist is pinned and the gun moves so the arm lines up with the inner forearm. The drawn hand is hidden inside it or barely shows.
+    - **Support hand:** open palm, cupped under the big barrel.
