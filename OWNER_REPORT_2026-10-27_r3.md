@@ -52,3 +52,12 @@ Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning mat
 18. **A skin-tone slider for the FBX hands,** in both BD22 Weapons Q 2.0 and ModelSwapper 2.0.
     - **Feasible on QuestZDoom 17.3 with no engine change:** a slider of discrete steps. Each step is a pre-recoloured copy of the hand texture, swapped by the option (MODELDEF skin / A_ChangeModel). Gloves could be one of the steps.
     - **To be checked:** whether a smooth slider is possible through a GLDEFS material shader on 17.3. Prove it on the rig before promising it.
+
+## For 2.0 (owner, 2026-10-27 11:21)
+19. **Option "Player Ballistics: Hitscan / Bullet":** the player can choose to fire real bullets instead of hitscan.
+    - **Source to build from:** the owner's RS_Ballistics (E:\DOOMWork\RS_Ballistics) already turns MONSTERS' hitscans into real flying rounds: `zscript/rsb/enemyfire.zs`, cvar `sv_rsb_enemy_rounds`, speed `sv_rsb_enemy_round_speed` = 80 map units a tic. Port that to the player's hitscans in BD22Q, with a WorldHitscanPreFired hook as recoil.zs already uses.
+    - **Rules:**
+      - it is a server cvar (it decides where shots go);
+      - a round leaves from the drawn muzzle (RSQ_Muzzle);
+      - same damage as BD22's hitscan;
+      - the kill is credited to the player.
