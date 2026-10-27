@@ -141,6 +141,12 @@ class RSQ_GunSide : Inventory
 	// batch 4: BrutalRevolver (row 17)
 	FbxTrgBru: RQFL A -1; Stop;
 	FbxSqzBru: RQFL B -1; Stop;
+	// heavies: GrenadeLauncher (row 8)
+	FbxTrgGL: RQV7 A -1; Stop;
+	FbxSqzGL: RQV7 B -1; Stop;
+	// heavies: Rocket_Launcher (row 19)
+	FbxTrgRL: RQV6 A -1; Stop;
+	FbxSqzRL: RQV6 B -1; Stop;
 	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
 	Nade: RQGN A -1; Stop;	// Ermac's ammo hand round the VR grenade
 	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
@@ -370,6 +376,28 @@ class RSQ_Hands : Weapon
 			}
 			gl = msq ? "FbxSqzBru" : "FbxTrgBru";
 		}
+		if (i == 8)	// heavies: GrenadeLauncher squeezes on its fire frames: 2RLN BCDE, GRLN BCDE or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || (mgp.Sprite == Actor.GetSpriteIndex('2RLN') && (mf == 1 || mf == 2 || mf == 3 || mf == 4)) || (mgp.Sprite == Actor.GetSpriteIndex('GRLN') && (mf == 1 || mf == 2 || mf == 3 || mf == 4));
+			}
+			gl = msq ? "FbxSqzGL" : "FbxTrgGL";
+		}
+		if (i == 19)	// heavies: Rocket_Launcher squeezes on its fire frames: 2ISF ABCDEFGHIJKLMNOPQRSTU, MISF ABCDEFGHIJKLMNOPQRSTU, MISG BCDEGHJ or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || (mgp.Sprite == Actor.GetSpriteIndex('2ISF') && (mf == 0 || mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 6 || mf == 7 || mf == 8 || mf == 9 || mf == 10 || mf == 11 || mf == 12 || mf == 13 || mf == 14 || mf == 15 || mf == 16 || mf == 17 || mf == 18 || mf == 19 || mf == 20)) || (mgp.Sprite == Actor.GetSpriteIndex('MISF') && (mf == 0 || mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 6 || mf == 7 || mf == 8 || mf == 9 || mf == 10 || mf == 11 || mf == 12 || mf == 13 || mf == 14 || mf == 15 || mf == 16 || mf == 17 || mf == 18 || mf == 19 || mf == 20)) || (mgp.Sprite == Actor.GetSpriteIndex('MISG') && (mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 6 || mf == 7 || mf == 9));
+			}
+			gl = msq ? "FbxSqzRL" : "FbxTrgRL";
+		}
 		if (i == 18)	// batch 4: Rifle squeezes on its FIRE frames (gunmoves rows 93-95: RIFF / RI2F / 2IFF A-D and the no-tube twins QT09 / QT0A / QT08) or fullbright, trigger otherwise
 		{
 			bool msq = false;
@@ -410,6 +438,10 @@ class RSQ_Hands : Weapon
 		else if (i == 18 && RSK_M203Handler.TriggerGrip(mo))
 			sp = (p.cmd.buttons & BT_OFFHANDATTACK) ? "M2" : "M1";	// 1.31: finger on the M203's trigger (squeezed)
 		String spl = (i == 4 || i == 7) ? (i == 4 ? "FbxSupP" : "FbxSupF") : "Sup" .. sp;	// BD 2.0 b1: the FBX support hands
+		if (i == 19)
+			spl = "FbxSupF";	// heavies: Rocket_Launcher, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 19)
+		if (i == 8)
+			spl = "FbxSupF";	// heavies: GrenadeLauncher, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 8)
 		if (i == 1)
 			spl = "FbxSupF";	// shotguns: AssaultShotgun, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 1)
 		if (i == 12)
@@ -882,6 +914,10 @@ class RSQ_Hands : Weapon
 	DFbxSqzRev: RQFK B -1; Stop;
 	DFbxTrgBru: RQFL A -1; Stop;	// batch 4: dual wield, BrutalRevolver
 	DFbxSqzBru: RQFL B -1; Stop;
+	DFbxTrgGL: RQV7 A -1; Stop;	// heavies: dual wield, GrenadeLauncher
+	DFbxSqzGL: RQV7 B -1; Stop;
+	DFbxTrgRL: RQV6 A -1; Stop;	// heavies: dual wield, Rocket_Launcher
+	DFbxSqzRL: RQV6 B -1; Stop;
 	Hidden: TNT1 A -1; Stop;
 	}
 }

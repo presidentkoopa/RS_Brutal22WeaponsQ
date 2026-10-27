@@ -42,7 +42,7 @@ class RSB_Guns abstract
 		switch (i)
 		{
 		case 1:	return (10.7185, 0.0346, -2.4812);
-		case 2:	return (18.3427, -0.1278, -3.7417);
+		case 2:	return (22.9516, 8.7973, -9.8684);	// heavies: moved with the gun to the FBX hand (was (18.3427, -0.1278, -3.7417))
 		case 3:	return (14.3673, 2.8003, 1.1952);	// batch 4: moved with the gun to the FBX hand (was 8.9567, 0.0021, -3.3564)
 		case 4:	return (12.5311, -0.0319, 0.2407);
 		case 5:	return (9.2809, -0.0000, -1.7485);
@@ -63,7 +63,7 @@ class RSB_Guns abstract
 		switch (i)
 		{
 		case 1:	return (0.0000, 1.0000, 0.0000);
-		case 2:	return (0.0000, 1.0000, 0.0000);
+		case 2:	return (-0.0771, 0.9787, 0.1900);	// heavies: moved with the gun to the FBX hand (was (0.0000, 1.0000, 0.0000))
 		case 3:	return (-0.9960, -0.0671, -0.0587);	// batch 4: moved with the gun to the FBX hand (was -1.0000, 0.0000, 0.0000)
 		case 4:	return (0.0000, 1.0000, 0.0000);
 		case 5:	return (0.0000, 1.0000, 0.0000);
@@ -569,7 +569,7 @@ class RSB_Guns abstract
 		switch (i)
 		{
 		case 1:	return (0.0000, 0.0000, -5.0000);
-		case 2:	return (0.0000, 0.0000, -5.0000);
+		case 2:	return (-4.9535, -4.6243, -14.0130);	// heavies: moved with the gun to the FBX hand (was (0.0000, 0.0000, -5.0000))
 		case 3:	return (0.4661, -5.4159, -2.8012);	// batch 4: moved with the gun to the FBX hand (was 0.0000, 0.0000, -5.0000)
 		case 4:	return (0.0000, 0.0000, 0.0000);
 		case 5:	return (0.0000, 0.0000, 0.0000);
@@ -1009,7 +1009,7 @@ class RSB_Guns abstract
 		switch (i)
 		{
 		case 1:	return (0.9884, 0.0000, 0.1522);
-		case 2:	return (0.9762, 0.0000, 0.2169);
+		case 2:	return (0.9626, 0.0235, 0.2698);	// heavies: moved with the gun to the FBX hand (was (0.9762, 0.0000, 0.2169))
 		case 3:	return (0.0000, 0.0050, 1.0000);
 		case 4:	return (0.9895, 0.0000, 0.1448);
 		case 5:	return (0.9667, 0.0000, 0.2559);

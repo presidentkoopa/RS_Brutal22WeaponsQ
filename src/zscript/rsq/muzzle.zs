@@ -68,6 +68,10 @@ class RSQ_Muzzle : EventHandler
 		if (w is 'AssaultShotgun')	return (67.36, 11.02, -2.66);
 		// batch 4: Revolver's drawn muzzle (front-most face centre of the ready frame, 21.54 -0.02 1.86 before the move), moved with the gun
 		if (w is 'Revolver')	return (26.67, 2.61, 7.04);
+		// heavies: GrenadeLauncher's drawn muzzle (front-most face centre of the ready frame, 46.39 0.00 1.16 before the move), moved with the gun
+		if (w is 'GrenadeLauncher')	return (50.66, 9.86, -3.40);
+		// heavies: Rocket_Launcher's drawn muzzle (front-most face centre of the ready frame, 51.65 0.00 7.65 before the move), moved with the gun
+		if (w is 'Rocket_Launcher')	return (55.59, 3.74, 17.94);
 		return (0, 0, 0);
 	}
 

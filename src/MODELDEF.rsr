@@ -884,8 +884,11 @@ Model Rocket_Launcher
 	SurfaceSkin 0 11 "rsr_clear.png"
 	SurfaceSkin 0 12 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.259 -4.608 0.0
+	ZOffset 0.657
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// heavies (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQDM A 0 5
 }
@@ -909,8 +912,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 11 "RPG.png"
 	SurfaceSkin 0 12 "RPG.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.259 -4.608 0.0
+	ZOffset 0.657
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// heavies (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQDP A 0 5
 }

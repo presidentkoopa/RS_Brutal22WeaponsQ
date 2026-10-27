@@ -354,3 +354,27 @@ Model Revolver
 	FrameIndex RQFK A 0 0	// Revolver, finger on the trigger
 	FrameIndex RQFK B 0 1	// Revolver, squeezed
 }
+
+// heavies (lane B): GrenadeLauncher (row 8), dual wield holds the FBX gun hand fitted from 1.92's GrenadeLauncher hold (frames baked in place, hook 0)
+Model GrenadeLauncher
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_GrenadeLauncher_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV7 A 0 0	// GrenadeLauncher, finger on the trigger
+	FrameIndex RQV7 B 0 1	// GrenadeLauncher, squeezed
+}
+
+// heavies (lane B): Rocket_Launcher (row 19), dual wield holds the FBX gun hand fitted from 1.92's Rocket_Launcher hold (frames baked in place, hook 0)
+Model Rocket_Launcher
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_Rocket_Launcher_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV6 A 0 0	// Rocket_Launcher, finger on the trigger
+	FrameIndex RQV6 B 0 1	// Rocket_Launcher, squeezed
+}

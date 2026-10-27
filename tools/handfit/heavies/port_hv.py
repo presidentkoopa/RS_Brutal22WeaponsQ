@@ -1,0 +1,104 @@
+"""port_hv.py <Class> <fit.json> [--src DIR] [--tag TEXT] [--dry]
+The heavies lane's entry to tools/handfit/port/port_gun.py (unchanged, imported): it registers the heavies' guns (GUNS_HV,
+parsed from the tree: MODELDEF names/scale/offset, handtable row, rsr_guns.bd.zs / rsb_guns.zs case, casings.zs row, scope
+row) and adds the one move port_gun.py does not have: break-open (rsb_guns.zs) rows written as switch cases (the M79).
+Then it runs port_gun.py's own main sequence."""
+import os, re, sys, json, argparse, numpy as np
+HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, os.path.join(HERE, '..', 'port'))
+import port_gun as pg
+D = lambda cls, extra=(): [('MODELDEF.rsqdual', cls)] + list(extra)
+GUNS_HV = {
+ 'MG42': dict(md3='models/bd/HitlersBuzzsaw/HitlersBuzzsaw.md3', names=['HitlersBuzzsaw.md3'], ready=0, scale=[-1, 1, 1], off=[0, 0, -5], row=11, rsr=10,
+    casing='MG42', blocks=None, skip=[], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'MG42'), dual=D('MG42', [('MODELDEF.purist', 'PuristMG42')])),
+ 'Machinegun': dict(md3='models/bd/Machinegun/Machinegun.md3', names=['Machinegun.md3'], ready=4, scale=[-1, 1, 1], off=[0, 0, -5], row=27, rsr=18,
+    casing='Machinegun', blocks=None, skip=[], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'Machinegun'), dual=[]),
+ 'Minigun': dict(md3='models/bd/Minigun/Minigun.md3', names=['Minigun.md3'], ready=4, scale=[-1, 1, 1], off=[0, 0, -5], row=13, rsr=17,
+    kick_surf=[0, 1, 3, 4, 5],	# the recoil fit leaves out surface 2 'Pipe' (the spinning barrels: shipped rows are 0 for spin-only frames)
+    blocks=None, skip=[], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'Minigun'), dual=D('Minigun', [('MODELDEF.purist', 'PuristMinigun')])),
+ 'Plasma_Gun': dict(md3='models/bd/Plasma_Gun/Plasma.md3', names=['Plasma.md3'], ready=4, scale=[-1, 1, 1], off=[0, 0, -5], row=15, rsr=7,
+    blocks=None, skip=['RQZW'], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'Plasma_Gun'),
+    dual=D('Plasma_Gun', [('MODELDEF.rsqoff', 'RSQ_Off_Plasma_Gun'), ('MODELDEF.purist', 'PuristPlasma_Gun')])),
+ 'RailGun': dict(md3='models/bd/RailGun/RailGun.md3', names=['RailGun.md3'], ready=3, scale=[-1, 1, 1], off=[0, 0, -5], row=16, rsr=6, scope=1,
+    blocks=None, skip=['RQLW'], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'RailGun'),
+    dual=D('RailGun', [('MODELDEF.rsqoff', 'RSQ_Off_RailGun'), ('MODELDEF.purist', 'PuristRailGun')])),
+ 'Rocket_Launcher': dict(md3='models/bd/RPG/RPG.md3', names=['RPG.md3'], ready=5, scale=[-1, 1, 1], off=[0, 0, -5], row=19, rsr=9,
+    blocks=None, skip=['RQDW'], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'Rocket_Launcher'),
+    dual=D('Rocket_Launcher', [('MODELDEF.purist', 'PuristRocket_Launcher')])),
+ 'GrenadeLauncher': dict(md3='models/bd/M79/M79.md3', names=['M79.md3'], ready=3, scale=[-1, 1, 1], off=[0, 0, -5], row=8, rsbcase=2,
+    blocks=None, skip=['RBGW'], skipcls=['RSQ_Hands', 'RSB_Round'], bdblock=('MODELDEF.bd.txt', 'GrenadeLauncher'),
+    dual=D('GrenadeLauncher', [('MODELDEF.purist', 'PuristGrenadeLauncher')])),
+ 'IncendiaryLauncher': dict(md3='models/bd/M32/m32.md3', names=['m32.md3'], ready=0, scale=[-0.62, 0.62, 0.62], off=[0, -30, -8], row=10, rsr=12,
+    blocks=None, skip=[], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'IncendiaryLauncher'),
+    dual=D('IncendiaryLauncher', [('MODELDEF.purist', 'PuristIncendiaryLauncher')])),
+}
+pg.GUNS.update(GUNS_HV)
+# hand sprites (new; free in the pack, brutal22test6 and BD_VoxelPack: checked by name) and state-label suffixes
+HANDSPR = {'MG42': ('RQV1', 'MG42'), 'Machinegun': ('RQV2', 'MGun'), 'Minigun': ('RQV3', 'Mini'), 'Plasma_Gun': ('RQV4', 'Plas'), 'RailGun': ('RQV5', 'Rail'),
+           'Rocket_Launcher': ('RQV6', 'RL'), 'GrenadeLauncher': ('RQV7', 'GL'), 'IncendiaryLauncher': ('RQV8', 'Inc')}
+EXTRA_SQZ = {'Machinegun': [('MGN1', 'BCDEFK')]}	# no gunmoves rows: its Fire frames (Machinegun.dec Fire: MGN1 B-F, K)
+def squeeze_expr(G):
+    """the gun hand squeezes on the gun's fire frames: the sprites/frames gunmoves.zs keys to its handtable row (+ EXTRA_SQZ)"""
+    tx = pg.rd('zscript/rsq/gunmoves.zs')
+    spr = re.findall(r'"([^"]+)"', re.search(r'static const String spr\[\] = \{([^}]*)\}', tx).group(1))
+    key = [int(v) for v in re.search(r'static const int key\[\] = \{([^}]*)\}', tx).group(1).split(',')]
+    fr = {}
+    for k, sname in enumerate(spr):
+        if key[2 * k] == G['row']: fr.setdefault(sname[:4], set()).update(ord(c) - 65 for c in sname[4:])
+    for sp, ls in EXTRA_SQZ.get(G['cls'], []): fr.setdefault(sp, set()).update(ord(c) - 65 for c in ls)
+    parts = ["(mgp.Sprite == Actor.GetSpriteIndex('%s') && (%s))" % (sp, ' || '.join('mf == %d' % f for f in sorted(fs))) for sp, fs in sorted(fr.items())]
+    return ' || '.join(parts) if parts else 'false', 'fire frames: ' + ', '.join('%s %s' % (sp, ''.join(chr(65 + f) for f in sorted(fs))) for sp, fs in sorted(fr.items()))
+NOGUNMOVES = {'Machinegun'}	# gunmoves.zs has no Pivot row 27 and no fire rows for the Machinegun: nothing to move (reported)
+
+_rd = pg.rd
+def rd_norm(p):
+    """MODELDEF blocks of the M32 carry the z in Offset (Offset 0.0 -30.0 -8.0, no ZOffset). Same placement written as
+    Offset x y 0.0 + ZOffset z (the form port_gun.py edits); only blocks drawing the current gun's meshes."""
+    tx = _rd(p)
+    if not p.startswith('MODELDEF') or not getattr(pg, 'CUR', None): return tx
+    def fix(m):
+        b = m.group(0)
+        if not any('"%s"' % n in b for n in pg.CUR['names']) or re.search(r'(?m)^[ \t]*ZOffset', b): return b
+        return re.sub(r'(?m)^([ \t]*)Offset[ \t]+([-\d.]+)[ \t]+([-\d.]+)[ \t]+([-\d.]+)[ \t]*\n', lambda o: '%sOffset %s %s 0.0\n%sZOffset %s\n' % (o.group(1), o.group(2), o.group(3), o.group(1), o.group(4)), b, count=1)
+    return pg.BLK.sub(fix, tx)
+pg.rd = rd_norm
+
+def rsb_cases(G, p, R, t, tag):
+    """rsb_guns.zs rows written as switch cases: Hinge (point) moves, Axis turns, Offset = the new placement. Hand-frame rows
+    (Hand0-2, HandT/Base/Tip) are kept (b1-b3 rule); Casing (0,0,0 = none) kept; PushRef (a gun-frame direction) turns; PushZ/PushR
+    (along / around the hinge axis, from the hinge) are rigid-invariant."""
+    tx = pg.rd('zscript/rsr/rsb_guns.zs'); c = G['rsbcase']
+    v, s = pg.getcase(tx, 'Hinge', c); tx = pg.setcase(tx, 'Hinge', c, s, '(%.4f, %.4f, %.4f)' % tuple(R @ v + t), tag)
+    v, s = pg.getcase(tx, 'Axis', c); tx = pg.setcase(tx, 'Axis', c, s, '(%.4f, %.4f, %.4f)' % tuple(R @ v), tag)
+    v, s = pg.getcase(tx, 'Offset', c); assert np.abs(v - np.array(G['off'])).max() < 1e-3, ('rsb Offset not base', v)
+    tx = pg.setcase(tx, 'Offset', c, s, '(%.4f, %.4f, %.4f)' % tuple(p[:3]), tag)
+    v, s = pg.getcase(tx, 'PushRef', c)
+    if v is not None: tx = pg.setcase(tx, 'PushRef', c, s, '(%.4f, %.4f, %.4f)' % tuple(R @ v), tag)
+    pg.wr('zscript/rsr/rsb_guns.zs', tx)	# PushZ0/1, PushR0/1, PushEdge: measured along / around the hinge axis from the hinge: unchanged by a rigid move
+
+if __name__ == '__main__':
+    ap = argparse.ArgumentParser(); ap.add_argument('cls'); ap.add_argument('fit'); ap.add_argument('--src'); ap.add_argument('--tag', default='heavies'); ap.add_argument('--dry', action='store_true')
+    pg.ARGS = ARGS = ap.parse_args()
+    if ARGS.src: pg.SRC = os.path.abspath(ARGS.src)
+    G = dict(pg.GUNS[ARGS.cls], cls=ARGS.cls); G['md3'] = os.path.join(pg.SRC, G['md3']); pg.CUR = G
+    F = json.load(open(ARGS.fit)); fitdir = os.path.dirname(os.path.abspath(ARGS.fit))
+    if 'place' in F: p = np.array(F['place'], float); res = None
+    else: p, res, R0, t0 = pg.place(G, F['shift'])
+    R, t = pg.rigid_move(G, p)
+    print('%s: MODELDEF Offset %.3f %.3f  ZOffset %.3f  Angle/Pitch/Roll %.3f/%.3f/%.3f' % ((ARGS.cls,) + tuple(p)), '' if res is None else '(chain residual %.4f cm)' % res)
+    pg.gun_blocks_cache = {ARGS.cls: pg.gun_blocks(G)}
+    pg.modeldef(G, p, ARGS.tag)
+    if G.get('row') is not None and G.get('bdblock') and ARGS.cls not in NOGUNMOVES: pg.gunmoves(G, p, ARGS.tag)
+    else: pg.note('gunmoves: no Pivot / fire rows for %s in gunmoves.zs: nothing moved' % ARGS.cls)
+    if G.get('rsr'): pg.rsr(G, p, R, t, ARGS.tag)
+    if G.get('rsbcase'): rsb_cases(G, p, R, t, ARGS.tag)
+    if G.get('casing'): pg.casing(G, R, t, ARGS.tag)
+    if not F.get('no_muzzle'): pg.muzzle(G, R, t, ARGS.tag)
+    if G.get('scope'): pg.scope(G, R, t, ARGS.tag)
+    if F.get('hand'):
+        H = F['hand']; H['sprite'], H['label'] = HANDSPR[ARGS.cls]
+        if H.get('squeeze', 'false') == 'false': H['squeeze'], H['squeeze_note'] = squeeze_expr(G)
+        pg.note('hand squeeze:', H['squeeze_note'])
+    if F.get('hand'): pg.hand(G, F['hand'], R, t, ARGS.tag, fitdir)
+    pg.flush()
+    print('moved %d items%s' % (len(pg.MOVED), ' (dry run: nothing written)' if ARGS.dry else ''))
+    if not ARGS.dry: json.dump(dict(cls=ARGS.cls, place=list(p), R=R.tolist(), t=t.tolist(), moved=pg.MOVED), open(os.path.join(fitdir, 'ported_%s.json' % ARGS.cls), 'w'), indent=1)

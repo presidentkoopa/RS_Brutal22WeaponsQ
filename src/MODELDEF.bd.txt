@@ -1317,9 +1317,12 @@ Model GrenadeLauncher
    Model 0 "M79.md3"
    Skin 0 "M79.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
+   Offset -4.954 -4.624 0.0
+   ZOffset -14.013
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// heavies (lane B): gun to the FBX hand fitted from 1.92
    NoInterpolation
-   ZOffset -5
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -1821,8 +1824,11 @@ Model Rocket_Launcher
    Model 0 "RPG.md3"
    Skin 0 "RPG.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 0.259 -4.608 0.0
+   ZOffset 0.657
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// heavies (lane B): gun to the FBX hand fitted from 1.92
    Nointerpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
