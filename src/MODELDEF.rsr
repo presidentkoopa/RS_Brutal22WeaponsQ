@@ -1490,13 +1490,19 @@ Model RSR_DroppedMag
 // are alpha-tested at gl_mask_threshold, so a clear surface is not drawn).
 
 // the gun without its magazine (ready frame)
+// r4 (owner: "only the top half of the skull pops out"): the skull is TWO surfaces of
+// Unmaker_rsr.md3, `magazine` (1: 361 verts, the top) and `magazine#2` (2: 249 verts, the jaw).
+// Only surface 1 was drawn as the part; surface 2 stayed on the gun. The RS VR Weapons copy of the
+// same mesh (Depot sets/plus_0.7 unmaker_wm.md3: surfaces of 10931 / 361 / 249 verts, the same
+// counts; MODELDEF.rsr WM_VP_Unmaker) draws 1 and 2 as the part and 0 alone as the gun, which is
+// what bd22_plus.py's card meant too (ref_parts skull AND skull2 -> magazine). Now the same.
 Model Unmaker
 {
 	Path "models/bd/Unmaker"
 	Model 0 "Unmaker_rsr.md3"
 	SurfaceSkin 0 0 "Unmaker.png"
 	SurfaceSkin 0 1 "rsr_clear.png"
-	SurfaceSkin 0 2 "Unmaker.png"
+	SurfaceSkin 0 2 "rsr_clear.png"	// r4: the skull is surfaces 1 AND 2
 	Scale -1.0000 1.0000 1.0000
 	Offset 0.0000 0.0000 0.0
 	ZOffset -5.0000
@@ -1511,7 +1517,7 @@ Model RSR_GunParts
 	Model 0 "Unmaker_rsr.md3"
 	SurfaceSkin 0 0 "rsr_clear.png"
 	SurfaceSkin 0 1 "Unmaker.png"
-	SurfaceSkin 0 2 "rsr_clear.png"
+	SurfaceSkin 0 2 "Unmaker.png"	// r4: the skull is surfaces 1 AND 2
 	Scale -1.0000 1.0000 1.0000
 	Offset 0.0000 0.0000 0.0
 	ZOffset -5.0000
@@ -1526,7 +1532,7 @@ Model RSQ_Hands
 	Model 0 "Unmaker_rsr.md3"
 	SurfaceSkin 0 0 "rsr_clear.png"
 	SurfaceSkin 0 1 "Unmaker.png"
-	SurfaceSkin 0 2 "rsr_clear.png"
+	SurfaceSkin 0 2 "Unmaker.png"	// r4: the skull is surfaces 1 AND 2
 	Scale -1.0000 1.0000 1.0000
 	Offset 0.0000 0.0000 0.0
 	ZOffset -5.0000
@@ -1541,7 +1547,7 @@ Model RSR_DroppedMag
 	Model 0 "Unmaker_rsr.md3"
 	SurfaceSkin 0 0 "rsr_clear.png"
 	SurfaceSkin 0 1 "Unmaker.png"
-	SurfaceSkin 0 2 "rsr_clear.png"
+	SurfaceSkin 0 2 "Unmaker.png"	// r4: the skull is surfaces 1 AND 2
 	Scale 0.3468 0.3468 0.3468
 	Offset -14.0589 0.0447 0.0
 	ZOffset -2.7920
