@@ -94,6 +94,8 @@ class RSQ_Muzzle : EventHandler
 		if (w is 'IncendiaryLauncher')	return (61.12, 11.16, 1.79);
 		// r11 port: Devastator's drawn muzzle (front-most face centre of the ready frame, 64.79 0.02 13.59 before the move), moved with the gun
 		if (w is 'Devastator')	return (66.55, 4.36, 21.68);
+		// r11 port: SSG's drawn muzzle (front-most face centre of the ready frame, 36.84 0.04 1.12 before the move), moved with the gun
+		if (w is 'SSG')	return (40.48, 8.12, -2.75);
 		return (0, 0, 0);
 	}
 
