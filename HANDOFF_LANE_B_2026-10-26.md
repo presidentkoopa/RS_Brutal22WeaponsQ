@@ -702,8 +702,18 @@ Worktree `/home/claude/lane_b_moon` (branch `moon-reload`, pushed to `lane-b-1.9
   - 0 script errors from our pack (only BD_VoxelPack's voxeldef lines and DeathSphereHealth).
 - **Sheet**: `/home/claude/lane_b_out/moon_reload.png` (in engine, left eye): closed; broken open; loader in the off
   hand; loader pushed home; rounds seated with the gun still open; flick shut.
-- **Pack**: `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r6-moon.pk3`, from pushed `7b6708f`, sha256
-  `a45ba278cca8bd8766e4957fd4cba3c72954f0a01efcc96ffbe4890ab9ccef03`. Not on the headset yet.
+- **Pack**: `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r6-moon.pk3`, built from pushed `38bc7e2` (this head;
+  it carries batch 2 and the scope commit too), sha256 `5bdd0bd6105475b228f33cf25a4d7dc81cc5b8bf3734a1486fc79fadf2dde632`.
+  On this pack, both reload modes were driven again: 0 script errors of ours, reserve capped at 72,
+  speedloader 72 -> 66 / cylinder 0 -> 6, a round at a time 6 x loaded, 2 shots after each.
+  **Rig only, not headset-confirmed.**
+- **Sweep**: `sw_r6m_*` on `7b6708f` (before the ammo numbers and the rebase) covered 30 of 32 classes, then hit
+  its 40-min limit (rig lock shared by 4+ lanes); Flamethrower2 and HandGrenades were not reached. Every class
+  matches r5m (err 0, vm 0, same shots and phases). Chain_Saw / Revolver / RailGun read "held False" in both,
+  which is the probe's name match. BrutalRevolver now opens the break reload on the button (rsb OPENING/OPEN); with
+  no hand in the sweep it stays open, so 2 shots instead of r5m's 4. That is expected.
+  A full sweep on the final pack (`sw_r6mf_*`, `sweep_r6mf.out`, check with `sweepcheck_r6m.py` after
+  changing its tag) was started at the end of the box.
 
 - **Ammo (owner, 2026-10-27)**: RevolverRounds 6 a pickup, carry 72. Backpack max 144, from BD22's rule for all
   four of its ammo types (Ammo.dec, parsed: backpack max = 2 x max). Backpack amount stays 6 (one speedloader).
