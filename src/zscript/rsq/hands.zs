@@ -234,7 +234,9 @@ class RSQ_Hands : Weapon
 		// slot is neither empty nor RSQ_Hands and reloading dies silently for EVERY gun.
 		// A copy that matches the ready weapon is a real dual wield and is left alone.
 		let off = p.OffhandWeapon;
-		bool stale = off && !(off is 'RSQ_Hands')
+		// 2026-10-27: only OUR leftover Dual copy is stale. Any other off-hand weapon (QZD's
+		// switchhand, the QuestSaber, the ShieldSaw, a holstered gun) is left alone.
+		bool stale = off && RSQ_Dual.CopyIndex(off) >= 0
 			&& RSQ_Dual.CopyIndex(off) != RSQ_Dual.GunIndex(p.ReadyWeapon);
 		if (h && (!off || stale) && p.PendingWeapon == WP_NOCHANGE)
 			p.PendingWeapon = h;
