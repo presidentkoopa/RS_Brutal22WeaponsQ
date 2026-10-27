@@ -61,3 +61,10 @@ Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning mat
       - a round leaves from the drawn muzzle (RSQ_Muzzle);
       - same damage as BD22's hitscan;
       - the kill is credited to the player.
+
+## Revolvers (owner, 2026-10-27 16:00)
+20. "I don't need two revolvers and one shotvolver." Keep exactly two:
+    - the **Revolver** (BrutalRevolver, the Moonlight);
+    - the **Shotvolver** (BD22 `Revolver`).
+
+    Drop `Revolver2` (BD21's slug revolver) and the "Shotvolver Swap for Revolver" option that swaps it in. The Shotvolver's slug alt fire, if any, stays on the Shotvolver.
