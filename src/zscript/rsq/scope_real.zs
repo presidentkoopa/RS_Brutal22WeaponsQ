@@ -1,8 +1,8 @@
 // RS VR scopes, REAL mode: the view down the bore, rendered into the scope's own glass.
 //
 // The companion to rsq/scope.zs. That file owns the per-gun table and the collimated DOT;
-// this one owns the magnified see-through picture, and nothing here runs unless the gun's
-// mode cvar (RSQ_ScopeTable.ModeCVar) says 1.
+// this one owns the picture through the glass: 3x in REAL mode, 1x under the dot in DOT mode
+// (1.99x r6; before that DOT had no picture and the glass was opaque).
 //
 // HOW IT WORKS
 //   An invisible actor (RSQ_ScopeCam) is parked each tic at the lens, pointing down the bore,
@@ -154,30 +154,28 @@ class RSQ_ScopeReal : EventHandler
 		return fH + w * vu;
 	}
 
-	// Where the eye is, in the same frame, in centimetres: the play-scope twin of
-	// RSQ_Scope.EyeInHandFrame. That one rebuilds the hand basis from the Euler angles because
-	// ui may not call AttackDir; here the real basis is already in hand.
-	//
-	// The view point is the pawn's XY with the player's view height, which in VR tracks the
-	// headset vertically. Stock QuestZDoom exposes no head POSITION to script, so a sideways
-	// head lean does not move this point -- the lateral test below is really "is the GUN in
-	// front of your face", which for a shouldered rifle is the same question.
-	private Vector3 EyeFLU(PlayerPawn mo)
+	// Where an eye is, in the same frame, in centimetres. The eye itself is RSQ_Scope.EyeWorld
+	// (scope.zs): the headset's real height and either eye's IPD offset, the way the renderer
+	// places it. Here the real hand basis is already in hand.
+	private Vector3 EyeFLU(PlayerPawn mo, int side)
 	{
-		let p = mo.player;
-		if (!p)
-			return (0, 0, 0);
-		Vector3 eye = (mo.pos.x, mo.pos.y, p.viewz);
-		Vector3 d = eye - mo.AttackPos;
+		Vector3 d = RSQ_Scope.EyeWorld(mo, side) - mo.AttackPos;
 		d.z *= ps;					// undo the squash Place applies
 		double k = 100.0 / vu;		// map units -> cm
 		return ((d dot fF) * k, -(d dot fR) * k, (d dot fU) * k);
 	}
 
-	// Is the player looking THROUGH the sight? Same geometry the collimated dot uses
-	// (RSQ_Scope.DotAt): drop the eye onto the bore axis, and ask how far back it is and how
-	// far off to the side. `wide` loosens both limits for a picture that is already up.
+	// Is the player looking THROUGH the sight with either eye? Same geometry the collimated dot
+	// uses (RSQ_Scope.DotAt): drop the eye onto the bore axis, and ask how far back it is and
+	// how far off to the side. `wide` loosens both limits for a picture that is already up.
+	// Sets eyeAlong to the sighting eye's distance behind the glass, for the magnification.
+	double eyeAlong;
 	private bool Through(PlayerPawn mo, int i, bool wide)
+	{
+		return ThroughEye(mo, i, wide, -1) || ThroughEye(mo, i, wide, 1);
+	}
+
+	private bool ThroughEye(PlayerPawn mo, int i, bool wide, int side)
 	{
 		Vector3 P = RSQ_ScopeTable.Lens(i);
 		Vector3 A = RSQ_ScopeTable.Axis(i);
@@ -185,18 +183,33 @@ class RSQ_ScopeReal : EventHandler
 		if (al <= 0)
 			return false;
 		A = A / al;
-		Vector3 E = EyeFLU(mo);
+		Vector3 E = EyeFLU(mo, side);
 		Vector3 toLens = P - E;
 		double along = toLens dot A;		// > 0: the glass is in front of the eye
 		if (along <= 0)
 			return false;
 		if (along > (wide ? RELIEF_OFF : RELIEF))
 			return false;
-		double side = (toLens - A * along).Length();
+		double s = (toLens - A * along).Length();
 		double rr = RSQ_ScopeTable.Radius(i);
 		if (rr <= 0)
 			return false;
-		return side <= rr * (wide ? SIDE_OFF : SIDE_ON);
+		if (s > rr * (wide ? SIDE_OFF : SIDE_ON))
+			return false;
+		eyeAlong = along;
+		return true;
+	}
+
+	// THE MAGNIFICATION. A camera texture is rendered mono (RenderViewpoint with mainview
+	// false), and VREyeInfo::GetProjection (hw_vrmodes.cpp:343) builds it with
+	// fovy = 2*atan(tan(fov/2)/ratio) at aspect ratio, so the fov handed to SetCameraToTexture
+	// is the HORIZONTAL field across the texture -- and the glass is UV-mapped 0..1 across its
+	// disc, so that is the field across the lens. The lens subtends 2*atan(r/along) at the eye;
+	// a mag-times sight shows 1/mag of that angle of the world across it.
+	static double FovFor(double r, double along, double mag)
+	{
+		along = clamp(along, 3.0, RELIEF_OFF);
+		return 2.0 * atan((r / along) / max(mag, 1.0));
 	}
 
 	// ---------------------------------------------------------------- the skin
@@ -282,14 +295,16 @@ class RSQ_ScopeReal : EventHandler
 		}
 
 		// 0 = dot, 1 = real. Read per player, never FindCVar, so a netgame cannot disagree
-		// about which mode a gun is in. A cvar that does not exist yet reads as dot, which is
-		// why this file is inert until MENUDEF/CVARINFO carry the option.
+		// about which mode a gun is in. A cvar that does not exist yet reads as dot.
+		// 1.99x r6: BOTH modes render the view down the bore; they differ in magnification.
+		//   1 REAL  the scope's own magnification (RSQ_ScopeTable.Mag, 3x).
+		//   0 DOT   1x, with the collimated red dot over it (rsq/hands.zs). The glass cannot
+		//           simply be made clear for this: behind the ocular is the inside of the tube
+		//           and the objective's own cap, never the world. A 1x picture through the
+		//           glass IS the see-through lens, at the same one-extra-render cost, and only
+		//           while an eye is at the eyepiece.
 		let cv = CVar.GetCVar(RSQ_ScopeTable.ModeCVar(i), mo.player);
-		if (!cv || cv.GetInt() != 1)
-		{
-			Shutdown();
-			return;
-		}
+		double mag = (cv && cv.GetInt() == 1) ? RSQ_ScopeTable.Mag(i) : 1.0;
 
 		// the gun changed under us: take the swap off the one that had it
 		if (w != lastWeapon || i != lastIndex)
@@ -341,14 +356,13 @@ class RSQ_ScopeReal : EventHandler
 		cam.SetOrigin(lens, true);
 		cam.angle = VectorAngle(d.x, d.y);
 		cam.pitch = -asin(clamp(d.z, -1, 1));
-		cam.roll = 0;
+		// 1.99x r6: 180, not 0. The glass UVs (kit md3_carve_surface.py --project-uv) put the
+		// texture's origin in the opposite corner, so a roll-0 picture showed in the lens
+		// upside down AND mirrored (rig frames, HANDOFF r6-scope): a 180 degree rotation.
+		cam.roll = 180;
 
-		// Horizontal fov for the magnification. 90 degrees is the picture a 1x sight would
-		// show, so 90/mag is what a mag-times sight shows of it.
-		double mag = RSQ_ScopeTable.Mag(i);
-		if (mag < 1.0)
-			mag = 1.0;
-		TexMan.SetCameraToTexture(cam, TEXNAME, 90.0 / mag);
+		double fov = FovFor(RSQ_ScopeTable.Radius(i), eyeAlong, mag);
+		TexMan.SetCameraToTexture(cam, TEXNAME, fov);
 
 		if (!skinOn)
 		{

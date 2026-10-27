@@ -1,8 +1,9 @@
 // RS VR scopes: a sight that can be put on any gun that has one in its mesh.
 //
 // Two modes per gun (MENUDEF.rsq -> rsq_scope_<gun>):
-//   DOT   a collimated red dot. No magnification, no render cost, no mesh change.
-//   REAL  the view down the bore, rendered into the scope's own glass surface.
+//   DOT   a collimated red dot over the view down the bore at 1x (1.99x r6: see-through).
+//   REAL  the view down the bore at 3x, rendered into the scope's own glass surface.
+// Both cost one extra scene render, and only while an eye is at the eyepiece (scope_real.zs).
 //
 // THE DOT IS COLLIMATED, and that is the whole point of it. A reticle painted on the glass
 // has full parallax: move your head and the dot slides off what the gun is pointing at, which
@@ -76,7 +77,7 @@ class RSQ_ScopeTable abstract
 
 	clearscope static double Mag(int i)
 	{
-		static const double v[] = { 0, 5.0, 6.0 };
+		static const double v[] = { 0, 3.0, 3.0 };	// 1.99x r6: 3x (owner); see scope_real.zs FovFor
 		return i > 0 && i < v.Size() ? v[i] : 1.0;
 	}
 
@@ -90,41 +91,93 @@ class RSQ_ScopeTable abstract
 
 class RSQ_Scope abstract
 {
+	const DOT_LIFT = 0.25;	// cm the dot sits in front of the glass, toward the eye
 	// The hand's own axes, built from the Euler angles the renderer wrote this frame.
 	// CLEARSCOPE, deliberately: nothing here calls a native: AttackAngle / AttackPitch /
 	// AttackRoll are plain readable fields and the rest is trig. So the renderer hook (ui, per
 	// frame) and the layer-state chooser (play, per tic) share ONE implementation instead of
 	// the play side needing a second copy to decide whether to show the reticle at all. AttackDir() cannot be called from ui (it is a play method on Actor), but the
 	// ANGLES are plain fields and ui may read play data -- so the basis is rebuilt here with
-	// trig instead. AttackAngle is the world yaw MINUS 90 and AttackPitch is negated, which
-	// is the engine's own convention (p_map.cpp adds the 90 back everywhere it uses them).
+	// trig instead. AttackAngle is the world yaw MINUS 90 (p_map.cpp adds the 90 back
+	// everywhere it uses it); AttackPitch is positive up.
 	// F11: RETURNS the three axes. An `out Vector3` parameter aborts the VM the first time it is
 	// called (qzd17.3 vmexec.h:828-830, "REGT_ADDROF not implemented for vectors").
 	clearscope static Vector3, Vector3, Vector3 Basis(PlayerPawn mo)
 	{
 		Vector3 fwd, right, up;
 		double yaw = mo.AttackAngle + 90.0;
-		double pit = -mo.AttackPitch;
+		// 1.99x r6: NOT negated. On QZD 17.3 AttackPitch is positive UP (the hand pitched 20
+		// up logs AttackPitch 20 and AttackDir z +0.342). With the old minus, and r0 below
+		// pointing left, the basis matched the engine's at no pose at all. This basis now matches the play side's AttackDir axes to four
+		// decimals at three logged poses (yaw/pitch/roll mixed; HANDOFF r6-scope).
+		double pit = mo.AttackPitch;
 		double rol = mo.AttackRoll;
 		double cy = cos(yaw), sy = sin(yaw), cp = cos(pit), sp = sin(pit);
 		fwd = (cp * cy, cp * sy, sp);
-		Vector3 r0 = (-sy, cy, 0);
+		// 1.99x r6: this was (-sy, cy, 0), which is LEFT, so right and up both came out
+		// negated and every eye landed on the mirror image of the lens: DotAt never had a
+		// sight picture and the dot never drew (rig log, HANDOFF r6-scope).
+		Vector3 r0 = (sy, -cy, 0);
 		// roll the right/up pair about the forward axis
 		double cr = cos(rol), sr = sin(rol);
-		Vector3 u0 = (fwd cross r0);
-		right = r0 * cr + u0 * sr;
+		Vector3 u0 = (r0 cross fwd);	// up at zero roll
+		right = r0 * cr - u0 * sr;		// positive AttackRoll tips the right side down
 		up = (right cross fwd);
 		return fwd, right, up;
 	}
 
-	// Where the eye is, in the hand's own frame, in centimetres. The view point is the pawn's
-	// XY with the player's own view height, which in VR already tracks the headset.
-	clearscope static Vector3 EyeInHandFrame(PlayerPawn mo)
+	// THE EYE, IN THE WORLD, the way the renderer places it. 1.99x r6: this was the pawn's XY at
+	// p.viewz, and that is not where either eye is, which is why neither mode ever worked in a
+	// headset (shown on the rig, HANDOFF r6-scope):
+	//   HEIGHT  with vr_crouch_use_button on (the QZD default, hw_vrmodes.cpp:122) viewz stays at
+	//           the pawn's ViewHeight and the headset's real height is added afterwards, in
+	//           OpenXRDeviceEyePose::GetViewShift (hw_openxrdevice.cpp:219):
+	//               + (hmdPosition.y + vr_height_adjust) * vu / ps - ViewHeight
+	//           The hand is placed from the controller's absolute height (AttackPos.Z,
+	//           hw_openxrdevice.cpp:595, weaponoffset = controller - hmd, VrInputDefault.cpp:148),
+	//           so with the old eye the gate was off by the player's height minus the pawn's:
+	//           16 cm on the rig. QZD hands script the head as Actor.HmdPosition (actor.zs:277,
+	//           written each frame at hw_vrmodes.cpp:445).
+	//   SIDE    the two eyes are vr_ipd/2 either side of that centre (GetViewShift, eye 0 = left
+	//           = -right). 3.2 cm, against a 1.35 cm lens: the centre point can NEVER be behind
+	//           the glass while an eye is, so both gates were shut for good.
+	// side: -1 left eye, +1 right eye, 0 the centre between them.
+	clearscope static Vector3 EyeWorld(PlayerPawn mo, int side)
+	{
+		let p = mo.player;
+		if (!p)
+			return mo.pos;
+		double ps = mo.Level.pixelstretch;
+		if (ps <= 0)
+			ps = 1.2;
+		double vu = CVarF('vr_vunits_per_meter', 34);
+		if (vu <= 0)
+			vu = 34;
+		Vector3 eye = (mo.pos.x, mo.pos.y, p.viewz);
+		let cb = CVar.FindCVar('vr_crouch_use_button');
+		if (!cb || cb.GetBool())
+			eye.z += (mo.HmdPosition.y + CVarF('vr_height_adjust', 0)) * vu / ps - mo.ViewHeight;
+		if (side != 0)
+		{
+			double half = CVarF('vr_ipd', 0.064) * 0.5 * vu * side;
+			eye += (sin(mo.angle), -cos(mo.angle), 0) * half;	// the view's right
+		}
+		return eye;
+	}
+
+	clearscope static double CVarF(Name n, double def)
+	{
+		let cv = CVar.FindCVar(n);
+		return cv ? cv.GetFloat() : def;
+	}
+
+	// Where an eye is, in the hand's own frame, in centimetres.
+	clearscope static Vector3 EyeInHandFrame(PlayerPawn mo, int side = 0)
 	{
 		let p = mo.player;
 		if (!p)
 			return (0, 0, 0);
-		Vector3 eye = (mo.pos.x, mo.pos.y, p.viewz);
+		Vector3 eye = EyeWorld(mo, side);
 		Vector3 d = eye - mo.AttackPos;
 		double ps = mo.Level.pixelstretch;
 		if (ps <= 0)
@@ -150,7 +203,13 @@ class RSQ_Scope abstract
 		if (al <= 0)
 			return P, false;
 		A = A / al;
-		Vector3 E = EyeInHandFrame(mo);
+		// The sighting eye is whichever eye is nearer the bore line; the dot is collimated for
+		// that one (the other is behind the tube or looking past it).
+		Vector3 E = EyeInHandFrame(mo, -1);
+		Vector3 Er = EyeInHandFrame(mo, 1);
+		Vector3 tl = P - E, tr = P - Er;
+		if ((tr - A * (tr dot A)).Length() < (tl - A * (tl dot A)).Length())
+			E = Er;
 		Vector3 D = E + A * ((P - E) dot A);
 		// off the glass: the eye is not behind the sight, so show nothing rather than a dot
 		// stuck to the rim
@@ -162,7 +221,10 @@ class RSQ_Scope abstract
 		// behind the glass (looking at the objective end) is not a sight picture either
 		if (((P - E) dot A) <= 0)
 			return D, false;
-		return D, true;
+		// 1.99x r6: lifted off the glass toward the eye. On the lens plane itself the quad is
+		// coplanar with the glass surface and loses the depth test to it: the rig drew the
+		// glass and no dot at all with D exactly on the plane.
+		return D - A * DOT_LIFT, true;
 	}
 
 	// Play-callable: is there a sight picture at all this frame? The layer chooser uses this to

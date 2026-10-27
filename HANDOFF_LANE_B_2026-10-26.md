@@ -614,3 +614,48 @@ gunmoves rows, `port_b2.py` the edits, `sheet_b2.py` / `compose_b2.py`, `sweepch
 - The palm under sits 1.2 cm below the forend (clearance rule). Worth the owner's eye.
 - The Moonlight reload (other lane) places BrutalRevolver at Scale 1.35 / Offset 0.0262 0.9224 / ZOffset 0.5878. Any future
   revolver hand move must move their RSB rows too.
+## r6-scope (2026-10-27, lane B scope): why the scope never worked, and the fix. RIG ONLY, NOT HEADSET-CONFIRMED
+
+Done (measured on the QZD 17.3 rig, OpenXR path, left eye 8.0 cm behind the ocular; sheet `lane_b_out/scope_fix.png`):
+- **Sniper REAL 3x:** the lens shows a live view down range at 3x (camera fov 6.44 deg). **DOT:** the lens shows
+  the same live view at 1x (fov 19.26 deg; best fit against the naked eye from the same pose: scale 1.00)
+  with the red dot on the bore line. **Eye away:** plain glass, skin off, camera texture drawn nowhere.
+- Pass: no script error from the pack (only the BD_VoxelPack voxeldef lines and DeathSphereHealth). Sniper
+  and RailGun selected and fired (+attack) on the rig. Reload was NOT exercised in this round.
+
+The failing steps, with evidence (rig logs `/home/claude/lane_b_scope_rig/r1..r7.txt`):
+1. **Gate, eye height** (both modes): the eye was `(pawn XY, viewz)`. With `vr_crouch_use_button` on (QZD
+   default, hw_vrmodes.cpp:122) viewz does not follow the head; the renderer adds
+   `(hmdY + vr_height_adjust)*vu/ps - ViewHeight` later (hw_openxrdevice.cpp:219), while the hand uses the
+   controller's absolute height (`weaponoffset = ctrl - hmd`, VrInputDefault.cpp:148; AttackPos.Z :595).
+   On the rig the eye came out 16 cm above where the HMD was. QZD does expose the head:
+   `Actor.HmdPosition` (actor.zs:277, set each frame at hw_vrmodes.cpp:445). Now `RSQ_Scope.EyeWorld`.
+2. **Gate, which eye** (both modes): the gate tested the centre between the eyes; each eye is vr_ipd/2 =
+   3.2 cm off it, against a 1.35 cm lens. It could never open with an eye at the glass. Now each eye is tested.
+3. **DOT basis** (ui `RSQ_Scope.Basis`): `r0` was the LEFT vector and AttackPitch was negated (on 17.3 it is
+   positive up). The dot was computed on the mirror point, off the glass: never drawn. Fixed; it now matches
+   the play side's AttackDir axes to 4 decimals at three logged yaw/pitch/roll poses.
+4. **Dot quad edge-on:** `rsq_dot.md3` lies in the md3 y=0 plane, which the HUD chain turns edge-on to an eye
+   behind the scope. `AngleOffset 90` (MODELDEF.rsq). The dot also sat exactly on the glass plane: now
+   `DOT_LIFT` 0.25 cm toward the eye.
+5. **Picture upside down and mirrored:** the carved glass UVs put (0,0) in the opposite corner. Camera roll 180.
+6. **Magnification:** was 90/mag (mag 6), about 1.3x at 8 cm eye relief. Now `fov = 2*atan((r/relief)/mag)`
+   (`FovFor`); the camera-texture fov is horizontal (mono render, VREyeInfo::GetProjection
+   hw_vrmodes.cpp:343) and the glass UVs span the disc 0..1. Mag 3 (owner).
+7. **DOT see-through:** clear glass cannot be see-through (the tube and the objective cap are behind it).
+   DOT now renders the same camera picture at 1x under the dot: one extra render, only while an eye is at
+   the eyepiece, the same cost as REAL.
+Not broken: the mesh (XM21.md3 surface 10 ScopeGlass, UV 0..1, bound by MODELDEF.rsr), the table lens
+(matches the glass centroid), A_ChangeModel/CMDL_USESURFACESKIN (swaps on 17.3), SetCameraToTexture.
+
+Not done:
+- **RailGun lens is covered:** the gate, skin swap and camera all run (log: skinOn=1 cam=1 fov 8.49), but
+  the RailGun.md3 "Scope" surface (0) has its own lens-cap faces 0.1-0.6 mm in front of ScopeGlass
+  (surface 1), covering 3 of 7 eye rays (ray cast through rgeo.py's chain at ready frame 3). Neither the
+  picture nor the dot can show until those faces leave surface 0. That is a mesh job; the kit carve tool's
+  selector is axis-aligned and this disc is tilted 45 deg in md3 space. Owner's call.
+- The table radius (Sniper 1.35 cm) is larger than the mesh disc (about 1.23 cm from the md3 bounds), so
+  the true mag is about 2.7-3x. The fit says 1.00 for DOT. Re-check in the headset.
+- `rsq_scope_sniper` is an archived user cvar: an old 0 survives the 1.99x default of 1 (the rig's ini
+  held 0, and the owner's may too). The menu shows the actual mode.
+- Headset pass.

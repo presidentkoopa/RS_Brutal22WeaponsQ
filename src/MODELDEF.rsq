@@ -130,6 +130,7 @@ Model RSQ_Hands
 // screen-space bob, i.e. a crosshair painted on the screen, which is the parallax-locked thing
 // a collimated sight exists to avoid.
 //
+// AngleOffset 90 (1.99x r6): without it the quad was edge-on to the eye and never seen.
 // Offset 0.0 -30.0 -5.0 cancels RenderHUDModel's fixed translate(0, 5, 30) at Scale -1 1 1, so
 // the quad's origin sits exactly ON the weapon controller -- the frame RSQ_ScopeTable.Lens is
 // measured in. Check: model origin (0,0,0) -> p = (0,-5,-30) -> 0.01*((0,-5,-30)+(0,5,30)) = 0.
@@ -140,6 +141,9 @@ Model RSQ_GunSide
 	Skin 0 "RQRTA0.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -30.0 -5.0
+	AngleOffset 90	// 1.99x r6: the quad is authored in the md3's y=0 plane, which the HUD chain turns
+					// edge-on to an eye behind the scope; this faces it back (models.cpp:272 rotates
+					// about the model origin, after every offset, so the dot does not move)
 	FrameIndex RQRT A 0 0
 }
 
@@ -150,6 +154,9 @@ Model RSQ_GunSide
 	Skin 0 "RQRTB0.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -30.0 -5.0
+	AngleOffset 90	// 1.99x r6: the quad is authored in the md3's y=0 plane, which the HUD chain turns
+					// edge-on to an eye behind the scope; this faces it back (models.cpp:272 rotates
+					// about the model origin, after every offset, so the dot does not move)
 	FrameIndex RQRT B 0 0
 }
 
