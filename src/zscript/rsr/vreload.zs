@@ -1074,6 +1074,7 @@ class RSR_ReloadHandler : EventHandler
 	{
 		switch (i)
 		{
+		case 13:	// lb-r8: the Unmaker skull, held open-handed so it shows (RS VR Reload: the bfg hand set)
 		case 15:
 		case 16:
 			return "RsrHoldPod";

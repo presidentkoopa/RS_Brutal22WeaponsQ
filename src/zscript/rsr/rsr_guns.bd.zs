@@ -7,6 +7,13 @@ class RSR_Guns abstract
 	// 1.93: the Ruger Mini-14 Ranch, measured from models/bd/XM21/XM21.md3 through rgeo.py
 	// (index 8). Every other index is still the generator's. Re-run gen_rsr.py when the
 	// gun goes through the real reload survey and these are what it should reproduce.
+	// lb-r8 (owner: "the unmaker better reload like RS VR Vanilla+"): index 13's Well, Mouth, MagLen,
+	// MagCentre, TopInHand and HandHook are Vanilla Plus's WM_VP_Unmaker row carried through the measured
+	// translation between the two meshes (tools/handfit/unmaker/plus_row.py): same skull in the same
+	// Ermac RsrHold, same seat on the gun, same travel. TopInHand / HandHook then refitted so the skull is
+	// VISIBLE in the hand (owner: never hidden in the fist; RS VR Reload holds it on the bfg hand set):
+	// Ermac's open pod hold (ammo_hand frame 6, RsrHoldPod), tools/handfit/unmaker/skull_hold.py, then
+	// visible.py: +2 F, +2 L, -2 U off that fit (touching, 2 hand verts in it, 83-100% of it seen from the head).
 
 	clearscope static int Count() { return 18; }
 
@@ -53,7 +60,7 @@ class RSR_Guns abstract
 		case 10:	return (13.926, 3.115, 6.593);
 		case 11:	return (36.788, 0.507, -3.364);	// BD 2.0 b1: moved with the gun to the FBX hand (was (28.489, 0.010, -4.540))
 		case 12:	return (14.812, 7.995, -4.216);
-		case 13:	return (11.788, 0.614, 7.329);
+		case 13:	return (11.026, 0.794, 6.467);
 		case 14:	return (17.879, 11.250, 8.304);
 		case 15:	return (36.407, -0.105, 14.610);
 		case 16:	return (-5.105, 12.794, 4.914);
@@ -107,7 +114,7 @@ class RSR_Guns abstract
 		case 10:	return 6.03;
 		case 11:	return 14.89;
 		case 12:	return 19.04;
-		case 13:	return 4.61;
+		case 13:	return 5.47;
 		case 14:	return 7.84;
 		case 15:	return 21.52;
 		case 16:	return 23.98;
@@ -133,7 +140,7 @@ class RSR_Guns abstract
 		case 10:	return 12.25;
 		case 11:	return 12.11;
 		case 12:	return 16.09;
-		case 13:	return 4.59;
+		case 13:	return 5.41;
 		case 14:	return 6.16;
 		case 15:	return 19.19;
 		case 16:	return 24.18;
@@ -159,7 +166,7 @@ class RSR_Guns abstract
 		case 10:	return (14.190, 7.381, 5.400);
 		case 11:	return (36.189, 0.560, -9.220);	// BD 2.0 b1: moved with the gun to the FBX hand (was (27.703, 0.013, -10.374))
 		case 12:	return (14.597, -0.029, -4.035);
-		case 13:	return (11.350, -0.131, 9.854);
+		case 13:	return (10.481, -0.144, 9.345);
 		case 14:	return (17.879, 9.039, 9.982);
 		case 15:	return (43.317, -0.005, 4.505);
 		case 16:	return (-5.884, 0.678, 7.504);
@@ -186,7 +193,7 @@ class RSR_Guns abstract
 		case 10:	return (-0.590, -5.238, -1.178);
 		case 11:	return (10.500, 3.518, -1.909);	// 1.99x item 10: Ermac ammo_hand 3 fitted to the canister (was under it)
 		case 12:	return (-0.700, 21.467, -2.274);
-		case 13:	return (-1.481, 4.252, -6.901);
+		case 13:	return (3.464, 8.784, -11.859);
 		case 14:	return (-0.700, 10.899, -3.672);
 		case 15:	return (4.299, 15.519, 3.125);	// 1.99x item 10: Ermac ammo_hand 6 (BFG pod hold) fitted to the block (was 18 cm above the palm)
 		case 16:	return (3.989, 29.117, -10.283);	// 1.99x item 10: Ermac ammo_hand 6 fitted to the drum (was 28 cm off)
@@ -213,7 +220,7 @@ class RSR_Guns abstract
 		case 10:	return (-8.353, -7.771, 14.516);
 		case 11:	return (3.508, 2.631, 17.989);	// 1.99x item 10: Ermac ammo_hand 3 fitted to the canister (was under it)
 		case 12:	return (21.730, 3.133, 25.019);
-		case 13:	return (3.637, -14.230, 13.269);
+		case 13:	return (7.990, -18.326, 7.562);
 		case 14:	return (-0.351, -11.976, 18.579);
 		case 15:	return (14.203, -10.441, 29.189);	// 1.99x item 10: Ermac ammo_hand 6 (BFG pod hold) fitted to the block (was 18 cm above the palm)
 		case 16:	return (16.323, -15.197, -9.094);	// 1.99x item 10: Ermac ammo_hand 6 fitted to the drum (was 28 cm off)

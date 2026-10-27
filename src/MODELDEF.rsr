@@ -1630,8 +1630,8 @@ Model RSR_DroppedMag
 	SurfaceSkin 0 1 "Unmaker.png"
 	SurfaceSkin 0 2 "Unmaker.png"	// r4: the skull is surfaces 1 AND 2
 	Scale 0.3468 0.3468 0.3468
-	Offset -14.0589 0.0447 0.0
-	ZOffset -2.7920
+	Offset -13.7636 0.0490 0.0	// lb-r8: Vanilla Plus's dropped skull (5.8360 0.0436 / -1.9116) moved by the md3 translation
+	ZOffset -2.7949			// (56.5156, -0.0156, 2.5469) x 0.3468 (tools/handfit/unmaker/plus_row.py)
 	USEACTORPITCH
 	USEACTORROLL
 	FrameIndex RQWW A 0 0

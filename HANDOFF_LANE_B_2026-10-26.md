@@ -1135,3 +1135,51 @@ only the support hand is new, and it is placed on the PORTED gun (nothing moves 
     Sniper (test pack): REAL on (skinOn 1, cam 1, fov 4.62) at 11.2 cm eye relief after 2 iterations. Not re-run on a ported Sniper (none).
 - **Purist rifle support:** still Ermac's handguard grip. The same solve on Rifle.md3 alone gave palm 1.59 cm off the handguard after lowering 1.6 cm: not good enough to ship.
 - The revolver cup is lowered 1.4 cm to clear both gun hands; it supports the gun HAND (as 1.92 and the pistol), 2.4 cm from the gun at the palm.
+# r8 Unmaker reload lane (2026-10-27, branch `unmaker` off `lane-b-1.99x`). RIG ONLY, NOT HEADSET-CONFIRMED
+
+Owner: "the unmaker better reload in bd22 like how it does in rs vr vanilla+". Coordinator, mid-lane: the skull must be
+VISIBLE in the off hand while carried, never hidden inside the fist (his RS VR Reload does it right).
+
+## What was wrong (measured)
+- The skull WAS drawn on the off hand (probe: layer 2201, caller RSQ_Hands, sprite RQWP, every tic of CARRY), but
+  inside Ermac's closed frame-3 fist (RsrHold): the skull's box lies wholly inside the fist's box (F -7..5, L -1..8,
+  U -8..-2 vs fist F -13..6, L -4..10, U -12..2). On the rig no frame from any camera showed it (before or after the
+  Plus numbers alone). The r6 "mid-air" note was the pouch reach: the hand was at the pouch, not at the skull.
+- The seat/travel came from a gen run on the `magazine` surface only: Well 0.86 cm off, Mouth 4.61 vs Plus 5.47.
+
+## What changed (`src/zscript/rsr/rsr_guns.bd.zs` row 13, `vreload.zs` HoldState, `MODELDEF.rsr` dropped skull)
+- Transform Plus -> BD22 (tools/handfit/unmaker/plus_row.py): Plus `unmaker_wm.md3` (same bytes in RS_VR_Weapons_Plus.pk3
+  and Depot sets/plus_0.7) = BD22 `Unmaker_rsr.md3` frame 0 + (56.5156, -0.0156, 2.5469) md3 units; scale fit 1.000000,
+  position match max 0.0000 over 11541 verts. In the controller frame (both MODELDEF placements, rgeo chain):
+  d = (4.017, -0.025, 1.035) cm F L U, spread 0.0000.
+- Plus row 1 (WM_VP_Unmaker) through d: Well (11.026, 0.794, 6.467), Axis (0,0,-1), Mouth 5.47, MagLen 5.41,
+  MagCentre (10.481, -0.144, 9.345). Checked: BD22's own skull surfaces seated = Plus seat + d, max 0.0000 cm.
+- Carry: Plus's carry put the skull in the same buried frame-3 fist (9% of its surface inside the hand mesh, 197 hand
+  vertices inside it). RS VR Reload (E:\DOOMWork\RS_VR_Reload, staged read-only) holds the Unmaker skull on its `bfg`
+  hand set (wm_ha_bfg_off_mag: ofs -0.34 0.68 -0.85, yaw -75, pitch 15), a loose skull re-origined on its centroid
+  (RS_VR_Weapons WMCARD.11_bfg magcenter -16.83 -0.13 6.61). Our in-hand layer cannot turn the part, so the match is:
+  Ermac's open BFG pod hold (ammo_hand frame 6, `RsrHoldPod`, as the Nuker/Hellish), skull fitted to his pod's contact
+  patch (skull_hold.py: frames 0-8 scored; frame 6 best: gap 0.98 cm, 4% buried), then moved +2 F +2 L -2 U
+  (visible.py) so it touches the fingers (nearest 0.26 cm, 2 hand verts in it, 0% buried) and 83 / 96 / 100% of it is
+  seen from three head positions. TopInHand (3.464, 8.784, -11.859), HandHook (7.990, -18.326, 7.562).
+- Dropped skull: Plus's world offset carried through the same translation (Offset -13.7636 0.0490, ZOffset -2.7949).
+- The 200-round magazine (counters.zs REAL[], RSQ_Mag_Unmaker) is untouched.
+
+## Shown on the rig (QZD 17.3, doom2 -> brutal22test6 -> BD_VoxelPack -> pack + probe)
+- `rig_reload.py`: magazine emptied, trigger on empty does nothing, by-hand reload with the off-hand driver (mags.at):
+  EMPTY > DROP > EMPTY > CARRY > INSERT > SEATED > DONE, mag 0 -> 200 from the pouch, fires again. No script errors.
+- Frames: `/home/claude/lane_b_out/unmaker_reload.png` (before: buried; now: skull in the open hand from the head and
+  close up, at the well, seated, firing).
+- Sweep (`sweep.py`): Unmaker, Devastator, Plasma_Gun, RailGun, Flamethrower2, IncendiaryLauncher, NukeLauncher,
+  Minigun, Machinegun given, selected, fired, alt-fired, reloaded on the final build: no script error or VM abort,
+  only BD22's own DeathSphereHealth lines; each reached its reload phases. Coarse: the probe's selection line comes
+  every 35 tics, so the Unmaker's first window still reads the start Rifle, and RailGun / IncendiaryLauncher print no
+  magazine-shot line. Identical to the same sweep before the hold change.
+
+## Not done / open
+- Side-by-side with Vanilla Plus on the rig: RS_VR_Weapons_Plus.pk3 is a DoomXR pack (PlacementCVars, FollowMainHand),
+  not runnable on QZD 17.3. The Depot's RSQ_plus.pk3 loads on the rig with no errors and holds the Unmaker, but its
+  reload never started from `rig_plus.py` (+reload gave no RSR_Start and no "refused" line); not chased.
+- The skull keeps its seated orientation in the hand (RS VR Reload turns it yaw -75 / pitch 15): turning it needs a
+  rotation on the HANDMAG layer in Place(), a code change the owner may want; not built.
+- HUD still shows SoulAmmo (pouch + lent), not the magazine (r6 note).
