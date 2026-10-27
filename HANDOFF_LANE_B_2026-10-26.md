@@ -784,3 +784,28 @@ in any run (only BD_VoxelPack's voxeldef lines and DeathSphereHealth).
 - The shared disk filled to 0 MB twice during this session (other lanes' output); one frame dump was
   cut short by it.
 - No sweep of all classes was run (time box); the four driven weapons and the whole pack compile clean.
+## r6-scope2 (2026-10-27, lane B scope): the RailGun scope. RIG ONLY, NOT HEADSET-CONFIRMED
+
+Done (QZD 17.3 rig, OpenXR path, left eye 8.0 cm behind the ocular at eyeL (-9.71, -0.09, 11.81);
+sheet `lane_b_out/scope_fix2.png`, pack `BD22_VR-Reloaded_1.99x-lb-r6-scope2.pk3`):
+- **REAL 3x** (rsq_scope_railgun 1): live view down range in the lens, upright (camera fov 8.49 deg).
+  **DOT** (0): the same view at 1x with the red dot. **Eye away** (10 cm back, 6 up, 4 left): plain glass.
+- Selects, fires (zombie killed on the rig), reloads: Depot rig `mags.py` gun 6 ran
+  IDLE > EMPTY > DROP > CARRY > INSERT > SEATED > DONE > IDLE. No script error from the pack (only
+  voxeldef lines and DeathSphereHealth).
+- Magnification by the camera fov: exactly 3x of DOT. An image fit of REAL against DOT at rig resolution
+  (lens about 26 px in radius) is too flat to confirm it (shallow minimum at 2.7). Re-check in the headset.
+
+**Correction of r6-scope:** the RailGun's lens was NOT covered by a lens cap. The 24-triangle fan in
+surface 0 (tris 2131-2154) lies behind the glass from every eye pose tried (ray cast: 0 of 77 rays at 5
+poses, including both eyes and eye-away poses). The real fault was MODELDEF: the block that draws the
+RailGun's Ready frames (MODELDEF.bd.txt, RAIL A/B/C) had a whole-model `Skin 0 "RailGun.png"`. A
+whole-model Skin wins over every SurfaceSkin AND over A_ChangeModel's surface-skin swap
+(models_md3.cpp:359-369), so the glass showed the whole atlas squeezed into its 0..1 UVs and the camera
+picture could never land. Now per-surface skins (0, 2, 3, 4 RailGun.png; 1 scope_glass.png). The same
+whole-model Skin / atlas-on-glass was in PuristRailGun (MODELDEF.purist) and RSQ_Off_RailGun
+(MODELDEF.rsqoff, dual-wield): their glass is scope_glass.png now (plain glass; no camera, as before).
+**RailGun.md3 is unchanged.** The Depot has the tilted-disc selector now (tools/kit/md3_carve_disc.py),
+dry-run-checked on this mesh, if a real cap is ever found.
+
+Not done: headset pass.

@@ -1237,7 +1237,14 @@ Model PuristRailGun
 {
    Path "models/bd/RailGun"
    Model 0 "RailGun.md3"
-   Skin 0 "RailGun.png"
+   // 1.99x r6-scope2: per-surface skins, NOT a whole-model Skin. A whole-model Skin wins over every
+   // SurfaceSkin and over A_ChangeModel's surface-skin swap (models_md3.cpp:359-369), so with it the
+   // glass showed the whole atlas squeezed into its 0..1 UVs and the scope camera never reached it.
+   SurfaceSkin 0 0 "RailGun.png"
+   SurfaceSkin 0 2 "RailGun.png"
+   SurfaceSkin 0 3 "RailGun.png"
+   SurfaceSkin 0 4 "RailGun.png"
+   SurfaceSkin 0 1 "scope_glass.png"
    Scale -1.0 1.0 1.0
    Offset 0.0 0.0 0.0
    NoInterpolation
@@ -10829,7 +10836,7 @@ Model PuristRailGun
 	Path "models/bd/RailGun"
 	Model 0 "RailGun.md3"
 	SurfaceSkin 0 0 "RailGun.png"
-	SurfaceSkin 0 1 "RailGun.png"
+	SurfaceSkin 0 1 "scope_glass.png"
 	SurfaceSkin 0 2 "RailGun.png"
 	SurfaceSkin 0 3 "RailGun.png"
 	SurfaceSkin 0 4 "rsr_clear.png"
