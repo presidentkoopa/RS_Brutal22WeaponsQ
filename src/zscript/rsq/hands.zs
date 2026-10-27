@@ -426,6 +426,10 @@ class RSQ_Hands : Weapon
 		String spl = (i == 4 || i == 7) ? (i == 4 ? "FbxSupP" : "FbxSupF") : "Sup" .. sp;	// BD 2.0 b1: the FBX support hands
 		if (i == 21)
 			spl = "FbxSupF";	// shotguns: Shot_Gun, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 21)
+		if (i == 17)
+			spl = "FbxSupP";	// batch 5: Revolver, Revolver2 and BrutalRevolver (shared row), the FBX cup under the gun hand (handtable SupportHook / SupportRot row 17)
+		if (i == 18 && !(p.ReadyWeapon is 'PuristRifle'))
+			spl = "FbxSupF";	// batch 5: Rifle (the purist rifle keeps its Ermac handguard grip), the FBX open palm under its handguard / M203 (handtable SupportHook / SupportRot row 18)
 		if (i == 1)
 			spl = "FbxSupF";	// shotguns: AssaultShotgun, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 1)
 		if (i == 12)

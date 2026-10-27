@@ -6,8 +6,8 @@
 The pose JSON: `q_trigger` / `q_squeeze` = the full joint-parameter vector of fbx_fitter's hand model (solve.hand_X order: the r5
 pistol pose with the solved fingers replaced), `solved_fingers` (those take the pose as solved; the rest keep the approved pistol
 hand's per-vertex correction `delta`, exactly as curl3 did), the wrist placement on the gun (R, t: hand -> gun scene frame; `shift`
-d), the gun move (MODELDEF Offset/ZOffset/Angle/Pitch/Roll), and the FBX source + take. The support hand of these guns is not an
-FBX pose yet (Ermac's): `support` says which pose and hook the handtable row holds.
+d), the gun move (MODELDEF Offset/ZOffset/Angle/Pitch/Roll), and the FBX source + take. `support` (batch 5): the FBX support pose
+(fbx_b1_L.md3 frame) and the hook / rot / point the handtable row holds, with its measurements.
 Needs RSQ_HANDS_TOOL = a full fitter checkout (lane data) and the FBX (fbx_fitter/handmodel.py FBX, or RSQ_FBX)."""
 import sys, os, json, numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); REPO = os.path.abspath(os.path.join(HERE, '..', '..', '..')); POSES = os.path.join(HERE, '..', 'poses')
@@ -20,6 +20,17 @@ def setup():
     from rigid3 import BONES	# finger -> bone prefix (batch 3)
     return revindex.setup(), BONES
 sys.path.insert(0, os.path.join(HERE, '..', 'batch3'))
+def bake_of(g):	# the newest committed bake of this gun's hand (batch 5, then batch 4)
+    for b in ('b5', 'b4'):
+        if os.path.exists(os.path.join(HERE, 'fits', 'bake', 'fbx_%s_%s_R.md3' % (b, g))): return 'fits/bake/fbx_%s_%s_R.md3' % (b, g)
+    return 'fits/bake/fbx_b4_%s_R.md3' % g
+SUP_FILE = dict(Rifle='Rifle', Revolver='Revolver', BrutalRevolver='Revolver')	# BrutalRevolver shares the Revolver's row 17 (one cup clears both)
+def support_of(g):
+    """batch 5: the FBX support hand as data (support_gun.py's solve: fbx_b1_L.md3 frame, the handtable hook / rot / point, measurements)."""
+    p = os.path.join(HERE, 'fits', 'b5', 'sup_%s.json' % SUP_FILE.get(g, g))
+    if not os.path.exists(p): return 'Ermac support pose (no FBX support solved)'
+    S = json.load(open(p)); S['md3'] = 'models/rsq/fbx/fbx_b1_L.md3'; S['label'] = 'FbxSupF (RQFS B)' if S['pose'] == 'B' else 'FbxSupP (RQFS A)'
+    S['how'] = 'support_gun.py %s %s, applied with port_gun.py --support (handtable row %s)' % (S['cls'], S['pose'], {'Rifle': 18}.get(S['cls'], 17)); return S
 def export(g):
     C = json.load(open(os.path.join(HERE, 'fits', 'curl3_%s.json' % g))); P = json.load(open(os.path.join(HERE, 'fits', 'ported_%s.json' % g)))
     (ctx, x, to_g, Xf, delta), B = setup()
@@ -29,10 +40,7 @@ def export(g):
                model='tools/handfit/fbx_fitter/handmodel.py + solve.hand_X (lane_c r5 parameterisation)', q_pistol_r5=x.tolist(), q_trigger=xt.tolist(), q_squeeze=xs.tolist(),
                solved_fingers='IMRP' if idx else 'MRP', squeeze_fingers='I', wrist_on_gun=dict(R=C['R'], t=C['t'], shift=C['shift']),
                gun_move=dict(zip(['Offset_x', 'Offset_y', 'ZOffset', 'AngleOffset', 'PitchOffset', 'RollOffset'], P['place'])),
-               fit=dict(trigger=C['trigger'], squeeze=C['squeeze']), bake_md3='fits/bake/fbx_b4_%s_R.md3' % g,
-               support=dict(Rifle='Ermac hand2 pose C under the M203 tube, moved with the gun (handtable row 18); NOT an FBX pose yet',
-                            Revolver='Ermac cup (handtable row 17, unchanged: it cups the gun hand, which is pinned); NOT an FBX pose yet',
-                            BrutalRevolver='Ermac cup (shared row 17); NOT an FBX pose yet').get(g, ''))
+               fit=dict(trigger=C['trigger'], squeeze=C['squeeze']), bake_md3=bake_of(g), support=support_of(g))
     os.makedirs(POSES, exist_ok=True); json.dump(out, open(os.path.join(POSES, '%s.json' % g), 'w'), indent=1); print('poses/%s.json' % g)
 def rebuild(J):
     (ctx, x, to_g, Xf, delta), B = setup(); dom = ctx.H.dom

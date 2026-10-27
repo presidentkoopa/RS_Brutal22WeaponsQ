@@ -370,12 +370,36 @@ def hand(G, H, R, t, tag, fitdir):
         tx = tx[:m.start()] + '\t// %s: row %d (%s) = %s\n' % (tag, row, c, H.get('support_note', 'the support pose moved with the gun')) + tx[m.start():]
     wr('zscript/rsq/handtable.zs', tx)
 
+# ---------------------------------------------------------------- 8. FBX support hand on an already ported gun (batch 5, support_gun.py's solve)
+def support_only(G, S, tag):
+    """Writes support_gun.py's sup_hook / sup_rot / sup_point_m into the gun's handtable row and selects the FBX support
+    label (FbxSupF = RQFS B palm under, FbxSupP = RQFS A cup) in hands.zs. 'purist': the purist rifle's own hook (no launcher)."""
+    row = G['row']; c = G['cls']; lab = 'FbxSupF' if S['pose'] == 'B' else 'FbxSupP'
+    what = 'the FBX open palm under its handguard / M203' if S['pose'] == 'B' else 'the FBX cup under the gun hand'
+    tx = rd('zscript/rsq/hands.zs')
+    if S.get('purist'):
+        m = re.search(r'\t\t\thook = \(([-\d., ]+)\);\t// batch 4: purist\'s rifle[^\n]*\n\t\t\thookTurn = \(([-\d., ]+)\);', tx); assert m, 'purist hook'
+        tx = tx[:m.start()] + '\t\t\thook = (%.3f, %.3f, %.3f);\t// %s: purist\'s rifle (no launcher): the FBX palm under its handguard (RQFS B, support_gun.py)\n\t\t\thookTurn = (%.3f, %.3f, %.3f);' % (tuple(S['sup_hook']) + (tag,) + tuple(S['sup_rot'])) + tx[m.end():]
+        assert re.search(r'\t\tif \(i == 18\)\n\t\t\tspl = "FbxSupF";', tx), 'run the Rifle --support first: its row 18 label (FbxSupF) covers the purist rifle too'
+        wr('zscript/rsq/hands.zs', tx); note('hands.zs purist rifle hook', S['sup_hook'], S['sup_rot'], '(label FbxSupF: row 18)'); return
+    m = first(r'\t\tif \(i == \d+\)\n\t\t\tspl = "FbxSupF";', tx, 'support anchor')
+    cond = 'i == %d' % row + S.get('cond', '')
+    tx = tx[:m.start()] + '\t\tif (%s)\n\t\t\tspl = "%s";\t// %s: %s, %s (handtable SupportHook / SupportRot row %d)\n' % (cond, lab, tag, c, what, row) + tx[m.start():]
+    wr('zscript/rsq/hands.zs', tx); note('hands.zs support label', cond, lab)
+    tx = rd('zscript/rsq/handtable.zs')
+    tx = setrow(tx, 'SupportHook', S['sup_hook'], row); tx = setrow(tx, 'SupportRot', S['sup_rot'], row); tx = setrow(tx, 'SupportPoint', S['sup_point_m'], row)
+    m = first(r'\t// [\w ]+: row \d+ \(', tx, 'support comment anchor')
+    tx = tx[:m.start()] + '\t// %s: row %d (%s) = %s (RQFS %s) at 1.92\'s SupportPoint moved with the gun (support_gun.py)\n' % (tag, row, c, what, S['pose']) + tx[m.start():]
+    wr('zscript/rsq/handtable.zs', tx); note('handtable Support row %d' % row, S['sup_hook'], S['sup_rot'], S['sup_point_m'])
+
 # ---------------------------------------------------------------- main
 if __name__ == '__main__':
-    ap = argparse.ArgumentParser(); ap.add_argument('cls'); ap.add_argument('fit'); ap.add_argument('--src'); ap.add_argument('--tag', default='batch 4'); ap.add_argument('--dry', action='store_true')
+    ap = argparse.ArgumentParser(); ap.add_argument('cls'); ap.add_argument('fit'); ap.add_argument('--src'); ap.add_argument('--tag', default='batch 4'); ap.add_argument('--dry', action='store_true'); ap.add_argument('--support', help='support_gun.py json: only the FBX support hand on the already ported gun')
     ARGS = ap.parse_args()
     if ARGS.src: SRC = os.path.abspath(ARGS.src)
     G = dict(GUNS[ARGS.cls], cls=ARGS.cls); G['md3'] = os.path.join(SRC, G['md3'])
+    if ARGS.support:
+        support_only(G, json.load(open(ARGS.support)), ARGS.tag); flush(); print('moved %d items%s' % (len(MOVED), ' (dry run: nothing written)' if ARGS.dry else '')); sys.exit(0)
     F = json.load(open(ARGS.fit)); fitdir = os.path.dirname(os.path.abspath(ARGS.fit))
     if 'place' in F: p = np.array(F['place'], float); res = None
     else:

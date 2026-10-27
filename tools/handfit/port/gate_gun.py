@@ -103,7 +103,7 @@ def compose(out, guns):
     rows = [(g, v) for g in guns for v in ('eye', 'side')]; w, h = 480, 360; lh = 22; top = 34
     for f in glob.glob(OUT + '/shots/*.png'): w, h = Image.open(f).size; break
     sheet = Image.new('RGB', (w * 4, top + (h + lh) * len(rows)), (24, 24, 24)); dr = ImageDraw.Draw(sheet)
-    dr.text((8, 8), 'batch 4: FBX hands, the gun moved to the hand (port_gun.py). QZD 17.3 rig, doom2 > brutal22test6 > BD_VoxelPack > pack. Rig only, not headset-confirmed', fill=(230, 230, 230))
+    dr.text((8, 8), os.environ.get('RSQ_SHEET_TITLE', 'batch 4: FBX hands, the gun moved to the hand (port_gun.py)') + '. QZD 17.3 rig, doom2 > brutal22test6 > BD_VoxelPack > pack. Rig only, not headset-confirmed', fill=(230, 230, 230))
     for r, (g, v) in enumerate(rows):
         y = top + r * (h + lh); refs = glob.glob(os.path.join(REF, '%s_%s.*' % (g, v)))
         dr.text((6, y + 4), '%s: 1.92 (%s)%s' % (g, v, '' if refs else ': NO 1.92 render'), fill=(150, 200, 255))
