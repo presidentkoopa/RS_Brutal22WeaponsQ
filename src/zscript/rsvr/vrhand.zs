@@ -37,7 +37,11 @@ class RSVR_VRHand play
 	// squash (1 / pixelstretch) taken back out
 	static Vector3 HandDir(PlayerPawn mo, double yaw, double pitch, double ps)
 	{
-		Vector3 ap = mo.AttackDir(mo, mo.angle + yaw, mo.pitch + pitch);
+		// 2026-10-27: the engine sets the pointer behind AttackDir only while it renders a frame
+		// (hw_vrmodes.cpp). A pawn restored from a save thinks before its first frame, and an
+		// unguarded call there segfaulted (save/load crash). Only call it when it is live.
+		Vector3 ap = mo.OverrideAttackPosDir ? mo.AttackDir(mo, mo.angle + yaw, mo.pitch + pitch)
+			: (mo.angle + yaw, mo.pitch + pitch, 0);
 		double cp = cos(ap.y);
 		Vector3 v = (cp * cos(ap.x), cp * sin(ap.x), -sin(ap.y) * ps);
 		double l = v.Length();
@@ -51,7 +55,11 @@ class RSVR_VRHand play
 	// include that, so these are the axes the layers on each hand are drawn in.
 	static Vector3 OffDir(PlayerPawn mo, double yaw, double pitch, double ps)
 	{
-		Vector3 ap = mo.OffhandDir(mo, mo.angle + yaw, mo.pitch + pitch);
+		// 2026-10-27: the engine sets the pointer behind OffhandDir only while it renders a frame
+		// (hw_vrmodes.cpp). A pawn restored from a save thinks before its first frame, and an
+		// unguarded call there segfaulted (save/load crash). Only call it when it is live.
+		Vector3 ap = mo.OverrideAttackPosDir ? mo.OffhandDir(mo, mo.angle + yaw, mo.pitch + pitch)
+			: (mo.angle + yaw, mo.pitch + pitch, 0);
 		double cp = cos(ap.y);
 		Vector3 v = (cp * cos(ap.x), cp * sin(ap.x), -sin(ap.y) * ps);
 		double l = v.Length();

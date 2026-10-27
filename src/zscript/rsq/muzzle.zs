@@ -132,7 +132,9 @@ class RSQ_Muzzle : EventHandler
 		if (!r)
 			return false;
 		// the engine's own direction for this rail (p_map.cpp P_RailAttack, VR branch)
-		Vector3 ap = mo.AttackDir(mo, e.AttackAngle, e.AttackPitch);
+		// 2026-10-27: AttackDir only while live (see rsvr/vrhand.zs); else the event's own angles
+		Vector3 ap = mo.OverrideAttackPosDir ? mo.AttackDir(mo, e.AttackAngle, e.AttackPitch)
+			: (e.AttackAngle, e.AttackPitch, 0);
 		r.angle = ap.x;
 		r.pitch = ap.y;
 		r.target = mo;
