@@ -984,3 +984,66 @@ RIG ONLY, NOT HEADSET-CONFIRMED.
   2. Shotvolver: index + curls (`curl3.py +Revolver`; it was still solving at the box).
   3. Finish the sweep.
   4. BrutalRevolver and Sniper: no 1.92 hold to start from. Owner's call on the reference.
+
+---
+
+# Hands lane, batch 4 (2026-10-27, box 10:02-11:32): port_gun.py; Rifle, Shotvolver, BrutalRevolver ported; Sniper flagged. RIG ONLY, NOT HEADSET-CONFIRMED
+
+Worktree `/home/claude/lane_b_b4` (pushed to `lane-b-1.99x`). Tools in the repo: `tools/handfit/port/` (README section "port/port_gun.py").
+One method for every gun (owner): the drawn wrist stays pinned where the approved pistol hand's is, and the GUN moves to the hand.
+
+## 1. Done (measured; rig only, not headset-confirmed)
+- **`port_gun.py <Class> <fit.json>`** (`2a503ff`, later commits extend it): applies the gun move to every gun-controller MODELDEF block
+  (counts asserted) and moves every table that hangs off the gun: gunmoves Pivot + fire rows (found from `key[]`; the original
+  placement must reproduce the shipped rows), rsr reload case, rsb break-open rows, casing port, RSQ_Muzzle, RSQ_ScopeTable, the M203;
+  optional FBX gun-hand wiring. Writes nothing unless every step passes. Lists what it moved (`fits/ported_<Class>.json`).
+  - Verified: `port/verify_mp40.sh` re-applies batch 3's MP40 move on 19f0203 and diffs against bdf3fae: byte-identical except
+    the BrutalSMG muzzle row that commit also added.
+- **Stopped run reverted** (`94f990e`): its Shotvolver and BrutalRevolver baked the hand on the UNMOVED gun (hand-to-gun shortcut).
+  All three of its guns were redone with the tool.
+- **Rifle** (row 18, `4c54425`): batch 3's fit. Gun Offset 0.348 -5.912, ZOffset -1.812, Angle/Pitch/Roll 3.854/3.363/10.974 (chain residual 0.0000 cm).
+  - 26 MODELDEF blocks incl. M203 and the M203 parts. Also moved: gunmoves pivot + rows 93-95, reload case 1, casing port (15.7, 1.2, 8.0),
+    muzzle row added at the drawn tip (71.18, 6.06, 11.42), purist handguard hook, and support pose C under the tube.
+  - M203: its tables stay in the rifle's original frame; `RSM_Geo.ToGun/DirToGun/FromGun` carry points across, and FwdHook is the moved axis.
+  - The numbers equal the stopped run's independent port (a28201d).
+  - The hands.zs M203 TriggerGrip special case is dead code (`TriggerGrip()` returns false since 1.32), so it was not touched.
+- **Shotvolver** (Revolver / Revolver2, row 17): batch 3's re-seat + `curl3 +Revolver`: index pad 0.48 cm from the trigger, M/R/P 0.20, pen 0.34,
+  palm 0.02, web 0.01, squeeze 0.60. Gun Offset 0.466 -5.416, ZOffset -2.801, same angles.
+  - 14 MODELDEF blocks, gunmoves pivot + rows 71-92, RSB rows 3/7/8/9, casing ports (Revolver, Revolver2), muzzle row added (26.67, 2.61, 7.04).
+  - Rule found: RSB.Hook uses `Offset(i)` for the hinged parts AND for the round in the off hand. So the off-hand RSQ_Hands RBRP block
+    moves too, and the hold rows are re-expressed (Hand0-2 = g R^T, HandT = HandT - g R^T t), so the hand's hold is unchanged.
+- **BrutalRevolver** (Moonlight, shared row 17, own hand RQFL selected by class): the Shotvolver's solved hold re-seated on its grip
+  (`reseat_from.py`) + index/curls: pad 0.00, M 0.20, R 0.17, P 0.25, pen 0.38 (rigid-only pen 0.61), palm 0.36.
+  - Gun Offset 0.843 -7.091, ZOffset 1.059, Angle/Pitch/Roll -3.854/3.363/-10.974 (positive mesh scale; residual 0.0000).
+  - 15 MODELDEF.rsqmoon blocks, RSB rows 10/11 (incl. the off-hand round), muzzle row 27.2/-0.03/4.61 -> 35.03/3.24/8.51.
+- **Poses as data** (`tools/handfit/poses/<Class>.json`, `port/rebake.py`): full joint vectors (trigger, squeeze), solved fingers,
+  wrist placement, gun move, FBX source. Rebake from the JSON reproduces all three committed MD3s exactly (0.0000).
+- **Gate on the delivered pack** (QZD 17.3 rig, doom2 -> brutal22test6 -> BD_VoxelPack -> pack, exclusive lock, `port/gate_gun.py`, logs `/home/claude/lane_b_b4run/g4/`):
+  - smoke (give, select, steady, fire, alt-fire, reload, fire), 0 pack script errors:
+    - Rifle: held, 14 shots, phases DROP,EMPTY.
+    - Revolver: 2 shots; "held False" is the probe's class-name match, as in r4.
+    - Revolver2: held, 12 shots.
+    - BrutalRevolver: held, 2 shots.
+  - Hand reloads:
+    - Rifle magazine (`mags.py 1`): IDLE>EMPTY>DROP>EMPTY>CARRY>INSERT>SEATED>DONE>IDLE.
+    - Rifle M203 on the moved gun: latch > open > round in the breech > round home > shut: loaded.
+    - Revolver break (`brk.py`): OPEN > CARRY > INSERT (0.0 cm off the bore) > chamber loaded. This equals the unmoved baseline pack (same script, `g3/`).
+    - BrutalRevolver speedloader: loaded > flick 457 deg/s > CLOSING > DONE.
+    - BrutalRevolver per round: each chamber loaded, 0.0 cm off the bore, flick shut, loaded 6.
+- Sheet `/home/claude/lane_b_out/b4_hands.png`: Rifle, Revolver and BrutalRevolver at rest, steadied and firing, from the eye and the side,
+  each beside its 1.92 render (BrutalRevolver has none). Shots come from the test packs of the same src.
+- Pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r8-hands.pk3`, built at `8a3d0e5` (src unchanged since; includes the shotgun lane's AssaultShotgun),
+  sha256 1d97467a7e2696e2f1d04b77a5de64e6d2a57534583e9757e7c4673ebc166b76.
+
+## 2. Not done / flagged
+- **Sniper (Ruger/XM21): flagged, not ported.** The Rifle's hold moved to the Ruger trigger and re-seated rigidly
+  (stopped run, the same tool) leaves pen 1.65 cm, palm 1.18, index pad 1.84 from the trigger, and M/R/P 3.0/5.1/7.2 cm.
+  The stock wrist is not a pistol grip. A 400-iteration re-seat (`sniper_fit.py`) hit its 20-min limit. Registry and scope/muzzle/rsr
+  movers are ready (`GUNS['Sniper']`); the eye-at-eyepiece scope re-check was not reached.
+- **Support hands are still Ermac's** on the Rifle (pose C under the M203 tube, moved with the gun) and on both revolvers (the cup;
+  unchanged because it cups the pinned gun hand). The owner asked for the FBX support poses as on the MP40/SMG/Flamethrower. Not done in this box.
+- The Revolver side-view rest frame on the sheet is framed off (the camera, not the gun). Steady and fire side frames show the hand on the grip.
+- BrutalRevolver has no gunmoves rows of its own (RVMA is not in the table) and shares Pivot row 17 with the Revolver. Dual wield for it is not wired (it had none).
+- Revolver2 does not inherit Revolver: its shots keep BD22's origin (no Revolver2 muzzle row).
+- The fitter snapshot in `tools/handfit/fbx_fitter/` lacks its lane data. `bake_gun.py` and `rebake.py` need `RSQ_HANDS_TOOL` = a full checkout.
+- Item 5 (Shot_Gun etc.) was dropped by the coordinator: the shotgun and heavy lanes have them.
