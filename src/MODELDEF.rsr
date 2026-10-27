@@ -1539,8 +1539,11 @@ Model IncendiaryLauncher
 	SurfaceSkin 0 7 "m32_tex2.png"
 	SurfaceSkin 0 8 "m32_tex1.png"
 	Scale -0.6200 0.6200 0.6200
-	Offset 0.0000 -30.0000 0.0
-	ZOffset -8.0000
+	Offset -8.579 -35.927 0.0
+	ZOffset -12.450
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r11 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQVM A 0 0
 }
@@ -1560,8 +1563,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 7 "rsr_clear.png"
 	SurfaceSkin 0 8 "rsr_clear.png"
 	Scale -0.6200 0.6200 0.6200
-	Offset 0.0000 -30.0000 0.0
-	ZOffset -8.0000
+	Offset -8.579 -35.927 0.0
+	ZOffset -12.450
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r11 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQVP A 0 0
 }
@@ -1694,8 +1700,11 @@ Model Devastator
 	SurfaceSkin 0 4 "smr_ext1.png"
 	SurfaceSkin 0 5 "smr_plate.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 -13.0000 0.0
-	ZOffset 0.0000
+	Offset -0.518 -15.473 0.0
+	ZOffset 3.456
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r11 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQEM A 0 0
 }
@@ -1712,8 +1721,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 4 "rsr_clear.png"
 	SurfaceSkin 0 5 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 -13.0000 0.0
-	ZOffset 0.0000
+	Offset -0.518 -15.473 0.0
+	ZOffset 3.456
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r11 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQEP A 0 0
 }
