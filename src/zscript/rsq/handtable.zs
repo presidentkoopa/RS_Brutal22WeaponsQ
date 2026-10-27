@@ -82,7 +82,7 @@ class RSQ_HandTable abstract
 	}
 
 	// batch 3: row 12 (MP40) = the FBX palm-under (RQFS B) under the MP40 barrel at 1.92's SupportPoint, moved with the gun (bake_b3.py)
-	// batch 4: row 17 (Revolver, the Shotvolver): FBX gun hand baked in place on the unmoved gun (hook 0); support unchanged
+	// batch 4: row 17 (Revolver, the Shotvolver; BrutalRevolver, the Moonlight, own frames): FBX gun hands baked in place on the unmoved guns (hook 0); support unchanged
 	// batch 4: row 18 (Rifle): FBX gun hand (hook 0); support pose C under the M203 tube moved with the gun (supmove_b4.py; was hook 0.954 -12.744 -17.400 rot 0 0 10, point 0.280 0 0.014)
 	// batch 2: row 5 (BrutalSMG) = the FBX palm-under (RQFS B) moved under the SMG forend (bake_b2.py)
 	clearscope static Vector3 SupportHook(int i)

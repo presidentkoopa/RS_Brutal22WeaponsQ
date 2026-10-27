@@ -460,3 +460,25 @@ Model RSQ_Hands
 	FrameIndex RQFK A 0 0	// Revolver, finger on the trigger
 	FrameIndex RQFK B 0 1	// Revolver, squeezed
 }
+
+// batch 4 (lane B): BrutalRevolver (Moonlight, row 17 with the Shotvolver) holds its own FBX gun hand (baked in place on the unmoved gun, hook 0)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b4_BrutalRevolver_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFL A 0 0	// BrutalRevolver, finger on the trigger
+	FrameIndex RQFL B 0 1	// BrutalRevolver, squeezed
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b4_BrutalRevolver_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFL A 0 0	// BrutalRevolver, finger on the trigger
+	FrameIndex RQFL B 0 1	// BrutalRevolver, squeezed
+}

@@ -132,6 +132,9 @@ class RSQ_GunSide : Inventory
 	// batch 4: Revolver (row 17)
 	TrgFbxRev: RQFK A -1; Stop;
 	SqzFbxRev: RQFK B -1; Stop;
+	// batch 4: BrutalRevolver (row 17, by class)
+	TrgFbxBru: RQFL A -1; Stop;
+	SqzFbxBru: RQFL B -1; Stop;
 	// batch 4: Rifle (row 18)
 	TrgFbxRif: RQFJ A -1; Stop;
 	SqzFbxRif: RQFJ B -1; Stop;
@@ -347,9 +350,9 @@ class RSQ_Hands : Weapon
 			if (xgp && xgp.CurState)
 			{
 				int xf = xgp.Frame;
-				xsq = xgp.CurState.bFullbright || (xf >= 1 && xf <= 9 && (xgp.Sprite == Actor.GetSpriteIndex('REVO') || xgp.Sprite == Actor.GetSpriteIndex('2EVO')));
+				xsq = xgp.CurState.bFullbright || (xf >= 1 && xf <= 9 && (xgp.Sprite == Actor.GetSpriteIndex('REVO') || xgp.Sprite == Actor.GetSpriteIndex('2EVO'))) || (xf >= 1 && xf <= 13 && xgp.Sprite == Actor.GetSpriteIndex('RVMA'));	// RVMA B-N: BrutalRevolver.dec Fire
 			}
-			gl = xsq ? "SqzFbxRev" : "TrgFbxRev";
+			gl = p.ReadyWeapon is 'BrutalRevolver' ? (xsq ? "SqzFbxBru" : "TrgFbxBru") : (xsq ? "SqzFbxRev" : "TrgFbxRev");	// the Moonlight has its own fit
 		}
 		if (i == 12)	// batch 3: MP40 squeezes on its FIRE frames (gunmoves rows 42-45: MP40 B D E Q R S, PP40 B D E) or fullbright, trigger otherwise
 		{
