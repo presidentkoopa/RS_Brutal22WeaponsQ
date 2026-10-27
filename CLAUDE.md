@@ -24,4 +24,4 @@ The Ruger's "Real" scope was reported as working for a week. Nobody ever showed 
 - **Working means shown working:** in-engine frames or a log of the behaviour itself, not "the code exists", "it compiles" or "the option is there".
 - **VR-only behaviour is labelled "rig only, not headset-confirmed"** until the owner confirms it in his headset.
 - **Option names promise only what has been proved.**
-- **Scope:** the owner abandoned the Ruger scope (2026-10-27 07:29) and is removing the mesh. Don't work on scopes unless he asks.
+- **Scope:** the owner wants his scope (2026-10-27 07:30: "I want my scope"). It is being made to work and SHOWN working on the rig first.
