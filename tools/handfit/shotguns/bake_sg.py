@@ -12,7 +12,7 @@ OUT = '/home/claude/lane_b_sgrun/bake'; os.makedirs(OUT, exist_ok=True)
 B1 = '/home/claude/lane_b_sg/src/models/rsq/fbx/'
 ctx, x, to_g, Xf, delta = revindex.setup(); Rg, tg = solve.gun_T(ctx, x)
 to_c = lambda X: solve.gmove(ctx, Rg, tg, X)
-G = sys.argv[1]; SPX = [float(v) for v in sys.argv[2:5]]; sys.path.insert(0, '/home/claude/lane_b_b3run/tools'); import fit3; sys.path.insert(0, '/home/claude/lane_b_sg/tools/handfit/shotguns'); import fit_sg
+G = sys.argv[1]; SPX = [float(v) for v in sys.argv[2:5]]; sys.path.insert(0, '/home/claude/lane_b_b3run/tools'); import fit3; sys.path.insert(0, '/home/claude/lane_b_sg/tools/handfit/shotguns'); import fit_sg; scene.merged = fit_sg._merged	# the support bake collides with the whole gun (no crop)
 J = json.load(open('/home/claude/lane_b_sgrun/curl3_%s.json' % G))
 ent = [dict(name=G + '_trg', side='R', X=to_c(np.array(J['Xt'])), cuff_ref=None),
        dict(name=G + '_sqz', side='R', X=to_c(np.array(J['Xs'])), cuff_ref=None),
@@ -44,11 +44,12 @@ near = Vm[(np.abs(Vm[:, 0] - SPm[0]) < 1.5) & (np.abs(Vm[:, 1] - SPm[1]) < 1.5)]
 under = near[np.argmin(near[:, 2])]
 Yr = (Y - palm) @ Rs.T
 ex = exactpen.Exact(Vm, F_)
-best = None
-for dz in np.arange(-0.0, -2.01, -0.1):		# lower the palm until the hand is clear of the gun (pen <= 0.5 cm, lane_c TOL)
+best = None; alt = None
+for dz in np.arange(-0.0, -4.01, -0.1):	# shotguns lane: to -4 cm (the pump is 4 cm deep)		# lower the palm until the hand is clear of the gun (pen <= 0.5 cm, lane_c TOL)
     Ys = Yr + under + np.array([0, 0, dz]); pen = float(ex.depth(Ys).max())
     if pen <= 0.5: best = (dz, pen, Ys); break
-dz, pen, Ys = best
+    if alt is None or pen < alt[1]: alt = (dz, pen, Ys)
+dz, pen, Ys = best if best else alt	# shotguns lane: no clear drop within 4 cm -> the least-penetrating one, reported (flag)
 ts = under + np.array([0, 0, dz]) - Rs @ palm		# Ys = Rs Y + ts
 h, r = hook.hook_from_rigid(Rs, ts)
 chk = hook.check(L['xyz'][1], h, r, Ys)

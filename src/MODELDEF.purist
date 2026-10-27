@@ -1851,8 +1851,11 @@ Model PuristShot_Gun
    Model 0 "Shotgun.md3"
    Skin 0 "Shotgun.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset -3.502 -4.257 0.0
+   ZOffset -8.973
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// shotguns (lane B): gun to the FBX hand fitted from 1.92
    Nointerpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
@@ -10931,8 +10934,11 @@ Model PuristShot_Gun
 	SurfaceSkin 0 5 "rsr_clear.png"
 	SurfaceSkin 0 6 "Shotgun.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -3.502 -4.257 0.0
+	ZOffset -8.973
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// shotguns (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQUG A 0 4
 }
@@ -11023,4 +11029,16 @@ Model PuristRevolver
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQFK A 0 0	// Revolver, finger on the trigger
 	FrameIndex RQFK B 0 1	// Revolver, squeezed
+}
+
+// shotguns (lane B): Shot_Gun (row 21), dual wield holds the FBX gun hand fitted from 1.92's Shot_Gun hold (frames baked in place, hook 0)
+Model PuristShot_Gun
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_sg_Shot_Gun_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFP A 0 0	// Shot_Gun, finger on the trigger
+	FrameIndex RQFP B 0 1	// Shot_Gun, squeezed
 }

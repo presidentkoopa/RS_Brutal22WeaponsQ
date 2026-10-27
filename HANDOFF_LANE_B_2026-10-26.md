@@ -1047,3 +1047,45 @@ One method for every gun (owner): the drawn wrist stays pinned where the approve
 - Revolver2 does not inherit Revolver: its shots keep BD22's origin (no Revolver2 muzzle row).
 - The fitter snapshot in `tools/handfit/fbx_fitter/` lacks its lane data. `bake_gun.py` and `rebake.py` need `RSQ_HANDS_TOOL` = a full checkout.
 - Item 5 (Shot_Gun etc.) was dropped by the coordinator: the shotgun and heavy lanes have them.
+
+# Hands lane: SHOTGUNS (2026-10-27, 10:07-11:45; rig only, not headset-confirmed)
+Method: batch 3's, unchanged (m192 -> rigid3.stage2 -> curl3 M/R/P + index), the drawn wrist pinned and the GUN moved to
+the hand with port_gun.py (wrapped by `tools/handfit/shotguns/port_sg.py`, which adds Shot_Gun / AssaultShotgun / SSG to
+its registry, the pump tables and the case-form break-open rows). Support = the FBX palm-under / pump grip (fbx_b1_L
+frame 1, RQFS B, label FbxSupF), never Ermac's glove. Pose data per gun: `tools/handfit/poses/<Class>.json`.
+
+## Done (measured; rig only, not headset-confirmed)
+- **AssaultShotgun (row 1, hand sprite RQFQ, fbx_sg_AssaultShotgun_R.md3).** 1.92 hold carried over (m192 residual
+  <= 0.99 cm); hand turned 33 deg on the wrist vs the pistol (1.92's own turn), gun shift (-3.8, 3.7, -11.3) cm.
+  Index re-solved: pad 0.15 cm from the trigger, squeeze 0.45 cm, M/R/P gaps 0.20, max penetration 0.49 cm.
+  Moved: 13 MODELDEF blocks, gunmoves Pivot + rows 0-5, RSR case 5 (Well/MagCentre/Grab/Axis/WellHook/Pull/HandleHook/Offset),
+  casing port, muzzle row (added). Rig: no script errors outside BD_VoxelPack; give/select/fire/alt/reload held,
+  10 shots; hand mag reload (mags.py 5) IDLE>EMPTY>DROP>EMPTY>CARRY>INSERT>SEATED>DONE>IDLE. ~25 min.
+  Pose data: tools/handfit/poses/AssaultShotgun.json.
+- **Shot_Gun (row 21, hand sprite RQFP, fbx_sg_Shot_Gun_R.md3).** m192 residual <= 0.5 cm; hand 2.5 deg from 1.92's
+  placement (30 deg vs the pistol), gun shift (-4.2, 3.1, -8.1) cm. Index on the trigger (0.0 cm), squeeze 0.60 cm,
+  M/R/P 0.20, max penetration 0.55 cm (0.05 over the 0.5 tolerance). Moved: MODELDEF (bd, purist x2, rsqoff x2,
+  rsrpump gun + pump/bolt/shell parts), gunmoves Pivot + its fire rows, the pump table (rsr_pump_guns case 1: Grab,
+  Port, Pull, Push, PumpHook, SupportHook, PortHook, Offset), the side port's literals in rsr_pump.zs (PortK, PushK,
+  new BoreK, casing-out point), casing port, muzzle row (added). Rig: no script errors; give/select/fire held, 4 shots;
+  pump test (pump_sg.py, the Depot pump.py with moved numbers): two shells through the port, pump grabbed at 0.0 cm,
+  full stroke, "ready". ~35 min (two fits OOM-killed in the shared 8 GB cgroup; fit now collides against the gun
+  behind F = 25 cm only, fit_sg.py `crop`).
+- Sheet: /home/claude/lane_b_out/hands_shotguns.png (at rest, steadied, firing; eye and side; next to 1.92).
+  Side views match 1.92's layout (gun hand on the grip, FBX palm on the pump / forend).
+
+## Flags (open)
+- Shot_Gun support palm on the pump: no drop within 4 cm clears 0.5 cm; the least-penetrating one is used (0.70 cm).
+- Eye tiles: at rest the gun hand is below the frame; steadied eye tiles show the gun pointing back at the camera
+  (both guns). Not judged; needs the owner's headset or a better eye pose. Shot_Gun eye-at-rest shows a large striped
+  object at the lower right: not identified.
+- Squeeze frames: AssaultShotgun 2SAS B-E, 3SAR I, USAS J N O; Shot_Gun SHTN/2HTN B-H (from the gunmoves rows;
+  not shown squeezing on the rig).
+- Hand sprites RQFP / RQFQ are new: free in the pack, BD22 and BD_VoxelPack at 10:30; check against the other lanes.
+- Fit JSONs point at the baked md3 in /home/claude/lane_b_sgrun (cloud path); the md3s are committed in src.
+
+## Not reached
+- **SSG (row 20):** fit not run to the end (OOM, then time). port_sg registers it and moves Hinge/Axis/PushRef/Offset
+  (dry run passes), but its Base/Tip/Bore/Rest rows and PushZ/PushR scalars are NOT moved yet: do not port it as is.
+- **Revolver2:** shares row 17 and Revolver.md3 with the Revolver (Shotvolver), which the other lane re-ports with
+  port_gun.py (Revolver entry has casing2='Revolver2'); not touched here to avoid two moves of one mesh.

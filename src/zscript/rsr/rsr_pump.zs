@@ -477,7 +477,7 @@ class RSP_State play
 	{
 		if (!geo)
 			return;
-		Vector3 at = i == 1 ? (12.8, -2.2, 0.5) : RSP_Guns.Port(i);
+		Vector3 at = i == 1 ? (17.034, 4.124, -1.390) : RSP_Guns.Port(i);	// shotguns: moved with the gun to the FBX hand (was 12.8, -2.2, 0.5)
 		Name cn = 'ShotgunCasing';		// BD22's own (DECORATE: looked up at run time)
 		class<Actor> cc = cn;
 		if (!cc)
@@ -500,8 +500,9 @@ class RSP_State play
 	// U -1.3..1.3). A shell can also be dropped in there, lying along the bore and pushed in
 	// sideways, as a real pump gun's combat load; spent shells come out of it.
 	clearscope static int Ports(int i) { return i == 1 && RSP.TestCvarOn('rsr_sideport') ? 2 : 1; }
-	clearscope static Vector3 PortK(int i, int k) { return k == 1 ? (12.8, -1.9, 0.2) : RSP_Guns.Port(i); }
-	clearscope static Vector3 PushK(int i, int k) { return k == 1 ? (0, 1, 0) : RSP_Guns.Push(i); }
+	clearscope static Vector3 PortK(int i, int k) { return k == 1 ? (17.024, 4.476, -1.627) : RSP_Guns.Port(i); }	// shotguns: moved with the gun (was 12.8, -1.9, 0.2)
+	clearscope static Vector3 PushK(int i, int k) { return k == 1 ? (-0.077, 0.979, 0.190) : RSP_Guns.Push(i); }	// shotguns: turned with the gun (was 0, 1, 0)
+	clearscope static Vector3 BoreK(int i) { return (0.996, 0.067, 0.059); }	// shotguns: the moved Shot_Gun's bore (was 1, 0, 0)
 	clearscope static double DepthK(int i, int k) { return k == 1 ? 1.5 : RSP_Guns.Depth(i); }
 	const SHELL_HALF = 3.0;		// half a BD22 shell (its tube depth is the whole shell, 6 cm)
 
@@ -513,9 +514,9 @@ class RSP_State play
 			Vector3 a1 = geo.OffDirInGun(RSP_Guns.AxisInHand(gun));
 			Vector3 c1 = geo.OffPoint(RSP_Guns.ShellInHand(gun)) - a1 * SHELL_HALF;
 			Vector3 rel1 = c1 - PortK(gun, 1);
-			double sv1 = rel1 dot (0, 1, 0);
-			Vector3 lv1 = rel1 - (0, 1, 0) * sv1;
-			return sv1, lv1.Length(), acos(clamp(abs(a1.x), 0, 1)), lv1;
+			double sv1 = rel1 dot PushK(gun, 1);
+			Vector3 lv1 = rel1 - PushK(gun, 1) * sv1;
+			return sv1, lv1.Length(), acos(clamp(abs(a1 dot BoreK(gun)), 0, 1)), lv1;
 		}
 		// 1.93: ZScript cannot forward a multi-value return as one expression. This compiled with
 		// "Incorrect number of return values. Got 1, but expected 4", so only the first value was
@@ -1149,7 +1150,7 @@ class RSP_Handler : EventHandler
 			double lead = max(RSP.ENTER_BEHIND, RSR_Assist.PumpCapture(owner.player, i));
 			Vector3 d = RSP_Guns.Push(i) * sv + lv * clamp(-sv / lead, 0, 1);
 			if (s.portSel == 1)		// the side port: the same shell, lying along the bore, moved to the port
-				d = RSP_State.PortK(i, 1) - RSP_Guns.Port(i) + (RSP_State.SHELL_HALF, 0, 0) + RSP_State.PushK(i, 1) * sv + lv * clamp(-sv / lead, 0, 1);
+				d = RSP_State.PortK(i, 1) - RSP_Guns.Port(i) + RSP_State.BoreK(i) * RSP_State.SHELL_HALF + RSP_State.PushK(i, 1) * sv + lv * clamp(-sv / lead, 0, 1);
 			return t + RSP_Guns.PortHook(i) + RSP.HookOf(i, d), r;
 		}
 		case RSP.EJECT:

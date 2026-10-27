@@ -1,6 +1,6 @@
 """TEST ONLY (shotguns lane: the Depot rig pump.py with its gun-frame numbers moved by the port, ported_Shot_Gun.json R, t): two shells into BD22's pump shotgun through the loading port, then a hand pump stroke."""
 import re, sys
-sys.path.insert(0, __import__('os').path.dirname(__import__('os').path.abspath(__file__)))
+sys.path.insert(0, '/home/claude/rsq_weapondepot/tools/rig')
 import rig, handrot as h, json, numpy as np
 J = json.load(open('/home/claude/lane_b_sg/tools/handfit/port/fits/ported_Shot_Gun.json')); R = np.array(J['R']); t = np.array(J['t'])
 mp = lambda p: tuple(R @ np.array(p) + t); md = lambda v: tuple(R @ np.array(v))

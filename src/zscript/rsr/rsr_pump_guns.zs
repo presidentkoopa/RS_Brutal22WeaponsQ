@@ -18,7 +18,7 @@ class RSP_Guns abstract
 	{
 		switch (i)
 		{
-		case 1:	return (40.100, 0.000, -2.800);
+		case 1:	return (44.203, 8.748, -2.605);	// shotguns: moved with the gun to the FBX hand (was (40.100, 0.000, -2.800))
 		case 2:	return (34.500, -0.000, 1.300);
 		}
 		return (0, 0, 0);
@@ -28,7 +28,7 @@ class RSP_Guns abstract
 	{
 		switch (i)
 		{
-		case 1:	return (-1.000, 0.000, -0.002);
+		case 1:	return (-0.996, -0.067, -0.061);	// shotguns: moved with the gun to the FBX hand (was (-1.000, 0.000, -0.002))
 		case 2:	return (-1.000, -0.000, 0.002);
 		}
 		return (0, 0, 0);
@@ -48,7 +48,7 @@ class RSP_Guns abstract
 	{
 		switch (i)
 		{
-		case 1:	return (0.000, -0.002, 1.000);
+		case 1:	return (-0.067, -0.061, 0.996);	// shotguns: moved with the gun to the FBX hand (was (0.000, -0.002, 1.000))
 		case 2:	return (0.000, 0.001, 0.741);
 		}
 		return (0, 0, 0);
@@ -68,7 +68,7 @@ class RSP_Guns abstract
 	{
 		switch (i)
 		{
-		case 1:	return (0.000, -0.002, 1.000);
+		case 1:	return (-0.067, -0.061, 0.996);	// shotguns: moved with the gun to the FBX hand (was (0.000, -0.002, 1.000))
 		case 2:	return (-0.000, 0.002, 1.000);
 		}
 		return (0, 0, 0);
@@ -78,7 +78,7 @@ class RSP_Guns abstract
 	{
 		switch (i)
 		{
-		case 1:	return (19.000, 0.000, -2.800);
+		case 1:	return (23.187, 7.333, -3.842);	// shotguns: moved with the gun to the FBX hand (was (19.000, 0.000, -2.800))
 		case 2:	return (12.500, -0.500, 3.300);
 		}
 		return (0, 0, 0);
@@ -88,7 +88,7 @@ class RSP_Guns abstract
 	{
 		switch (i)
 		{
-		case 1:	return (1.000, 0.000, 0.000);
+		case 1:	return (0.996, 0.067, 0.059);	// shotguns: moved with the gun to the FBX hand (was (1.000, 0.000, 0.000))
 		case 2:	return (0.892, 0.429, -0.140);
 		}
 		return (0, 0, 0);
@@ -108,7 +108,7 @@ class RSP_Guns abstract
 	{
 		switch (i)
 		{
-		case 1:	return (-0.024, -2.986, -1.130);
+		case 1:	return (0.631, -2.865, -1.261);	// shotguns: moved with the gun to the FBX hand (was (-0.024, -2.986, -1.130))
 		case 2:	return (0.006, 0.647, 1.100);
 		}
 		return (0, 0, 0);
@@ -168,7 +168,7 @@ class RSP_Guns abstract
 	{
 		switch (i)
 		{
-		case 1:	return (0.000, 0.000, -5.000);
+		case 1:	return (-3.502, -4.257, -8.973);	// shotguns: moved with the gun to the FBX hand (was (0.000, 0.000, -5.000))
 		case 2:	return (0.000, 0.000, 0.000);
 		}
 		return (0, 0, 0);

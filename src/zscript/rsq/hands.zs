@@ -141,6 +141,9 @@ class RSQ_GunSide : Inventory
 	// batch 4: BrutalRevolver (row 17)
 	FbxTrgBru: RQFL A -1; Stop;
 	FbxSqzBru: RQFL B -1; Stop;
+	// shotguns: Shot_Gun (row 21)
+	FbxTrgSG: RQFP A -1; Stop;
+	FbxSqzSG: RQFP B -1; Stop;
 	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
 	Nade: RQGN A -1; Stop;	// Ermac's ammo hand round the VR grenade
 	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
@@ -370,6 +373,17 @@ class RSQ_Hands : Weapon
 			}
 			gl = msq ? "FbxSqzBru" : "FbxTrgBru";
 		}
+		if (i == 21)	// shotguns: Shot_Gun squeezes on its fire frames (SHTN / 2HTN B-H) or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || ((mgp.Sprite == Actor.GetSpriteIndex('SHTN') || mgp.Sprite == Actor.GetSpriteIndex('2HTN')) && mf >= 1 && mf <= 7);
+			}
+			gl = msq ? "FbxSqzSG" : "FbxTrgSG";
+		}
 		if (i == 18)	// batch 4: Rifle squeezes on its FIRE frames (gunmoves rows 93-95: RIFF / RI2F / 2IFF A-D and the no-tube twins QT09 / QT0A / QT08) or fullbright, trigger otherwise
 		{
 			bool msq = false;
@@ -410,6 +424,8 @@ class RSQ_Hands : Weapon
 		else if (i == 18 && RSK_M203Handler.TriggerGrip(mo))
 			sp = (p.cmd.buttons & BT_OFFHANDATTACK) ? "M2" : "M1";	// 1.31: finger on the M203's trigger (squeezed)
 		String spl = (i == 4 || i == 7) ? (i == 4 ? "FbxSupP" : "FbxSupF") : "Sup" .. sp;	// BD 2.0 b1: the FBX support hands
+		if (i == 21)
+			spl = "FbxSupF";	// shotguns: Shot_Gun, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 21)
 		if (i == 1)
 			spl = "FbxSupF";	// shotguns: AssaultShotgun, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 1)
 		if (i == 12)
@@ -882,6 +898,8 @@ class RSQ_Hands : Weapon
 	DFbxSqzRev: RQFK B -1; Stop;
 	DFbxTrgBru: RQFL A -1; Stop;	// batch 4: dual wield, BrutalRevolver
 	DFbxSqzBru: RQFL B -1; Stop;
+	DFbxTrgSG: RQFP A -1; Stop;	// shotguns: dual wield, Shot_Gun
+	DFbxSqzSG: RQFP B -1; Stop;
 	Hidden: TNT1 A -1; Stop;
 	}
 }

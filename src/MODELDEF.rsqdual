@@ -354,3 +354,15 @@ Model Revolver
 	FrameIndex RQFK A 0 0	// Revolver, finger on the trigger
 	FrameIndex RQFK B 0 1	// Revolver, squeezed
 }
+
+// shotguns (lane B): Shot_Gun (row 21), dual wield holds the FBX gun hand fitted from 1.92's Shot_Gun hold (frames baked in place, hook 0)
+Model Shot_Gun
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_sg_Shot_Gun_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFP A 0 0	// Shot_Gun, finger on the trigger
+	FrameIndex RQFP B 0 1	// Shot_Gun, squeezed
+}

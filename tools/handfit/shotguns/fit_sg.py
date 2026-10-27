@@ -11,10 +11,19 @@ sys.path.insert(0, '/home/claude/lane_b_b3run/tools')
 from rigid3 import *
 import rigid3
 M = SRC + '/models/bd/'
+# Memory (2026-10-27): Shotgun.md3's 'Runko' is 18.9k vertices; exactpen on the whole gun was OOM-killed twice (1 GB rss in a
+# shared 8 GB cgroup). The gun hand only touches the gun behind F = crop cm (the support hand is not in this fit), so the
+# collision mesh keeps only faces with every vertex at F < crop (it['crop']). Drawing and baking still use the whole gun.
+_merged = scene.merged
+def _merged_crop(it, *a, **k):
+    it2 = {kk: v for kk, v in it.items() if kk != 'crop'}; F, V = _merged(it2, *a, **k)
+    if 'crop' not in it: return F, V
+    keep = (V[np.asarray(F)][:, :, 0] < it['crop']).all(1); return np.asarray(F)[keep], V
+scene.merged = _merged_crop
 revlm.GUNS.update({
- 'Shot_Gun': dict(it=dict(path=M + 'ShotGun/Shotgun.md3', frame=4, scale=[-1.0, 1.0, 1.0], off=[0.0, 0.0, -5.0]), grip_surf=[6], trig_surf=3, fmax=None, bore_surf=6),
+ 'Shot_Gun': dict(it=dict(path=M + 'ShotGun/Shotgun.md3', frame=4, crop=25.0, scale=[-1.0, 1.0, 1.0], off=[0.0, 0.0, -5.0]), grip_surf=[6], trig_surf=3, fmax=None, bore_surf=6),
  'AssaultShotgun': dict(it=dict(path=M + 'AssaultShotgun/AssaultShotgun.md3', frame=4, scale=[-1.0, 1.0, 1.0], off=[0.0, 0.0, -5.0]), grip_surf=[3], trig_surf=5, fmax=None, bore_surf=3),
- 'SSG': dict(it=dict(path=M + 'SSG/SSG.md3', frame=1, scale=[-1.0, 1.0, 1.0], off=[0.0, 0.0, -5.0]), grip_surf=[1], trig_surf=5, fmax=None, bore_surf=0),
+ 'SSG': dict(it=dict(path=M + 'SSG/SSG.md3', frame=1, crop=20.0, scale=[-1.0, 1.0, 1.0], off=[0.0, 0.0, -5.0]), grip_surf=[1], trig_surf=5, fmax=None, bore_surf=0),
 })
 def curl(g, R, t, d, nfev=40, idx=False):
     ctx, x, to_g, Xf, delta = revindex.setup(); L = ctx.L
@@ -42,7 +51,7 @@ def curl(g, R, t, d, nfev=40, idx=False):
     m = lambda X: dict(pen=float(ex.depth(X).max()), padI_trig=float(np.linalg.norm(X[rg['I']].mean(0) - tf)), **{'gap_' + f: float(ex.unsigned(X[rg[f]]).min()) for f in 'MRPT'},
                        gap_palm=float(ex.unsigned(X[evaluate.reg(L, 'palm')]).min()), gap_web=float(ex.unsigned(X[evaluate.reg(L, 'web')]).min()))
     X0 = Xf @ R.T + t
-    o = dict(gun=g, rigid_only=m(X0), trigger=m(Xt), squeeze=m(Xs), squeeze_travel=float(np.linalg.norm(Xs[rg['I']].mean(0) - Xt[rg['I']].mean(0))), shift=d.tolist())
+    o = dict(q_trigger=x2.tolist(), q_squeeze_index=s2.x.tolist(), q_pistol=x.tolist(), gun=g, rigid_only=m(X0), trigger=m(Xt), squeeze=m(Xs), squeeze_travel=float(np.linalg.norm(Xs[rg['I']].mean(0) - Xt[rg['I']].mean(0))), shift=d.tolist())
     json.dump(dict(o, Xt=(Xt + d).tolist(), Xs=(Xs + d).tolist(), R=R.tolist(), t=t.tolist()), open(RUN + '/curl3_%s.json' % g, 'w'))
     return o
 if __name__ == '__main__':
@@ -55,4 +64,4 @@ if __name__ == '__main__':
         o, R, t, d = rigid3.stage2(g); print('stage2', json.dumps(o, default=float), flush=True)
         np.save(RUN + '/st2_%s.npy' % g, np.r_[R.ravel(), t, d])
     o = curl(g, R, t, d, idx=idx)
-    print('curl', json.dumps({k: ({a: round(b, 2) for a, b in v.items()} if isinstance(v, dict) else v) for k, v in o.items()}, default=float), flush=True)
+    print('curl', json.dumps({k: ({a: round(b, 2) for a, b in v.items()} if isinstance(v, dict) else v) for k, v in o.items() if not k.startswith('q_')}, default=float), flush=True)

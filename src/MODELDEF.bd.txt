@@ -2763,8 +2763,11 @@ Model Shot_Gun
    Model 0 "Shotgun.md3"
    Skin 0 "Shotgun.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset -3.502 -4.257 0.0
+   ZOffset -8.973
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// shotguns (lane B): gun to the FBX hand fitted from 1.92
    Nointerpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).

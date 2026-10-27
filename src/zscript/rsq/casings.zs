@@ -18,7 +18,7 @@ class RSA_Casings : EventHandler
 		if (w is 'Rifle')				return (15.7, 1.2, 8.0);	// batch 4: moved with the gun to the FBX hand (was 10.0, -0.6, 2.6)
 		if (w is 'BrutalSMG')			return (18.7, -0.8, 2.6);	// batch 2: moved with the gun to the FBX hand (was 14.0, -3.1, -1.0)
 		if (w is 'AssaultShotgun')		return (20.8, 6.5, -5.2);	// shotguns: moved with the gun to the FBX hand (was 16.0, -1.4, -0.6)
-		if (w is 'Shot_Gun')			return (12.8, -1.5, 0.0);	// 1.97: the port the model-maker named `eject`
+		if (w is 'Shot_Gun')			return (17.0, 4.9, -1.7);	// shotguns: moved with the gun to the FBX hand (was 12.8, -1.5, 0.0)	// 1.97: the port the model-maker named `eject`
 		if (w is 'SSG')					return (4.4, 0.0, 1.9);	// 1.97: the break-open breech, surface `Open`
 		if (w is 'Revolver')			return (13.2, 2.0, 4.6);	// batch 4: moved with the gun to the FBX hand (was 7.9, 0.0, 0.2)	// 1.97: the cylinder: the mean of its five `shells`
 		if (w is 'Revolver2')			return (13.2, 2.0, 4.6);	// batch 4: moved with the gun to the FBX hand (was 7.9, 0.0, 0.2)	// 1.97: the Shotvolver, on the Revolver's own mesh
