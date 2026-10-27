@@ -142,9 +142,12 @@ Model PuristBIG_FUCKING_GUN
    Model 0 "BFG.md3"
    Skin 0 "BFG.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
+   Offset -0.338 -2.964 0.0
+   ZOffset -0.782
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r11 port (lane B): gun to the FBX hand fitted from 1.92
    NoInterpolation
-   ZOffset -5
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -2143,7 +2146,11 @@ Model PuristIncendiaryLauncher
    SurfaceSkin 0 7 "m32_tex2.png"
    SurfaceSkin 0 8 "m32_tex1.png"
    Scale -0.62 0.62 0.62
-   Offset 0.0 -30.0 -8.0
+   Offset -8.579 -35.927 0.0
+   ZOffset -12.450
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r11 port (lane B): gun to the FBX hand fitted from 1.92
    NoInterpolation
 
    FrameIndex	M202	A	0	0
@@ -2200,7 +2207,11 @@ Model PuristDevastator
    SurfaceSkin 0 4 "smr_ext1.png"
    SurfaceSkin 0 5 "smr_plate.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 -13.0 0.0
+   Offset -0.518 -15.473 0.0
+   ZOffset 3.456
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r11 port (lane B): gun to the FBX hand fitted from 1.92
 
    FrameIndex	DEVA	A	0	0
    FrameIndex	DEVA	B	0	1
@@ -11176,4 +11187,40 @@ Model PuristBFG10k
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQVA A 0 0	// BFG10k, finger on the trigger
 	FrameIndex RQVA B 0 1	// BFG10k, squeezed
+}
+
+// r11 port (lane B): BIG_FUCKING_GUN (row 3), dual wield holds the FBX gun hand fitted from 1.92's BIG_FUCKING_GUN hold (frames baked in place, hook 0)
+Model PuristBIG_FUCKING_GUN
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_BIG_FUCKING_GUN_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVB A 0 0	// BIG_FUCKING_GUN, finger on the trigger
+	FrameIndex RQVB B 0 1	// BIG_FUCKING_GUN, squeezed
+}
+
+// r11 port (lane B): IncendiaryLauncher (row 10), dual wield holds the FBX gun hand fitted from 1.92's IncendiaryLauncher hold (frames baked in place, hook 0)
+Model PuristIncendiaryLauncher
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_IncendiaryLauncher_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV8 A 0 0	// IncendiaryLauncher, finger on the trigger
+	FrameIndex RQV8 B 0 1	// IncendiaryLauncher, squeezed
+}
+
+// r11 port (lane B): Devastator (row 6), dual wield holds the FBX gun hand fitted from 1.92's Devastator hold (frames baked in place, hook 0)
+Model PuristDevastator
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_Devastator_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVC A 0 0	// Devastator, finger on the trigger
+	FrameIndex RQVC B 0 1	// Devastator, squeezed
 }

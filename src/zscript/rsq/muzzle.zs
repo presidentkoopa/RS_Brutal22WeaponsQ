@@ -88,6 +88,12 @@ class RSQ_Muzzle : EventHandler
 		if (w is 'NukeLauncher')	return (55.74, 5.70, 11.67);
 		// r10 port: BFG10k's drawn muzzle (front-most face centre of the ready frame, 88.00 0.01 -4.00 before the move), moved with the gun
 		if (w is 'BFG10k')	return (90.20, 9.05, 7.27);
+		// r11 port: BIG_FUCKING_GUN's drawn muzzle (front-most face centre of the ready frame, 84.70 0.00 11.24 before the move), moved with the gun
+		if (w is 'BIG_FUCKING_GUN')	return (86.71, 5.85, 21.97);
+		// r11 port: IncendiaryLauncher's drawn muzzle (front-most face centre of the ready frame, 55.69 0.03 3.09 before the move), moved with the gun
+		if (w is 'IncendiaryLauncher')	return (61.12, 11.16, 1.79);
+		// r11 port: Devastator's drawn muzzle (front-most face centre of the ready frame, 64.79 0.02 13.59 before the move), moved with the gun
+		if (w is 'Devastator')	return (66.55, 4.36, 21.68);
 		return (0, 0, 0);
 	}
 

@@ -49,8 +49,17 @@ def rebuild(J):
     def X(q, fingers):
         m = fm(fingers); return (to_g(solve.hand_X(ctx, np.array(q))[0]) + np.where(m[:, None], 0, delta)) @ R.T + t + d
     return X(J['q_trigger'], J['solved_fingers']), X(J['q_squeeze'], J['solved_fingers'] + J['squeeze_fingers']), ctx, x, Xf
+def rebuild_hv(J):
+    """r11: the heavies / fit-farm pose JSON (heavies/poses_hv.py: poses.trigger / poses.squeeze pose_vector + solved_fingers, wrist R, t,
+    shift_cm), rebuilt exactly as the farm's curl (fit_hv.curl: solved fingers carry no per-vertex delta; X @ R^T + t + shift)."""
+    (ctx, x, to_g, Xf, delta), B = setup(); dom = ctx.H.dom
+    fm = lambda fs: np.array([any(str(b).startswith(B[f]) for f in fs) for b in dom])
+    W = J['wrist']; R = np.array(W['R']); t = np.array(W['t']); d = np.array(W['shift_cm'])
+    def X(P):
+        m = fm(P.get('solved_fingers', 'IMRP')); return (to_g(solve.hand_X(ctx, np.array(P['pose_vector']))[0]) + np.where(m[:, None], 0, delta)) @ R.T + t + d
+    return X(J['poses']['trigger']), X(J['poses']['squeeze']), ctx, x, Xf
 def rebake(path, out):
-    J = json.load(open(path)); Xt, Xs, ctx, x, Xf = rebuild(J); Rg, tg = solve.gun_T(ctx, x); to_c = lambda X: solve.gmove(ctx, Rg, tg, X)
+    J = json.load(open(path)); Xt, Xs, ctx, x, Xf = (rebuild_hv if 'poses' in J else rebuild)(J); Rg, tg = solve.gun_T(ctx, x); to_c = lambda X: solve.gmove(ctx, Rg, tg, X)
     ent = [dict(name=J['cls'] + '_trg', side='R', X=to_c(Xt)), dict(name=J['cls'] + '_sqz', side='R', X=to_c(Xs)), dict(name='PISTOL_chk', side='R', X=to_c(Xf))]
     for e in ent: e['cuff_ref'] = e['X'][ctx.cuff]
     rows, paths, _ = bake.bake(ent, out + '.md3'); print(paths['R'])
