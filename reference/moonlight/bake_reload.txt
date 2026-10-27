@@ -1,0 +1,16 @@
+hinge (frame 26) [ 8.4556 -0.0262 -1.1446], axis +L, open 63.4 deg
+cylinder F 1.85..8.30
+loader seat: base [-2.2256 -0.1653  1.7203] tip [ 8.0759 -0.169   1.8839] bore [ 9.999e-01 -4.000e-04  1.590e-02] depth 6.2300
+loader centre (whole) [ 1.6465 -0.1519  1.8782], its rounds rear F 1.7351
+round 0 (surface 4): base [ 1.7351 -0.0221  0.3852] tip [ 6.6382 -0.0213  0.2821] bore [ 9.998e-01  2.000e-04 -2.100e-02]
+round 1 (surface 5): base [ 1.7351 -1.7694  1.2022] tip [ 6.6342 -1.7691  1.1031] bore [ 9.998e-01  1.000e-04 -2.020e-02]
+round 2 (surface 6): base [ 1.7351 -1.7048  3.1464] tip [ 6.6342 -1.7044  3.0486] bore [ 9.998e-01  1.000e-04 -2.000e-02]
+round 3 (surface 7): base [ 1.7351 -0.0172  4.0092] tip [ 6.6382 -0.0159  3.9062] bore [ 9.998e-01  3.000e-04 -2.100e-02]
+round 4 (surface 8): base [1.7351 1.7162 3.0886] tip [6.6342 1.7165 2.9963] bore [ 9.998e-01  1.000e-04 -1.880e-02]
+round 5 (surface 9): base [1.7351 1.7376 1.2227] tip [6.6342 1.738  1.1178] bore [ 9.998e-01  1.000e-04 -2.140e-02]
+casing ring centre [ 4.084  -0.0097  2.1278]
+world round: Scale 0.4682  Offset -11.9026 0.0015  ZOffset 1.4881
+world loader: Scale 0.4682  Offset -11.0734 -0.0428  ZOffset 1.0511
+world cage: Scale 0.4682  Offset -10.4808 -0.0388  ZOffset 1.0393
+muzzle: F 27.58, ring centre L -0.03 U 5.34 (7 verts, L -1.02..0.96 U 5.18..5.74)
+wrote src/models/bd/Moonlight/rev_rsb.md3

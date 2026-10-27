@@ -5,6 +5,8 @@
 // seat (Base/Tip/Bore 3,0), LoaderDepth, Casing and the hold (HandBase/HandTip) were changed,
 // and LoaderEmptyInHand was added. The five per-chamber rows (cases 25..28) are left in place
 // but unused. Re-apply after any gen_rsb.py run.
+// PATCHED BY HAND 2026-10-27 (lane B moon-reload): BrutalRevolver rows 10 (speedloader) and 11 (a round
+// at a time), numbers from reference/moonlight/bake_reload.py (bake_reload.txt). Re-apply after gen_rsb.py.
 // Real VR reload, break-open guns and revolvers: per gun. Positions cm in the weapon
 // controller's frame (F, L, U); turns right-handed about the axis, opening positive.
 
@@ -27,6 +29,7 @@ class RSB_Guns abstract
 		if (n == 'GrenadeLauncher')	return 2;
 		if (n == 'Revolver')	return PerRound() ? 7 : 3;
 		if (n == 'Revolver2')	return PerRound() ? 9 : 8;	// 1.97: the slug revolver
+		if (n == 'BrutalRevolver')	return PerRound() ? 11 : 10;	// the Moonlight six-shooter (moon-reload)
 		if (n == 'VR_SuperShotgun')	return 4;
 		if (n == 'VR_Revolver')	return 5;
 		if (n == 'VR_Revolver2')	return 6;
@@ -47,6 +50,9 @@ class RSB_Guns abstract
 		case 7:	return (8.9567, 0.0021, -3.3564);
 		case 8:	return (8.9567, 0.0021, -3.3564);
 		case 9:	return (8.9567, 0.0021, -3.3564);
+		// BrutalRevolver (Moonlight, rev_rsb.md3): reference/moonlight/bake_reload.py
+		case 10:	return (8.4556, -0.0262, -1.1446);		// Moonlight: frame 26 fit (bake_reload.py)
+		case 11:	return (8.4556, -0.0262, -1.1446);
 		}
 		return (0, 0, 0);
 	}
@@ -65,6 +71,8 @@ class RSB_Guns abstract
 		case 7:	return (-1.0000, 0.0000, 0.0000);
 		case 8:	return (-1.0000, 0.0000, 0.0000);
 		case 9:	return (-1.0000, 0.0000, 0.0000);
+		case 10:	return (0.0000, 1.0000, 0.0000);		// barrel-down about +L
+		case 11:	return (0.0000, 1.0000, 0.0000);
 		}
 		return (0, 0, 0);
 	}
@@ -83,6 +91,8 @@ class RSB_Guns abstract
 		case 7:	return 90.0115;
 		case 8:	return 90.0115;
 		case 9:	return 90.0115;
+		case 10:	return 63.4;		// Moonlight: frame 26
+		case 11:	return 63.4;
 		}
 		return 0;
 	}
@@ -101,6 +111,8 @@ class RSB_Guns abstract
 		case 7:	return 5;		// a round at a time: the cylinder's own five chambers
 		case 8:	return 1;
 		case 9:	return 5;		// a round at a time: the cylinder's own five chambers
+		case 10:	return 1;		// BrutalRevolver: the speedloader
+		case 11:	return 6;		// BrutalRevolver: a round at a time, its six chambers
 		}
 		return 0;
 	}
@@ -118,6 +130,8 @@ class RSB_Guns abstract
 		case 7:	return false;		// not the speedloader
 		case 8:	return true;
 		case 9:	return false;		// not the speedloader
+		case 10:	return true;
+		case 11:	return false;
 		}
 		return false;
 	}
@@ -151,6 +165,13 @@ class RSB_Guns abstract
 		case 74:	return (3.5635, 0.9579, -1.1248);
 		case 75:	return (3.5636, 1.5702, 0.7395);
 		case 76:	return (3.5636, 0.0045, 1.8846);
+		case 80:	return (-2.2256, -0.1653, 1.7203);
+		case 88:	return (1.7351, -0.0221, 0.3852);
+		case 89:	return (1.7351, -1.7694, 1.2022);
+		case 90:	return (1.7351, -1.7048, 3.1464);
+		case 91:	return (1.7351, -0.0172, 4.0092);
+		case 92:	return (1.7351, 1.7162, 3.0886);
+		case 93:	return (1.7351, 1.7376, 1.2227);
 		}
 		return (0, 0, 0);
 	}
@@ -184,6 +205,13 @@ class RSB_Guns abstract
 		case 74:	return (13.1599, 0.9600, -1.1010);
 		case 75:	return (13.1598, 1.5734, 0.7619);
 		case 76:	return (13.1598, 0.0078, 1.9068);
+		case 80:	return (8.0759, -0.1690, 1.8839);
+		case 88:	return (6.6382, -0.0213, 0.2821);
+		case 89:	return (6.6342, -1.7691, 1.1031);
+		case 90:	return (6.6342, -1.7044, 3.0486);
+		case 91:	return (6.6382, -0.0159, 3.9062);
+		case 92:	return (6.6342, 1.7165, 2.9963);
+		case 93:	return (6.6342, 1.7380, 1.1178);
 		}
 		return (0, 0, 0);
 	}
@@ -216,6 +244,13 @@ class RSB_Guns abstract
 		case 74:	return (1.0000, 0.0002, 0.0025);
 		case 75:	return (1.0000, 0.0003, 0.0023);
 		case 76:	return (1.0000, 0.0003, 0.0023);
+		case 80:	return (0.9999, -0.0004, 0.0159);
+		case 88:	return (0.9998, 0.0002, -0.0210);
+		case 89:	return (0.9998, 0.0001, -0.0202);
+		case 90:	return (0.9998, 0.0001, -0.0200);
+		case 91:	return (0.9998, 0.0003, -0.0210);
+		case 92:	return (0.9998, 0.0001, -0.0188);
+		case 93:	return (0.9998, 0.0001, -0.0214);
 		}
 		return (0, 0, 0);
 	}
@@ -248,6 +283,13 @@ class RSB_Guns abstract
 		case 74:	return (1.0000, -0.0000, 0.0000);
 		case 75:	return (1.0000, -0.0000, 0.0000);
 		case 76:	return (1.0000, -0.0000, 0.0000);
+		case 80:	return (1.0000, 0.0000, 0.0000);
+		case 88:	return (1.0000, 0.0000, 0.0000);
+		case 89:	return (1.0000, 0.0000, 0.0000);
+		case 90:	return (1.0000, 0.0000, 0.0000);
+		case 91:	return (1.0000, 0.0000, 0.0000);
+		case 92:	return (1.0000, 0.0000, 0.0000);
+		case 93:	return (1.0000, 0.0000, 0.0000);
 		}
 		return (0, 0, 0);
 	}
@@ -279,6 +321,13 @@ class RSB_Guns abstract
 		case 74:	return (0.0000, 1.0000, -0.0000);
 		case 75:	return (0.0000, 1.0000, -0.0000);
 		case 76:	return (0.0000, 1.0000, -0.0000);
+		case 80:	return (0.0000, 1.0000, 0.0000);
+		case 88:	return (0.0000, 1.0000, 0.0000);
+		case 89:	return (0.0000, 1.0000, 0.0000);
+		case 90:	return (0.0000, 1.0000, 0.0000);
+		case 91:	return (0.0000, 1.0000, 0.0000);
+		case 92:	return (0.0000, 1.0000, 0.0000);
+		case 93:	return (0.0000, 1.0000, 0.0000);
 		}
 		return (0, 0, 0);
 	}
@@ -310,6 +359,13 @@ class RSB_Guns abstract
 		case 74:	return (0.0000, -0.0000, 1.0000);
 		case 75:	return (0.0000, -0.0000, 1.0000);
 		case 76:	return (0.0000, -0.0000, 1.0000);
+		case 80:	return (0.0000, 0.0000, 1.0000);
+		case 88:	return (0.0000, 0.0000, 1.0000);
+		case 89:	return (0.0000, 0.0000, 1.0000);
+		case 90:	return (0.0000, 0.0000, 1.0000);
+		case 91:	return (0.0000, 0.0000, 1.0000);
+		case 92:	return (0.0000, 0.0000, 1.0000);
+		case 93:	return (0.0000, 0.0000, 1.0000);
 		}
 		return (0, 0, 0);
 	}
@@ -341,6 +397,13 @@ class RSB_Guns abstract
 		case 74:	return (-0.0000, -0.0000, 0.0000);
 		case 75:	return (-0.0000, -0.0000, 0.0000);
 		case 76:	return (-0.0000, -0.0000, 0.0000);
+		case 80:	return (0.0000, 0.0000, 0.0000);		// baked at the seat (rev_rsb.md3 frame 1/3)
+		case 88:	return (0.0000, 0.0000, 0.0000);
+		case 89:	return (0.0000, 0.0000, 0.0000);
+		case 90:	return (0.0000, 0.0000, 0.0000);
+		case 91:	return (0.0000, 0.0000, 0.0000);
+		case 92:	return (0.0000, 0.0000, 0.0000);
+		case 93:	return (0.0000, 0.0000, 0.0000);
 		}
 		return (0, 0, 0);
 	}
@@ -359,6 +422,8 @@ class RSB_Guns abstract
 		case 7:	return (0.5386, 0.0092, -0.8425);
 		case 8:	return (0.5386, 0.0092, -0.8425);
 		case 9:	return (0.5386, 0.0092, -0.8425);
+		case 10:	return (-0.2490, -0.0012, -0.9685);		// = VR_Revolver's (5) hold of its speedloader
+		case 11:	return (0.5386, 0.0092, -0.8425);		// = BD22 Revolver's (7) hold of one round
 		}
 		return (0, 0, 0);
 	}
@@ -376,6 +441,8 @@ class RSB_Guns abstract
 		case 7:	return (-0.0094, 0.9999, 0.0049);
 		case 8:	return (-0.0094, 0.9999, 0.0049);
 		case 9:	return (-0.0094, 0.9999, 0.0049);
+		case 10:	return (0.0022, 1.0000, -0.0019);
+		case 11:	return (-0.0094, 0.9999, 0.0049);
 		}
 		return (0, 0, 0);
 	}
@@ -393,6 +460,8 @@ class RSB_Guns abstract
 		case 7:	return (0.8425, 0.0053, 0.5386);
 		case 8:	return (0.8425, 0.0053, 0.5386);
 		case 9:	return (0.8425, 0.0053, 0.5386);
+		case 10:	return (0.9685, -0.0026, -0.2490);
+		case 11:	return (0.8425, 0.0053, 0.5386);
 		}
 		return (0, 0, 0);
 	}
@@ -410,6 +479,8 @@ class RSB_Guns abstract
 		case 7:	return (-1.8711, 4.5497, -9.1817);
 		case 8:	return (-1.8711, 4.5497, -9.1817);
 		case 9:	return (-1.8711, 4.5497, -9.1817);
+		case 10:	return (0.4246, 5.5272, -0.3592);		// the loader's rear where VR_Revolver's sits in the hand
+		case 11:	return (-0.7608, 4.5324, -7.7214);		// the round's rim where BD22's sits
 		}
 		return (0, 0, 0);
 	}
@@ -428,6 +499,8 @@ class RSB_Guns abstract
 		case 7:	return (-0.1511, 4.4959, -6.0521);
 		case 8:	return (-0.1511, 4.4959, -6.0521);
 		case 9:	return (-0.1511, 4.4959, -6.0521);
+		case 10:	return (-0.6871, 5.3537, -2.9426);
+		case 11:	return (-0.1510, 4.4959, -6.0522);
 		}
 		return (0, 0, 0);
 	}
@@ -445,6 +518,8 @@ class RSB_Guns abstract
 		case 7:	return (5.0009, 4.4025, 2.0445);
 		case 8:	return (5.0009, 4.4025, 2.0445);
 		case 9:	return (5.0009, 4.4025, 2.0445);
+		case 10:	return (-3.4106, 5.3724, 6.9936);
+		case 11:	return (2.5767, 4.4501, -1.9769);
 		}
 		return (0, 0, 0);
 	}
@@ -463,6 +538,8 @@ class RSB_Guns abstract
 		case 7:	return "RsbShell";
 		case 8:	return "RsbShell";
 		case 9:	return "RsbShell";
+		case 10:	return "RsbCell";
+		case 11:	return "RsbShell";
 		}
 		return "";
 	}
@@ -481,6 +558,8 @@ class RSB_Guns abstract
 		case 7:	return (-1.0000, 1.0000, 1.0000);
 		case 8:	return (-1.0000, 1.0000, 1.0000);
 		case 9:	return (-1.0000, 1.0000, 1.0000);
+		case 10:	return (1.3500, 1.3500, 1.3500);
+		case 11:	return (1.3500, 1.3500, 1.3500);
 		}
 		return (0, 0, 0);
 	}
@@ -498,6 +577,8 @@ class RSB_Guns abstract
 		case 7:	return (0.0000, 0.0000, -5.0000);
 		case 8:	return (0.0000, 0.0000, -5.0000);
 		case 9:	return (0.0000, 0.0000, -5.0000);
+		case 10:	return (0.0262, 0.9224, 0.5878);		// MODELDEF.rsqmoon
+		case 11:	return (0.0262, 0.9224, 0.5878);
 		}
 		return (0, 0, 0);
 	}
@@ -515,6 +596,8 @@ class RSB_Guns abstract
 		case 7:	return 'RBRG';
 		case 8:	return 'RBRG';
 		case 9:	return 'RBRG';
+		case 10:	return 'RBMG';
+		case 11:	return 'RBMG';
 		}
 		return 'None';
 	}
@@ -532,6 +615,8 @@ class RSB_Guns abstract
 		case 7:	return 'RBRP';
 		case 8:	return 'RBRP';
 		case 9:	return 'RBRP';
+		case 10:	return 'RBMP';
+		case 11:	return 'RBNP';
 		}
 		return 'None';
 	}
@@ -549,6 +634,8 @@ class RSB_Guns abstract
 		case 7:	return 'RBRW';
 		case 8:	return 'RBRW';
 		case 9:	return 'RBRW';
+		case 10:	return 'RBMW';
+		case 11:	return 'RBNW';
 		}
 		return 'None';
 	}
@@ -566,6 +653,8 @@ class RSB_Guns abstract
 		case 7:	return "REVO A";
 		case 8:	return "REVO A";
 		case 9:	return "REVO A";
+		case 10:	return "RVMA A";
+		case 11:	return "RVMA A";
 		}
 		return "";
 	}
@@ -584,6 +673,8 @@ class RSB_Guns abstract
 		case 7:	return "Revolver/Open";
 		case 8:	return "Revolver/Open";
 		case 9:	return "Revolver/Open";
+		case 10:	return "Revolver/Open";
+		case 11:	return "Revolver/Open";
 		}
 		return "";
 	}
@@ -601,6 +692,8 @@ class RSB_Guns abstract
 		case 7:	return "";
 		case 8:	return "";
 		case 9:	return "";
+		case 10:	return "";
+		case 11:	return "";
 		}
 		return "";
 	}
@@ -618,6 +711,8 @@ class RSB_Guns abstract
 		case 7:	return "Shotgun/Reload";
 		case 8:	return "Shotgun/Reload";
 		case 9:	return "Shotgun/Reload";
+		case 10:	return "Revolver/Reload";		// BrutalRevolver's own stock reload sound
+		case 11:	return "Shotgun/Reload";
 		}
 		return "";
 	}
@@ -635,6 +730,8 @@ class RSB_Guns abstract
 		case 7:	return "Revolver/Close";
 		case 8:	return "Revolver/Close";
 		case 9:	return "Revolver/Close";
+		case 10:	return "Revolver/Close";
+		case 11:	return "Revolver/Close";
 		}
 		return "";
 	}
@@ -652,6 +749,8 @@ class RSB_Guns abstract
 		case 7:	return "";
 		case 8:	return "";
 		case 9:	return "";
+		case 10:	return "";
+		case 11:	return "";
 		}
 		return "";
 	}
@@ -669,6 +768,8 @@ class RSB_Guns abstract
 		case 7:	return 5;
 		case 8:	return 5;
 		case 9:	return 5;
+		case 10:	return 5;
+		case 11:	return 5;
 		}
 		return 0;
 	}
@@ -687,6 +788,8 @@ class RSB_Guns abstract
 		case 7:	return "AmmoShell";
 		case 8:	return "Clip2";		// BD21 Revolver2's own Weapon.AmmoType1
 		case 9:	return "Clip2";		// BD21 Revolver2's own Weapon.AmmoType1
+		case 10:	return "RevolverRounds";
+		case 11:	return "RevolverRounds";
 		}
 		return "";
 	}
@@ -704,6 +807,8 @@ class RSB_Guns abstract
 		case 7:	return "RevolverAmmo";
 		case 8:	return "RevolverAmmo";
 		case 9:	return "RevolverAmmo";
+		case 10:	return "BrutalRevolverCylinder";
+		case 11:	return "BrutalRevolverCylinder";
 		}
 		return "";
 	}
@@ -721,6 +826,8 @@ class RSB_Guns abstract
 		case 7:	return 1;
 		case 8:	return 1;
 		case 9:	return 1;
+		case 10:	return 6;
+		case 11:	return 1;
 		}
 		return 0;
 	}
@@ -738,6 +845,8 @@ class RSB_Guns abstract
 		case 7:	return 6;
 		case 8:	return 6;
 		case 9:	return 6;
+		case 10:	return 6;
+		case 11:	return 6;
 		}
 		return 0;
 	}
@@ -756,6 +865,8 @@ class RSB_Guns abstract
 		case 7:	return false;
 		case 8:	return false;
 		case 9:	return false;
+		case 10:	return true;		// the mesh's own rounds thrown (its frames 24-29 throw them)
+		case 11:	return true;
 		}
 		return false;
 	}
@@ -774,6 +885,8 @@ class RSB_Guns abstract
 		case 7:	return (3.5636, -0.0215, 0.2363);
 		case 8:	return (3.5636, -0.0215, 0.2363);
 		case 9:	return (3.5636, -0.0215, 0.2363);
+		case 10:	return (4.0840, -0.0097, 2.1278);		// the six rounds' centre, seated
+		case 11:	return (4.0840, -0.0097, 2.1278);
 		}
 		return (0, 0, 0);
 	}
@@ -791,6 +904,8 @@ class RSB_Guns abstract
 		case 7:	return 'Revolver';
 		case 8:	return 'Revolver2';
 		case 9:	return 'Revolver2';
+		case 10:	return 'BrutalRevolver';
+		case 11:	return 'BrutalRevolver';
 		}
 		return 'None';
 	}
@@ -809,6 +924,8 @@ class RSB_Guns abstract
 		case 7:	return "HasUnloadedRevolver";
 		case 8:	return "HasUnloadedRevolver";
 		case 9:	return "HasUnloadedRevolver";
+		case 10:	return "";
+		case 11:	return "";
 		}
 		return "";
 	}
@@ -822,6 +939,7 @@ class RSB_Guns abstract
 		{
 		case 5:	return true;		// Vanilla VR Plus VR_Revolver: its own speedloader mesh
 		case 6:	return true;		// Vanilla VR Plus VR_Revolver2
+		case 10:	return true;		// BrutalRevolver: the Moonlight's cage (rev_rsb.md3 frame 2) stays in the hand
 		}
 		return false;
 	}
@@ -839,6 +957,8 @@ class RSB_Guns abstract
 		case 7:	return false;
 		case 8:	return false;
 		case 9:	return false;
+		case 10:	return false;
+		case 11:	return false;
 		}
 		return false;
 	}
@@ -857,6 +977,8 @@ class RSB_Guns abstract
 		case 7:	return "Reloading";
 		case 8:	return "Reloading";
 		case 9:	return "Reloading";
+		case 10:	return "Reloading";
+		case 11:	return "Reloading";
 		}
 		return "";
 	}
@@ -875,6 +997,8 @@ class RSB_Guns abstract
 		case 7:	return 7.0000;
 		case 8:	return 7.0000;
 		case 9:	return 7.0000;
+		case 10:	return 6.2300;		// Moonlight: the loader's rounds, front 8.08 to the cylinder face 1.85
+		case 11:	return 0.0000;
 		}
 		return 0;
 	}
@@ -893,6 +1017,8 @@ class RSB_Guns abstract
 		case 7:	return (0.0000, 0.0050, 1.0000);
 		case 8:	return (0.0000, 0.0050, 1.0000);
 		case 9:	return (0.0000, 0.0050, 1.0000);
+		case 10:	return (0.9667, 0.0000, 0.2559);		// = VR_Revolver (5): the same mesh at the same placement
+		case 11:	return (0.9667, 0.0000, 0.2559);
 		}
 		return (0, 0, 0);
 	}
@@ -910,6 +1036,8 @@ class RSB_Guns abstract
 		case 7:	return -13.0415;
 		case 8:	return -13.0415;
 		case 9:	return -13.0415;
+		case 10:	return -4.5635;
+		case 11:	return -4.5635;
 		}
 		return 0;
 	}
@@ -927,6 +1055,8 @@ class RSB_Guns abstract
 		case 7:	return 0.5950;
 		case 8:	return 0.5950;
 		case 9:	return 0.5950;
+		case 10:	return 4.5619;
+		case 11:	return 4.5619;
 		}
 		return 0;
 	}
@@ -944,6 +1074,8 @@ class RSB_Guns abstract
 		case 7:	return 3.0000;
 		case 8:	return 3.0000;
 		case 9:	return 3.0000;
+		case 10:	return 8.0000;
+		case 11:	return 8.0000;
 		}
 		return 0;
 	}
@@ -961,6 +1093,8 @@ class RSB_Guns abstract
 		case 7:	return 9.3192;
 		case 8:	return 9.3192;
 		case 9:	return 9.3192;
+		case 10:	return 23.2318;
+		case 11:	return 23.2318;
 		}
 		return 0;
 	}
@@ -979,6 +1113,8 @@ class RSB_Guns abstract
 			-999.0, 8.1, 9.8, 10.4, 12.1, 12.2, 12.9, 13.2, 13.2, 7.0, -3.8, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0,
 			-999.0, 8.1, 9.8, 10.4, 12.1, 12.2, 12.9, 13.2, 13.2, 7.0, -3.8, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0, -999.0
 		};
+		if (i == 10 || i == 11)
+			i = 5;		// BrutalRevolver: VR_Revolver's face, the same mesh at the same placement
 		return i >= 1 && i <= 6 ? e[(i - 1) * 25 + b] : -999;
 	}
 }
@@ -1012,6 +1148,11 @@ class RSB_Sprites : Actor
 		RBWG A 0;
 		RBWP ABCDEFGHIJ 0;
 		RBWW ABC 0;
+		RBMG A 0;
+		RBMP ABHIJ 0;
+		RBMW ABC 0;
+		RBNP ABCDEFGH 0;
+		RBNW AC 0;
 		RQHN JKL 0;
 		Stop;
 	}
