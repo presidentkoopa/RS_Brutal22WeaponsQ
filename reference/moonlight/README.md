@@ -65,3 +65,8 @@ Every number from the mesh (`rev.md3`, 41 frames, 11 surfaces) through the Depot
   - arrange six in a ring (it reads as a speedloader);
   - recolour to the Moonlight mesh's colours.
 - **Firing rules until the owner says otherwise:** BD21's revolver, parsed from Revolver2.dec: 1 round per chamber, 6-round cylinder, 100 damage per shot (A_FireBullets 1,1,1,100). Pickup amount, max carry and what it replaces on maps are open: the owner's call.
+
+## Trigger (owner, 2026-10-27 06:12)
+- **One shot per trigger pull.** No full auto, and no hold-to-fire semi-auto: the trigger must be released and pulled again.
+- **Top rate 5-6 shots a second:** at 35 tics/s, a minimum 6-7 tics between shots (6 tics = 5.8/s, 7 tics = 5/s).
+- **Recoil wanted.** The owner calls the last recoil attempt "a disaster". Recoil is designed WITH him before anything is built (see the recoil discussion).
