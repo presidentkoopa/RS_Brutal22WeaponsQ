@@ -55,3 +55,13 @@ Every number from the mesh (`rev.md3`, 41 frames, 11 surfaces) through the Depot
   - our `Revolver2` (slug revolver) reserve = `Clip2`, cylinder = `RevolverAmmo`.
 
   So the six-shooter needs its own reserve ammo, e.g. `RevolverRounds`, with a pickup. The owner prefers recolouring the Shotvolver's voxel ammo pickup to match the Moonlight mesh's colour; failing that, recolour another voxel or make one. Where it spawns (replacing what, how much) is the owner's call when built.
+
+## Ammo decision (owner, 2026-10-27 06:1x)
+- **Own ammo:** the Revolver gets its own ammo type (e.g. `RevolverRounds`), NOT shells and NOT Clip2.
+- **Pickup made from existing art:**
+  - start from BD22's shotgun-shell pickup (the voxel in BD_VoxelPack if there is one, otherwise the sprite);
+  - cut it down to ONE shell, then shorten and scale it to revolver-round size;
+  - round its top into a bullet nose;
+  - arrange six in a ring (it reads as a speedloader);
+  - recolour to the Moonlight mesh's colours.
+- **Firing rules until the owner says otherwise:** BD21's revolver, parsed from Revolver2.dec: 1 round per chamber, 6-round cylinder, 100 damage per shot (A_FireBullets 1,1,1,100). Pickup amount, max carry and what it replaces on maps are open: the owner's call.
