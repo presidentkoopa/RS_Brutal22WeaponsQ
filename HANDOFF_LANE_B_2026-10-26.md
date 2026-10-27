@@ -430,3 +430,46 @@ Not yet on the owner's headset.
    Moonlight's frame body only (the item 3 lesson), or the hand moves against a still gun.
 5. Rig: `tools/rig/brk.py` (break, load, flick shut) on the Revolver, speedloader and per-round feed;
    then the 31-gun sweep.
+
+## Moonlight, box 2 (06:28-07:28): `BrutalRevolver` built (`6f65af6`)
+Owner decisions: reference/moonlight/README.md (named "Revolver", class BrutalRevolver; own ammo;
+BD21 firing rules; one shot per pull, 5-6/s max; no recoil work).
+
+### Done (rig-checked, QZD 17.3)
+- New files only, plus one line in `handtable.zs`: `actors/Weapons/BrutalRevolver.dec`, `DECORATE.rsqmoon`,
+  `KEYCONF.rsqmoon` (slot 2), `MODELDEF.rsqmoon`, `models/bd/Moonlight/rev.md3` (sha1 81e48872) +
+  `WPN-REV.png`, `sprites/RVMAA0.png`, and in `handtable.zs` BrutalRevolver -> row 17.
+- Ammo: `RevolverRounds` (reserve) and `BrutalRevolverCylinder` (6, the gun). Never shares
+  RevolverAmmo with the Shotvolver.
+- Firing: `A_FireBullets(1, 1, 1, 100, "ShotgunPuff2", FBF_NORANDOM)` (Revolver2.dec, parsed),
+  `RSQ_SemiLock`, 7-tic cycle. Rig: trigger held 40 tics = 1 shot; taps every 2 tics = shots
+  7 and 15 tics apart (never under 7 = 5/s). Some 1-tic taps do not register (BD22's FiredPrimary).
+- Mesh: rev.md3 at the measured placement, in the Revolver's hand fit (`r5_moon_inhand.png`).
+- Reload (stock, button): plays the mesh's own frames: open, speedloader in, away, shut
+  (`r5_moon_reload.png`). Fills the cylinder to 6 (rig: reserve 12 -> 6).
+- `Weapon.TryPickup` needs the Ready sprite to exist as a lump (weapons.zs ValidateSpriteFrame):
+  `RVMAA0.png` is BD22's REVOA0 (so 2D play shows BD22's revolver too).
+- IDKFA gives Revolver (Shotvolver), Revolver2 and BrutalRevolver.
+
+### Gated test pk3 (r5-moon)
+`/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r5-moon.pk3`, built from `6f65af6`, sha256
+`2588120d60708a29b7359a4a5a220372259794207247ea439cc6fcf4253d45e5`. Gate (`lane_b_r4/sweep.sh`, logs
+`sw_r5m_*`): 32 classes (the 31 + BrutalRevolver), one engine at a time: 0 pack script errors, 0 VM
+aborts; every gun's shots and reload phases equal r3's (Unmaker 40/40 this run). Not on the headset yet.
+
+### Placeholders (owner's call, marked in the .dec)
+- RevolverRounds: 6 a pickup, max 60, backpack 120.
+- Pickup art: BD22's shell / revolver sprites; the six-round speedloader art is not made.
+- Map spawns: none yet.
+
+### Not done (next)
+1. Hand-driven VR reload: RSB rows (clone index 3 with the measured hinge 8.46/0/-1.14, axis +L,
+   63.3 deg, seat, Scale 1.35 / Offset 0.0262 0.9224 / ZOffset 0.5878) plus the gun/part/loader
+   models; the loader bake is ready (`lane_b_r4/moon/bake.py`).
+2. Muzzle origin (`muzzle.zs` table) and casings: not measured for this mesh yet.
+3. The pickup art (shell cut down, nosed, six in a ring, recoloured).
+
+### Coordination note
+- The hands lane shares this working tree. A checkout or stash on their side reverted my uncommitted
+  `handtable.zs` line once mid-box; it was re-added and committed. Keep uncommitted edits to shared
+  files short.
