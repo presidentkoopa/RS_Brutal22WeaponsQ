@@ -11,8 +11,6 @@
 // four guns whose mesh has no port in it at all.
 class RSA_Casings : EventHandler
 {
-	Array<Actor> pend;
-
 	// (0, 0, 0): not one of ours. (This engine's VM cannot pass a Vector3 out by reference.)
 	static Vector3 Port(Weapon w)
 	{
@@ -119,18 +117,15 @@ class RSA_Casings : EventHandler
 		double sz = Size(mo.player.ReadyWeapon ? mo.player.ReadyWeapon.GetClassName() : 'None', n);
 		if (sz > 0 && !lent)	// F11: a lent 3D casing is real-size at 1.0 (casemodels.zs)
 			c.A_SetScale(sz, sz);
-		pend.Push(c);
-	}
-
-	override void WorldTick()
-	{
-		for (int i = 0; i < pend.Size(); i++)
-		{
-			let c = pend[i];
-			if (c)
-				Place(c);
-		}
-		pend.Clear();
+		// r4 (owner: "the over-under machine gun's casings come out of the barrel"): placed
+		// NOW, not on the next WorldTick. The engine runs this from the fresh-thinker pass
+		// (dthinker.cpp: CallPostBeginPlay, then the first CallTick in the same tic), with
+		// target and vel already set, so everything Place() needs is here. Waiting a tic left
+		// every casing drawn for one tic where BD22's spawner dropped it -- the spawner is a
+		// Speed 20 projectile (Casing.dec 50CaseSpawn2 / RifleCaseSpawn), so that is about 20
+		// map units out along the barrel, and its second casing (MGLinks) another 20 further.
+		// Rig, Machinegun, r3: age 0 at the spawner, age 1 at the port (14.5 -0.3 -5.6).
+		Place(c);
 	}
 
 	void Place(Actor c)
