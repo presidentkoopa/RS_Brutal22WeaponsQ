@@ -974,7 +974,8 @@ RIG ONLY, NOT HEADSET-CONFIRMED.
   - Run them with `/home/claude/lane_b_b3run/sweep3.sh <pk3> b3`.
 - Pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r6-hands3.pk3`, sha256
   850b1c40d3f2033f55d169e9d8189711da7617e3aa82aceb50091b508116fed2. Built with `python3 build.py 1.99x-lb-r6-hands3` at the head
-  rebased onto origin (761a392 + handoff; it includes r6 reloads ec08cf6, the RailGun scope and melee r6).
+  rebased onto origin as it stood at 09:02 (it includes r6 reloads ec08cf6, the RailGun scope and melee r6; NOT melee r6b 19f0203,
+  which landed after the build).
   - Gated on this exact pack: MP40 and BrutalSMG give / select / fire / alt-fire / reload. 0 pack script errors, held, shots 12 / 16,
     phases DROP,EMPTY (`logs/fin_b3_*`).
   - The sheet and `mags.py` ran on the pre-rebase build of the same hands code (`t.pk3`).
