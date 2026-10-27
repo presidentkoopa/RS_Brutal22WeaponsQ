@@ -29,6 +29,7 @@ class RSQ_HandTable abstract
 		if (w is 'RailGun')	return 16;
 		if (w is 'Revolver')	return 17;
 		if (w is 'Revolver2')	return 17;	// 1.97: the Shotvolver draws sprite REVO on this same mesh and has no MODELDEF of its own, so it is the Revolver's fit. Without this line it fell through to 0, the unfitted default.
+		if (w is 'BrutalRevolver')	return 17;	// r5: the Moonlight sits in this fit: the Depot hand-fitted it to the same palm (rig, reference/moonlight)
 		if (w is 'Rifle')	return 18;
 		if (w is 'Rocket_Launcher')	return 19;
 		if (w is 'SSG')	return 20;

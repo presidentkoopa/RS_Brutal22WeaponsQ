@@ -1,0 +1,56 @@
+// r5: the Moonlight six-shooter (BrutalRevolver), reference/moonlight/README.md "Measured".
+// rev.md3 (RS_ModelSwapper models/vplus/gats, 41 frames, sha1 81e48872) at the Depot's hand-fitted
+// placement: rev_wm.md3 (sets/plus_0.7, MODELDEF.wmq WM_Moonlight) is rev.md3 frame 0 moved
+// (-25.08, 0, 3.47) mesh units, residual 0, so its Offset -33.6102 / ZOffset -4.1887 become
+// 0.9224 / 0.5878 here (measure_moonlight.py). Sprites: RVMA A-Z = frames 0-25, RVMB A-O = 26-40.
+Model BrutalRevolver
+{
+	Path "models/bd/Moonlight"
+	Model 0 "rev.md3"
+	Skin 0 "WPN-REV.png"
+	Scale 1.35 1.35 1.35
+	Offset 0.0262 0.9224 0.0
+	ZOffset 0.5878
+	NoInterpolation
+	FrameIndex RVMA A 0 0
+	FrameIndex RVMA B 0 1
+	FrameIndex RVMA C 0 2
+	FrameIndex RVMA D 0 3
+	FrameIndex RVMA E 0 4
+	FrameIndex RVMA F 0 5
+	FrameIndex RVMA G 0 6
+	FrameIndex RVMA H 0 7
+	FrameIndex RVMA I 0 8
+	FrameIndex RVMA J 0 9
+	FrameIndex RVMA K 0 10
+	FrameIndex RVMA L 0 11
+	FrameIndex RVMA M 0 12
+	FrameIndex RVMA N 0 13
+	FrameIndex RVMA O 0 14
+	FrameIndex RVMA P 0 15
+	FrameIndex RVMA Q 0 16
+	FrameIndex RVMA R 0 17
+	FrameIndex RVMA S 0 18
+	FrameIndex RVMA T 0 19
+	FrameIndex RVMA U 0 20
+	FrameIndex RVMA V 0 21
+	FrameIndex RVMA W 0 22
+	FrameIndex RVMA X 0 23
+	FrameIndex RVMA Y 0 24
+	FrameIndex RVMA Z 0 25
+	FrameIndex RVMB A 0 26
+	FrameIndex RVMB B 0 27
+	FrameIndex RVMB C 0 28
+	FrameIndex RVMB D 0 29
+	FrameIndex RVMB E 0 30
+	FrameIndex RVMB F 0 31
+	FrameIndex RVMB G 0 32
+	FrameIndex RVMB H 0 33
+	FrameIndex RVMB I 0 34
+	FrameIndex RVMB J 0 35
+	FrameIndex RVMB K 0 36
+	FrameIndex RVMB L 0 37
+	FrameIndex RVMB M 0 38
+	FrameIndex RVMB N 0 39
+	FrameIndex RVMB O 0 40
+}
