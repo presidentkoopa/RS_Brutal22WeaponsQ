@@ -159,6 +159,9 @@ class RSQ_GunSide : Inventory
 	// r9 port: Minigun (row 13)
 	FbxTrgMini: RQV3 A -1; Stop;
 	FbxSqzMini: RQV3 B -1; Stop;
+	// r9 port: Sniper (row 22)
+	FbxTrgSni: RQFN A -1; Stop;
+	FbxSqzSni: RQFN B -1; Stop;
 	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
 	Nade: RQGN A -1; Stop;	// Ermac's ammo hand round the VR grenade
 	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
@@ -454,6 +457,17 @@ class RSQ_Hands : Weapon
 			}
 			gl = msq ? "FbxSqzMini" : "FbxTrgMini";
 		}
+		if (i == 22)	// r9 port: Sniper squeezes on its FIRE frames (X21F / P21F A-C, the gunmoves rows of row 22) or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || (mf <= 2 && (mgp.Sprite == Actor.GetSpriteIndex('X21F') || mgp.Sprite == Actor.GetSpriteIndex('P21F')));
+			}
+			gl = msq ? "FbxSqzSni" : "FbxTrgSni";
+		}
 		if (i == 18)	// batch 4: Rifle squeezes on its FIRE frames (gunmoves rows 93-95: RIFF / RI2F / 2IFF A-D and the no-tube twins QT09 / QT0A / QT08) or fullbright, trigger otherwise
 		{
 			bool msq = false;
@@ -494,6 +508,8 @@ class RSQ_Hands : Weapon
 		else if (i == 18 && RSK_M203Handler.TriggerGrip(mo))
 			sp = (p.cmd.buttons & BT_OFFHANDATTACK) ? "M2" : "M1";	// 1.31: finger on the M203's trigger (squeezed)
 		String spl = (i == 4 || i == 7) ? (i == 4 ? "FbxSupP" : "FbxSupF") : "Sup" .. sp;	// BD 2.0 b1: the FBX support hands
+		if (i == 22)
+			spl = "FbxSupF";	// r9 port: Sniper, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 22)
 		if (i == 15)
 			spl = "FbxSupF";	// r9 port: Plasma_Gun, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 15)
 		if (i == 16)
@@ -992,6 +1008,8 @@ class RSQ_Hands : Weapon
 	DFbxSqzPlas: RQV4 B -1; Stop;
 	DFbxTrgMini: RQV3 A -1; Stop;	// r9 port: dual wield, Minigun
 	DFbxSqzMini: RQV3 B -1; Stop;
+	DFbxTrgSni: RQFN A -1; Stop;	// r9 port: dual wield, Sniper
+	DFbxSqzSni: RQFN B -1; Stop;
 	Hidden: TNT1 A -1; Stop;
 	}
 }

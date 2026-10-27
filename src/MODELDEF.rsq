@@ -636,3 +636,25 @@ Model RSQ_Hands
 	FrameIndex RQV3 A 0 0	// Minigun, finger on the trigger
 	FrameIndex RQV3 B 0 1	// Minigun, squeezed
 }
+
+// r9 port (lane B): Sniper (row 22) holds the FBX gun hand fitted from 1.92's Sniper hold (frames baked in place, hook 0)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_r9_Sniper_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFN A 0 0	// Sniper, finger on the trigger
+	FrameIndex RQFN B 0 1	// Sniper, squeezed
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_r9_Sniper_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFN A 0 0	// Sniper, finger on the trigger
+	FrameIndex RQFN B 0 1	// Sniper, squeezed
+}

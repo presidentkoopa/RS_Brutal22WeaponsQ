@@ -200,11 +200,11 @@ def rsr(G, p, R, t, tag):
         v, s = getcase(tx, fn, c)
         if v is not None: tx = setcase(tx, fn, c, s, v3(pt(v)), tag)
     ax, s = getcase(tx, 'Axis', c); ax1 = R @ ax; tx = setcase(tx, 'Axis', c, s, v3(ax1), tag)
-    v, s = getcase(tx, 'WellHook', c); tx = setcase(tx, 'WellHook', c, s, v3([-ax1[1], -ax1[2], ax1[0]]), tag)
+    v, s = getcase(tx, 'WellHook', c); tx = setcase(tx, 'WellHook', c, s, v3(np.linalg.norm(v) * np.array([-ax1[1], -ax1[2], ax1[0]])), tag)	# r9: keep the row's length (1 / mesh scale on scaled meshes: Sniper 0.0954, M32 1.613)
     pu, s = getcase(tx, 'Pull', c)
     if pu is not None:
         pu1 = R @ pu; tx = setcase(tx, 'Pull', c, s, v3(pu1), tag)
-        v, s = getcase(tx, 'HandleHook', c); tx = setcase(tx, 'HandleHook', c, s, v3([pu1[1], pu1[2], -pu1[0]]), tag)
+        v, s = getcase(tx, 'HandleHook', c); tx = setcase(tx, 'HandleHook', c, s, v3(np.linalg.norm(v) * np.array([pu1[1], pu1[2], -pu1[0]])), tag)	# r9: keep the row's length
     v, s = getcase(tx, 'Offset', c); assert np.abs(v - np.array(G['off'])).max() < 1e-3, ('reload Offset is not the base', v)
     tx = setcase(tx, 'Offset', c, s, '(%.3f, %.3f, %.3f)' % tuple(p[:3]), tag)
     wr('zscript/rsr/rsr_guns.bd.zs', tx)

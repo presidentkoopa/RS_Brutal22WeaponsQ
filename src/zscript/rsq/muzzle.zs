@@ -53,7 +53,7 @@ class RSQ_Muzzle : EventHandler
 		if (!w)
 			return (0, 0, 0);
 		Name n = w.GetClassName();
-		if (n == 'Sniper')	return (62.3, 0.3, 5.0);
+		if (n == 'Sniper')	return (68.38, 6.31, 9.77);	// r9 port: moved with the gun to the FBX hand (was 62.3, 0.3, 5.0)
 		if (w is 'BrutalPistol')	return (23.3, 2.2, 6.3);	// BD 2.0 b1: BrutalPistol.md3 frame 3 slide face (F 15.18, bore U 0.10 at the 1.99 placement), moved with the gun to the FBX hand
 		// hands b3: BrutalSMG.md3 frame 3, the front-most face (surface 1, F 35.07, L -1.02..1.02, U -5.74..-3.71 at the
 		// 1.99 placement: the barrel end under the rail), its centre moved with the gun by batch 2's move (shift + pistol r5 move)

@@ -1096,8 +1096,11 @@ Model Sniper
 	// authored skin at all. scope_real.zs swaps this for the camera texture when REAL.
 	SurfaceSkin 0 10 "scope_glass.png"
 	Scale -10.4850 10.4850 10.4850
-	Offset -0.2816 -44.5467 0.0
-	ZOffset -6.3157
+	Offset -4.310 -51.099 0.0
+	ZOffset -4.224
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex X21G A 0 0
 	// X21F / P21F: the FIRING pose, same single mesh frame as the ready pose. Without
@@ -1207,8 +1210,11 @@ Model Sniper
 	// authored skin at all. scope_real.zs swaps this for the camera texture when REAL.
 	SurfaceSkin 0 10 "scope_glass.png"
 	Scale -10.4850 10.4850 10.4850
-	Offset -0.2816 -44.5467 0.0
-	ZOffset -6.3157
+	Offset -4.310 -51.099 0.0
+	ZOffset -4.224
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQKM A 0 0
 }
@@ -1234,8 +1240,11 @@ Model Sniper
 	// authored skin at all. scope_real.zs swaps this for the camera texture when REAL.
 	SurfaceSkin 0 10 "scope_glass.png"
 	Scale -10.4850 10.4850 10.4850
-	Offset -0.2816 -44.5467 0.0
-	ZOffset -6.3157
+	Offset -4.310 -51.099 0.0
+	ZOffset -4.224
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQKM B 0 0
 }
@@ -1257,8 +1266,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 9 "rsr_clear.png"
 	SurfaceSkin 0 10 "rsr_clear.png"
 	Scale -10.4850 10.4850 10.4850
-	Offset -0.2816 -44.5467 0.0
-	ZOffset -6.3157
+	Offset -4.310 -51.099 0.0
+	ZOffset -4.224
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQKP A 0 0
 }
@@ -1280,8 +1292,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 9 "rsr_clear.png"
 	SurfaceSkin 0 10 "rsr_clear.png"
 	Scale -10.4850 10.4850 10.4850
-	Offset -0.2816 -44.5467 0.0
-	ZOffset -6.3157
+	Offset -4.310 -51.099 0.0
+	ZOffset -4.224
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQKP B 0 0
 }
@@ -1303,8 +1318,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 9 "rsr_clear.png"
 	SurfaceSkin 0 10 "rsr_clear.png"
 	Scale -10.4850 10.4850 10.4850
-	Offset -0.2816 -44.5467 0.0
-	ZOffset -6.3157
+	Offset -4.310 -51.099 0.0
+	ZOffset -4.224
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQKP C 0 0
 }

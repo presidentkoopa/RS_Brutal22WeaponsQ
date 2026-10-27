@@ -17,8 +17,9 @@ os.environ.update(B22_IWAD='/home/claude/gamedata/doom2.wad', B22_BD22='/home/cl
 sys.path.insert(0, RIGD)
 import rig, mags
 rig.run('boot', 'wait 100; quit', 120)
-g = mags.tables()[13]
-print('tables row 13:', g)
+ROW = int(os.environ.get('ROW', '13')); GUN = os.environ.get('GUN', 'Unmaker'); AMMO = os.environ.get('AMMO', 'SoulAmmo 450')	# r9: other magazine guns (e.g. ROW=17 GUN=Minigun AMMO='Clip2 400')
+g = mags.tables()[ROW]
+print('tables row %d:' % ROW, g)
 H = int(os.environ.get('HOLD', '15'))	# FRAMES runs hold each pose longer, so the dumps catch it
 CARRYP = os.environ.get('CARRYP')		# optional: an extra carry pose, held clear of the gun (F L U cm)
 extra = ('echo UNM CLEAR; qz_lhand "%s"; wait %d; ' % (rig.lpose(*[float(x) for x in CARRYP.split()]), 2 * H)) if CARRYP else ''
@@ -26,9 +27,9 @@ reload = ('qz_ltrigger 1; wait 12; %secho UNM CARRY; qz_lhand "%s"; wait %d; ech
           'qz_ltrigger 0; wait 30; ' % (extra, mags.at(g, g['M'] + 3), 2 * H if CARRYP else H, mags.at(g, g['M'] * 0.5), H, mags.at(g, 0), H + 10))
 reload = mags.with_pouch(reload)
 s = ('wait 100; god; notarget; screenblocks 12; crosshair 0; qz_hmd "%s"; rsq_extra_weapons 1; rsr_reload 1; rsr_grab_with 0; rsr_debug 1; rsq_reload_nonstd 1; '
-     'take SoulAmmo 999; give SoulAmmo 450; give Unmaker; use Unmaker; wait 150; '
+     'take %s 999; give %s; give %s; use %s; wait 150; '
      '%secho UNM FIRE1; +attack; wait %d; -attack; wait 20; echo UNM TRYFIRE_EMPTY; +attack; wait 30; -attack; wait 20; '
-     'echo UNM HANDRELOAD; %s echo UNM FIRE2; +attack; wait 80; -attack; wait 30; echo UNM END; quit' % (HMD, 'take RSQ_Mag_Unmaker 999; wait 10; ' if os.environ.get('TAKE') else '', int(os.environ.get('FIRE', '900')), reload))
+     'echo UNM HANDRELOAD; %s echo UNM FIRE2; +attack; wait 80; -attack; wait 30; echo UNM END; quit' % (HMD, AMMO.split()[0], AMMO, GUN, GUN, 'take RSQ_Mag_%s 999; wait 10; ' % GUN if os.environ.get('TAKE') else '', int(os.environ.get('FIRE', '900')), reload))
 fr = os.environ.get('FRAMES')
 if fr:
     os.makedirs(fr, exist_ok=True)
@@ -36,7 +37,7 @@ if fr:
 rc, t = rig.run('unm_' + TAG, s, 700, [x for x in os.environ.get('EXTRA', '').split() if x])	# EXTRA: test-only pk3s after the pack
 print('rc', rc)
 for l in t.splitlines():
-    if re.search(r'UNMP |UNM |rsr t\d+ gun 13|RSQ|counter|mag ', l) and 'B22 T' not in l:
+    if re.search(r'UNMP |UNM |rsr t\d+ gun %d|' % ROW + r'RSQ|counter|mag ', l) and 'B22 T' not in l:
         print(l)
 errs = [l for l in t.splitlines() if re.search(r'Script error|VM abort|exception', l, re.I) and 'voxeldef' not in l.lower()]
 print('ERRORS:', errs[:10] or 'none')
