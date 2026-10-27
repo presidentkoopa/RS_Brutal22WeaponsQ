@@ -318,3 +318,15 @@ Model MP40
 	FrameIndex RQFI A 0 0	// MP40, finger on the trigger
 	FrameIndex RQFI B 0 1	// MP40, squeezed
 }
+
+// batch 4 (lane B): Rifle (row 18), dual wield holds the FBX gun hand fitted for it (frames baked in place, hook 0)
+Model Rifle
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b4_Rifle_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFJ A 0 0	// Rifle, finger on the trigger
+	FrameIndex RQFJ B 0 1	// Rifle, squeezed
+}

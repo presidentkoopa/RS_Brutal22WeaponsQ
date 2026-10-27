@@ -22,7 +22,24 @@ class RSM_Geo abstract
 	clearscope static double TravelOf(int gun) { return gun == 2 ? 9.694 : TRAVEL; }
 	clearscope static double RoundLen(int gun) { return gun == 2 ? 8.550 : ROUND_LEN; }
 	clearscope static double RoundSeat(int gun) { return gun == 2 ? 0.400 : ROUND_SEAT; }
-	clearscope static Vector3 FwdHook(int gun) { return gun == 2 ? (0.0000, 0.0000, -1.0000) : (0.0000, 0.0000, -1.0000); }
+	clearscope static Vector3 FwdHook(int gun) { return gun == 2 ? (0.0000, 0.0000, -1.0000) : (0.0671, 0.0587, -0.9960); }	// batch 4: the rifle's forward axis after its move to the FBX hand (was 0 0 -1)
+	// batch 4 (lane B): the rifle (gun 1) is drawn moved to the FBX hand (MODELDEF Offset 0.348 -5.912, ZOffset -1.812, Angle/Pitch/Roll 3.854/3.363/10.974).
+	// The numbers above stay in its ORIGINAL controller frame: ToGun takes a moved-frame point there, FromGun brings one back.
+	clearscope static Vector3 ToGun(int gun, Vector3 p)
+	{
+		if (gun != 1) return p;
+		return (0.996020 * p.x + 0.067099 * p.y + 0.058662 * p.z + -6.171022, -0.077127 * p.x + 0.978743 * p.y + 0.190036 * p.z + -2.122789, -0.044664 * p.x + -0.193804 * p.y + 0.980023 * p.z + -4.267728);
+	}
+	clearscope static Vector3 DirToGun(int gun, Vector3 v)
+	{
+		if (gun != 1) return v;
+		return (0.996020 * v.x + 0.067099 * v.y + 0.058662 * v.z, -0.077127 * v.x + 0.978743 * v.y + 0.190036 * v.z, -0.044664 * v.x + -0.193804 * v.y + 0.980023 * v.z);
+	}
+	clearscope static Vector3 FromGun(int gun, Vector3 p)
+	{
+		if (gun != 1) return p;
+		return (0.996020 * p.x + -0.077127 * p.y + -0.044664 * p.z + 5.792127, 0.067099 * p.x + 0.978743 * p.y + -0.193804 * p.z + 1.664629, 0.058662 * p.x + 0.190036 * p.y + 0.980023 * p.z + 4.947881);
+	}
 	clearscope static Vector3 RoundInHand() { return (-1.930, 4.560, -4.500); }	// the round's middle, off hand frame
 	clearscope static Vector3 RoundAxisInHand() { return (0, 0, 1); }			// its nose (up the grip)
 }

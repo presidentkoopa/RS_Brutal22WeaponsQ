@@ -2251,8 +2251,11 @@ Model Rifle
    Model 1 "M203.md3"	// 1.30: the M203 (kitbash/gen_m203.py)
    Skin 1 "M203.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 0.348 -5.912 0.0
+   ZOffset -1.812
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// batch 4 (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
