@@ -898,3 +898,64 @@ load order: no script error from the pack, no abort).
   now swings 28 cm lower: `fin4` (the shipped pack after the rebase) cut on all 4 swings, two hands
   510 and one hand 255 both times. The sword numbers in the sheet are from `fin2` (same code, pre-rebase).
 - Saw, fin3: one cut landed on the first tic of the bar-clear hold (pose lag of a tic); fin2 was clean.
+---
+
+# Hands lane, batch 3 (2026-10-27, box 08:11-09:26): MP40 done from 1.92's hold; Rifle fitted, not ported; three not reached
+
+Worktree `/home/claude/lane_b_b3` (branch `b3-hands`, pushed to `lane-b-1.99x`). Tools, logs, shots: `/home/claude/lane_b_b3run/`
+(`tools/m192.py` 1.92 landmarks, `rigid3.py` stage 1/2 placement, `curl3.py` finger curls + squeeze, `fit3.py` gun landmarks
+(Rifle/MP40 added to revlm), `bake_b3.py`, `port_b3.py`, `sheet_b3.py`, `compose_b3.py`, `sweepcheck_b3.py`). Everything below is
+RIG ONLY, NOT HEADSET-CONFIRMED.
+
+## The method (new in batch 3): start from where 1.92's hand sits on the gun
+1. `m192.py`: 1.92's displayed gun hand (Ermac hand.md3, the handtable row and trigger frame from lane_c `rows192.json`) on each gun,
+   in 1.92's controller frame. All four guns are drawn at Offset 0 0 / ZOffset -5 in 1.92 and 1.99 (meshes md5-equal), so this is
+   the hand's placement relative to the gun. Landmarks: web, palm, cuff, the four knuckles (lane_c `ermaclm`).
+   - T = rigid fit of 1.92's pistol hand onto 1.92's hand on that gun. Rifle and MP40 use 1.92 frame 106: 10.6 deg off the
+     pistol hand (yaw 9.2, pitch -2.0, roll -5.1). Fit residual 0.1-1.0 cm. 1.92's Revolver uses the pistol's own frame 6,
+     moved 3.25 cm forward with no turn: 1.92 does NOT hold the revolver lower.
+2. The approved FBX pistol hand (lane_c r5 frame 0) is moved by T, then re-placed rigidly onto the grip (`rigid3.stage2`):
+   no penetration past 0.25 cm, palm and web onto the grip, index pad to the trigger, turn kept near 1.92's.
+3. `curl3.py`: middle, ring and pinky curls closed to 0.2 cm; the squeeze moves the index pad 0.6 cm back along the bore.
+4. The gun keeps the pistol's r5 aim and moves to the hand, so the cuff stays where the approved pistol hand's cuff is.
+   The hand turns on the wrist the way 1.92's does. That is a choice; the alternative is to tilt the gun, which would move the drawn bore off the shot line.
+
+## 1. Done (measured; rig only, not headset-confirmed)
+### MP40 (row 12)
+- Fit, in cm. Before the curls: palm 0.29, web 0.09, index pad 0.51 from the trigger face, penetration 0.29.
+  After the curls: M/R/P pads 0.20, thumb 0.02. Squeeze: travel 0.60, pad 1.10 from the trigger face.
+  Turned 10.3 deg vs the pistol hand (euler Z/Y/X 6.2 / 3.0 / -7.5). 1.92 had 10.6.
+- Gun: Offset -0.982 -4.470, ZOffset -2.213, Angle/Pitch/Roll 3.854/3.363/10.974, residual 0.0000 cm.
+  - Applied to all 11 gun-controller blocks (count asserted): bd.txt 1, purist 3, rsqoff 3, rsr MP40 RQMM 2, RSR_GunParts RQMP 2.
+  - Not moved: RSQ_Hands RQMP (off hand) and RSR_DroppedMag RQMW.
+- Moved with the gun:
+  - rsr case 4: Well (35.546, 4.753, 8.153), Axis (-0.045, -0.195, 0.980), MagCentre (35.775, 5.987, 1.812), WellHook, Grab (26.725, 5.073, 9.243), Pull, HandleHook, Offset.
+  - The casing port, (38.9, 2.5, 9.4).
+  - gunmoves pivot row 12 (0.98, 7.79, 19.53) and fire rows 42-45. The original placement reproduces the shipped rows exactly.
+- Bake: `models/rsq/fbx/fbx_b3_R.md3` (0 trigger, 1 squeeze, 2 = the pistol re-bake check, identical to fbx_b1_R frame 0, unused).
+  - New sprite RQFI A/B, free in the pack, BD22 and VoxelPack. Hook 0.
+  - Squeeze on MP40 B D E Q R S / PP40 B D E (the gunmoves fire frames) or fullbright. Dual wield wired.
+- Support: RQFS B (the FBX palm-under) under the barrel at 1.92's SupportPoint (40, 0, 3.3), moved with the gun to (0.440, 0.050, 0.101) m.
+  Penetration 0.47 cm, palm gap 0.40 cm.
+### BrutalSMG: RSQ_Muzzle row (batch 2 left it open)
+- (39.6, 4.4, 0.8): the centre of the front-most face of BrutalSMG.md3 frame 3 (surface 1, F 35.07, L +-1.02, U -5.74..-3.71
+  at the 1.99 placement: the barrel end), moved by batch 2's move. The pistol's row check through the same transform: 23.33 2.19 6.34.
+
+## 2. Fitted but not ported: Rifle (row 18)
+- Same method. Before the curls: palm 0.28, web 0.04, index pad 0.28 from the trigger face, penetration 0.26.
+  After the curls: M/R/P pads 0.20, thumb 0.51. Squeeze: travel 0.60, pad 0.76 from the trigger face.
+  Turned 8.9 deg vs the pistol hand (euler 4.5 / 3.0 / -6.9). Gun shift in the 1.99 frame (-2.40, 0.57, -0.38).
+  Numbers and vertices: `/home/claude/lane_b_b3run/curl3_Rifle.json`, `st2_Rifle.npy`.
+- So the 35 deg rake does not stop the FBX hand: 1.92's placement plus a rigid re-seat closes palm, web and index without changing the pistol curl.
+- Not ported in the box. The Rifle draws through about 25 MODELDEF blocks: bd, purist, rsm, rsqoff and rsr, each with M203.md3 as model 1,
+  plus `RSR_GunParts` M203 RQ2P. The M203 reload (RSK_M203Handler) has its own controller-frame points, and hands.zs special-cases
+  row 18 for the M203 trigger grip.
+  - Moving all of that with the gun is the next job: `port_b3.py` generalised, plus the RSK tables.
+  - I did not start a half-move.
+
+## 3. Not reached (measured only, no files changed)
+- **Revolver (Shotvolver).** 1.92 holds it with the PISTOL's hand frame, 3.25 cm further forward, not lower.
+  `rigid3.stage2`: palm 0.02, web 0.01, penetration 0.34, turned 7.4 deg. The index pad is still 1.93 cm from the trigger
+  (pistol curl), with M/R/P gaps 1.3-1.4. Next: index re-solve plus curl3. Expect it to close: batch 2 had 3.2-3.8 cm left at the joint limits from the web-on-backstrap start.
+- **BrutalRevolver (Moonlight):** not in 1.92 (no reference hold). Not started. Its reload rows (Moonlight lane) would move with the gun.
+- **Sniper (Ruger/XM21):** not started. The Depot's `Sniper.json` is from BD22_main (a different mesh), so there is no 1.92 Ruger hold to measure.
