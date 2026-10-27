@@ -266,3 +266,31 @@ Model HandGrenades
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQGN A 0 3
 }
+
+// BD 2.0 b1: dual wield, the FBX hand (the layer is called by the gun, so the block is the gun's class)
+Model BrutalPistol
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b1_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFG A 0 0	// pistol, finger on the trigger
+	FrameIndex RQFG B 0 2	// pistol, squeezed
+	FrameIndex RQFG C 0 1	// flamethrower, finger on the lever
+	FrameIndex RQFG D 0 3	// flamethrower, squeezed
+}
+
+// BD 2.0 b1: dual wield, the FBX hand (the layer is called by the gun, so the block is the gun's class)
+Model Flamethrower2
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b1_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFG A 0 0	// pistol, finger on the trigger
+	FrameIndex RQFG B 0 2	// pistol, squeezed
+	FrameIndex RQFG C 0 1	// flamethrower, finger on the lever
+	FrameIndex RQFG D 0 3	// flamethrower, squeezed
+}

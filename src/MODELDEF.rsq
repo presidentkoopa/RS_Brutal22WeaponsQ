@@ -318,3 +318,50 @@ Model HandGrenades
    ZOffset -5
    FrameIndex RQNP B 0 2
 }
+
+// BD 2.0 batch 1: the FBX-skeleton hands (lane_c r5, owner-approved) on BrutalPistol (row 4) and Flamethrower2
+// (row 7). Frames baked where they are drawn (hand-table hook 0): Ermac's placement Scale -1 1 1, Offset 0 -24 -10.
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b1_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFG A 0 0	// pistol, finger on the trigger
+	FrameIndex RQFG B 0 2	// pistol, squeezed
+	FrameIndex RQFG C 0 1	// flamethrower, finger on the lever
+	FrameIndex RQFG D 0 3	// flamethrower, squeezed
+}
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b1_L.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFS A 0 0	// pistol cup
+	FrameIndex RQFS B 0 1	// flamethrower: open palm under the tank
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b1_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFG A 0 0	// pistol, finger on the trigger
+	FrameIndex RQFG B 0 2	// pistol, squeezed
+	FrameIndex RQFG C 0 1	// flamethrower, finger on the lever
+	FrameIndex RQFG D 0 3	// flamethrower, squeezed
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b1_L.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFS A 0 0	// pistol cup
+	FrameIndex RQFS B 0 1	// flamethrower: open palm under the tank
+}

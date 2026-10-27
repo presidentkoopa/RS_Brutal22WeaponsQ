@@ -163,8 +163,11 @@ Model BrutalPistol
 	SurfaceSkin 0 4 "BrutalPistol.png"
 	SurfaceSkin 0 5 "BrutalPistol.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.820 -8.333 0.0
+	ZOffset -1.408
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// BD 2.0 b1 (lane_c r5): gun to the FBX hand
 	NoInterpolation
 	FrameIndex RQPM A 0 3
 }
@@ -181,8 +184,11 @@ Model BrutalPistol
 	SurfaceSkin 0 4 "BrutalPistol.png"
 	SurfaceSkin 0 5 "BrutalPistol.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.820 -8.333 0.0
+	ZOffset -1.408
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// BD 2.0 b1 (lane_c r5): gun to the FBX hand
 	NoInterpolation
 	FrameIndex RQPM B 0 3
 }
@@ -198,8 +204,11 @@ Model BrutalPistol
 	SurfaceSkin 0 4 "BrutalPistol.png"
 	SurfaceSkin 0 5 "BrutalPistol.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.820 -8.333 0.0
+	ZOffset -1.408
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// BD 2.0 b1 (lane_c r5): gun to the FBX hand
 	NoInterpolation
 	FrameIndex RQPM C 0 3
 }
@@ -216,8 +225,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 4 "rsr_clear.png"
 	SurfaceSkin 0 5 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.820 -8.333 0.0
+	ZOffset -1.408
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// BD 2.0 b1 (lane_c r5): gun to the FBX hand
 	NoInterpolation
 	FrameIndex RQPP B 0 3
 }
@@ -234,8 +246,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 4 "rsr_clear.png"
 	SurfaceSkin 0 5 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.820 -8.333 0.0
+	ZOffset -1.408
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// BD 2.0 b1 (lane_c r5): gun to the FBX hand
 	NoInterpolation
 	FrameIndex RQPP A 0 3
 }
@@ -1343,8 +1358,11 @@ Model Flamethrower2
 	SurfaceSkin 0 2 "rsr_clear.png"
 	SurfaceSkin 0 3 "Flamethrower2.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -4.371 -8.313 0.0
+	ZOffset -5.669
+	AngleOffset -3.798
+	PitchOffset 1.805
+	RollOffset 0.100	// BD 2.0 b1 (lane_c r5): gun to the FBX hand
 	NoInterpolation
 	FrameIndex RQYM A 0 0
 }
@@ -1359,8 +1377,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 2 "Flamethrower2.png"
 	SurfaceSkin 0 3 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -4.371 -8.313 0.0
+	ZOffset -5.669
+	AngleOffset -3.798
+	PitchOffset 1.805
+	RollOffset 0.100	// BD 2.0 b1 (lane_c r5): gun to the FBX hand
 	NoInterpolation
 	FrameIndex RQYP A 0 0
 }

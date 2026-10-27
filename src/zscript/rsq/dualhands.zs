@@ -61,6 +61,8 @@ class RSQ_DualHands : EventHandler
 			{
 				String tf = RSQ_HandTable.Trigger(i);
 				label = tf != "" ? (firing ? "DSqz" : "DTrg") .. tf : "DGun" .. RSQ_HandTable.GunOne(i);
+				if (i == 4 || i == 7)	// BD 2.0 b1: the FBX hands
+					label = (firing ? "DFbxSqz" : "DFbxTrg") .. (i == 4 ? "P" : "F");
 			}
 		}
 		if (label == "")

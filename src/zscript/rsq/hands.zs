@@ -116,6 +116,13 @@ class RSQ_GunSide : Inventory
 	SupD: RQSP D -1; Stop;
 	SupE: RQSP E -1; Stop;
 	SupF: RQSP F -1; Stop;
+	// BD 2.0 b1: the FBX hands (rows 4 BrutalPistol, 7 Flamethrower2; lane_c r5)
+	FbxTrgP: RQFG A -1; Stop;
+	FbxSqzP: RQFG B -1; Stop;
+	FbxTrgF: RQFG C -1; Stop;
+	FbxSqzF: RQFG D -1; Stop;
+	FbxSupP: RQFS A -1; Stop;
+	FbxSupF: RQFS B -1; Stop;
 	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
 	Nade: RQGN A -1; Stop;	// Ermac's ammo hand round the VR grenade
 	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
@@ -292,13 +299,28 @@ class RSQ_Hands : Weapon
 		// the index finger rests on the trigger, and squeezes it while fire is held
 		String tf = RSQ_HandTable.Trigger(i);
 		String gl = tf != "" ? ((p.cmd.buttons & BT_ATTACK) ? "Sqz" .. tf : "Trg" .. tf) : "Gun" .. g;
+		if (i == 4 || i == 7)	// BD 2.0 b1 (lane_c r5): the FBX hands squeeze on the gun's FIRE tics (the frames its Fire / Hold states show), trigger otherwise
+		{
+			bool fsq = false;
+			let fgp = p.FindPSprite(PSP_WEAPON);
+			if (fgp && fgp.CurState)
+			{
+				int ff = fgp.Frame;
+				if (i == 4)	// BD22 Pistol.dec ResumeFireFrame / Fire2: "####" A 1 BRIGHT (the shot), then B, C, D 1
+					fsq = (fgp.Sprite == Actor.GetSpriteIndex('PIST') || fgp.Sprite == Actor.GetSpriteIndex('2IST')) && (fgp.CurState.bFullbright || ff == 1 || ff == 2 || ff == 3);
+				else	// BD22 Flamethrower.dec Fire / Hold: D E G H 1 BRIGHT
+					fsq = (fgp.Sprite == Actor.GetSpriteIndex('FLMT') || fgp.Sprite == Actor.GetSpriteIndex('2LMT')) && (fgp.CurState.bFullbright || ff == 3 || ff == 4 || ff == 6 || ff == 7);
+			}
+			gl = (fsq ? "FbxSqz" : "FbxTrg") .. (i == 4 ? "P" : "F");
+		}
 		invoker.SetLayer(p, RSQ_Layers.GUNHAND, gs, own != "" ? own : i > 0 && g != "" ? gl : "Hidden");
 		String sp = RSQ_HandTable.Support(i);
 		if (i == 18 && p.ReadyWeapon is 'PuristRifle')
 			sp = "B";		// 1.30: purist's rifle has no launcher: its handguard grip as before
 		else if (i == 18 && RSK_M203Handler.TriggerGrip(mo))
 			sp = (p.cmd.buttons & BT_OFFHANDATTACK) ? "M2" : "M1";	// 1.31: finger on the M203's trigger (squeezed)
-		invoker.SetLayer(p, RSQ_Layers.SUPPORT, gs, hold && sp != "" ? "Sup" .. sp : "Hidden");
+		String spl = (i == 4 || i == 7) ? (i == 4 ? "FbxSupP" : "FbxSupF") : "Sup" .. sp;	// BD 2.0 b1: the FBX support hands
+		invoker.SetLayer(p, RSQ_Layers.SUPPORT, gs, hold && sp != "" ? spl : "Hidden");
 
 		// 2026-10-23: the VR scope's reticle (rsq/scope.zs). WHETHER the layer is there is this
 		// tic's business; WHERE it sits is ModifyBobLayer3D's, per rendered frame. It exists
@@ -733,6 +755,10 @@ class RSQ_Hands : Weapon
 	DGunF: RQGS F -1; Stop;
 	DGunG: RQGS G -1; Stop;
 	DGunH: RQGS H -1; Stop;	// VR grenade: Ermac's one-shell pinch (ammo_hand 1) holding the ring
+	DFbxTrgP: RQFG A -1; Stop;	// BD 2.0 b1: dual wield, the FBX hands
+	DFbxSqzP: RQFG B -1; Stop;
+	DFbxTrgF: RQFG C -1; Stop;
+	DFbxSqzF: RQFG D -1; Stop;
 	Hidden: TNT1 A -1; Stop;
 	}
 }

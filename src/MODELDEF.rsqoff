@@ -138,8 +138,11 @@ Model RSQ_Off_BrutalPistol
    Model 0 "BrutalPistol.md3"
    Skin 0 "BrutalPistol.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 0.820 -8.333 0.0
+   ZOffset -1.408
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// BD 2.0 b1 (lane_c r5): gun to the FBX hand
    Nointerpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
@@ -5545,8 +5548,11 @@ Model RSQ_Off_BrutalPistol
 	SurfaceSkin 0 4 "BrutalPistol.png"
 	SurfaceSkin 0 5 "BrutalPistol.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.820 -8.333 0.0
+	ZOffset -1.408
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// BD 2.0 b1 (lane_c r5): gun to the FBX hand
 	NoInterpolation
 	FrameIndex RQPM A 0 3
 }
@@ -5563,8 +5569,11 @@ Model RSQ_Off_BrutalPistol
 	SurfaceSkin 0 4 "BrutalPistol.png"
 	SurfaceSkin 0 5 "BrutalPistol.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.820 -8.333 0.0
+	ZOffset -1.408
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// BD 2.0 b1 (lane_c r5): gun to the FBX hand
 	NoInterpolation
 	FrameIndex RQPM B 0 3
 }
@@ -5581,8 +5590,11 @@ Model RSQ_Off_BrutalPistol
 	SurfaceSkin 0 4 "BrutalPistol.png"
 	SurfaceSkin 0 5 "BrutalPistol.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.820 -8.333 0.0
+	ZOffset -1.408
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// BD 2.0 b1 (lane_c r5): gun to the FBX hand
 	NoInterpolation
 	FrameIndex RQPM C 0 3
 }
@@ -5812,4 +5824,18 @@ Model RSQ_Off_Shot_Gun
 	ZOffset -5.0000
 	NoInterpolation
 	FrameIndex RQUG A 0 4
+}
+
+// BD 2.0 b1: dual wield, the FBX hand (the layer is called by the gun, so the block is the gun's class)
+Model RSQ_Off_BrutalPistol
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b1_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFG A 0 0	// pistol, finger on the trigger
+	FrameIndex RQFG B 0 2	// pistol, squeezed
+	FrameIndex RQFG C 0 1	// flamethrower, finger on the lever
+	FrameIndex RQFG D 0 3	// flamethrower, squeezed
 }

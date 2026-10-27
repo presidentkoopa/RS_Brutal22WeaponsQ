@@ -25,6 +25,7 @@ version "4.14"	// 1.97 F5: WorldHitscanPreFired is 4.13+; qzd17.3 is 4.14.3
 #include "zscript/rsq/alts.zs"
 #include "zscript/rsq/casemodels.zs"
 #include "zscript/rsq/casings.zs"
+#include "zscript/rsq/flamespout.zs"	// BD 2.0 b1: the Flamethrower's flame starts at the drawn spout tip
 #include "zscript/rsq/dualtable.zs"
 #include "zscript/rsq/dual.zs"
 #include "zscript/rsq/voxtable.zs"
