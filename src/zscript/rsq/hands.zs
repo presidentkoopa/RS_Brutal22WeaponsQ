@@ -129,15 +129,6 @@ class RSQ_GunSide : Inventory
 	// batch 3: MP40 (row 12)
 	FbxTrgM: RQFI A -1; Stop;
 	FbxSqzM: RQFI B -1; Stop;
-	// batch 4: Revolver (row 17)
-	TrgFbxRev: RQFK A -1; Stop;
-	SqzFbxRev: RQFK B -1; Stop;
-	// batch 4: BrutalRevolver (row 17, by class)
-	TrgFbxBru: RQFL A -1; Stop;
-	SqzFbxBru: RQFL B -1; Stop;
-	// batch 4: Rifle (row 18)
-	TrgFbxRif: RQFJ A -1; Stop;
-	SqzFbxRif: RQFJ B -1; Stop;
 	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
 	Nade: RQGN A -1; Stop;	// Ermac's ammo hand round the VR grenade
 	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
@@ -333,28 +324,6 @@ class RSQ_Hands : Weapon
 					fsq = (fgp.Sprite == Actor.GetSpriteIndex('FLMT') || fgp.Sprite == Actor.GetSpriteIndex('2LMT')) && (fgp.CurState.bFullbright || ff == 3 || ff == 4 || ff == 6 || ff == 7);
 			}
 			gl = (fsq ? "FbxSqz" : "FbxTrg") .. (i == 4 ? "P" : "F");
-		}
-		if (i == 18)	// batch 4: Rifle squeezes on its fire frames (gunmoves rows) or fullbright, trigger otherwise
-		{
-			bool xsq = false;
-			let xgp = p.FindPSprite(PSP_WEAPON);
-			if (xgp && xgp.CurState)
-			{
-				int xf = xgp.Frame;
-				xsq = xgp.CurState.bFullbright || (xf <= 3 && (xgp.Sprite == Actor.GetSpriteIndex('RIFF') || xgp.Sprite == Actor.GetSpriteIndex('RI2F') || xgp.Sprite == Actor.GetSpriteIndex('2IFF') || xgp.Sprite == Actor.GetSpriteIndex('QT09') || xgp.Sprite == Actor.GetSpriteIndex('QT0A') || xgp.Sprite == Actor.GetSpriteIndex('QT08')));
-			}
-			gl = xsq ? "SqzFbxRif" : "TrgFbxRif";
-		}
-		if (i == 17)	// batch 4: Revolver squeezes on its fire frames (gunmoves rows) or fullbright, trigger otherwise
-		{
-			bool xsq = false;
-			let xgp = p.FindPSprite(PSP_WEAPON);
-			if (xgp && xgp.CurState)
-			{
-				int xf = xgp.Frame;
-				xsq = xgp.CurState.bFullbright || (xf >= 1 && xf <= 9 && (xgp.Sprite == Actor.GetSpriteIndex('REVO') || xgp.Sprite == Actor.GetSpriteIndex('2EVO'))) || (xf >= 1 && xf <= 13 && xgp.Sprite == Actor.GetSpriteIndex('RVMA'));	// RVMA B-N: BrutalRevolver.dec Fire
-			}
-			gl = p.ReadyWeapon is 'BrutalRevolver' ? (xsq ? "SqzFbxBru" : "TrgFbxBru") : (xsq ? "SqzFbxRev" : "TrgFbxRev");	// the Moonlight has its own fit
 		}
 		if (i == 12)	// batch 3: MP40 squeezes on its FIRE frames (gunmoves rows 42-45: MP40 B D E Q R S, PP40 B D E) or fullbright, trigger otherwise
 		{
@@ -699,8 +668,8 @@ class RSQ_Hands : Weapon
 		}
 		if (!gunHand && i == 18 && o.ReadyWeapon is 'PuristRifle')
 		{
-			hook = (2.520, 2.510, 4.940);	// batch 4: purist's rifle (no launcher): the handguard grip, moved with the gun (was -0.090, -1.390, 11.380 / 0 0 0)
-			hookTurn = (-3.854, 3.363, 10.974);
+			hook = (-0.090, -1.390, 11.380);	// 1.30: purist's rifle (no launcher): the handguard grip as before
+			hookTurn = (0, 0, 0);
 		}
 
 		// The renderer turns every HUD model by its own layer's offset: yaw x / 4,
@@ -847,10 +816,6 @@ class RSQ_Hands : Weapon
 	DFbxSqzS: RQFH B -1; Stop;
 	DFbxTrgM: RQFI A -1; Stop;	// batch 3: dual wield, MP40
 	DFbxSqzM: RQFI B -1; Stop;
-	DTrgFbxRev: RQFK A -1; Stop;	// batch 4: dual wield, Revolver
-	DSqzFbxRev: RQFK B -1; Stop;
-	DTrgFbxRif: RQFJ A -1; Stop;	// batch 4: dual wield, Rifle
-	DSqzFbxRif: RQFJ B -1; Stop;
 	Hidden: TNT1 A -1; Stop;
 	}
 }

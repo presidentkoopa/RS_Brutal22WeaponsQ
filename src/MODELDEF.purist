@@ -1506,11 +1506,8 @@ Model PuristRifle
    Model 0 "Rifle.md3"
    Skin 0 "Rifle.png"
    Scale -1.0 1.0 1.0
-   Offset 0.348 -5.912 0.0
-   ZOffset -1.812
-   AngleOffset 3.854
-   PitchOffset 3.363
-   RollOffset 10.974	// batch 4 (lane B): gun to the FBX hand fitted from 1.92
+   Offset 0.0 0.0 0.0
+   ZOffset -5
 	NoInterpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
@@ -10658,11 +10655,8 @@ Model PuristRifle
 	SurfaceSkin 0 4 "Rifle.png"
 	SurfaceSkin 0 5 "Rifle.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.348 -5.912 0.0
-	ZOffset -1.812
-	AngleOffset 3.854
-	PitchOffset 3.363
-	RollOffset 10.974	// batch 4 (lane B): gun to the FBX hand fitted from 1.92
+	Offset 0.0000 0.0000 0.0
+	ZOffset -5.0000
 	NoInterpolation
 	FrameIndex RQRM A 0 3
 }
@@ -10678,11 +10672,8 @@ Model PuristRifle
 	SurfaceSkin 0 4 "Rifle.png"
 	SurfaceSkin 0 5 "Rifle.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.348 -5.912 0.0
-	ZOffset -1.812
-	AngleOffset 3.854
-	PitchOffset 3.363
-	RollOffset 10.974	// batch 4 (lane B): gun to the FBX hand fitted from 1.92
+	Offset 0.0000 0.0000 0.0
+	ZOffset -5.0000
 	NoInterpolation
 	FrameIndex RQRM B 0 3
 }
@@ -10972,28 +10963,4 @@ Model PuristMP40
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQFI A 0 0	// MP40, finger on the trigger
 	FrameIndex RQFI B 0 1	// MP40, squeezed
-}
-
-// batch 4 (lane B): Rifle (row 18), dual wield holds the FBX gun hand fitted for it (frames baked in place, hook 0)
-Model PuristRifle
-{
-	Path "models/rsq/fbx"
-	Model 0 "fbx_b4_Rifle_R.md3"
-	Skin 0 "fbx_hand.png"
-	Scale -1.0 1.0 1.0
-	Offset 0.0 -24.0 -10.0
-	FrameIndex RQFJ A 0 0	// Rifle, finger on the trigger
-	FrameIndex RQFJ B 0 1	// Rifle, squeezed
-}
-
-// batch 4 (lane B): Revolver (row 17), dual wield holds the FBX gun hand fitted for it (frames baked in place, hook 0)
-Model PuristRevolver
-{
-	Path "models/rsq/fbx"
-	Model 0 "fbx_b4_Revolver_R.md3"
-	Skin 0 "fbx_hand.png"
-	Scale -1.0 1.0 1.0
-	Offset 0.0 -24.0 -10.0
-	FrameIndex RQFK A 0 0	// Revolver, finger on the trigger
-	FrameIndex RQFK B 0 1	// Revolver, squeezed
 }

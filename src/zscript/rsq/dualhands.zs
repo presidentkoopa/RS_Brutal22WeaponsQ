@@ -63,10 +63,6 @@ class RSQ_DualHands : EventHandler
 				label = tf != "" ? (firing ? "DSqz" : "DTrg") .. tf : "DGun" .. RSQ_HandTable.GunOne(i);
 				if (i == 4 || i == 7)	// BD 2.0 b1: the FBX hands
 					label = (firing ? "DFbxSqz" : "DFbxTrg") .. (i == 4 ? "P" : "F");
-				if (i == 18)	// batch 4: Rifle
-					label = firing ? "DSqzFbxRif" : "DTrgFbxRif";
-				if (i == 17)	// batch 4: Revolver
-					label = firing ? "DSqzFbxRev" : "DTrgFbxRev";
 				if (i == 12)	// batch 3: MP40
 					label = firing ? "DFbxSqzM" : "DFbxTrgM";
 				if (i == 5)	// batch 2: BrutalSMG

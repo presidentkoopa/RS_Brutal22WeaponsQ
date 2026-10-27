@@ -158,7 +158,7 @@ class RSM_State play
 		if (!geo)
 			geo = new('RSR_State');
 		geo.Frames(mo);
-		palm = RSM_Geo.ToGun(gun, geo.OffPoint(RSR.PalmGrab()));	// batch 4: in the rifle's original frame
+		palm = geo.OffPoint(RSR.PalmGrab());
 		steadied = RSVR_VRHand.Steadied(mo);
 		bool trig = (p.cmd.buttons & BT_OFFHANDATTACK) != 0;
 		bool trigPress = trig && !trigPrev;
@@ -257,8 +257,8 @@ class RSM_State play
 		}
 
 		// the round
-		Vector3 mid = RSM_Geo.ToGun(gun, geo.OffPoint(RSM_Geo.RoundInHand()));	// batch 4: in the rifle's original frame
-		Vector3 nose = RSM_Geo.DirToGun(gun, geo.OffDirInGun(RSM_Geo.RoundAxisInHand()));
+		Vector3 mid = geo.OffPoint(RSM_Geo.RoundInHand());
+		Vector3 nose = geo.OffDirInGun(RSM_Geo.RoundAxisInHand());
 		double rear = mid.x - nose.x * RSM_Geo.RoundLen(gun) / 2;
 		double seatF = RSM_Geo.TubeRear(gun) + pull + RSM_Geo.RoundSeat(gun);
 		switch (hand)
@@ -336,7 +336,7 @@ class RSM_State play
 	void CaseOut(PlayerPawn mo)
 	{
 		Vector3 at = (RSM_Geo.FrameFront(gun) + 3, RSM_Geo.AxisL(gun), RSM_Geo.AxisU(gun) - 1);
-		Vector3 pos = RSVR_VRHand.HandPos(mo) + geo.FromGun(RSM_Geo.FromGun(gun, at));	// batch 4: the moved breech
+		Vector3 pos = RSVR_VRHand.HandPos(mo) + geo.FromGun(at);
 		let a = Actor.Spawn('RSM_SpentCase', pos);
 		if (!a)
 			return;
