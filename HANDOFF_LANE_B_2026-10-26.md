@@ -548,3 +548,69 @@ Sheet: `/home/claude/lane_b_out/b1_hands.png`.
 - The pistol now fires from its drawn muzzle (RSQ_Muzzle). That is a VR shot-origin change on a
   BD22 gun, per CLAUDE.md's "code fits the mesh" rule. Worth the owner's eye in the headset.
 - No headset pass yet. The hands still render as bare skin (lane_c REPORT: no glove texture for the FBX UVs).
+
+---
+
+# Hands lane, batch 2 (2026-10-27, box 07:12-08:12): BrutalSMG done, five guns flagged at the first measurement
+
+Worktree `/home/claude/lane_b_b2` (branch `b2-hands`, pushed to `lane-b-1.99x`). Tools, logs, shots: `/home/claude/lane_b_b2run/`
+(`tools/revlm.py` landmarks, `revindex.py` index re-solve, `move_b2.py` MODELDEF placement, `bake_b2.py`, `follow_b2.py`
+gunmoves rows, `port_b2.py` the edits, `sheet_b2.py` / `compose_b2.py`, `sweepcheck_b2.py`). Named "batch 2", not 2.0 (owner).
+
+## 1. Done (measured; rig only, not headset-confirmed)
+### BrutalSMG: the pistol's approved hand, index re-solved; the FBX palm under the forend
+- Gun hand = lane_c r5's pistol trigger pose (fbx_b1_R frame 0). Only the index's 3 pose parameters were re-solved
+  (squeeze.py's method), first to the SMG trigger, then to a squeeze 0.6 cm back along the bore (the pistol's rule).
+  - Before: pad 1.92 cm from the trigger face. After: 0.58 cm (spread at its joint limit, 20 deg). Squeeze: 0.14 cm.
+  - Index penetration 0.26 cm. Whole hand 0.65 cm, which is the unchanged pistol fingers on the SMG grip (lane_c TOL 0.5; 1.92 median 0.95).
+  - Non-index vertices moved at most 0.13 cm.
+- Why it fits: the grip rake equals the pistol's (19 deg rear axis). The trigger sits 7.0 cm in front of the web and 1.5 cm below it;
+  the pistol's is 7.3 cm and 0.4 cm above.
+- Gun placement: the pistol's r5 orientation (same aim as the approved pistol, including its 11 deg roll), translated so
+  the SMG's web point (grip top, rear profile U -3.7) sits on the pistol's. The MODELDEF chain gives Offset 0.908 -4.560,
+  ZOffset -3.413, Angle/Pitch/Roll 3.854/3.363/10.974, with a residual of 0.0000 cm.
+  - Applied to all 12 gun-controller blocks: bd.txt, purist (VSMG + RQBM x2), rsqoff (VSMG + RQBM x3), rsr (RQBM x3, RSR_GunParts RQBP x2).
+  - The count is asserted. RSQ_Hands RQBP (off hand) and RQBW (dropped) are not moved.
+- Moved with the gun (same rigid move, controller frame):
+  - rsr case 3: Well (22.384, 3.230, -0.313), Axis (0.255, -0.164, 0.953), MagCentre (18.329, 4.780, -10.081), WellHook, Grab (26.687, 5.480, 2.471), Pull, HandleHook, Offset.
+  - The casing port, (18.7, -0.8, 2.6).
+  - gunmoves pivot row 5 (-0.908, 6.587, 19.440) and fire rows 18-20. The refit reproduces the shipped rows AND b1's pistol rows to 0.01.
+- Bake: `models/rsq/fbx/fbx_b2_R.md3` holds frame 0 (trigger), frame 1 (squeeze) and frame 2 (the pistol re-bake check,
+  identical to fbx_b1_R frame 0, 0.0000; unused). New sprite RQFH A/B, free in the pack, BD22 and VoxelPack. Hook 0.
+- Support: the existing FBX open palm under (RQFS B, the flamer's) is moved under the SMG forend: SupportHook row 5 (-4.436, 10.601, 9.638),
+  SupportRot (-7.927, 2.302, 10.732). The SupportPoint moves with the gun to (0.305, 0.038, 0.003).
+  - Contact: the palm was lowered until the hand cleared the gun (pen 0.50 cm), so it sits 1.2 cm under the forend.
+- Wiring: hands.zs `FbxTrgS/FbxSqzS` (squeeze on SMGF/2MGF A-C, SMGZ G-I or fullbright), `FbxSupF` for row 5;
+  dualhands.zs and rsqdual/rsqoff/purist blocks for dual wield. handtable GunHook/GunHookTwo row 5 = 0.
+- Gate: QZD 17.3 rig, doom2 -> brutal22test6 -> BD_VoxelPack -> pack, exclusive lock.
+  - Smoke run: 0 pack script errors, BrutalSMG held and firing.
+  - `mags.py 3`: IDLE>EMPTY>DROP>EMPTY>CARRY>INSERT>SEATED>DONE>IDLE (`mags_b2.out`).
+  - Sweep of the 32 classes: see section 3.
+- Sheet `/home/claude/lane_b_out/b2_hands.png`: rest / steadied / firing, from the eye and from the side.
+  - The eye pose needs pitch -25 today; b1's +25 showed the ceiling in this run (not explained).
+- Pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r6-hands.pk3` (`python3 build.py 1.99x-lb-r6-hands`, head 54fe2b7),
+  sha256 15a1fecf968c0eee376d7d48992be2fa1ea9e1ec91cf82efc1bbf80263f4952f.
+
+## 2. Flagged at the first measurement (not ground on). Figure: `/home/claude/lane_b_out/b2_flagged.png`
+- **Revolver (Shotvolver), BrutalRevolver (Moonlight).** The problem is height, not reach. Each trigger sits well BELOW the web:
+  - Revolver: 5.0 cm below and 8.8 cm in front.
+  - BrutalRevolver: 4.1 cm below and 6.7 cm in front.
+  - Pistol, for comparison: 0.4 cm above and 7.3 cm in front.
+  - With the web on the backstrap top, the pistol pose's pad is 5.4 / 4.4 cm from the trigger. Index-only re-solve leaves 3.8 / 3.2 cm, at the joint limits.
+  - Sliding the hand down the backstrap until the index reaches would need about 4-5 cm. The hand would then hang below the butt.
+  - This corrects b1's "2.8 cm further" reading: the gap is mainly vertical.
+  - Owner's call: a new revolver grip pose (solve from scratch), or accept a low hand.
+- **MP40, Rifle.** The pistol grip pose fits the trigger reach (8.8 / 7.5 cm vs 7.3), but the grip rake is 36 / 35 deg against the pistol's 19.
+  - That is 16-17 deg, about 2.5 cm at the butt, so the fingers would sink in or float.
+- **Sniper (Ruger).** It has no pistol grip: a sporter stock wrist. The pistol grip pose does not apply.
+- No gun files were changed for these five.
+
+## 3. Open
+- **Sweep (32 classes) still running at the box.** The rig lock alternates with the Moonlight lane's sweep, at about 1.5 min a class.
+  - Done and equal to b1 / r4 so far: Melee_Attacks, BrutalAxe, Chain_Saw, DSweap, BrutalPistol (+ BrutalSMG, MP40, read by the same check).
+  - Check: `python3 /home/claude/lane_b_b2run/tools/sweepcheck_b2.py` (logs `logs/sw_b2_*`).
+- melee.zs SMG contact points (muzzle 18.6/-0.3/-1.2, butt 0.6/0/-10.4) are not moved. b1 did not move the pistol's either; their frame is unclear.
+- SMG has no `RSQ_Muzzle` row, so its shot origin is unchanged (BD22's). The drawn muzzle moved with the gun.
+- The palm under sits 1.2 cm below the forend (clearance rule). Worth the owner's eye.
+- The Moonlight reload (other lane) places BrutalRevolver at Scale 1.35 / Offset 0.0262 0.9224 / ZOffset 0.5878. Any future
+  revolver hand move must move their RSB rows too.
