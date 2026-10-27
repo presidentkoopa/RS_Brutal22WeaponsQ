@@ -77,6 +77,7 @@ OptionMenu "RSQ_Options"
 	Option "Sniper Scope", "rsq_scope_sniper", "RSQ_ScopeMode"
 	Option "Railgun Scope", "rsq_scope_railgun", "RSQ_ScopeMode"
 	Option "Ballistics", "rsq_ballistics", "RSQ_Ballistics"
+	Option "Player Ballistics", "sv_rsq_player_ballistics", "RSQ_PlayerBallistics"	// BD 2.0: zscript/rsq/playerrounds.zs
 	StaticText " "
 	Submenu "Voxel Options", "RSQ_VoxelOptions"
 	StaticText " "
