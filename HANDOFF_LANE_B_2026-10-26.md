@@ -1296,3 +1296,64 @@ on the unmoved gun (r9: loaded) and fails on the moved one (round never enters).
   FBX support on all except MiniGun (Ermac's handle grip) and PuristRifle (Ermac's handguard grip).
 - **No FBX hand:** SSG, IncendiaryLauncher, FlameCannon, Unmaker, Devastator, HellishMissileLauncher, BIG_FUCKING_GUN; melee/thrown:
   BrutalAxe, Chain_saw, DSweap, HandGrenades.
+
+# Lane rev-unmaker (2026-10-27, branch `lane-rev-unmaker` off `lane-b-1.99x` a4b0eb7). RIG ONLY, NOT HEADSET-CONFIRMED
+
+Owner r3 item 20 (two revolvers only), the Revolver's own ammo (owner, 19:06 cap correction), the Unmaker reload
+"like RS VR Vanilla+". No hand placement rows touched (one class-mapping line removed from handtable.zs: `Revolver2 -> 17`).
+
+## 1. Done (measured)
+- **Revolver2 is gone.** Removed: `actors/Weapons/Revolver2.dec`, `DECORATE.rsqrev` (its include + `RSQ_ShotvolverSpawner`),
+  KEYCONF slot-2 line, the menu option "Shotvolver Swap for Revolver", cvar `rsq_slug_replaces_shotvolver`, the
+  RevolverSpawner swap in `roster.zs`; class lookups in handtable / casings / casemodels / melee / rsb_guns Index().
+  rsb rows 8/9 retired (Cls 'None', numbers kept so BrutalRevolver keeps 10/11). README, README.txt, port_gun.py,
+  gate_gun.py lists. The Shotvolver keeps its own slug alt fire (`rsa_rev_magnum`).
+- **RevolverRounds (the Moonlight's reserve):** 6 a pickup. Cap **36 with one Revolver, 72 once a second Revolver is
+  picked up** (owner 19:06). How: BrutalRevolver is `+INVENTORY.ALWAYSPICKUP`; a BrutalRevolver world pickup destroyed
+  within reach of a player who already owned one (the dual.zs rule) gives `RSQ_MoonPair`; `RSQ_Roster.WorldTick` sets the
+  player's RevolverRounds MaxAmount to 36 or 72 every tic. The backpack does not raise it (BackpackMaxAmount 36). There is
+  NO off-hand Moonlight copy (RSQ_DualTable has none), so "two" means two picked up, not dual-wielded.
+- **Pickup art:** `tools/moonammo/make_pickup.py` (numbers it prints): the pack's `shell_12ga.md3`, its mouth (`inner`, 36 tris)
+  deleted with the Depot's `md3_carve_disc.py --delete`, hull cut to 62% so case + nose = the Moonlight round (rev.md3 f20,
+  surfaces 4-9 PCA: 3.542 x r 0.599 mesh units = 4.88 x r 0.82 cm), a round nose (12 segments = the hull's, 6 rings,
+  length = case radius), uniform scale 0.05929, six in a ring at the chamber radius (1.9 cm = 1.380 u). Colours from
+  WPN-REV.png: brass (179,129,5) = the Moonlight round's own texels; nose blue (23,103,169) = the sheet's commonest
+  saturated hue. World size: ring diameter = BD22's SHELA0 (16 px x 0.9 = 14.4 map units) -> MODELDEF Scale 3.5348.
+  2D sprite RVRDA0.png = a render of the mesh. Files: `models/rsq/moonammo/*`, `MODELDEF.rsqmoonammo`, `sprites/RVRDA0.png`.
+- **Map spawns (rule):** one RevolverRounds beside 1 in 4 of the map's own bullet pickups (the Clip2 family: Doom's Clip and
+  ClipBox, which BD22 spawns as Clip2 / ClipBox2 / EasyClip2) present at tic 0, not dropped, not owned; 14 units away
+  (on the same spot if that is blocked). It replaces nothing. Chosen because the Revolver is a slot-2 pistol-class gun and
+  bullets are the commonest small ammo; the Shotvolver's shells were left alone.
+- **Unmaker reload:** no code change. lane-b already carries r8's port, which is the same source and method as ModelSwapper
+  round 5 (`port_plus_rows.py`): MS row 84 (brt_Unmaker, the same bd/Unmaker mesh) Well (11.025, 0.794, 6.466), Axis
+  (0,0,-1), Mouth 5.47, MagLen 5.41, MagCentre (10.481,-0.144,9.345) = our rsr row 13. Re-shown below on this pack.
+
+## 2. Rig evidence (QZD 17.3, doom2 > brutal22test6 > BD_VoxelPack > pack, exclusive /home/claude/rig.lock, ini restored)
+- Pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-revunm.pk3` (build.py at `7ab88d0`; src unchanged after),
+  sha256 `1f6d7d9d0b96cbd662432348e16b91aa6505561a2825fc17cc97a6c68f37315d`. Every run: `script errors (not BD_VoxelPack voxeldef): none`;
+  the only `Script error` lines are BD_VoxelPack's own `voxeldef.txt` lines 66/72/77/892.
+- `tools/moonammo/rig_rev.py` (logs in scratchpad `out/final/build/logs`):
+  - roster: after `idkfa` the player holds `BrutalRevolver` and `REVOLVER` (the Shotvolver); `give Revolver2` ->
+    `Unknown item "Revolver2"`; `summon Revolver2` -> `Unknown actor or visual thinker 'Revolver2'`; the old cvar is unset.
+  - cap: one Revolver `RevolverRounds #51 (36/36)` after giving 100; second Revolver walked onto (left stick) ->
+    `RSQ moon t115: second Revolver picked up`, `RSQ moon t116: RevolverRounds cap 36 -> 72 (two Revolvers), holding 36`;
+    100 more -> `(72/72)`; backpack + 100 more -> still `(72/72)`.
+  - spawn: `MAP07: 6 map-placed bullet pickups (Clip2 family), RevolverRounds put beside 2` (also MAP01 1-2 of 2,
+    MAP03 1 of 2, MAP11 1 of 6 in that run; random per run).
+  - frame: `/home/claude/lane_b_out/revunm_pickup.png` (the six-round pickup on MAP07 next to a bullet box, and RVRDA0).
+- gate_gun.py smoke Revolver / BrutalRevolver: 0 errors, 0 VM aborts, 2 shots each (Revolver "held false" = same on r10).
+  hands: Shotvolver break-open (rsb 3) and Moonlight (rsb 10) open > carry > insert 0.0 cm off the bore > loaded;
+  Moonlight flick shut 457 deg/s.
+- Unmaker (`tools/handfit/unmaker/rig_reload.py`, CARRYP 20 25 -5, head 0 1.6 0 -35 15 0): IDLE>EMPTY>DROP>EMPTY>CARRY>
+  INSERT>SEATED>DONE>IDLE, `RELOAD magazine 0 -> 200, 200 from the pouch, pouch 250 -> 50`, fires again, `ERRORS: none`.
+  Frames `/home/claude/lane_b_out/revunm_unmaker_reload.png` and `revunm_unmaker_skull_zoom.png`: the skull is seen at the
+  fingers while carried from this head pose.
+
+## 3. Not done / open
+- From a head pose that sees the BACK of the off hand (run 2: CARRYP 0 20 15, head yaw 25) the skull is hidden behind the
+  hand. RS VR Reload turns the skull in the hand (yaw -75, pitch 15); ours cannot turn the HANDMAG layer without a code
+  change in vreload.zs Place() (r8's open item). Not built: owner's call.
+- Owner questions: backpack rule for RevolverRounds (doubles like BD22's ammo, i.e. 72 / 144, or none as built);
+  where the Revolver itself spawns on maps (nowhere today, so a second one only comes from give/summon or a future spawn);
+  dual-wielding the Moonlight (README "Dual Revolvers, of course") is not built; spawn rate 1 in 4 is a first pick.
+- The Shotvolver's own map spawn is BD22's (RevolverSpawner via the commented-out shotgun replacer: effectively none).
