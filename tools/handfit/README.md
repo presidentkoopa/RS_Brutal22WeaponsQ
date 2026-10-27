@@ -58,3 +58,6 @@ These tools put the FBX hands on 4 guns tonight: BrutalPistol, Flamethrower2, Br
 - `fits/`: each gun's fit (shift, hand wiring), the curl / stage-2 data, the baked MD3s, and `ported_<Class>.json` (what the port moved; the M203 gate reads R, t from it).
 - Rule found in batch 4: break-open guns (rsb_guns.zs) pass `Offset(i)` to RSB.Hook for the hinged parts AND the round in the off hand, so the
   off-hand RSQ_Hands block moves too, and the hold rows are re-expressed (Hand0-2 = g R^T, HandT = HandT - g R^T t) so the hand's hold is unchanged.
+
+## Destination: RS_Avatar (owner, 2026-10-27)
+When the BD22 hands are done, `tools/handfit/poses/` (every gun's pose data: joint angles, wrist placement, gun move, FBX frame) and the re-bake tooling also go to the owner's **RS_Avatar** repo. RS Avatar uses the same FBX hand source for UZDXREMA's hand fitting, so one set of poses serves both. Coordinate with the avatar lane, and don't push into RS_Avatar without the owner's go.
