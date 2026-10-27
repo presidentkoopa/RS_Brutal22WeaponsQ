@@ -1059,10 +1059,10 @@ break-open switch-case rows, the M32's Offset-without-ZOffset, Minigun recoil fi
 - **GrenadeLauncher (M79), row 8**: 1.92 hold re-seated (17.9 deg off the start), index solved to the trigger (pad 0.39 cm from
   the trigger face, squeeze 0.60 cm, max penetration 0.67 cm), palm-under support (pen 0.48, palm gap 1.5 cm). Gun moved
   (Offset -4.954 -4.624, ZOffset -14.013, aim = pistol r5); rsb case 2 Hinge/Axis/PushRef/Offset, recoil rows 30-32, muzzle
-  row added. Commit 039ce08 (re-ported on the current base after the rebase conflicted; the fit is unchanged).
+  row added. Commit 68ab9c4 (re-ported on the current base after the rebase conflicted; the fit is unchanged).
 - **Rocket_Launcher (RPG), row 19**: ported, but **flagged**: index pad 2.05 cm short of the trigger (M/R/P-only curl; the run
   that would solve the index timed out under machine load). rsr case 9 moved (Grab moved too although HasHandle is false: unused).
-  Commit 039ce08.
+  Commit 68ab9c4.
 - Rig: see `/home/claude/lane_b_out/hands_heavies.png` and the per-gun result below.
 
 ### 2. Open / flagged / not reached
@@ -1075,3 +1075,9 @@ break-open switch-case rows, the M32's Offset-without-ZOffset, Minigun recoil fi
   that port_gun.py does not move yet: needs ToGun/FromGun for gun 2 before it is ported.
 - Support: only RQFS B (palm-under) exists as an FBX support pose; the Minigun / MG42 handlebar has no FBX pose.
 - The machine ran 2 cores at load 5-6 (three lanes fitting): a fit took 8-25 min, not 2.
+- Poses as data (owner): `tools/handfit/poses/GrenadeLauncher.json`, `Rocket_Launcher.json` (trigger / squeeze pose vectors,
+  recovered exactly from the baked vertices, wrist placement, gun move, FBX source; support = FBX RQFS B source frame + placement;
+  its joint angles are the source pose's, not stored as a vector yet). Tool `heavies/poses_hv.py`.
+- Rig sheet `/home/claude/lane_b_out/hands_heavies.png`: eye views show both guns in the FBX hand with the FBX palm-under when
+  steadied; the SIDE views missed the gun (camera pose) and the RPG eye "firing" pick is a wall: re-shoot needed.
+  Script-error scan (sheet runs, pack before the last rebase): only BD22's own `DeathSphereHealth` lines.
