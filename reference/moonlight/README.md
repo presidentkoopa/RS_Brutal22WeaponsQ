@@ -70,3 +70,7 @@ Every number from the mesh (`rev.md3`, 41 frames, 11 surfaces) through the Depot
 - **One shot per trigger pull.** No full auto, and no hold-to-fire semi-auto: the trigger must be released and pulled again.
 - **Top rate 5-6 shots a second:** at 35 tics/s, a minimum 6-7 tics between shots (6 tics = 5.8/s, 7 tics = 5/s).
 - **Recoil wanted.** The owner calls the last recoil attempt "a disaster". Recoil is designed WITH him before anything is built (see the recoil discussion).
+
+## Dual wield (owner, 2026-10-27 06:52)
+- **Dual Revolvers, of course.** BrutalRevolver can be dual-wielded, like BD22's DualPistols. Each hand is one shot per pull (that hand's trigger), max 5-6/s per gun.
+- Reloading both, with the speedloader by hand, is designed when built: for example one gun at a time, the other holstered or held.
