@@ -1252,3 +1252,47 @@ Tool fixes (all in the repo):
 - Rocket_Launcher gun-hand penetration 0.88 cm (> 0.5 tolerance); its support palm turns up under the tube on the side view: owner look.
 - Sniper: the thumb sinks 1.61 cm into the stock wrist (the owner's grip choice); ring/pinky 0.65/1.42 cm short of the wood.
 - Scope lens pictures not shown (above).
+
+# r10 port lane (2026-10-27, branch `port10` pushed to `lane-b-1.99x`): fit-farm r2/r3 guns. RIG ONLY, NOT HEADSET-CONFIRMED
+
+Worktree `/home/claude/lane_b_p10`, run dir `/home/claude/lane_b_p10run`. Same one method (wrist pinned, the GUN moves to the hand) via
+`heavies/port_hv.py`. Inputs: `/home/claude/fitfarm_results` (PICKS_r2.md, PICKS_r3.md), copied unchanged to `tools/handfit/port/fits/farm_r2/<Gun>/`.
+
+## 1. Done (measured; rig only, not headset-confirmed)
+| gun (row) | farm fit | gun hand (trigger pose) | support (FBX RQFS B palm-under) | moved |
+|---|---|---|---|---|
+| MG42 (11) | MG42_fromMinigun | pad 0.27, pen 0.40, palm 0.09 | farm placement: pen 0.44, palm 1.38 (support_gun.py: 0.45 / 1.37) | 4 blocks incl. HitlersBuzzsaw_rsr.md3, Pivot + 4 rows, rsr case 10, casing, muzzle added (barrel tip) |
+| Machinegun (27) | Machinegun_fromMP40 | pad 0.22, pen 0.35, palm 0.30 | farm placement: pen 0.44, palm 0.70 (support_gun.py identical) | 5 blocks incl. Machinegun_rsr.md3 and MODELDEF.rsm (tube, no-tube twins), rsr case 18, casing, muzzle added on the M249 barrel (surface 5), **launcher (RSM gun 2)**: FwdHook(2), ToGun/DirToGun/FromGun gun-2 branch, seated round block RQ3P B re-placed (residual 0.0000 cm). No gunmoves rows exist for it. |
+| NukeLauncher (14) | NukeLauncher_fromMinigun | pad 0.43, pen 0.60, palm 0.29 | support_gun.py: pen 0.45, palm 1.30 (farm had 0.47 / 1.87) | 4 blocks incl. Nuker_rsr.md3, Pivot + 4 rows, rsr case 15, muzzle added |
+| BFG10k (2) | BFG10k_fromMinigun (r3, landed 15:35) | pad 0.00, pen 0.58, palm 0.49 | farm placement: pen 0.44, palm 1.45 (support_gun.py: 0.49 / 1.11) | 4 blocks (2 bd + 2 purist), Pivot + 5 rows, muzzle added; no rsr/rsb case |
+Hand sprites: RQV1 MG42, RQV2 Machinegun, RQV9 NukeLauncher, RQVA BFG10k (free in the pack, brutal22test6, BD_VoxelPack). Poses as data:
+`poses/{MG42,Machinegun,NukeLauncher,BFG10k}.json` (FK fit <= 6e-10 cm). Per-gun port logs and support jsons: `port/fits/r10/`.
+
+Tool changes: `port_hv.py`: MG42 / Machinegun `*_rsr.md3` reload drawings were not moved (same bug as the MiniGun's in r9); NukeLauncher,
+BFG10k registered; `m203mg()` moves the Machinegun's launcher. `gate_gun.py`: job `m203mg` (launcher reload on the moved Machinegun).
+Finding: the Depot `m203.py GUN=mg` aims the round at bore U -1.517, 5 cm above the table's AxisU(2) -6.517; it scraped in at ENTER_SIDE 5
+on the unmoved gun (r9: loaded) and fails on the moved one (round never enters). With the table's bore line the moved gun loads; the gate uses that.
+
+## 2. Rig evidence (QZD 17.3, doom2 > brutal22test6 > BD_VoxelPack > pack, exclusive lock, ini restored, frame dumps deleted)
+- Smoke (test build of the same tree, 3 guns): 0 pack script errors, 0 VM aborts, all held.
+- Hand reloads: MG42 and Machinegun magazines IDLE>EMPTY>DROP>EMPTY>CARRY>INSERT>SEATED>DONE>IDLE. Machinegun launcher (moved):
+  latch > took the tube > open > took a round > round in the breech > round home > shut: loaded, no script error.
+  **NukeLauncher hand reload NOT shown:** the rig driver (unmaker/rig_reload.py ROW=15, mags.py 15) reaches no rsr phase on r10 AND on r9 (unmoved): a driver/test gap, not a port change. Needs a Nuke-specific driver.
+- Pack **`/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r10.pk3`** (`python3 build.py 1.99x-lb-r10` at pushed head `6115102`),
+  sha256 `6acd9cad6fe8914deb745a3056e0d4c77b8a043a0048f1f5c4e6f928def9962f`.
+- 37-class sweep r10 vs r9: 0 script errors, 0 VM aborts; 35 SAME, 2 DIFF on shot count only (BrutalSMG 9 vs 10, untouched by r10:
+  run-to-run timing; MG42 16 vs 18); held and reload phases identical on all 37. Log `/home/claude/lane_b_p10run/sweep/`.
+- Sheet `/home/claude/lane_b_out/r10_hands.png` (r10 pack; 12 runs, 0 script errors): FBX gun hand on the grip and the FBX palm under the gun on
+  all four, side steady / side fire / eye fire. Owner look: MG42's support palm sits beside the barrel jacket (1.92 SupportPoint 30 cm out);
+  the blocky brown arm in the MG42/Machinegun fire frames is a world sprite in front of the rig camera, not the hands.
+
+## 3. Pending / flagged
+- Not ported (no fit landed by 16:05): SSG, BIG_FUCKING_GUN (r2b still running), Devastator (needs a re-run from a finished hold),
+  IncendiaryLauncher (r1 fit pad 5.22: needs a re-fit). NukeLauncher hand reload not shown (above). Gun-hand pen 0.58-0.60 on BFG10k / Nuke (> 0.5).
+
+## 4. BD22 guns with / without FBX hands after r10
+- **FBX gun hand:** BrutalPistol, BrutalSMG, Flamethrower2, MP40, Rifle (+ PuristRifle), Revolver, Revolver2, BrutalRevolver, AssaultShotgun,
+  Shot_Gun, GrenadeLauncher, Rocket_Launcher, RailGun, Plasma_Gun, MiniGun, Sniper, **MG42, Machinegun, NukeLauncher, BFG10k**.
+  FBX support on all except MiniGun (Ermac's handle grip) and PuristRifle (Ermac's handguard grip).
+- **No FBX hand:** SSG, IncendiaryLauncher, FlameCannon, Unmaker, Devastator, HellishMissileLauncher, BIG_FUCKING_GUN; melee/thrown:
+  BrutalAxe, Chain_saw, DSweap, HandGrenades.
