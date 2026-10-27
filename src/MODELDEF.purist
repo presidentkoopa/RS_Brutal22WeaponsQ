@@ -2037,8 +2037,11 @@ Model PuristMG42
    Model 0 "HitlersBuzzsaw.md3"
    Skin 0 "HitlersBuzzsaw.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset -0.730 -2.859 0.0
+   ZOffset -0.442
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
 
    FrameIndex	HBUS	A	0	0
    FrameIndex	HBUS	B	0	1
@@ -2069,8 +2072,11 @@ Model PuristBFG10k
    Model 0 "BFG_10k.md3"
    Skin 0 "BFG_10k2.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset -0.344 -2.493 0.0
+   ZOffset -0.730
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
 
    FrameIndex	BG2G	A	0	4
    FrameIndex	BG2G	B	0	4
@@ -2102,8 +2108,11 @@ Model PuristBFG10k
    Model 0 "BFG_10k.md3"
    Skin 0 "BFG_10k.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset -0.344 -2.493 0.0
+   ZOffset -0.730
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
 
    FrameIndex	BG2G	S	0	0
    FrameIndex	BG2G	T	0	1
@@ -2147,8 +2156,11 @@ Model PuristNukeLauncher
    Model 0 "Nuker.md3"
    Skin 0 "Nuker.png"
    Scale -1.1 1.1 1.1
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 0.463 -2.370 0.0
+   ZOffset 4.577
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
 
    FrameIndex	NKLF	A	0	5
    FrameIndex	NKLF	B	0	5
@@ -11128,4 +11140,40 @@ Model PuristMinigun
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQV3 A 0 0	// Minigun, finger on the trigger
 	FrameIndex RQV3 B 0 1	// Minigun, squeezed
+}
+
+// r10 port (lane B): MG42 (row 11), dual wield holds the FBX gun hand fitted from 1.92's MG42 hold (frames baked in place, hook 0)
+Model PuristMG42
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_MG42_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV1 A 0 0	// MG42, finger on the trigger
+	FrameIndex RQV1 B 0 1	// MG42, squeezed
+}
+
+// r10 port (lane B): NukeLauncher (row 14), dual wield holds the FBX gun hand fitted from 1.92's NukeLauncher hold (frames baked in place, hook 0)
+Model PuristNukeLauncher
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_NukeLauncher_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV9 A 0 0	// NukeLauncher, finger on the trigger
+	FrameIndex RQV9 B 0 1	// NukeLauncher, squeezed
+}
+
+// r10 port (lane B): BFG10k (row 2), dual wield holds the FBX gun hand fitted from 1.92's BFG10k hold (frames baked in place, hook 0)
+Model PuristBFG10k
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_BFG10k_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVA A 0 0	// BFG10k, finger on the trigger
+	FrameIndex RQVA B 0 1	// BFG10k, squeezed
 }

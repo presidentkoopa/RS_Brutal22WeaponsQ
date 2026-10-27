@@ -162,6 +162,18 @@ class RSQ_GunSide : Inventory
 	// r9 port: Sniper (row 22)
 	FbxTrgSni: RQFN A -1; Stop;
 	FbxSqzSni: RQFN B -1; Stop;
+	// r10 port: MG42 (row 11)
+	FbxTrgMG42: RQV1 A -1; Stop;
+	FbxSqzMG42: RQV1 B -1; Stop;
+	// r10 port: Machinegun (row 27)
+	FbxTrgMGun: RQV2 A -1; Stop;
+	FbxSqzMGun: RQV2 B -1; Stop;
+	// r10 port: NukeLauncher (row 14)
+	FbxTrgNuke: RQV9 A -1; Stop;
+	FbxSqzNuke: RQV9 B -1; Stop;
+	// r10 port: BFG10k (row 2)
+	FbxTrgBFGk: RQVA A -1; Stop;
+	FbxSqzBFGk: RQVA B -1; Stop;
 	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
 	Nade: RQGN A -1; Stop;	// Ermac's ammo hand round the VR grenade
 	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
@@ -468,6 +480,50 @@ class RSQ_Hands : Weapon
 			}
 			gl = msq ? "FbxSqzSni" : "FbxTrgSni";
 		}
+		if (i == 11)	// r10 port: MG42 squeezes on its fire frames: HBUS BCF, PBUS BCF or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || (mgp.Sprite == Actor.GetSpriteIndex('HBUS') && (mf == 1 || mf == 2 || mf == 5)) || (mgp.Sprite == Actor.GetSpriteIndex('PBUS') && (mf == 1 || mf == 2 || mf == 5));
+			}
+			gl = msq ? "FbxSqzMG42" : "FbxTrgMG42";
+		}
+		if (i == 27)	// r10 port: Machinegun squeezes on its fire frames: MGN1 BCDEFK or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || (mgp.Sprite == Actor.GetSpriteIndex('MGN1') && (mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 10));
+			}
+			gl = msq ? "FbxSqzMGun" : "FbxTrgMGun";
+		}
+		if (i == 14)	// r10 port: NukeLauncher squeezes on its fire frames: NKLF ABCDEFGHIJ or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || (mgp.Sprite == Actor.GetSpriteIndex('NKLF') && (mf == 0 || mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 6 || mf == 7 || mf == 8 || mf == 9));
+			}
+			gl = msq ? "FbxSqzNuke" : "FbxTrgNuke";
+		}
+		if (i == 2)	// r10 port: BFG10k squeezes on its fire frames: BG2G MNOPQR or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || (mgp.Sprite == Actor.GetSpriteIndex('BG2G') && (mf == 12 || mf == 13 || mf == 14 || mf == 15 || mf == 16 || mf == 17));
+			}
+			gl = msq ? "FbxSqzBFGk" : "FbxTrgBFGk";
+		}
 		if (i == 18)	// batch 4: Rifle squeezes on its FIRE frames (gunmoves rows 93-95: RIFF / RI2F / 2IFF A-D and the no-tube twins QT09 / QT0A / QT08) or fullbright, trigger otherwise
 		{
 			bool msq = false;
@@ -508,6 +564,14 @@ class RSQ_Hands : Weapon
 		else if (i == 18 && RSK_M203Handler.TriggerGrip(mo))
 			sp = (p.cmd.buttons & BT_OFFHANDATTACK) ? "M2" : "M1";	// 1.31: finger on the M203's trigger (squeezed)
 		String spl = (i == 4 || i == 7) ? (i == 4 ? "FbxSupP" : "FbxSupF") : "Sup" .. sp;	// BD 2.0 b1: the FBX support hands
+		if (i == 2)
+			spl = "FbxSupF";	// r10 port: BFG10k, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 2)
+		if (i == 14)
+			spl = "FbxSupF";	// r10 port: NukeLauncher, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 14)
+		if (i == 27)
+			spl = "FbxSupF";	// r10 port: Machinegun, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 27)
+		if (i == 11)
+			spl = "FbxSupF";	// r10 port: MG42, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 11)
 		if (i == 22)
 			spl = "FbxSupF";	// r9 port: Sniper, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 22)
 		if (i == 15)
@@ -1010,6 +1074,14 @@ class RSQ_Hands : Weapon
 	DFbxSqzMini: RQV3 B -1; Stop;
 	DFbxTrgSni: RQFN A -1; Stop;	// r9 port: dual wield, Sniper
 	DFbxSqzSni: RQFN B -1; Stop;
+	DFbxTrgMG42: RQV1 A -1; Stop;	// r10 port: dual wield, MG42
+	DFbxSqzMG42: RQV1 B -1; Stop;
+	DFbxTrgMGun: RQV2 A -1; Stop;	// r10 port: dual wield, Machinegun
+	DFbxSqzMGun: RQV2 B -1; Stop;
+	DFbxTrgNuke: RQV9 A -1; Stop;	// r10 port: dual wield, NukeLauncher
+	DFbxSqzNuke: RQV9 B -1; Stop;
+	DFbxTrgBFGk: RQVA A -1; Stop;	// r10 port: dual wield, BFG10k
+	DFbxSqzBFGk: RQVA B -1; Stop;
 	Hidden: TNT1 A -1; Stop;
 	}
 }

@@ -80,6 +80,14 @@ class RSQ_Muzzle : EventHandler
 		if (w is 'Plasma_Gun')	return (76.10, 8.12, 9.61);
 		// r9 port: Minigun's drawn muzzle (front-most face centre of the ready frame, 95.92 0.35 -7.94 before the move), moved with the gun
 		if (w is 'Minigun')	return (100.86, 11.49, 2.74);
+		// r10 port: MG42's drawn muzzle (front-most face centre of the ready frame, 100.51 -0.15 1.86 before the move), moved with the gun
+		if (w is 'MG42')	return (102.78, 8.98, 14.00);
+		// r10 port: Machinegun's drawn muzzle (front-most face centre of the ready frame, 68.76 -0.04 4.77 before the move), moved with the gun
+		if (w is 'Machinegun')	return (72.13, 6.28, 13.43);
+		// r10 port: NukeLauncher's drawn muzzle (front-most face centre of the ready frame, 53.57 0.00 -2.87 before the move), moved with the gun
+		if (w is 'NukeLauncher')	return (55.74, 5.70, 11.67);
+		// r10 port: BFG10k's drawn muzzle (front-most face centre of the ready frame, 88.00 0.01 -4.00 before the move), moved with the gun
+		if (w is 'BFG10k')	return (90.20, 9.05, 7.27);
 		return (0, 0, 0);
 	}
 

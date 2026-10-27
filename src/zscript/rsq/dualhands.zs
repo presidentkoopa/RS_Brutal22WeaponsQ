@@ -79,6 +79,12 @@ class RSQ_DualHands : EventHandler
 					label = firing ? "DFbxSqzPlas" : "DFbxTrgPlas";
 				if (i == 13)	// r9 port: Minigun
 					label = firing ? "DFbxSqzMini" : "DFbxTrgMini";
+				if (i == 11)	// r10 port: MG42
+					label = firing ? "DFbxSqzMG42" : "DFbxTrgMG42";
+				if (i == 14)	// r10 port: NukeLauncher
+					label = firing ? "DFbxSqzNuke" : "DFbxTrgNuke";
+				if (i == 2)	// r10 port: BFG10k
+					label = firing ? "DFbxSqzBFGk" : "DFbxTrgBFGk";
 				if (i == 18)	// batch 4: Rifle
 					label = firing ? "DFbxSqzRif" : "DFbxTrgRif";
 				if (i == 12)	// batch 3: MP40

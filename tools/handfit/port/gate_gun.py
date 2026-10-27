@@ -62,29 +62,31 @@ def sheet(pk3, cls, state, view):
     if fr: Image.open(fr[-1]).save(os.path.join(OUT, 'shots', '%s_%s_%s.png' % (cls, view, state)))
     shutil.rmtree(d, ignore_errors=True)	# frame dumps deleted; the last frame kept as PNG
     return dict(frames=len(fr), errors=check(text, cls)['errors'])
-def m203(pk3):
-    """the M203 reload on the MOVED rifle: the Depot m203.py script with every tube / round target moved by the port's R, t."""
+def m203(pk3, mg=False):
+    """the M203 reload on the MOVED rifle: the Depot m203.py script with every tube / round target moved by the port's R, t.
+    r10: mg=True ('m203mg') = the Machinegun's launcher (RSM gun 2): rsr_m203_geo.zs gun-2 numbers (bore U -6.517, AxisU(2); the Depot
+    m203.py GUN=mg uses -1.517, 5 cm above the bore: it scraped in at ENTER_SIDE 5 on the unmoved gun, not on the moved one), moved by ported_Machinegun.json."""
     import numpy as np, handrot as h
-    P = json.load(open(os.path.join(HERE, 'fits', 'ported_Rifle.json'))); R = np.array(P['R']); t = np.array(P['t'])
+    P = json.load(open(os.path.join(HERE, 'fits', 'ported_%s.json' % ('Machinegun' if mg else 'Rifle')))); R = np.array(P['R']); t = np.array(P['t'])
     MV = lambda q: tuple(R @ np.array(q, float) + t); MD = lambda v: tuple(R @ np.array(v, float))
-    L, U, TR, REAR = 0.520, -5.000, 11.0, 28.44; PALM = (-1.5, 2.0, -4.5); RND, RAX = (-1.930, 4.560, -4.500), (0, 0, 1)
+    L, U, TR, REAR = (-0.068, -6.517, 9.694, 29.272) if mg else (0.520, -5.000, 11.0, 28.44); PALM = (-1.5, 2.0, -4.5); RND, RAX = (-1.930, 4.560, -4.500), (0, 0, 1)
     palm_at = lambda x: h.place(PALM, (1, 0, 0), MV((x, L, U - 2.0)), MD((1, 0, 0)))[0]
     round_at = lambda x: h.place(RND, RAX, MV((x, L, U)), MD((1, 0, 0)))[0]
     FAR = '-0.25 1.3 -0.3 30 0 0'
-    s = ('wait 120; god; rsr_reload 1; rsr_grab_with 0; rsr_debug 1; give Rifle; give Clip2 100; give AmmoRocket 10; use Rifle; wait 80; '
+    s = ('wait 120; god; rsr_reload 1; rsr_grab_with 0; rsr_debug 1; give %s; give Clip2 100; give AmmoRocket 10; use %s; wait 80; '
          '+altattack; wait 3; -altattack; wait 60; '
          'qz_lhand "%s"; wait 10; qz_lgrip 1; wait 10; qz_ltrigger 1; wait 6; '
          'qz_lhand "%s"; wait 8; qz_lhand "%s"; wait 8; qz_lhand "%s"; wait 10; qz_ltrigger 0; qz_lgrip 0; wait 6; '
          'qz_lhand "%s"; wait 10; qz_ltrigger 1; wait 10; qz_lhand "%s"; wait 12; qz_lhand "%s"; wait 15; qz_ltrigger 0; wait 8; '
          'qz_lhand "%s"; wait 10; qz_ltrigger 1; wait 8; qz_lhand "%s"; wait 8; qz_lhand "%s"; wait 10; qz_ltrigger 0; wait 8; '
          'qz_lhand "%s"; wait 10; +altattack; wait 3; -altattack; wait 40; quit'
-         % (palm_at(40), palm_at(40 + TR * 0.4), palm_at(40 + TR * 0.75), palm_at(40 + TR + 0.5), FAR, round_at(REAR + 3.5), round_at(REAR + TR + 0.4 + 4.3),
-            palm_at(40 + TR), palm_at(40 + TR / 2), palm_at(39.5), FAR))
-    setpk3(pk3); rc, text = locked(rig.run, 'm203_moved', s, 260)
-    return [l[:160] for l in text.splitlines() if re.match(r'rs[mk]', l) or 'm203' in l.lower()] + ['script errors: %s' % check(text, 'Rifle')['errors']]
+         % ((('Machinegun',) * 2 if mg else ('Rifle',) * 2) + (palm_at(40),) + (palm_at(40 + TR * 0.4), palm_at(40 + TR * 0.75), palm_at(40 + TR + 0.5), FAR, round_at(REAR + 3.5), round_at(REAR + TR + 0.4 + 4.3),
+            palm_at(40 + TR), palm_at(40 + TR / 2), palm_at(39.5), FAR)))
+    setpk3(pk3); rc, text = locked(rig.run, 'm203mg_moved' if mg else 'm203_moved', s, 260)
+    return [l[:160] for l in text.splitlines() if re.match(r'rs[mk]', l) or 'm203' in l.lower()] + ['script errors: %s' % check(text, 'Machinegun' if mg else 'Rifle')['errors']]
 BOOTED = {}
 def hands(pk3, job):
-    if job == 'm203': return m203(pk3)
+    if job in ('m203', 'm203mg'): return m203(pk3, job == 'm203mg')
     setpk3(pk3); os.environ.pop('B22_NOPROBE', None)
     if BOOTED.get('pk3') != pk3:	# mags.py / brk.py read the pack's own tables from the probe's dump in logs/boot.log
         locked(rig.run, 'boot', 'wait 60; quit', 120); BOOTED['pk3'] = pk3

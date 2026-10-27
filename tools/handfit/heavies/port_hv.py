@@ -7,10 +7,12 @@ import os, re, sys, json, argparse, numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, os.path.join(HERE, '..', 'port'))
 import port_gun as pg
 D = lambda cls, extra=(): [('MODELDEF.rsqdual', cls)] + list(extra)
+# r10: MG42 / Machinegun + their reload drawings (*_rsr.md3, MODELDEF.rsr: were not moved, as the MiniGun's in r9); the Machinegun's
+# muzzle on the M249 barrel (surface 5), not the launcher tube, and its launcher (gun 2) tables move (m203mg); NukeLauncher, BFG10k added.
 GUNS_HV = {
- 'MG42': dict(md3='models/bd/HitlersBuzzsaw/HitlersBuzzsaw.md3', names=['HitlersBuzzsaw.md3'], ready=0, scale=[-1, 1, 1], off=[0, 0, -5], row=11, rsr=10,
+ 'MG42': dict(md3='models/bd/HitlersBuzzsaw/HitlersBuzzsaw.md3', names=['HitlersBuzzsaw.md3'], names_extra=['HitlersBuzzsaw_rsr.md3'], ready=0, scale=[-1, 1, 1], off=[0, 0, -5], row=11, rsr=10,
     casing='MG42', blocks=None, skip=[], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'MG42'), dual=D('MG42', [('MODELDEF.purist', 'PuristMG42')])),
- 'Machinegun': dict(md3='models/bd/Machinegun/Machinegun.md3', names=['Machinegun.md3'], ready=4, scale=[-1, 1, 1], off=[0, 0, -5], row=27, rsr=18,
+ 'Machinegun': dict(md3='models/bd/Machinegun/Machinegun.md3', names=['Machinegun.md3'], names_extra=['Machinegun_rsr.md3'], ready=4, muzzle_surf=[5], m203mg=True, scale=[-1, 1, 1], off=[0, 0, -5], row=27, rsr=18,
     casing='Machinegun', blocks=None, skip=[], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'Machinegun'), dual=[]),
  'Minigun': dict(md3='models/bd/Minigun/Minigun.md3', names=['Minigun.md3'], names_extra=['Minigun_rsr.md3'],	# r9: the reload drawing (MODELDEF.rsr Minigun / RSR_GunParts) moves too
     ready=4, scale=[-1, 1, 1], off=[0, 0, -5], row=13, rsr=17,
@@ -33,11 +35,18 @@ GUNS_HV = {
     ready=0, scale=[-0.62, 0.62, 0.62], off=[0, -30, -8], row=10, rsr=12,
     blocks=None, skip=[], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'IncendiaryLauncher'),
     dual=D('IncendiaryLauncher', [('MODELDEF.purist', 'PuristIncendiaryLauncher')])),
+ 'BFG10k': dict(md3='models/bd/BFG/BFG_10k.md3', names=['BFG_10k.md3'], ready=4, scale=[-1, 1, 1], off=[0, 0, -5], row=2,	# r10 (farm guns.json; no rsr / rsb case, no casing)
+    blocks=None, skip=[], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'BFG10k'),
+    dual=D('BFG10k', [('MODELDEF.purist', 'PuristBFG10k')])),
+ 'NukeLauncher': dict(md3='models/bd/Nuker/Nuker.md3', names=['Nuker.md3'], names_extra=['Nuker_rsr.md3'], ready=0, scale=[-1.1, 1.1, 1.1], off=[0, 0, -5], row=14, rsr=15,	# r10 (farm guns.json: frame 0, MODELDEF.bd.txt)
+    blocks=None, skip=[], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'NukeLauncher'),
+    dual=D('NukeLauncher', [('MODELDEF.purist', 'PuristNukeLauncher')])),
 }
 pg.GUNS.update(GUNS_HV)
 # hand sprites (new; free in the pack, brutal22test6 and BD_VoxelPack: checked by name) and state-label suffixes
 HANDSPR = {'MG42': ('RQV1', 'MG42'), 'Machinegun': ('RQV2', 'MGun'), 'Minigun': ('RQV3', 'Mini'), 'Plasma_Gun': ('RQV4', 'Plas'), 'RailGun': ('RQV5', 'Rail'),
-           'Rocket_Launcher': ('RQV6', 'RL'), 'GrenadeLauncher': ('RQV7', 'GL'), 'IncendiaryLauncher': ('RQV8', 'Inc')}
+           'Rocket_Launcher': ('RQV6', 'RL'), 'GrenadeLauncher': ('RQV7', 'GL'), 'IncendiaryLauncher': ('RQV8', 'Inc'),
+           'NukeLauncher': ('RQV9', 'Nuke'), 'BFG10k': ('RQVA', 'BFGk')}	# r10: RQV9 free in the pack, brutal22test6 and BD_VoxelPack (checked)
 EXTRA_SQZ = {'Machinegun': [('MGN1', 'BCDEFK')]}	# no gunmoves rows: its Fire frames (Machinegun.dec Fire: MGN1 B-F, K)
 def squeeze_expr(G):
     """the gun hand squeezes on the gun's fire frames: the sprites/frames gunmoves.zs keys to its handtable row (+ EXTRA_SQZ)"""
@@ -91,6 +100,33 @@ def rsb_cases(G, p, R, t, tag):
         v, s_ = pg.getcase(tx, fn, c); tx = pg.setcase(tx, fn, c, s_, '(%.4f, %.4f, %.4f)' % tuple(pg.z0(x, 5e-5) for x in nv), tag)
     pg.wr('zscript/rsr/rsb_guns.zs', tx)	# PushZ0/1, PushR0/1, PushEdge: measured along / around the hinge axis from the hinge: unchanged by a rigid move
 
+def m203mg(G, p, R, t, tag):
+    """r10: the Machinegun's under-barrel launcher (RSM gun 2). Its tables (rsr_m203_geo.zs AxisL/U, TubeRear/Front, ...) stay in the
+    gun's ORIGINAL controller frame, as the rifle's (gun 1, batch 4): ToGun / DirToGun / FromGun get a gun-2 branch with this move's
+    R, t, FwdHook(2) turns with the gun, and the 40 mm round drawn on the gun (MODELDEF.rsm RSR_GunParts RQ3P B, m203_round.md3 at its
+    own seat offset) is re-placed so it is drawn moved by the same R, t (the tube RQ3P A and the no-tube twins QU0x draw Machinegun.md3:
+    moved by modeldef())."""
+    tx = pg.rd('zscript/rsr/rsr_m203_geo.zs'); fw = R @ np.array([1.0, 0, 0]); fh = [fw[1], fw[2], -fw[0]]
+    m = re.search(r'clearscope static Vector3 FwdHook\(int gun\) \{ return gun == 2 \? \(0\.0000, 0\.0000, -1\.0000\) : ', tx); assert m, 'FwdHook gun 2'
+    tx = tx[:m.start()] + 'clearscope static Vector3 FwdHook(int gun) { return gun == 2 ? (%.4f, %.4f, %.4f) : ' % tuple(fh) + tx[m.end():]
+    Ri = R.T; ti = -R.T @ t
+    aff = lambda M, b, s: '(' + ', '.join(' + '.join('%.6f * %s.%s' % (M[r_, c], s, 'xyz'[c]) for c in range(3)) + ('' if b is None else ' + %.6f' % b[r_]) for r_ in range(3)) + ')'
+    for fn, M, b, v in (('ToGun', Ri, ti, 'p'), ('DirToGun', Ri, None, 'v'), ('FromGun', R, t, 'p')):
+        a = '\tclearscope static Vector3 %s(int gun, Vector3 %s)\n\t{\n\t\tif (gun != 1) return %s;' % (fn, v, v)
+        tx = pg.sub1(tx, a, '\tclearscope static Vector3 %s(int gun, Vector3 %s)\n\t{\n\t\tif (gun == 2) return %s;\t// %s: the Machinegun (gun 2) moved to the FBX hand\n\t\tif (gun != 1) return %s;' % (fn, v, aff(M, b, v), tag, v), fn)
+    tx = tx.replace('\tclearscope static Vector3 RoundInHand()', '\t// %s (lane B): the Machinegun (gun 2) is drawn moved to the FBX hand (MODELDEF Offset %.3f %.3f, ZOffset %.3f, Angle/Pitch/Roll %.3f/%.3f/%.3f);\n\t// its numbers above stay in its ORIGINAL frame, FwdHook(2) is its forward axis after the move (was 0 0 -1).\n\tclearscope static Vector3 RoundInHand()' % ((tag,) + tuple(p)), 1)
+    pg.wr('zscript/rsr/rsr_m203_geo.zs', tx); pg.note('M203 gun 2 FwdHook', np.round(fh, 4), '+ ToGun / DirToGun / FromGun gun-2 branch (R, t of this move)')
+    # the round seated on the gun
+    tx = pg.rd('MODELDEF.rsm'); hit = [mm for mm in pg.BLK.finditer(tx) if mm.group(1) == 'RSR_GunParts' and re.search(r'FrameIndex RQ3P B ', mm.group(0)) and 'm203_round.md3' in mm.group(0)]
+    assert len(hit) == 1, 'RQ3P B round block'; b = hit[0].group(0)
+    o = pg.num(r'(?m)^\s*Offset\s+([-\d. ]+)', b); z = pg.num(r'(?m)^\s*ZOffset\s+([-\d.]+)', b); assert not re.search(r'(Angle|Pitch|Roll)Offset', b)
+    off0 = [o[0], o[1], z[0]]; X = pg.raw(os.path.join(pg.SRC, 'models/bd/Rifle/m203_round.md3'), 0); V0 = pg.chain([-1, 1, 1], off0, (0, 0, 0))(X); tgt = V0 @ R.T + t
+    from scipy.optimize import least_squares
+    f = lambda q: (pg.chain([-1, 1, 1], q[:3], q[3:])(X) - tgt).ravel(); s_ = least_squares(f, np.r_[off0, p[3:]]); q = s_.x; res = float(np.abs(f(q)).max()); assert res < 0.01, ('round re-place', res)
+    nb = re.sub(r'(?m)^([ \t]*)Offset[^\n]*\n[ \t]*ZOffset[^\n]*\n', lambda mm: '%sOffset %.3f %.3f 0.0\n%sZOffset %.3f\n%sAngleOffset %.3f\n%sPitchOffset %.3f\n%sRollOffset %.3f\t// %s (lane B): the Machinegun\'s seated 40 mm round, moved with the gun (was Offset %s %s, ZOffset %s)\n' % (
+        mm.group(1), q[0], q[1], mm.group(1), q[2], mm.group(1), q[3], mm.group(1), q[4], mm.group(1), q[5], tag, o[0], o[1], z[0]), b, count=1)
+    assert nb != b; pg.wr('MODELDEF.rsm', tx.replace(b, nb, 1)); pg.note('MODELDEF.rsm RSR_GunParts RQ3P B (m203_round) re-placed', np.round(off0, 3), '->', np.round(q, 3), 'residual %.4f cm' % res)
+
 if __name__ == '__main__':
     ap = argparse.ArgumentParser(); ap.add_argument('cls'); ap.add_argument('fit'); ap.add_argument('--src'); ap.add_argument('--tag', default='heavies'); ap.add_argument('--dry', action='store_true')
     pg.ARGS = ARGS = ap.parse_args()
@@ -110,6 +146,7 @@ if __name__ == '__main__':
     if G.get('casing'): pg.casing(G, R, t, ARGS.tag)
     if not F.get('no_muzzle'): pg.muzzle(G, R, t, ARGS.tag)
     if G.get('scope'): pg.scope(G, R, t, ARGS.tag)
+    if G.get('m203mg'): m203mg(G, p, R, t, ARGS.tag)
     if F.get('hand'):
         H = F['hand']; H['sprite'], H['label'] = HANDSPR[ARGS.cls]
         if H.get('squeeze', 'false') == 'false': H['squeeze'], H['squeeze_note'] = squeeze_expr(G)

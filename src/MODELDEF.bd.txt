@@ -2954,8 +2954,11 @@ Model MG42
    Model 0 "HitlersBuzzsaw.md3"
    Skin 0 "HitlersBuzzsaw.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset -0.730 -2.859 0.0
+   ZOffset -0.442
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
 
    FrameIndex	HBUS	A	0	0
    FrameIndex	HBUS	B	0	1
@@ -2987,8 +2990,11 @@ Model BFG10k
    Model 0 "BFG_10k.md3"
    Skin 0 "BFG_10k2.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset -0.344 -2.493 0.0
+   ZOffset -0.730
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
 
    FrameIndex	BG2G	A	0	4
    FrameIndex	BG2G	B	0	4
@@ -3021,8 +3027,11 @@ Model BFG10k
    Model 0 "BFG_10k.md3"
    Skin 0 "BFG_10k.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset -0.344 -2.493 0.0
+   ZOffset -0.730
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
 
    FrameIndex	BG2G	S	0	0
    FrameIndex	BG2G	T	0	1
@@ -3070,8 +3079,11 @@ Model NukeLauncher
    Model 0 "Nuker.md3"
    Skin 0 "Nuker.png"
    Scale -1.1 1.1 1.1
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 0.463 -2.370 0.0
+   ZOffset 4.577
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
 
    FrameIndex	NKLF	A	0	5
    FrameIndex	NKLF	B	0	5
@@ -13768,9 +13780,12 @@ Model Machinegun
    Model 0 "Machinegun.md3"
    Skin 0 "Machinegun.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
+   Offset -0.612 -3.967 0.0
+   ZOffset -2.037
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
    NoInterpolation
-   ZOffset -5
 
 	//Ready
 	
