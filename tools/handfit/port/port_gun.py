@@ -72,9 +72,14 @@ def fire_rows(G, off, ao, frames):
 def pivot(off, zoff): return D_ @ np.array([off[0], zoff, off[1]]) - O_H
 
 # ---------------------------------------------------------------- text helpers
-def rd(p): return open(os.path.join(SRC, p), encoding='latin1').read()
-def wr(p, t):
-    if not ARGS.dry: open(os.path.join(SRC, p), 'w', encoding='latin1').write(t)
+PENDING = {}	# all edits are held here and written only when every step has passed (no half-moved tree on an assert)
+def rd(p): return PENDING[p] if p in PENDING else open(os.path.join(SRC, p), encoding='latin1').read()
+def wr(p, t): PENDING[p] = t
+def flush():
+    if ARGS.dry: return
+    for p, t in PENDING.items(): open(os.path.join(SRC, p), 'w', encoding='latin1').write(t)
+    for a, b in COPIES: shutil.copyfile(a, b)
+COPIES = []
 def sub1(t, a, b, what):
     n = t.count(a); assert n == 1, '%s: %d matches' % (what, n); return t.replace(a, b)
 def first(rx, t, what):
@@ -92,7 +97,10 @@ GUNS = {
     ('MODELDEF.rsr', 'MP40'): 2, ('MODELDEF.rsr', 'RSR_GunParts'): 2}, skip=['RQMW'], skipcls=['RSQ_Hands'], bdblock=('MODELDEF.bd.txt', 'MP40'),
     dual=[('MODELDEF.rsqdual', 'MP40'), ('MODELDEF.rsqoff', 'RSQ_Off_MP40'), ('MODELDEF.purist', 'PuristMP40')]),
  'Rifle': dict(md3='models/bd/Rifle/Rifle.md3', names=['Rifle.md3', 'M203.md3'], ready=3, scale=[-1, 1, 1], off=[0, 0, -5], row=18, rsr=1,
-    casing='Rifle', muzzle_surf=None, blocks=None, skip=['RQRW'], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'Rifle'),
+    names_extra=['m203_round.md3'], classes=['Rifle', 'PuristRifle', 'RSR_GunParts', 'RSQ_Off_Rifle'],
+    casing='Rifle', muzzle_surf=[4], skip=['RQRW', 'RQ2H', 'RQ2S'], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'Rifle'),
+    blocks={('MODELDEF.bd.txt', 'Rifle'): 1, ('MODELDEF.purist', 'PuristRifle'): 3, ('MODELDEF.rsm', 'Rifle'): 5, ('MODELDEF.rsm', 'RSR_GunParts'): 2,
+            ('MODELDEF.rsqoff', 'RSQ_Off_Rifle'): 9, ('MODELDEF.rsr', 'Rifle'): 3, ('MODELDEF.rsr', 'RSR_GunParts'): 3},
     m203=True, dual=[('MODELDEF.rsqdual', 'Rifle'), ('MODELDEF.rsqoff', 'RSQ_Off_Rifle'), ('MODELDEF.purist', 'PuristRifle')]),
  'Revolver': dict(md3='models/bd/Revolver/Revolver.md3', names=['Revolver.md3'], ready=0, scale=[-1, 1, 1], off=[0, 0, -5], row=17, rsb=[3, 7, 8, 9],
     casing='Revolver', casing2='Revolver2', blocks=None, skip=['RBRW'], skipcls=['RSQ_Hands', 'RSB_Round'], bdblock=('MODELDEF.bd.txt', 'Revolver'),
@@ -115,10 +123,14 @@ def gun_blocks(G):
         f = os.path.basename(f); tx = rd(f)
         for m in BLK.finditer(tx):
             b = m.group(0); cls = m.group(1)
-            if not any('"%s"' % n in b for n in G['names']): continue
+            if not any('"%s"' % n in b for n in G['names'] + G.get('names_extra', [])): continue
+            if G.get('classes') and cls not in G['classes']: continue
             if cls in G['skipcls'] or any(re.search(r'Frame(Index)?\s+%s\s' % s, b) for s in G['skip']): continue
             sc = num(r'(?m)^\s*Scale\s+([-\d. ]+)', b)
             if sc is None or np.abs(np.array(sc[:3]) - np.array(G['scale'])).max() > 1e-3: continue	# a different drawing (world / dropped)
+            o = num(r'(?m)^\s*Offset\s+([-\d. ]+)', b); zz = num(r'(?m)^\s*ZOffset\s+([-\d.]+)', b)
+            if o is None or zz is None or np.abs(np.array(o[:2] + zz[:1]) - np.array(G['off'])).max() > 1e-3:
+                print('  (not moved: %s %s at Offset %s ZOffset %s, not this gun\'s base placement)' % (f, cls, o, zz)); continue
             out.append((f, cls, m))
     return out
 def modeldef(G, p, tag):
@@ -277,14 +289,14 @@ def m203(G, p, R, t, tag):
     wr('zscript/rsr/rsr_m203.zs', tx)
     # the purist rifle (no launcher): its handguard support hook moves with the gun
     tx = rd('zscript/rsq/hands.zs'); a = '\t\t\thook = (-0.090, -1.390, 11.380);\t// 1.30: purist\'s rifle (no launcher): the handguard grip as before\n\t\t\thookTurn = (0, 0, 0);'
-    h, r = support_move(G, (-0.090, -1.390, 11.380), (0, 0, 0), R, t, 'RQSP', None)
+    h, r = support_move(G, (-0.090, -1.390, 11.380), (0, 0, 0), R, t, None, 1)	# Ermac hand2 pose B
     tx = sub1(tx, a, '\t\t\thook = (%.3f, %.3f, %.3f);\t// %s: purist\'s rifle (no launcher): the handguard grip, moved with the gun (was -0.090, -1.390, 11.380 / 0 0 0)\n\t\t\thookTurn = (%.3f, %.3f, %.3f);' % (tuple(h) + (tag,) + tuple(r)), 'purist hook')
     wr('zscript/rsq/hands.zs', tx); note('purist rifle support hook', '(-0.090, -1.390, 11.380)/0 ->', np.round(h, 3), np.round(r, 3))
 
 # ---------------------------------------------------------------- 6. support pose moved rigidly with the gun (supmove_b4 / hook.py)
 def support_move(G, h0, r0, R, t, md3=None, frame=None):
     import hook
-    hand2 = os.path.join(SRC, 'models/rsq/hand2.md3'); xyz = md3_frames(hand2)[0][frame or 0]
+    hand2 = os.path.join(SRC, 'models/rsq/hand2.md3'); xyz = md3_frames(hand2)[0][frame]
     draw = lambda h, r: 100 * (hudrender.to_local(xyz, dict(hook=list(h), rot=list(r), **hook.PL)) @ hook.P.T)
     Y0 = draw((0, 0, 0), (0, 0, 0)); Y1 = draw(h0, r0); R0, t0 = kabsch(Y0, Y1)
     h, r = hook.hook_from_rigid(R @ R0, R @ t0 + t); return np.array(h), np.array(r)
@@ -301,7 +313,7 @@ def getrow(tx, fn, row):
     return np.array([float([s.strip() for s in a.split(',')][row]) for a in re.findall(r'static const double [xyz]\[\] = \{ ([^}]*) \};', tx[i0:i1])])
 def hand(G, H, R, t, tag, fitdir):
     row = G['row']; spr = H['sprite']; md3 = H['md3_name']; L = H['label']; c = G['cls']
-    if not ARGS.dry: shutil.copyfile(os.path.join(fitdir, H['md3']), os.path.join(SRC, 'models/rsq/fbx', md3))
+    COPIES.append((os.path.join(fitdir, H['md3']), os.path.join(SRC, 'models/rsq/fbx', md3)))
     note('hand md3', md3, '<-', H['md3'])
     FR = '\tFrameIndex %s A 0 0\t// %s, finger on the trigger\n\tFrameIndex %s B 0 1\t// %s, squeezed\n' % (spr, c, spr, c)
     hb = lambda cls: 'Model %s\n{\n\tPath "models/rsq/fbx"\n\tModel 0 "%s"\n\tSkin 0 "fbx_hand.png"\n\tScale -1.0 1.0 1.0\n\tOffset 0.0 -24.0 -10.0\n%s}\n' % (cls, md3, FR)
@@ -317,7 +329,7 @@ def hand(G, H, R, t, tag, fitdir):
         '\t\t\tgl = msq ? "FbxSqz%s" : "FbxTrg%s";\n\t\t}\n') % (row, tag, c, H.get('squeeze_note', 'FIRE frames (gunmoves rows)'), H['squeeze'], L, L) + tx[m.start():]
     m = list(re.finditer(r'\tDFbx\w+: \w+ B -1; Stop;\n', tx)); assert m, 'dual states anchor'; e = m[-1].end()	# after the last dual FBX state
     tx = tx[:e] + '\tDFbxTrg%s: %s A -1; Stop;\t// %s: dual wield, %s\n\tDFbxSqz%s: %s B -1; Stop;\n' % (L, spr, tag, c, L, spr) + tx[e:]
-    if H.get('support'):
+    if H.get('support') and H['support'] != 'move':	# the FBX palm-under replaces the Ermac support pose; 'move' keeps the gun's own pose
         m = first(r'\t\tif \(i == \d+\)\n\t\t\tspl = "FbxSupF";', tx, 'support anchor')
         tx = tx[:m.start()] + '\t\tif (i == %d)\n\t\t\tspl = "FbxSupF";\t// %s: %s, the FBX open palm under its barrel (handtable SupportHook / SupportRot row %d)\n' % (row, tag, c, row) + tx[m.start():]
     wr('zscript/rsq/hands.zs', tx); note('hands.zs labels FbxTrg%s / FbxSqz%s (+ dual)' % (L, L))
@@ -364,5 +376,6 @@ if __name__ == '__main__':
     if G.get('scope'): scope(G, R, t, ARGS.tag)
     if G.get('m203'): m203(G, p, R, t, ARGS.tag)
     if F.get('hand'): hand(G, F['hand'], R, t, ARGS.tag, fitdir)
+    flush()
     print('moved %d items%s' % (len(MOVED), ' (dry run: nothing written)' if ARGS.dry else ''))
     json.dump(dict(cls=ARGS.cls, place=list(p), R=R.tolist(), t=t.tolist(), moved=MOVED), open(os.path.join(fitdir, 'ported_%s.json' % ARGS.cls), 'w'), indent=1)

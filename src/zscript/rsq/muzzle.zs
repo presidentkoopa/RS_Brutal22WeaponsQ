@@ -62,6 +62,8 @@ class RSQ_Muzzle : EventHandler
 		// no bore is modelled; the barrel is a box at the muzzle (face F 27.02-27.38, L -1.40..1.35, U 4.04..5.18):
 		// its face's centre (reference/moonlight/bake_reload.txt "muzzle")
 		if (n == 'BrutalRevolver')	return (27.2, -0.03, 4.61);
+		// batch 4: Rifle's drawn muzzle (front-most face centre of the ready frame, 65.80 0.49 2.57 before the move), moved with the gun
+		if (w is 'Rifle')	return (71.18, 6.06, 11.42);
 		return (0, 0, 0);
 	}
 

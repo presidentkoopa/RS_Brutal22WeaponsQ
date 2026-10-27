@@ -416,3 +416,25 @@ Model RSQ_Hands
 	FrameIndex RQFI A 0 0	// MP40, finger on the trigger
 	FrameIndex RQFI B 0 1	// MP40, squeezed
 }
+
+// batch 4 (lane B): Rifle (row 18) holds the FBX gun hand fitted from 1.92's Rifle hold (frames baked in place, hook 0)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b4_Rifle_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFJ A 0 0	// Rifle, finger on the trigger
+	FrameIndex RQFJ B 0 1	// Rifle, squeezed
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b4_Rifle_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFJ A 0 0	// Rifle, finger on the trigger
+	FrameIndex RQFJ B 0 1	// Rifle, squeezed
+}
