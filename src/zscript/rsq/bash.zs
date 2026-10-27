@@ -65,8 +65,15 @@ class RSQ_BashFX : Actor
 			int t = RSQ.PlayerInt(PlayerPawn(target), 'rsq_bash_tint', 0);
 			// r6 (owner item 17): the colour is assignable on every effect, not only RSH0 -- the
 			// tints are a luminance ramp (TRNSLATE.rsq), so they recolour any of the five
+			// r6b: a translation does nothing on these truecolor PNGs on QZD's renderer (rig frames:
+			// tints 1-4 drew as the art). AddShaded draws the art's brightness in one colour, which
+			// is the tint. Colours as TRNSLATE.rsq's RSQ_BashTint1-4 ramps' top ends.
+			static const int TC[] = { 0, 0x50AAFF, 0x5AFF78, 0xFFBE46, 0xFFFFFF };
 			if (t > 0 && t < 5)
-				a.A_SetTranslation(String.Format("RSQ_BashTint%d", t));
+			{
+				a.A_SetRenderStyle(1.0, STYLE_AddShaded);
+				a.SetShade(TC[t]);
+			}
 		}
 		Destroy();
 	}

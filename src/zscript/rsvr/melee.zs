@@ -127,6 +127,8 @@ class RSVR_MeleeHandler : EventHandler
 			bool twoUp = RSVR_VRHand.InVR(mo) && mo.player.ReadyWeapon
 				&& RSVR_Hand.KindOf(mo) == RSVR_Hand.AXE && RSVR_VRHand.TwoHands(mo);
 			mo.SetInventory('RSVR_AxeTwo', twoUp ? 1 : 0);
+			// r6b (owner item 10): the sword under the engine's steadying (WF_TWOHANDSTABILIZED)
+			mo.SetInventory('RSVR_SwordTwo', RSVR_VRHand.InVR(mo) && mk == RSVR_Hand.SWORD && RSVR_VRHand.Steadied(mo) ? 1 : 0);
 			// r6 (item 7): in VR the chainsaw's trigger runs the chain without BD22's swing animation
 			// (Saw.dec RSVR_SawRun); the cutting is RSVR_Hand.Tick's, by contact
 			mo.SetInventory('RSVR_SawVR', RSVR_VRHand.InVR(mo) && mk == RSVR_Hand.SAW ? 1 : 0);
@@ -269,6 +271,7 @@ class RSVR_Hand play
 	Actor lockRing;
 	int lockKeep;		// F11: a release that was not a throw keeps the paint until this tic
 	int poseFrame;		// 0 = one hand, 1 = the two-handed placement
+	int lastPoseFrame;
 	int swingTics;
 	int calmTics;
 	int whooshWait;
@@ -326,7 +329,7 @@ class RSVR_Hand play
 	transient SpriteID s3XEG;
 	transient SpriteID s4XEG;
 	transient SpriteID s5XEG;
-	transient SpriteID sDSLA;
+	transient SpriteID sDSLA, sDSL2;
 	transient SpriteID sSAWG;
 	transient SpriteID s1AWG;
 	transient SpriteID s2AWG;
@@ -434,6 +437,7 @@ class RSVR_Hand play
 		s4XEG = Actor.GetSpriteIndex('4XEG');
 		s5XEG = Actor.GetSpriteIndex('5XEG');
 		sDSLA = Actor.GetSpriteIndex('DSLA');
+		sDSL2 = Actor.GetSpriteIndex('DSL2');
 		sSAWG = Actor.GetSpriteIndex('SAWG');	// r6: the chainsaw's idle (and, in VR, its running) frames
 		s1AWG = Actor.GetSpriteIndex('1AWG');
 		s2AWG = Actor.GetSpriteIndex('2AWG');
@@ -509,7 +513,10 @@ class RSVR_Hand play
 		if (psp.Frame != 0)
 			return false;
 		if (k == SWORD)
-			return s == sDSLA;
+		{
+			poseFrame = s == sDSL2 ? 3 : 0;	// r6b: 3 = the two-handed block (MODELDEF.bd.txt DSL2)
+			return s == sDSLA || s == sDSL2;
+		}
 		if (k == RIFLEBUTT)
 			return s == sRIFG || s == s2IFG || s == sRI2G;
 		if (k == SGBUTT)
@@ -587,6 +594,14 @@ class RSVR_Hand play
 		// ZOffset off up measured against the shipped block's -5.
 		double sf = poseFrame == 1 ? 8.9584 : poseFrame == 2 ? 10.0 : 0.0;	// 2: Chain_saw's Offset y 10
 		double su = poseFrame == 1 ? -17.2631 : 0.0;
+		if (poseFrame == 3)
+		{
+			// r6b: the two-handed sword block -- PitchOffset 110 (forward toward up), then its
+			// Offset y -40.26 and ZOffset -33.19 (MODELDEF.bd.txt DSL2)
+			m = (m.x * cos(110) - m.z * sin(110), m.y, m.x * sin(110) + m.z * cos(110));
+			sf = -40.26;
+			su = -28.19;
+		}
 		double f = 0.01 * (ws * m.x - 30 - oz - sf);
 		double r = 0.01 * (-ws * m.y + ox);
 		double u = 0.01 * (ws * m.z + oy + su);
@@ -641,6 +656,14 @@ class RSVR_Hand play
 		}
 		if (k == 0 || !ReadyPose(mo, k) || !Frame(mo))
 		{
+			Reset();
+			return;
+		}
+		// r6b: a change of placement (one hand <-> two) moves the blade in one tic without
+		// the hand moving: that jump is not a swing (rig: the sword's steadying started one)
+		if (poseFrame != lastPoseFrame)
+		{
+			lastPoseFrame = poseFrame;
 			Reset();
 			return;
 		}
@@ -949,6 +972,13 @@ class RSVR_Hand play
 		{
 			Launch(mo, 'DSAttack', p, dir);
 			Launch(mo, 'DSAttack2', p, dir);
+			// r6b (owner item 10): two hands on the sword, 2.0x -- the same pair again
+			// (DSAttack and DSAttack2 deal a fixed 200 each: Damage (random(200,200)))
+			if (mo.CountInv('RSVR_SwordTwo') > 0)
+			{
+				Launch(mo, 'DSAttack', p, dir);
+				Launch(mo, 'DSAttack2', p, dir);
+			}
 		}
 		else if (k == SAW)
 		{
@@ -1279,7 +1309,8 @@ class RSVR_AxeThrown : RSVR_Token {}
 class RSVR_AxeTrig : RSVR_Token {}
 class RSVR_AxeVRThrow : RSVR_Token {}
 class RSVR_MeleeTwo : RSVR_Token {}	// F11: the off grip held near the axe or the sword
-class RSVR_AxeTwo : RSVR_Token {}		// both hands on the haft: the shifted placement
+class RSVR_AxeTwo : RSVR_Token {}
+class RSVR_SwordTwo : RSVR_Token {}	// r6b: the engine steadies the sword: the DSL2 placement, 2.0x		// both hands on the haft: the shifted placement
 class RSVR_NotVR : RSVR_Token {}
 class RSVR_SawVR : RSVR_Token {}		// r6: VR with the chainsaw in hand: Saw.dec Fire runs RSVR_SawRun
 

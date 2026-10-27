@@ -862,3 +862,39 @@ Not done: headset pass.
 
 ## Not reached
 - Item 14 (dual options for every gun): not started in this box.
+
+
+## Melee lane r6b (2026-10-27): item 10 built, item 17 fixed, item 7 out-of-range shown
+**Rig only, not headset-confirmed.** Pack `lane_b_out/BD22_VR-Reloaded_1.99x-lb-r6-melee2.pk3` (+ `.sha256`),
+sheet `lane_b_out/melee_fixes2.png`, logs `lane_b_out/melee_r6b_logs/` (`fin2` = the shipped pack on the
+load order: no script error from the pack, no abort).
+
+### 1. Done (shown on the rig)
+- **10 two-handed sword (owner-approved plan, 2.0x).** While the engine steadies the Dragonslayer
+  (WF_TWOHANDSTABILIZED: off grip within 50 cm), `RSVR_SwordTwo` is set and Dragonslayer.dec draws
+  `DSL2 A` (TwoHand state). MODELDEF.bd.txt's DSL2 block is the same mesh with PitchOffset 110 about the
+  main hand's grip point, md3 (30/ws, 0, 0) (Offset y -40.26, ZOffset -33.19): DSweap.md3 frame 0's
+  handle (guard t=-14 to pommel t=-62 along (0.342, 0, 0.940), measured) then runs along the engine's
+  aim, i.e. toward the off hand, and the blade away from it. melee.zs Place applies the same turn
+  (rig: handle . forward = 1.00). The main hand's motion still drives the swing; the hit
+  is the same pair fired twice (DSAttack and DSAttack2 are fixed damage: Damage (random(200,200))).
+  Rig, same downswing into the same zombie: one hand DSAttack 1x200 + DSAttack2 55 = 255; two hands
+  2x200 + 110 = 510. Hands: the support hand is hidden; the off hand shows as the free fist at the off
+  controller, which is on the handle line by construction. The gun hand takes the same 110-degree turn
+  about the grip (hands.zs). The placement is eyeballed on rig frames, not measured.
+  A change of placement (one hand <-> two) now resets the swing history (it read as a swing).
+- **17 flash at its spawn point.** The 52 RS* FX PNGs had no grAb offsets, so they hung down-right of
+  the hit point. Centred grAb (w/2, h/2) added. Rig: probe at 60 u straight ahead draws centred there.
+- **17 tints.** A translation did nothing on these truecolor PNGs on this renderer. Now RSQ_BashFX
+  sets STYLE_AddShaded + SetShade (TRNSLATE ramps' top colours). Rig: blue, green, amber shown.
+  Menu row renamed "Melee Hit Flash Colour".
+- **7 bar leaves.** Zombie pinned (SetOrigin each tic), trigger held throughout: cuts every 2 tics while
+  in, last cut t760 while the bar was being pulled back, 0 cuts over 40 tics with the bar clear.
+
+### 2. Flagged
+- Tint 4 (white) was not captured in a frame (the probe frame missed it); 0-3 were.
+- The first sword test swing was marginal: the blade crossed the zombie at about z 111-115 against its
+  112 top, so whether it cut depended on which pose sample landed (m3, fin3: swing, no cut). The test
+  now swings 28 cm lower: `fin4` (the shipped pack after the rebase) cut on all 4 swings, two hands
+  510 and one hand 255 both times. The sword numbers in the sheet are from `fin2` (same code, pre-rebase).
+- Saw, fin3: one cut landed on the first tic of the bar-clear hold (pose lag of a tic); fin2 was clean.

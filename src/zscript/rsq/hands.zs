@@ -279,13 +279,17 @@ class RSQ_Hands : Weapon
 		}
 		if (s)
 			s.holding = hold;
+		// r6b (owner item 10): the sword steadied in two hands. The engine aims it at the off
+		// hand, so the off controller is ON the handle line: the off hand shows there, closed
+		// (the free fist), instead of the support hand posed for the one-handed sword
+		bool swordTwo = i == 26 && mo.CountInv('RSVR_SwordTwo') > 0;
 		invoker.FollowGun(p, i);
 
 		static const String ammo[] = { "FreeHand", "AmmoB", "AmmoC", "AmmoD", "AmmoE", "AmmoF", "AmmoG", "AmmoH" };
 		// 2026-10-16 (owner): the free off hand is a FIST (it punches: rsq/fists.zs), open only
 		// while the grenade is out, to take its ring
 		bool nade = p.ReadyWeapon && p.ReadyWeapon.GetClassName() == 'HandGrenades';
-		String fh = !on || hold ? "Hidden" : rsr != "" ? rsr : carry == 0 && !nade ? "AmmoH" : ammo[clamp(carry, 0, 7)];
+		String fh = !on || (hold && !swordTwo) ? "Hidden" : rsr != "" ? rsr : carry == 0 && !nade ? "AmmoH" : ammo[clamp(carry, 0, 7)];
 		invoker.freeFist = fh == "AmmoH";
 		invoker.OffPunch(mo);
 		invoker.SetLayer(p, RSQ_Layers.FREEHAND, invoker, fh);
@@ -336,7 +340,7 @@ class RSQ_Hands : Weapon
 		String spl = (i == 4 || i == 7) ? (i == 4 ? "FbxSupP" : "FbxSupF") : "Sup" .. sp;	// BD 2.0 b1: the FBX support hands
 		if (i == 5)
 			spl = "FbxSupF";	// batch 2: BrutalSMG, the FBX open palm under its forend (handtable SupportHook / SupportRot row 5)
-		invoker.SetLayer(p, RSQ_Layers.SUPPORT, gs, hold && sp != "" ? spl : "Hidden");
+		invoker.SetLayer(p, RSQ_Layers.SUPPORT, gs, hold && sp != "" && !swordTwo ? spl : "Hidden");
 
 		// 2026-10-23: the VR scope's reticle (rsq/scope.zs). WHETHER the layer is there is this
 		// tic's business; WHERE it sits is ModifyBobLayer3D's, per rendered frame. It exists
@@ -691,6 +695,21 @@ class RSQ_Hands : Weapon
 		}
 		Vector3 t, r;
 		[t, r] = RSQ_Turn.Place(hook, hookTurn, gunTurnNow, frameTurn, frameMove, RSQ_GunMoves.Pivot(i));
+		if (gunHand && i == 26 && Owner.CountInv('RSVR_SwordTwo') > 0)
+		{
+			// r6b: the two-handed sword block (MODELDEF.bd.txt DSL2) turns the mesh 110 deg
+			// (forward toward up) about the grip, (0, 5, -6) in this layer's space: the sword's
+			// grip md3 (30/ws, 0, 0) -> (0, -5, -30) after its ZOffset and the jDoom turn, less
+			// the hands' Offset (0, -10, -24). The gun hand takes the same turn about that point.
+			Vector3 k0, k1, k2, r0, r1, r2, n0, n1, n2;
+			[k0, k1, k2] = RSQ_Turn.Rows((0, 110, 0));
+			[r0, r1, r2] = RSQ_Turn.Rows(r);
+			[n0, n1, n2] = RSQ_Turn.Mul(k0, k1, k2, r0, r1, r2);
+			Vector3 piv = (0, 5, -6);
+			Vector3 kp = (k0 dot piv, k1 dot piv, k2 dot piv);
+			t += RSQ_Turn.Back(n0, n1, n2, piv - kp);
+			r = RSQ_Turn.Angles(n0, n1, n2);
+		}
 		// the renderer still adds this layer's own turn on top: take it back out
 		return translation + t, rotation + r - (h.x / 4, (h.y - WEAPONTOP) / -4, 0);
 	}

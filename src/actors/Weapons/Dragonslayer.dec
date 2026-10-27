@@ -40,8 +40,18 @@ ACTOR DSweap : BrutalWeapon
 		TNT1 A 0 A_JumpIfInventory("Salute1", 1, "Salute")
 		TNT1 A 0 A_JumpIfInventory("Salute2", 1, "Salute")
 		TNT1 A 0 A_JumpIfInventory("TossGrenade",1,"TossGrenade")
+		TNT1 A 0 A_JumpIfInventory("RSVR_SwordTwo",1,"TwoHand")
 		DSLA A 1 A_WeaponReady
 		Loop
+
+	// r6b (owner item 10): the engine steadies the sword (off grip within 50 cm) and aims it
+	// from the main hand AT the off hand. DSL2 is the same mesh turned so its handle runs
+	// along that line, toward the off hand, and the blade away from it (MODELDEF.bd.txt).
+	// melee.zs reads the sprite to know which placement is live. Back to Ready on release.
+	TwoHand:
+		DSL2 A 1 A_WeaponReady
+		"####" "#" 0 A_JumpIfInventory("RSVR_SwordTwo", 1, "TwoHand")
+		Goto Ready
 
 	Select:
 		TNT1 A 0 A_Giveinventory("GoSpecial",1)

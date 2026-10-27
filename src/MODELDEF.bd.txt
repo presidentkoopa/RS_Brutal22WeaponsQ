@@ -1104,6 +1104,25 @@ Model DSweap
    FrameIndex	DSLC	P	0	0
 }
 
+// r6b (owner item 10): the Dragonslayer held in two hands. The engine aims a steadied
+// weapon's forward axis from the main hand at the off hand. DSweap.md3 frame 0 (measured):
+// the handle runs from the guard (t=-14) to the pommel (t=-62) along b = (0.342, 0, 0.940),
+// 70 deg up off forward. PitchOffset 110 turns -b (toward the pommel) onto forward, so the
+// handle points at the off hand and the blade away from it. The turn is about the main
+// hand's grip point, md3 (30/ws, 0, 0), which the one-handed block puts at the controller
+// (melee.zs Place): Offset y -40.26 = 30 cos110 - 30, ZOffset -33.19 = -5 - 30 sin110.
+Model DSweap
+{
+   Path "models/bd/DSweap"
+   Model 0 "DSweap.md3"
+   Skin 0 "DSweap.png"
+   Scale -1.0 1.0 1.0
+   Offset 0.0 -40.26 0.0
+   ZOffset -33.19
+   PitchOffset 110
+   FrameIndex	DSL2	A	0	0
+}
+
 // FlameCannon -- placement from the authored FlameCannon; keying from BD22's FlameCannon.dec.
 // 28 pairs. Shared-mesh labels excluded: kick, punch, grenade, dual.
 // Sprites those labels used: 2LMG, DUFL, FLMG, MANA, TNT1

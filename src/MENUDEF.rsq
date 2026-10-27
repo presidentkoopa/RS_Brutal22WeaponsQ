@@ -92,7 +92,7 @@ OptionMenu "RSQ_Options"
 	Option "Real Casing Models", "rsq_casing_models", "OnOff"
 	Slider "Casing Size", "rsq_casing_size", 0.5, 2.5, 0.1, 1
 	Option "Melee Hit Flash", "rsq_bash_fx", "RSQ_BashFXOpt"
-	Option "Bash Impact Colour", "rsq_bash_tint", "RSQ_BashTintOpt"
+	Option "Melee Hit Flash Colour", "rsq_bash_tint", "RSQ_BashTintOpt"
 	Slider "Melee swing strength", "rsvr_melee_swing", 0.2, 3.0, 0.1
 	StaticText " "
 	Option "Extra weapons with cheats", "rsq_extra_weapons", "OnOff"
