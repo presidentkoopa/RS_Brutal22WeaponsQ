@@ -61,11 +61,13 @@ class RSQ_Muzzle : EventHandler
 		// moon-reload: rev.md3 frame 0, surface 3 (barrel and top strap), MODELDEF.rsqmoon placement. CONSTRUCTED:
 		// no bore is modelled; the barrel is a box at the muzzle (face F 27.02-27.38, L -1.40..1.35, U 4.04..5.18):
 		// its face's centre (reference/moonlight/bake_reload.txt "muzzle")
-		if (n == 'BrutalRevolver')	return (27.2, -0.03, 4.61);
+		if (n == 'BrutalRevolver')	return (35.03, 3.24, 8.51);	// batch 4: moved with the gun to the FBX hand (was 27.2, -0.03, 4.61)
 		// batch 4: Rifle's drawn muzzle (front-most face centre of the ready frame, 65.80 0.49 2.57 before the move), moved with the gun
 		if (w is 'Rifle')	return (71.18, 6.06, 11.42);
 		// shotguns: AssaultShotgun's drawn muzzle (front-most face centre of the ready frame, 62.87 -0.13 -1.08 before the move), moved with the gun
 		if (w is 'AssaultShotgun')	return (67.36, 11.02, -2.66);
+		// batch 4: Revolver's drawn muzzle (front-most face centre of the ready frame, 21.54 -0.02 1.86 before the move), moved with the gun
+		if (w is 'Revolver')	return (26.67, 2.61, 7.04);
 		return (0, 0, 0);
 	}
 

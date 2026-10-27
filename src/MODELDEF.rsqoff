@@ -765,8 +765,11 @@ Model RSQ_Off_Revolver
    Model 0 "Revolver.md3"
    Skin 0 "Revolver.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 0.466 -5.416 0.0
+   ZOffset -2.801
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// batch 4 (lane B): gun to the FBX hand fitted from 1.92
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -4953,8 +4956,11 @@ Model RSQ_Off_Revolver
 	SurfaceSkin 0 8 "rsr_clear.png"
 	SurfaceSkin 0 9 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.466 -5.416 0.0
+	ZOffset -2.801
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// batch 4 (lane B): gun to the FBX hand fitted from 1.92
 	FrameIndex RBRG A 0 0
 }
 
@@ -5953,4 +5959,16 @@ Model RSQ_Off_AssaultShotgun
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQFQ A 0 0	// AssaultShotgun, finger on the trigger
 	FrameIndex RQFQ B 0 1	// AssaultShotgun, squeezed
+}
+
+// batch 4 (lane B): Revolver (row 17), dual wield holds the FBX gun hand fitted from 1.92's Revolver hold (frames baked in place, hook 0)
+Model RSQ_Off_Revolver
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b4_Revolver_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFK A 0 0	// Revolver, finger on the trigger
+	FrameIndex RQFK B 0 1	// Revolver, squeezed
 }

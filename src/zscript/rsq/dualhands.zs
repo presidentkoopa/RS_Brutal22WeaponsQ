@@ -65,6 +65,8 @@ class RSQ_DualHands : EventHandler
 					label = (firing ? "DFbxSqz" : "DFbxTrg") .. (i == 4 ? "P" : "F");
 				if (i == 1)	// shotguns: AssaultShotgun
 					label = firing ? "DFbxSqzAS" : "DFbxTrgAS";
+				if (i == 17 && !(w is 'BrutalRevolver'))	// batch 4: Revolver
+					label = firing ? "DFbxSqzRev" : "DFbxTrgRev";
 				if (i == 18)	// batch 4: Rifle
 					label = firing ? "DFbxSqzRif" : "DFbxTrgRif";
 				if (i == 12)	// batch 3: MP40

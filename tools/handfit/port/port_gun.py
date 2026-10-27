@@ -103,12 +103,16 @@ GUNS = {
             ('MODELDEF.rsqoff', 'RSQ_Off_Rifle'): 9, ('MODELDEF.rsr', 'Rifle'): 3, ('MODELDEF.rsr', 'RSR_GunParts'): 3},
     m203=True, dual=[('MODELDEF.rsqdual', 'Rifle'), ('MODELDEF.rsqoff', 'RSQ_Off_Rifle'), ('MODELDEF.purist', 'PuristRifle')]),
  'Revolver': dict(md3='models/bd/Revolver/Revolver.md3', names=['Revolver.md3'], ready=0, scale=[-1, 1, 1], off=[0, 0, -5], row=17, rsb=[3, 7, 8, 9],
-    casing='Revolver', casing2='Revolver2', blocks=None, skip=['RBRW'], skipcls=['RSQ_Hands', 'RSB_Round'], bdblock=('MODELDEF.bd.txt', 'Revolver'),
+    casing='Revolver', casing2='Revolver2', skip=['RBRW'], skipcls=['RSB_Round'],	# RSQ_Hands RBRP (the round in the off hand) moves too: RSB.Hook places it with Offset(i)
+    blocks={('MODELDEF.bd.txt', 'Revolver'): 1, ('MODELDEF.purist', 'PuristRevolver'): 2, ('MODELDEF.rsb', 'RSB_GunParts'): 7, ('MODELDEF.rsb', 'Revolver'): 1,
+            ('MODELDEF.rsb', 'RSQ_Hands'): 1, ('MODELDEF.rsqoff', 'RSQ_Off_Revolver'): 2}, bdblock=('MODELDEF.bd.txt', 'Revolver'),
     dual=[('MODELDEF.rsqdual', 'Revolver'), ('MODELDEF.rsqoff', 'RSQ_Off_Revolver'), ('MODELDEF.purist', 'PuristRevolver')]),
- 'BrutalRevolver': dict(md3='models/bd/Moonlight/rev.md3', names=['rev.md3'], ready=0, scale=[1.35, 1.35, 1.35], off=[0.0262, 0.9224, 0.5878], row=None, rsb=[10, 11],
-    blocks=None, skip=[], skipcls=['RSQ_Hands', 'RSB_Round'], bdblock=None, dual=[]),
- 'Sniper': dict(md3='models/bd/Ruger/XM21.md3', names=['XM21.md3'], ready=0, scale=[-10.485, 10.485, 10.485], off=[-0.2816, -44.5467, -6.3157], row=None, rsr=8,
-    scope=2, blocks=None, skip=['RQKW'], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=None, dual=[]),
+ 'BrutalRevolver': dict(md3='models/bd/Moonlight/rev.md3', names=['rev.md3', 'rev_rsb.md3'], ready=0, scale=[1.35, 1.35, 1.35], off=[0.0262, 0.9224, 0.5878], row=17, rsb=[10, 11],
+    skip=[], skipcls=['RSB_Round', 'RSB_Casing'], bdblock=None, dual=[],	# row 17 is shared with the Revolver; no gunmoves rows of its own (RVMA is not in gunmoves' spr list)
+    blocks={('MODELDEF.rsqmoon', 'BrutalRevolver'): 2, ('MODELDEF.rsqmoon', 'RSB_GunParts'): 10, ('MODELDEF.rsqmoon', 'RSQ_Hands'): 3}),
+ 'Sniper': dict(md3='models/bd/XM21/XM21.md3', names=['XM21.md3'], ready=0, scale=[-10.485, 10.485, 10.485], off=[-0.2816, -44.5467, -6.3157], row=22, rsr=8,
+    scope=2, skip=['RQKW'], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.rsr', 'Sniper'), dual=[],	# one-frame mesh: no gunmoves fire rows (keyed 99), Pivot row 22 only
+    blocks={('MODELDEF.rsr', 'Sniper'): 3, ('MODELDEF.rsr', 'RSR_GunParts'): 3}),
 }
 
 # ---------------------------------------------------------------- 1. MODELDEF
@@ -205,26 +209,39 @@ def rsr(G, p, R, t, tag):
     tx = setcase(tx, 'Offset', c, s, '(%.3f, %.3f, %.3f)' % tuple(p[:3]), tag)
     wr('zscript/rsr/rsr_guns.bd.zs', tx)
 def rsb(G, p, R, t, tag):
-    """break-open table rows (rsb_guns.zs): gun-frame points move, directions turn; Offset = the new placement; hand-frame rows kept."""
+    """break-open table rows (rsb_guns.zs, switch/case): gun-frame points (Hinge, Casing) move, the hinge Axis turns, Offset = the
+    new placement. The Hand0..HandTip rows are the off-hand's hold of the round (hand frame): kept, as rsr's TopInHand / HandHook."""
     tx = rd('zscript/rsr/rsb_guns.zs')
-    def get(fn, c):
-        i0 = tx.index(' %s(int i)' % fn); i1 = tx.index('\n\t}', i0); seg = tx[i0:i1]
-        m = re.search(r'static const double f\[\] = \{([^}]*)\};.*?static const double l\[\] = \{([^}]*)\};.*?static const double u\[\] = \{([^}]*)\};', seg, re.S)
-        return i0, i1, seg, m
     for fn, kind in (('Hinge', 'p'), ('Axis', 'd'), ('Casing', 'p'), ('Offset', 'o')):
-        i0, i1, seg, m = get(fn, 0)
-        if not m: note('rsb %s: no f/l/u table, NOT moved (flag)' % fn); continue
-        cols = [[s.strip() for s in m.group(k).split(',')] for k in (1, 2, 3)]
+        i0 = tx.index(' %s(int i)' % fn); i1 = tx.index('\n\t}', i0); seg = tx[i0:i1]
         for c in G['rsb']:
-            v = np.array([float(cols[k][c]) for k in range(3)])
+            m = re.search(r'\t\tcase %d:\treturn \(([^)]*)\);' % c, seg); assert m, (fn, c)
+            v = np.array([float(x) for x in m.group(1).split(',')])
+            if kind == 'o': assert np.abs(v - np.array(G['off'])).max() < 1e-3, ('rsb Offset not the base', c, v)
             nv = R @ v + t if kind == 'p' else R @ v if kind == 'd' else np.array(p[:3])
-            if kind == 'o': assert np.abs(v - np.array(G['off'])).max() < 1e-3, ('rsb Offset not base', c, v)
-            for k in range(3): cols[k][c] = '%.3f' % z0(nv[k])
-            note('reload rsb %s row %d' % (fn, c), v.round(3), '->', nv.round(3))
-        s2 = seg
-        for k, name in enumerate('flu'):
-            s2 = re.sub(r'(static const double %s\[\] = \{)([^}]*)(\};)' % name, lambda mm: mm.group(1) + ' ' + ', '.join(cols[k]) + ' ' + mm.group(3), s2, count=1)
-        tx = tx[:i0] + s2 + tx[i1:]
+            new = '\t\tcase %d:\treturn (%.4f, %.4f, %.4f);\t// %s: moved with the gun to the FBX hand (was %s)' % ((c,) + tuple(z0(x, 5e-5) for x in nv) + (tag, m.group(1)))
+            seg = seg.replace(m.group(0), new, 1); note('reload rsb %s case %d' % (fn, c), m.group(1), '->', '%.4f, %.4f, %.4f' % tuple(nv))
+        tx = tx[:i0] + seg + tx[i1:]
+    # chamber bores turn with the gun (Rest0-2 / RestT are the identity motion of parts drawn in place: unchanged under the conjugation)
+    i0 = tx.index(' Bore(int i, int k)'); i1 = tx.index('\n\t}', i0); seg = tx[i0:i1]
+    for c in G['rsb']:
+        for k in range(8):
+            m = re.search(r'\t\tcase %d:\treturn \(([^)]*)\);' % (c * 8 + k), seg)
+            if not m: continue
+            v = np.array([float(x) for x in m.group(1).split(',')]); nv = R @ v
+            seg = seg.replace(m.group(0), '\t\tcase %d:\treturn (%.4f, %.4f, %.4f);\t// %s: turned with the gun (was %s)' % ((c * 8 + k,) + tuple(z0(x, 5e-5) for x in nv) + (tag, m.group(1))), 1)
+            note('reload rsb Bore gun %d chamber %d' % (c, k), m.group(1), '->', '%.4f, %.4f, %.4f' % tuple(nv))
+    tx = tx[:i0] + seg + tx[i1:]
+    # the round in the off hand: seated point (now drawn moved, M x) -> hold. g' = g R^T, HandT' = HandT - g' t keeps the hold unchanged
+    def getc(fn, c):
+        i0 = tx.index(' %s(int i)' % fn); i1 = tx.index('\n\t}', i0); m = re.search(r'\t\tcase %d:\treturn \(([^)]*)\);' % c, tx[i0:i1])
+        return np.array([float(x) for x in m.group(1).split(',')]), m.group(0), m.group(1)
+    for c in G['rsb']:
+        g = np.array([getc('Hand%d' % r, c)[0] for r in range(3)]); g1 = g @ R.T; hT = getc('HandT', c)[0]; hT1 = hT - g1 @ t
+        for fn, nv in (('Hand0', g1[0]), ('Hand1', g1[1]), ('Hand2', g1[2]), ('HandT', hT1)):
+            v, line, old = getc(fn, c); i0 = tx.index(' %s(int i)' % fn)
+            new = '\t\tcase %d:\treturn (%.4f, %.4f, %.4f);\t// %s: the hold of the round re-expressed for the moved gun (was %s)' % ((c,) + tuple(z0(x, 5e-5) for x in nv) + (tag, old))
+            tx = tx[:i0] + tx[i0:].replace(line, new, 1); note('reload rsb %s case %d' % (fn, c), old, '->', '%.4f, %.4f, %.4f' % tuple(nv))
     wr('zscript/rsr/rsb_guns.zs', tx)
 
 # ---------------------------------------------------------------- 4. casing port, muzzle, scope
@@ -324,7 +341,7 @@ def hand(G, H, R, t, tag, fitdir):
     tx = rd('zscript/rsq/hands.zs')
     a = '\tFist: RQGF A -1; Stop;'; tx = sub1(tx, a, '\t// %s: %s (row %d)\n\tFbxTrg%s: %s A -1; Stop;\n\tFbxSqz%s: %s B -1; Stop;\n' % (tag, c, row, L, spr, L, spr) + a, 'states')
     m = first(r'\t\tif \(i == \d+\)\t// batch \d: \w+ squeezes', tx, 'gun label anchor')
-    tx = tx[:m.start()] + ('\t\tif (i == %d)\t// %s: %s squeezes on its %s or fullbright, trigger otherwise\n\t\t{\n\t\t\tbool msq = false;\n'
+    tx = tx[:m.start()] + ('\t\tif (i == %d' + H.get('cond', '') + ')\t// %s: %s squeezes on its %s or fullbright, trigger otherwise\n\t\t{\n\t\t\tbool msq = false;\n'
         '\t\t\tlet mgp = p.FindPSprite(PSP_WEAPON);\n\t\t\tif (mgp && mgp.CurState)\n\t\t\t{\n\t\t\t\tint mf = mgp.Frame;\n\t\t\t\tmsq = mgp.CurState.bFullbright || %s;\n\t\t\t}\n'
         '\t\t\tgl = msq ? "FbxSqz%s" : "FbxTrg%s";\n\t\t}\n') % (row, tag, c, H.get('squeeze_note', 'FIRE frames (gunmoves rows)'), H['squeeze'], L, L) + tx[m.start():]
     m = list(re.finditer(r'\tDFbx\w+: \w+ B -1; Stop;\n', tx)); assert m, 'dual states anchor'; e = m[-1].end()	# after the last dual FBX state
@@ -335,7 +352,7 @@ def hand(G, H, R, t, tag, fitdir):
     wr('zscript/rsq/hands.zs', tx); note('hands.zs labels FbxTrg%s / FbxSqz%s (+ dual)' % (L, L))
     if G['dual']:
         tx = rd('zscript/rsq/dualhands.zs'); m = first(r'\t\t\t\tif \(i == \d+\)\t// batch', tx, 'dual label anchor')
-        tx = tx[:m.start()] + '\t\t\t\tif (i == %d)\t// %s: %s\n\t\t\t\t\tlabel = firing ? "DFbxSqz%s" : "DFbxTrg%s";\n' % (row, tag, c, L, L) + tx[m.start():]
+        tx = tx[:m.start()] + ('\t\t\t\tif (i == %d' + H.get('dcond', H.get('cond', '')) + ')\t// %s: %s\n\t\t\t\t\tlabel = firing ? "DFbxSqz%s" : "DFbxTrg%s";\n') % (row, tag, c, L, L) + tx[m.start():]
         wr('zscript/rsq/dualhands.zs', tx); note('dualhands.zs label')
     tx = rd('zscript/rsq/handtable.zs')
     tx = setrow(tx, 'GunHook', (0, 0, 0), row); tx = setrow(tx, 'GunHookTwo', (0, 0, 0), row); note('handtable GunHook / GunHookTwo row %d = 0' % row)

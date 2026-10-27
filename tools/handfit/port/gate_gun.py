@@ -82,10 +82,19 @@ def m203(pk3):
             palm_at(40 + TR), palm_at(40 + TR / 2), palm_at(39.5), FAR))
     setpk3(pk3); rc, text = locked(rig.run, 'm203_moved', s, 260)
     return [l[:160] for l in text.splitlines() if re.match(r'rs[mk]', l) or 'm203' in l.lower()] + ['script errors: %s' % check(text, 'Rifle')['errors']]
+BOOTED = {}
 def hands(pk3, job):
     if job == 'm203': return m203(pk3)
+    setpk3(pk3); os.environ.pop('B22_NOPROBE', None)
+    if BOOTED.get('pk3') != pk3:	# mags.py / brk.py read the pack's own tables from the probe's dump in logs/boot.log
+        locked(rig.run, 'boot', 'wait 60; quit', 120); BOOTED['pk3'] = pk3
     env = dict(os.environ, B22_PK3=pk3)
-    cmd = ['python3', 'brk.py'] + job[3:].split() if job.startswith('brk') else ['python3', 'mags.py'] + job.split()
+    if job.startswith('brk'):	# brk<Class>:<ammo>:<feed>  e.g. brkRevolver:AmmoShell:0 (feed 0 = a round at a time, 1 = speedloader)
+        c, ammo, feed = job[3:].split(':'); env['FEED'] = feed
+        locked(rig.run, 'open_' + c, 'wait 120; god; rsq_extra_weapons 1; rsb_revolver_feed %s; rsr_reload 1; rsr_debug 1; give %s; give %s 100; use %s; wait 90; '
+               '+attack; wait 3; -attack; wait 30; +attack; wait 3; -attack; wait 40; +reload; wait 4; -reload; wait 60; quit' % (feed, c, ammo, c), 200)
+        cmd = ['python3', 'brk.py', c, ammo]
+    else: cmd = ['python3', 'mags.py'] + job.split()
     r = locked(subprocess.run, cmd, cwd=RIGD, env=env, capture_output=True, text=True)
     return (r.stdout + r.stderr).splitlines()[-25:]
 def compose(out, guns):

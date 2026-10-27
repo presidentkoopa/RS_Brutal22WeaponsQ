@@ -43,16 +43,16 @@ class RSB_Guns abstract
 		{
 		case 1:	return (10.7185, 0.0346, -2.4812);
 		case 2:	return (18.3427, -0.1278, -3.7417);
-		case 3:	return (8.9567, 0.0021, -3.3564);
+		case 3:	return (14.3673, 2.8003, 1.1952);	// batch 4: moved with the gun to the FBX hand (was 8.9567, 0.0021, -3.3564)
 		case 4:	return (12.5311, -0.0319, 0.2407);
 		case 5:	return (9.2809, -0.0000, -1.7485);
 		case 6:	return (9.2809, -0.0000, -1.7485);
-		case 7:	return (8.9567, 0.0021, -3.3564);
-		case 8:	return (8.9567, 0.0021, -3.3564);
-		case 9:	return (8.9567, 0.0021, -3.3564);
+		case 7:	return (14.3673, 2.8003, 1.1952);	// batch 4: moved with the gun to the FBX hand (was 8.9567, 0.0021, -3.3564)
+		case 8:	return (14.3673, 2.8003, 1.1952);	// batch 4: moved with the gun to the FBX hand (was 8.9567, 0.0021, -3.3564)
+		case 9:	return (14.3673, 2.8003, 1.1952);	// batch 4: moved with the gun to the FBX hand (was 8.9567, 0.0021, -3.3564)
 		// BrutalRevolver (Moonlight, rev_rsb.md3): reference/moonlight/bake_reload.py
-		case 10:	return (8.4556, -0.0262, -1.1446);		// Moonlight: frame 26 fit (bake_reload.py)
-		case 11:	return (8.4556, -0.0262, -1.1446);
+		case 10:	return (16.6129, 3.1040, 1.7713);	// batch 4: moved with the gun to the FBX hand (was 8.4556, -0.0262, -1.1446)		// Moonlight: frame 26 fit (bake_reload.py)
+		case 11:	return (16.6129, 3.1040, 1.7713);	// batch 4: moved with the gun to the FBX hand (was 8.4556, -0.0262, -1.1446)
 		}
 		return (0, 0, 0);
 	}
@@ -64,15 +64,15 @@ class RSB_Guns abstract
 		{
 		case 1:	return (0.0000, 1.0000, 0.0000);
 		case 2:	return (0.0000, 1.0000, 0.0000);
-		case 3:	return (-1.0000, 0.0000, 0.0000);
+		case 3:	return (-0.9960, -0.0671, -0.0587);	// batch 4: moved with the gun to the FBX hand (was -1.0000, 0.0000, 0.0000)
 		case 4:	return (0.0000, 1.0000, 0.0000);
 		case 5:	return (0.0000, 1.0000, 0.0000);
 		case 6:	return (0.0000, 1.0000, 0.0000);
-		case 7:	return (-1.0000, 0.0000, 0.0000);
-		case 8:	return (-1.0000, 0.0000, 0.0000);
-		case 9:	return (-1.0000, 0.0000, 0.0000);
-		case 10:	return (0.0000, 1.0000, 0.0000);		// barrel-down about +L
-		case 11:	return (0.0000, 1.0000, 0.0000);
+		case 7:	return (-0.9960, -0.0671, -0.0587);	// batch 4: moved with the gun to the FBX hand (was -1.0000, 0.0000, 0.0000)
+		case 8:	return (-0.9960, -0.0671, -0.0587);	// batch 4: moved with the gun to the FBX hand (was -1.0000, 0.0000, 0.0000)
+		case 9:	return (-0.9960, -0.0671, -0.0587);	// batch 4: moved with the gun to the FBX hand (was -1.0000, 0.0000, 0.0000)
+		case 10:	return (-0.0771, 0.9787, 0.1900);	// batch 4: moved with the gun to the FBX hand (was 0.0000, 1.0000, 0.0000)		// barrel-down about +L
+		case 11:	return (-0.0771, 0.9787, 0.1900);	// batch 4: moved with the gun to the FBX hand (was 0.0000, 1.0000, 0.0000)
 		}
 		return (0, 0, 0);
 	}
@@ -224,33 +224,33 @@ class RSB_Guns abstract
 		case 8:	return (1.0000, -0.0029, -0.0006);
 		case 9:	return (1.0000, -0.0031, -0.0006);
 		case 16:	return (1.0000, 0.0006, 0.0013);
-		case 24:	return (1.0000, -0.0003, 0.0023);		// the cylinder's own axis
-		case 25:	return (1.0000, 0.0002, 0.0023);
-		case 26:	return (1.0000, 0.0002, 0.0025);
-		case 27:	return (1.0000, 0.0003, 0.0023);
-		case 28:	return (1.0000, 0.0003, 0.0023);
+		case 24:	return (0.9959, 0.0664, 0.0609);	// batch 4: turned with the gun (was 1.0000, -0.0003, 0.0023)		// the cylinder's own axis
+		case 25:	return (0.9959, 0.0668, 0.0610);	// batch 4: turned with the gun (was 1.0000, 0.0002, 0.0023)
+		case 26:	return (0.9959, 0.0668, 0.0611);	// batch 4: turned with the gun (was 1.0000, 0.0002, 0.0025)
+		case 27:	return (0.9959, 0.0669, 0.0610);	// batch 4: turned with the gun (was 1.0000, 0.0003, 0.0023)
+		case 28:	return (0.9959, 0.0669, 0.0610);	// batch 4: turned with the gun (was 1.0000, 0.0003, 0.0023)
 		case 32:	return (1.0000, 0.0000, 0.0000);
 		case 33:	return (1.0000, 0.0000, 0.0000);
 		case 40:	return (0.9999, -0.0004, 0.0112);
 		case 48:	return (0.9999, -0.0004, 0.0112);
-		case 56:	return (1.0000, -0.0003, 0.0023);
-		case 57:	return (1.0000, 0.0002, 0.0023);
-		case 58:	return (1.0000, 0.0002, 0.0025);
-		case 59:	return (1.0000, 0.0003, 0.0023);
-		case 60:	return (1.0000, 0.0003, 0.0023);
-		case 64:	return (1.0000, -0.0003, 0.0023);
-		case 72:	return (1.0000, -0.0003, 0.0023);
-		case 73:	return (1.0000, 0.0002, 0.0023);
-		case 74:	return (1.0000, 0.0002, 0.0025);
-		case 75:	return (1.0000, 0.0003, 0.0023);
-		case 76:	return (1.0000, 0.0003, 0.0023);
-		case 80:	return (0.9999, -0.0004, 0.0159);
-		case 88:	return (0.9998, 0.0002, -0.0210);
-		case 89:	return (0.9998, 0.0001, -0.0202);
-		case 90:	return (0.9998, 0.0001, -0.0200);
-		case 91:	return (0.9998, 0.0003, -0.0210);
-		case 92:	return (0.9998, 0.0001, -0.0188);
-		case 93:	return (0.9998, 0.0001, -0.0214);
+		case 56:	return (0.9959, 0.0664, 0.0609);	// batch 4: turned with the gun (was 1.0000, -0.0003, 0.0023)
+		case 57:	return (0.9959, 0.0668, 0.0610);	// batch 4: turned with the gun (was 1.0000, 0.0002, 0.0023)
+		case 58:	return (0.9959, 0.0668, 0.0611);	// batch 4: turned with the gun (was 1.0000, 0.0002, 0.0025)
+		case 59:	return (0.9959, 0.0669, 0.0610);	// batch 4: turned with the gun (was 1.0000, 0.0003, 0.0023)
+		case 60:	return (0.9959, 0.0669, 0.0610);	// batch 4: turned with the gun (was 1.0000, 0.0003, 0.0023)
+		case 64:	return (0.9959, 0.0664, 0.0609);	// batch 4: turned with the gun (was 1.0000, -0.0003, 0.0023)
+		case 72:	return (0.9959, 0.0664, 0.0609);	// batch 4: turned with the gun (was 1.0000, -0.0003, 0.0023)
+		case 73:	return (0.9959, 0.0668, 0.0610);	// batch 4: turned with the gun (was 1.0000, 0.0002, 0.0023)
+		case 74:	return (0.9959, 0.0668, 0.0611);	// batch 4: turned with the gun (was 1.0000, 0.0002, 0.0025)
+		case 75:	return (0.9959, 0.0669, 0.0610);	// batch 4: turned with the gun (was 1.0000, 0.0003, 0.0023)
+		case 76:	return (0.9959, 0.0669, 0.0610);	// batch 4: turned with the gun (was 1.0000, 0.0003, 0.0023)
+		case 80:	return (0.9952, 0.0636, 0.0742);	// batch 4: turned with the gun (was 0.9999, -0.0004, 0.0159)
+		case 88:	return (0.9967, 0.0714, 0.0381);	// batch 4: turned with the gun (was 0.9998, 0.0002, -0.0210)
+		case 89:	return (0.9967, 0.0711, 0.0389);	// batch 4: turned with the gun (was 0.9998, 0.0001, -0.0202)
+		case 90:	return (0.9967, 0.0711, 0.0391);	// batch 4: turned with the gun (was 0.9998, 0.0001, -0.0200)
+		case 91:	return (0.9967, 0.0714, 0.0381);	// batch 4: turned with the gun (was 0.9998, 0.0003, -0.0210)
+		case 92:	return (0.9967, 0.0708, 0.0402);	// batch 4: turned with the gun (was 0.9998, 0.0001, -0.0188)
+		case 93:	return (0.9968, 0.0713, 0.0377);	// batch 4: turned with the gun (was 0.9998, 0.0001, -0.0214)
 		}
 		return (0, 0, 0);
 	}
@@ -415,15 +415,15 @@ class RSB_Guns abstract
 		{
 		case 1:	return (0.5363, 0.0089, -0.8440);
 		case 2:	return (0.2409, 0.0486, -0.9693);
-		case 3:	return (0.5386, 0.0092, -0.8425);
+		case 3:	return (0.5734, 0.2084, -0.7923);	// batch 4: the hold of the round re-expressed for the moved gun (was 0.5386, 0.0092, -0.8425)
 		case 4:	return (0.5368, 0.0091, -0.8437);
 		case 5:	return (-0.2490, -0.0012, -0.9685);
 		case 6:	return (-0.2490, -0.0012, -0.9685);
-		case 7:	return (0.5386, 0.0092, -0.8425);
-		case 8:	return (0.5386, 0.0092, -0.8425);
-		case 9:	return (0.5386, 0.0092, -0.8425);
-		case 10:	return (-0.2490, -0.0012, -0.9685);		// = VR_Revolver's (5) hold of its speedloader
-		case 11:	return (0.5386, 0.0092, -0.8425);		// = BD22 Revolver's (7) hold of one round
+		case 7:	return (0.5734, 0.2084, -0.7923);	// batch 4: the hold of the round re-expressed for the moved gun (was 0.5386, 0.0092, -0.8425)
+		case 8:	return (0.5734, 0.2084, -0.7923);	// batch 4: the hold of the round re-expressed for the moved gun (was 0.5386, 0.0092, -0.8425)
+		case 9:	return (0.5734, 0.2084, -0.7923);	// batch 4: the hold of the round re-expressed for the moved gun (was 0.5386, 0.0092, -0.8425)
+		case 10:	return (-0.2047, 0.1698, -0.9640);	// batch 4: the hold of the round re-expressed for the moved gun (was -0.2490, -0.0012, -0.9685)		// = VR_Revolver's (5) hold of its speedloader
+		case 11:	return (0.5734, 0.2084, -0.7923);	// batch 4: the hold of the round re-expressed for the moved gun (was 0.5386, 0.0092, -0.8425)		// = BD22 Revolver's (7) hold of one round
 		}
 		return (0, 0, 0);
 	}
@@ -434,15 +434,15 @@ class RSB_Guns abstract
 		{
 		case 1:	return (-0.0062, 1.0000, 0.0066);
 		case 2:	return (-0.0496, 0.9981, 0.0377);
-		case 3:	return (-0.0094, 0.9999, 0.0049);
+		case 3:	return (-0.0867, 0.9771, 0.1943);	// batch 4: the hold of the round re-expressed for the moved gun (was -0.0094, 0.9999, 0.0049)
 		case 4:	return (-0.0091, 0.9999, 0.0050);
 		case 5:	return (0.0022, 1.0000, -0.0019);
 		case 6:	return (0.0022, 1.0000, -0.0019);
-		case 7:	return (-0.0094, 0.9999, 0.0049);
-		case 8:	return (-0.0094, 0.9999, 0.0049);
-		case 9:	return (-0.0094, 0.9999, 0.0049);
-		case 10:	return (0.0022, 1.0000, -0.0019);
-		case 11:	return (-0.0094, 0.9999, 0.0049);
+		case 7:	return (-0.0867, 0.9771, 0.1943);	// batch 4: the hold of the round re-expressed for the moved gun (was -0.0094, 0.9999, 0.0049)
+		case 8:	return (-0.0867, 0.9771, 0.1943);	// batch 4: the hold of the round re-expressed for the moved gun (was -0.0094, 0.9999, 0.0049)
+		case 9:	return (-0.0867, 0.9771, 0.1943);	// batch 4: the hold of the round re-expressed for the moved gun (was -0.0094, 0.9999, 0.0049)
+		case 10:	return (-0.0749, 0.9793, 0.1883);	// batch 4: the hold of the round re-expressed for the moved gun (was 0.0022, 1.0000, -0.0019)
+		case 11:	return (-0.0867, 0.9771, 0.1943);	// batch 4: the hold of the round re-expressed for the moved gun (was -0.0094, 0.9999, 0.0049)
 		}
 		return (0, 0, 0);
 	}
@@ -453,15 +453,15 @@ class RSB_Guns abstract
 		{
 		case 1:	return (0.8440, 0.0017, 0.5364);
 		case 2:	return (0.9693, 0.0390, 0.2429);
-		case 3:	return (0.8425, 0.0053, 0.5386);
+		case 3:	return (0.8147, -0.0427, 0.5783);	// batch 4: the hold of the round re-expressed for the moved gun (was 0.8425, 0.0053, 0.5386)
 		case 4:	return (0.8437, 0.0050, 0.5369);
 		case 5:	return (0.9685, -0.0026, -0.2490);
 		case 6:	return (0.9685, -0.0026, -0.2490);
-		case 7:	return (0.8425, 0.0053, 0.5386);
-		case 8:	return (0.8425, 0.0053, 0.5386);
-		case 9:	return (0.8425, 0.0053, 0.5386);
-		case 10:	return (0.9685, -0.0026, -0.2490);
-		case 11:	return (0.8425, 0.0053, 0.5386);
+		case 7:	return (0.8147, -0.0427, 0.5783);	// batch 4: the hold of the round re-expressed for the moved gun (was 0.8425, 0.0053, 0.5386)
+		case 8:	return (0.8147, -0.0427, 0.5783);	// batch 4: the hold of the round re-expressed for the moved gun (was 0.8425, 0.0053, 0.5386)
+		case 9:	return (0.8147, -0.0427, 0.5783);	// batch 4: the hold of the round re-expressed for the moved gun (was 0.8425, 0.0053, 0.5386)
+		case 10:	return (0.9760, 0.1107, -0.1877);	// batch 4: the hold of the round re-expressed for the moved gun (was 0.9685, -0.0026, -0.2490)
+		case 11:	return (0.8147, -0.0427, 0.5783);	// batch 4: the hold of the round re-expressed for the moved gun (was 0.8425, 0.0053, 0.5386)
 		}
 		return (0, 0, 0);
 	}
@@ -472,15 +472,15 @@ class RSB_Guns abstract
 		{
 		case 1:	return (-2.4369, 1.4551, -10.7462);
 		case 2:	return (-2.9386, 4.3565, -11.2309);
-		case 3:	return (-1.8711, 4.5497, -9.1817);
+		case 3:	return (-2.0938, 2.7285, -15.7199);	// batch 4: the hold of the round re-expressed for the moved gun (was -1.8711, 4.5497, -9.1817)
 		case 4:	return (0.5887, 4.1569, -10.3550);
 		case 5:	return (0.1911, 5.4982, -1.3209);
 		case 6:	return (0.1911, 5.4982, -1.3209);
-		case 7:	return (-1.8711, 4.5497, -9.1817);
-		case 8:	return (-1.8711, 4.5497, -9.1817);
-		case 9:	return (-1.8711, 4.5497, -9.1817);
-		case 10:	return (0.4246, 5.5272, -0.3592);		// the loader's rear where VR_Revolver's sits in the hand
-		case 11:	return (-0.7608, 4.5324, -7.7214);		// the round's rim where BD22's sits
+		case 7:	return (-2.0938, 2.7285, -15.7199);	// batch 4: the hold of the round re-expressed for the moved gun (was -1.8711, 4.5497, -9.1817)
+		case 8:	return (-2.0938, 2.7285, -15.7199);	// batch 4: the hold of the round re-expressed for the moved gun (was -1.8711, 4.5497, -9.1817)
+		case 9:	return (-2.0938, 2.7285, -15.7199);	// batch 4: the hold of the round re-expressed for the moved gun (was -1.8711, 4.5497, -9.1817)
+		case 10:	return (4.0081, 3.3921, -8.1097);	// batch 4: the hold of the round re-expressed for the moved gun (was 0.4246, 5.5272, -0.3592)		// the loader's rear where VR_Revolver's sits in the hand
+		case 11:	return (-4.0115, 2.4845, -15.6403);	// batch 4: the hold of the round re-expressed for the moved gun (was -0.7608, 4.5324, -7.7214)		// the round's rim where BD22's sits
 		}
 		return (0, 0, 0);
 	}
@@ -570,15 +570,15 @@ class RSB_Guns abstract
 		{
 		case 1:	return (0.0000, 0.0000, -5.0000);
 		case 2:	return (0.0000, 0.0000, -5.0000);
-		case 3:	return (0.0000, 0.0000, -5.0000);
+		case 3:	return (0.4661, -5.4159, -2.8012);	// batch 4: moved with the gun to the FBX hand (was 0.0000, 0.0000, -5.0000)
 		case 4:	return (0.0000, 0.0000, 0.0000);
 		case 5:	return (0.0000, 0.0000, 0.0000);
 		case 6:	return (0.0000, 0.0000, 0.0000);
-		case 7:	return (0.0000, 0.0000, -5.0000);
-		case 8:	return (0.0000, 0.0000, -5.0000);
-		case 9:	return (0.0000, 0.0000, -5.0000);
-		case 10:	return (0.0262, 0.9224, 0.5878);		// MODELDEF.rsqmoon
-		case 11:	return (0.0262, 0.9224, 0.5878);
+		case 7:	return (0.4661, -5.4159, -2.8012);	// batch 4: moved with the gun to the FBX hand (was 0.0000, 0.0000, -5.0000)
+		case 8:	return (0.4661, -5.4159, -2.8012);	// batch 4: moved with the gun to the FBX hand (was 0.0000, 0.0000, -5.0000)
+		case 9:	return (0.4661, -5.4159, -2.8012);	// batch 4: moved with the gun to the FBX hand (was 0.0000, 0.0000, -5.0000)
+		case 10:	return (0.8429, -7.0909, 1.0592);	// batch 4: moved with the gun to the FBX hand (was 0.0262, 0.9224, 0.5878)		// MODELDEF.rsqmoon
+		case 11:	return (0.8429, -7.0909, 1.0592);	// batch 4: moved with the gun to the FBX hand (was 0.0262, 0.9224, 0.5878)
 		}
 		return (0, 0, 0);
 	}
@@ -878,15 +878,15 @@ class RSB_Guns abstract
 		{
 		case 1:	return (0.0000, 0.0000, 0.0000);
 		case 2:	return (0.0000, 0.0000, 0.0000);
-		case 3:	return (3.5636, -0.0215, 0.2363);		// the cylinder's rear face
+		case 3:	return (8.8371, 1.7191, 4.3952);	// batch 4: moved with the gun to the FBX hand (was 3.5636, -0.0215, 0.2363)		// the cylinder's rear face
 		case 4:	return (8.0289, -1.2745, 3.4838);
 		case 5:	return (4.4599, 0.0046, -0.2405);
 		case 6:	return (4.4599, 0.0046, -0.2405);
-		case 7:	return (3.5636, -0.0215, 0.2363);
-		case 8:	return (3.5636, -0.0215, 0.2363);
-		case 9:	return (3.5636, -0.0215, 0.2363);
-		case 10:	return (4.0840, -0.0097, 2.1278);		// the six rounds' centre, seated
-		case 11:	return (4.0840, -0.0097, 2.1278);
+		case 7:	return (8.8371, 1.7191, 4.3952);	// batch 4: moved with the gun to the FBX hand (was 3.5636, -0.0215, 0.2363)
+		case 8:	return (8.8371, 1.7191, 4.3952);	// batch 4: moved with the gun to the FBX hand (was 3.5636, -0.0215, 0.2363)
+		case 9:	return (8.8371, 1.7191, 4.3952);	// batch 4: moved with the gun to the FBX hand (was 3.5636, -0.0215, 0.2363)
+		case 10:	return (12.1113, 2.1927, 4.7250);	// batch 4: moved with the gun to the FBX hand (was 4.0840, -0.0097, 2.1278)		// the six rounds' centre, seated
+		case 11:	return (12.1113, 2.1927, 4.7250);	// batch 4: moved with the gun to the FBX hand (was 4.0840, -0.0097, 2.1278)
 		}
 		return (0, 0, 0);
 	}

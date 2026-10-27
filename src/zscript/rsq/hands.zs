@@ -135,6 +135,12 @@ class RSQ_GunSide : Inventory
 	// shotguns: AssaultShotgun (row 1)
 	FbxTrgAS: RQFQ A -1; Stop;
 	FbxSqzAS: RQFQ B -1; Stop;
+	// batch 4: Revolver (row 17)
+	FbxTrgRev: RQFK A -1; Stop;
+	FbxSqzRev: RQFK B -1; Stop;
+	// batch 4: BrutalRevolver (row 17)
+	FbxTrgBru: RQFL A -1; Stop;
+	FbxSqzBru: RQFL B -1; Stop;
 	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
 	Nade: RQGN A -1; Stop;	// Ermac's ammo hand round the VR grenade
 	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
@@ -341,6 +347,28 @@ class RSQ_Hands : Weapon
 				msq = mgp.CurState.bFullbright || (mgp.Sprite == Actor.GetSpriteIndex('2SAS') && mf >= 1 && mf <= 4) || (mgp.Sprite == Actor.GetSpriteIndex('3SAR') && mf == 8) || (mgp.Sprite == Actor.GetSpriteIndex('USAS') && (mf == 9 || mf == 13 || mf == 14));
 			}
 			gl = msq ? "FbxSqzAS" : "FbxTrgAS";
+		}
+		if (i == 17 && !(p.ReadyWeapon is 'BrutalRevolver'))	// batch 4: Revolver squeezes on its FIRE frames (Revolver.dec Fire: REVO / 2EVO B C bright, D-G the kick; Revolver2 draws REVO on the same mesh) or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || (mf >= 1 && mf <= 6 && (mgp.Sprite == Actor.GetSpriteIndex('REVO') || mgp.Sprite == Actor.GetSpriteIndex('2EVO')));
+			}
+			gl = msq ? "FbxSqzRev" : "FbxTrgRev";
+		}
+		if (i == 17 && p.ReadyWeapon is 'BrutalRevolver')	// batch 4: BrutalRevolver squeezes on its FIRE frames (BrutalRevolver.dec Fire: RVMA B D bright, F H) or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || (mf >= 1 && mf <= 7 && mgp.Sprite == Actor.GetSpriteIndex('RVMA'));
+			}
+			gl = msq ? "FbxSqzBru" : "FbxTrgBru";
 		}
 		if (i == 18)	// batch 4: Rifle squeezes on its FIRE frames (gunmoves rows 93-95: RIFF / RI2F / 2IFF A-D and the no-tube twins QT09 / QT0A / QT08) or fullbright, trigger otherwise
 		{
@@ -850,6 +878,10 @@ class RSQ_Hands : Weapon
 	DFbxSqzRif: RQFJ B -1; Stop;
 	DFbxTrgAS: RQFQ A -1; Stop;	// shotguns: dual wield, AssaultShotgun
 	DFbxSqzAS: RQFQ B -1; Stop;
+	DFbxTrgRev: RQFK A -1; Stop;	// batch 4: dual wield, Revolver
+	DFbxSqzRev: RQFK B -1; Stop;
+	DFbxTrgBru: RQFL A -1; Stop;	// batch 4: dual wield, BrutalRevolver
+	DFbxSqzBru: RQFL B -1; Stop;
 	Hidden: TNT1 A -1; Stop;
 	}
 }

@@ -45,5 +45,16 @@ These tools put the FBX hands on 4 guns tonight: BrutalPistol, Flamethrower2, Br
 - fit.json: `shift` (curl3's, cm in the gun's original frame; the gun keeps the approved pistol's r5 aim) or `place`.
 - A new gun = one entry in `GUNS` (md3, ready frame, base Scale/Offset, handtable row, reload case, casing key, the bd block).
 - Paths: repo-relative (`src/` or `$RSQ_SRC` / `--src`); fitter modules from `../fbx_fitter`. Writes `ported_<Class>.json` (the list) next to the fit.
+- Committed in `2a503ff` (first push); Rifle / Shotvolver / BrutalRevolver ported with it in batch 4.
 - **Verified:** `port/verify_mp40.sh` re-applies batch 3's MP40 move on 19f0203 and diffs against bdf3fae: byte-identical
   except the BrutalSMG muzzle row that commit also added.
+
+### Batch 4 tools in `port/` (all repo-relative; env overrides listed in each file)
+- `gate_gun.py smoke|sheet|hands|compose`: the per-gun rig gate (exclusive lock per engine run, rig ini restored, frame dumps deleted).
+  `hands` takes Depot mags.py ids, `brk<Class>:<ammo>:<feed>` (break-open, with the open dump first) and `m203` (the moved rifle's launcher).
+- `bake_gun.py <Class> <curl.json> <out>`: bakes trigger / squeeze / pistol-check frames with the wrist where the approved pistol's is.
+  Needs `RSQ_HANDS_TOOL` = a full fitter checkout: the snapshot in `fbx_fitter/` lacks its lane data (ref192_pistol.json, results/).
+- `reseat_from.py` (rigid re-seat from a given hold), `curl_gun.py [+]<Class>` (index + M/R/P curls), `sniper_fit.py` (the Rifle's hold on the Ruger).
+- `fits/`: each gun's fit (shift, hand wiring), the curl / stage-2 data, the baked MD3s, and `ported_<Class>.json` (what the port moved; the M203 gate reads R, t from it).
+- Rule found in batch 4: break-open guns (rsb_guns.zs) pass `Offset(i)` to RSB.Hook for the hinged parts AND the round in the off hand, so the
+  off-hand RSQ_Hands block moves too, and the hold rows are re-expressed (Hand0-2 = g R^T, HandT = HandT - g R^T t) so the hand's hold is unchanged.
