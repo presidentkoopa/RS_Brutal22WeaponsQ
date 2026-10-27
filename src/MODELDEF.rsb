@@ -131,8 +131,11 @@ Model GrenadeLauncher
 	SurfaceSkin 0 3 "rsr_clear.png"
 	SurfaceSkin 0 4 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -4.954 -4.624 0.0
+	ZOffset -14.013
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RBGG A 0 3
 }
@@ -148,8 +151,11 @@ Model RSB_GunParts
 	SurfaceSkin 0 3 "rsr_clear.png"
 	SurfaceSkin 0 4 "M79.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -4.954 -4.624 0.0
+	ZOffset -14.013
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RBGP A 0 3
 }
@@ -165,8 +171,11 @@ Model RSB_GunParts
 	SurfaceSkin 0 3 "M79.png"
 	SurfaceSkin 0 4 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -4.954 -4.624 0.0
+	ZOffset -14.013
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RBGP B 0 3
 }
@@ -182,8 +191,11 @@ Model RSQ_Hands
 	SurfaceSkin 0 3 "M79.png"
 	SurfaceSkin 0 4 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -4.954 -4.624 0.0
+	ZOffset -14.013
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RBGP H 0 3
 }

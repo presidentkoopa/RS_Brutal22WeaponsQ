@@ -55,17 +55,19 @@ class RSQ_ScopeTable abstract
 
 	clearscope static Vector3 Lens(int i)
 	{
-		static const double f[] = { 0, -1.710, -0.300 };
-		static const double l[] = { 0, -0.090,  0.250 };
-		static const double u[] = { 0, 11.810,  9.240 };
+		static const double f[] = { 0, 2.756, -0.300 };
+		static const double l[] = { 0, 0.416, 0.250 };
+		static const double u[] = { 0, 16.469, 9.240 };
+				// r9 port: Lens 1 moved with the gun to the FBX hand (was -1.7100 -0.0900 11.8100)
 		return i > 0 && i < f.Size() ? (f[i], l[i], u[i]) : (0, 0, 0);
 	}
 
 	clearscope static Vector3 Axis(int i)
 	{
-		static const double f[] = { 0, 0.9998, 1.0000 };
-		static const double l[] = { 0, 0.0149, -0.0040 };
-		static const double u[] = { 0, 0.0152, 0.0038 };
+		static const double f[] = { 0, 0.9940, 1.0000 };
+		static const double l[] = { 0, 0.0787, -0.0040 };
+		static const double u[] = { 0, 0.0764, 0.0038 };
+				// r9 port: Axis 1 moved with the gun to the FBX hand (was 0.9998 0.0149 0.0152)
 		return i > 0 && i < f.Size() ? (f[i], l[i], u[i]) : (1, 0, 0);
 	}
 

@@ -606,9 +606,12 @@ Model PuristGrenadeLauncher
    Model 0 "M79.md3"
    Skin 0 "M79.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
+   Offset -4.954 -4.624 0.0
+   ZOffset -14.013
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
    NoInterpolation
-   ZOffset -5
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -862,8 +865,11 @@ Model PuristMinigun
    Model 0 "Minigun.md3"
    Skin 0 "Minigun.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset -1.156 -5.106 0.0
+   ZOffset -1.923
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
    Nointerpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
@@ -984,8 +990,11 @@ Model PuristPlasma_Gun
    Model 0 "Plasma.md3"
    Skin 0 "Plasma.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset -0.978 -4.369 0.0
+   ZOffset -0.265
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
    Nointerpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
@@ -1094,8 +1103,11 @@ Model PuristRocket_Launcher
    Model 0 "RPG.md3"
    Skin 0 "RPG.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 0.259 -4.608 0.0
+   ZOffset 0.657
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
    Nointerpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
@@ -1252,9 +1264,12 @@ Model PuristRailGun
    SurfaceSkin 0 4 "RailGun.png"
    SurfaceSkin 0 1 "scope_glass.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
+   Offset -0.895 -5.099 0.0
+   ZOffset -1.747
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
    NoInterpolation
-   ZOffset -5
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -10334,8 +10349,11 @@ Model PuristGrenadeLauncher
 	SurfaceSkin 0 3 "rsr_clear.png"
 	SurfaceSkin 0 4 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -4.954 -4.624 0.0
+	ZOffset -14.013
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RBGG A 0 3
 }
@@ -10877,8 +10895,11 @@ Model PuristRailGun
 	SurfaceSkin 0 3 "RailGun.png"
 	SurfaceSkin 0 4 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -0.895 -5.099 0.0
+	ZOffset -1.747
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQLM A 0 3
 }
@@ -10892,8 +10913,11 @@ Model PuristPlasma_Gun
 	SurfaceSkin 0 2 "Plasma.png"
 	SurfaceSkin 0 3 "Plasma.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -0.978 -4.369 0.0
+	ZOffset -0.265
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQZM A 0 4
 }
@@ -10916,8 +10940,11 @@ Model PuristRocket_Launcher
 	SurfaceSkin 0 11 "rsr_clear.png"
 	SurfaceSkin 0 12 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.259 -4.608 0.0
+	ZOffset 0.657
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQDM A 0 5
 }
@@ -11041,4 +11068,64 @@ Model PuristShot_Gun
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQFP A 0 0	// Shot_Gun, finger on the trigger
 	FrameIndex RQFP B 0 1	// Shot_Gun, squeezed
+}
+
+// r9 port (lane B): GrenadeLauncher (row 8), dual wield holds the FBX gun hand fitted from 1.92's GrenadeLauncher hold (frames baked in place, hook 0)
+Model PuristGrenadeLauncher
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_GrenadeLauncher_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV7 A 0 0	// GrenadeLauncher, finger on the trigger
+	FrameIndex RQV7 B 0 1	// GrenadeLauncher, squeezed
+}
+
+// r9 port (lane B): Rocket_Launcher (row 19), dual wield holds the FBX gun hand fitted from 1.92's Rocket_Launcher hold (frames baked in place, hook 0)
+Model PuristRocket_Launcher
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_Rocket_Launcher_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV6 A 0 0	// Rocket_Launcher, finger on the trigger
+	FrameIndex RQV6 B 0 1	// Rocket_Launcher, squeezed
+}
+
+// r9 port (lane B): RailGun (row 16), dual wield holds the FBX gun hand fitted from 1.92's RailGun hold (frames baked in place, hook 0)
+Model PuristRailGun
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_RailGun_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV5 A 0 0	// RailGun, finger on the trigger
+	FrameIndex RQV5 B 0 1	// RailGun, squeezed
+}
+
+// r9 port (lane B): Plasma_Gun (row 15), dual wield holds the FBX gun hand fitted from 1.92's Plasma_Gun hold (frames baked in place, hook 0)
+Model PuristPlasma_Gun
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_Plasma_Gun_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV4 A 0 0	// Plasma_Gun, finger on the trigger
+	FrameIndex RQV4 B 0 1	// Plasma_Gun, squeezed
+}
+
+// r9 port (lane B): Minigun (row 13), dual wield holds the FBX gun hand fitted from 1.92's Minigun hold (frames baked in place, hook 0)
+Model PuristMinigun
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_Minigun_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV3 A 0 0	// Minigun, finger on the trigger
+	FrameIndex RQV3 B 0 1	// Minigun, squeezed
 }

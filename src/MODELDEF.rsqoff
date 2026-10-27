@@ -521,8 +521,11 @@ Model RSQ_Off_Plasma_Gun
    Model 0 "Plasma.md3"
    Skin 0 "Plasma.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset -0.978 -4.369 0.0
+   ZOffset -0.265
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
    Nointerpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
@@ -639,9 +642,12 @@ Model RSQ_Off_RailGun
    SurfaceSkin 0 4 "RailGun.png"
    SurfaceSkin 0 1 "scope_glass.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
+   Offset -0.895 -5.099 0.0
+   ZOffset -1.747
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
    NoInterpolation
-   ZOffset -5
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -5793,8 +5799,11 @@ Model RSQ_Off_RailGun
 	SurfaceSkin 0 3 "RailGun.png"
 	SurfaceSkin 0 4 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -0.895 -5.099 0.0
+	ZOffset -1.747
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQLM A 0 3
 }
@@ -5809,8 +5818,11 @@ Model RSQ_Off_Plasma_Gun
 	SurfaceSkin 0 2 "Plasma.png"
 	SurfaceSkin 0 3 "Plasma.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -0.978 -4.369 0.0
+	ZOffset -0.265
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQZM A 0 4
 }
@@ -5989,4 +6001,28 @@ Model RSQ_Off_Shot_Gun
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQFP A 0 0	// Shot_Gun, finger on the trigger
 	FrameIndex RQFP B 0 1	// Shot_Gun, squeezed
+}
+
+// r9 port (lane B): RailGun (row 16), dual wield holds the FBX gun hand fitted from 1.92's RailGun hold (frames baked in place, hook 0)
+Model RSQ_Off_RailGun
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_RailGun_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV5 A 0 0	// RailGun, finger on the trigger
+	FrameIndex RQV5 B 0 1	// RailGun, squeezed
+}
+
+// r9 port (lane B): Plasma_Gun (row 15), dual wield holds the FBX gun hand fitted from 1.92's Plasma_Gun hold (frames baked in place, hook 0)
+Model RSQ_Off_Plasma_Gun
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_Plasma_Gun_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV4 A 0 0	// Plasma_Gun, finger on the trigger
+	FrameIndex RQV4 B 0 1	// Plasma_Gun, squeezed
 }

@@ -721,8 +721,11 @@ Model RailGun
 	SurfaceSkin 0 3 "RailGun.png"
 	SurfaceSkin 0 4 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -0.895 -5.099 0.0
+	ZOffset -1.747
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQLM A 0 3
 }
@@ -738,8 +741,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 3 "rsr_clear.png"
 	SurfaceSkin 0 4 "RailGun.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -0.895 -5.099 0.0
+	ZOffset -1.747
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQLP A 0 3
 }
@@ -792,8 +798,11 @@ Model Plasma_Gun
 	SurfaceSkin 0 2 "Plasma.png"
 	SurfaceSkin 0 3 "Plasma.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -0.978 -4.369 0.0
+	ZOffset -0.265
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQZM A 0 4
 }
@@ -808,8 +817,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 2 "rsr_clear.png"
 	SurfaceSkin 0 3 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -0.978 -4.369 0.0
+	ZOffset -0.265
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQZP A 0 4
 }
@@ -884,8 +896,11 @@ Model Rocket_Launcher
 	SurfaceSkin 0 11 "rsr_clear.png"
 	SurfaceSkin 0 12 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.259 -4.608 0.0
+	ZOffset 0.657
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQDM A 0 5
 }
@@ -909,8 +924,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 11 "RPG.png"
 	SurfaceSkin 0 12 "RPG.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.259 -4.608 0.0
+	ZOffset 0.657
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQDP A 0 5
 }
@@ -1865,8 +1883,11 @@ Model Minigun
 	SurfaceSkin 0 5 "Minigun.png"
 	SurfaceSkin 0 6 "Minigun.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -1.156 -5.106 0.0
+	ZOffset -1.923
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQCM A 0 4
 }
@@ -1884,8 +1905,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 5 "rsr_clear.png"
 	SurfaceSkin 0 6 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -1.156 -5.106 0.0
+	ZOffset -1.923
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQCP A 0 4
 }

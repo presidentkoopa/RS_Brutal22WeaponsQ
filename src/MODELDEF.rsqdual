@@ -366,3 +366,63 @@ Model Shot_Gun
 	FrameIndex RQFP A 0 0	// Shot_Gun, finger on the trigger
 	FrameIndex RQFP B 0 1	// Shot_Gun, squeezed
 }
+
+// r9 port (lane B): GrenadeLauncher (row 8), dual wield holds the FBX gun hand fitted from 1.92's GrenadeLauncher hold (frames baked in place, hook 0)
+Model GrenadeLauncher
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_GrenadeLauncher_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV7 A 0 0	// GrenadeLauncher, finger on the trigger
+	FrameIndex RQV7 B 0 1	// GrenadeLauncher, squeezed
+}
+
+// r9 port (lane B): Rocket_Launcher (row 19), dual wield holds the FBX gun hand fitted from 1.92's Rocket_Launcher hold (frames baked in place, hook 0)
+Model Rocket_Launcher
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_Rocket_Launcher_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV6 A 0 0	// Rocket_Launcher, finger on the trigger
+	FrameIndex RQV6 B 0 1	// Rocket_Launcher, squeezed
+}
+
+// r9 port (lane B): RailGun (row 16), dual wield holds the FBX gun hand fitted from 1.92's RailGun hold (frames baked in place, hook 0)
+Model RailGun
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_RailGun_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV5 A 0 0	// RailGun, finger on the trigger
+	FrameIndex RQV5 B 0 1	// RailGun, squeezed
+}
+
+// r9 port (lane B): Plasma_Gun (row 15), dual wield holds the FBX gun hand fitted from 1.92's Plasma_Gun hold (frames baked in place, hook 0)
+Model Plasma_Gun
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_Plasma_Gun_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV4 A 0 0	// Plasma_Gun, finger on the trigger
+	FrameIndex RQV4 B 0 1	// Plasma_Gun, squeezed
+}
+
+// r9 port (lane B): Minigun (row 13), dual wield holds the FBX gun hand fitted from 1.92's Minigun hold (frames baked in place, hook 0)
+Model Minigun
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_Minigun_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV3 A 0 0	// Minigun, finger on the trigger
+	FrameIndex RQV3 B 0 1	// Minigun, squeezed
+}

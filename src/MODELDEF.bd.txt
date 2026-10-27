@@ -1317,9 +1317,12 @@ Model GrenadeLauncher
    Model 0 "M79.md3"
    Skin 0 "M79.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
+   Offset -4.954 -4.624 0.0
+   ZOffset -14.013
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
    NoInterpolation
-   ZOffset -5
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -1581,8 +1584,11 @@ Model Minigun
    Model 0 "Minigun.md3"
    Skin 0 "Minigun.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset -1.156 -5.106 0.0
+   ZOffset -1.923
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
    Nointerpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
@@ -1708,8 +1714,11 @@ Model Plasma_Gun
    Model 0 "Plasma.md3"
    Skin 0 "Plasma.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset -0.978 -4.369 0.0
+   ZOffset -0.265
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
    Nointerpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
@@ -1821,8 +1830,11 @@ Model Rocket_Launcher
    Model 0 "RPG.md3"
    Skin 0 "RPG.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 0.259 -4.608 0.0
+   ZOffset 0.657
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
    Nointerpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
@@ -1985,9 +1997,12 @@ Model RailGun
    // the scope glass is its own surface and its own tile (see MODELDEF.rsr)
    SurfaceSkin 0 1 "scope_glass.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
+   Offset -0.895 -5.099 0.0
+   ZOffset -1.747
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
    NoInterpolation
-   ZOffset -5
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 

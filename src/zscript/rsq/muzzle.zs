@@ -70,6 +70,16 @@ class RSQ_Muzzle : EventHandler
 		if (w is 'Revolver')	return (26.67, 2.61, 7.04);
 		// shotguns: Shot_Gun's drawn muzzle (front-most face centre of the ready frame, 65.34 0.02 0.22 before the move), moved with the gun
 		if (w is 'Shot_Gun')	return (69.20, 9.87, 1.83);
+		// r9 port: GrenadeLauncher's drawn muzzle (front-most face centre of the ready frame, 46.39 0.00 1.16 before the move), moved with the gun
+		if (w is 'GrenadeLauncher')	return (50.66, 9.86, -3.40);
+		// r9 port: Rocket_Launcher's drawn muzzle (front-most face centre of the ready frame, 51.65 0.00 7.65 before the move), moved with the gun
+		if (w is 'Rocket_Launcher')	return (55.59, 3.74, 17.94);
+		// r9 port: RailGun's drawn muzzle (front-most face centre of the ready frame, 111.51 0.03 0.59 before the move), moved with the gun
+		if (w is 'RailGun')	return (116.02, 10.31, 12.14);
+		// r9 port: Plasma_Gun's drawn muzzle (front-most face centre of the ready frame, 72.10 0.07 -1.15 before the move), moved with the gun
+		if (w is 'Plasma_Gun')	return (76.10, 8.12, 9.61);
+		// r9 port: Minigun's drawn muzzle (front-most face centre of the ready frame, 95.92 0.35 -7.94 before the move), moved with the gun
+		if (w is 'Minigun')	return (100.86, 11.49, 2.74);
 		return (0, 0, 0);
 	}
 
