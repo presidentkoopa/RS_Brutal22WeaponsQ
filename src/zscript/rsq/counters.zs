@@ -10,7 +10,14 @@ class RSQ_Counters : EventHandler
 	static const Name GUN[] = { 'MG42', 'Flamethrower2', 'IncendiaryLauncher', 'Machinegun', 'Unmaker', 'Devastator', 'NukeLauncher', 'HellishMissileLauncher', 'Minigun' };
 	static const Name MAG[] = { 'RSQ_Mag_MG42', 'RSQ_Mag_Flamethrower2', 'RSQ_Mag_IncendiaryLauncher', 'RSQ_Mag_Machinegun', 'RSQ_Mag_Unmaker', 'RSQ_Mag_Devastator', 'RSQ_Mag_NukeLauncher', 'RSQ_Mag_HellishMissileLauncher', 'RSQ_Mag_Minigun' };
 	static const Name RES[] = { 'Clip2', 'Gas', 'AmmoM202', 'Clip2', 'SoulAmmo', 'DevastatorAmmo', 'Nuke', 'MiniHellRocketAmmo', 'Clip2' };
-	static const int CAP[] = { 100, 200, 6, 100, 60, 50, 1, 6, 100 };
+	static const int CAP[] = { 100, 100, 6, 100, 200, 50, 1, 6, 200 };
+	// r6 (owner item 13, 2026-10-27): Flamethrower 100, Machinegun 100, Unmaker 200, chaingun (Minigun) 200, and
+	// those four are REAL magazines (RealTick), not counters: a counter is a share of the reserve, so a
+	// 200 box over Clip2's 200 could never run dry before the reserve did and never asked for a reload.
+	static const int REAL[] = { 0, 1, 0, 1, 1, 0, 0, 0, 1 };
+	// rounds of the magazine lent into the reserve item, so BD22's own fire code (A_JumpIfNoAmmo, DepleteAmmo)
+	// finds ammo to spend. At most LEND; the reserve the HUD shows is the pouch plus these.
+	const LEND = 10;
 	int lastRes[MAXPLAYERS][9];
 	bool inited[MAXPLAYERS][9];
 
@@ -30,6 +37,11 @@ class RSQ_Counters : EventHandler
 				class<Inventory> nomag = "RSQ_NoMag_" .. GUN[g];
 				if (!mag || !res || !empty || !fill || !nomag) continue;
 				bool held = w && w.GetClassName() == GUN[g];
+				if (REAL[g] != 0)
+				{
+					RealTick(mo, pn, g, mag, res, empty, fill, nomag, held);
+					continue;
+				}
 				int r = mo.CountInv(res);
 				if (!held || !RSR_ReloadHandler.WantsHands(mo) || !NonStdOn(mo))
 				{
@@ -65,6 +77,98 @@ class RSQ_Counters : EventHandler
 				lastRes[pn][g] = r;
 			}
 		}
+	}
+
+	// r6: a REAL magazine. M = RSQ_Mag_<gun> (rounds in the gun), P = the pouch (BD22's reserve item minus the
+	// rounds lent to it), L = RSQ_Lent_<gun> (inventory, so it survives a map change and a save). BD22 fires as
+	// it always did and takes its ammo from the reserve item; each round it took is charged to the magazine and
+	// what the lent rounds did not cover is given back to the pouch. Seated (RSQ_Fill): min(CAP - M, P) moves
+	// from the pouch into the magazine. Out (RSQ_NoMag): nothing is lent, so the gun cannot fire, and its
+	// rounds stay in the magazine for the top-up. Not held / option off / not VR: the lent rounds are taken
+	// back and the magazine keeps its rounds, so another gun on the same ammo never spends them.
+	void RealTick(PlayerPawn mo, int pn, int g, class<Inventory> mag, class<Inventory> res, class<Inventory> empty,
+		class<Inventory> fill, class<Inventory> nomag, bool held)
+	{
+		class<Inventory> lent = "RSQ_Lent_" .. GUN[g];
+		class<Inventory> pouchTok = "RSQ_Pouch_" .. GUN[g];	// the gun's Reload starts only with rounds in the pouch
+		if (!lent || !pouchTok)
+			return;
+		int L = mo.CountInv(lent);
+		int r = mo.CountInv(res);
+		bool on = held && RSR_ReloadHandler.WantsHands(mo) && NonStdOn(mo);
+		if (!on)
+		{
+			mo.TakeInventory(empty, 1);
+			if (L > 0)
+			{
+				mo.TakeInventory(res, min(L, r));
+				mo.TakeInventory(lent, L);
+			}
+			if (held)
+			{
+				// VR reloading off for this gun (option off, or not in VR): Brutal Doom's gun, so the rounds in
+				// the magazine go back to the reserve, as far as it holds them (the rest wait in the magazine)
+				int inMag = mo.CountInv(mag);
+				if (inMag > 0)
+				{
+					int before = mo.CountInv(res);
+					mo.GiveInventory(res, inMag);
+					SetCount(mo, mag, inMag - (mo.CountInv(res) - before));
+				}
+				mo.TakeInventory(nomag, 1);
+				inited[pn][g] = false;
+			}
+			mo.TakeInventory(pouchTok, 1);
+			lastRes[pn][g] = mo.CountInv(res);
+			return;
+		}
+		int M = mo.CountInv(mag);
+		int M0 = M;
+		int d = lastRes[pn][g] - r;
+		if (inited[pn][g] && d > 0)
+		{
+			// (ZScript names are case-insensitive: a local "m" would be "M")
+			int fromMag = min(d, M), fromLent = min(d, L);
+			M -= fromMag;
+			L -= fromLent;
+			if (fromMag > fromLent)
+				mo.GiveInventory(res, fromMag - fromLent);	// BD22's code took it from the pouch, but it was a magazine round
+		}
+		bool top = !inited[pn][g] || mo.CountInv(fill) > 0;
+		inited[pn][g] = true;
+		if (top)
+		{
+			mo.TakeInventory(fill, 1);
+			mo.TakeInventory(nomag, 1);
+			int p = mo.CountInv(res) - L;
+			int n = clamp(min(CAP[g] - M, p), 0, CAP[g]);
+			mo.TakeInventory(res, n);
+			M += n;
+			if (RSR.Debug(mo.player))
+				Console.Printf("rsq t%d %s: RELOAD magazine %d -> %d, %d from the pouch, pouch %d -> %d", level.maptime, GUN[g], M - n, M, n, p, p - n);
+		}
+		bool magOut = mo.CountInv(nomag) > 0;
+		int want = magOut ? 0 : min(M, LEND);
+		if (L > want)
+		{
+			mo.TakeInventory(res, min(L - want, mo.CountInv(res)));
+			L = want;
+		}
+		else if (L < want)
+		{
+			int b = mo.CountInv(res);
+			mo.GiveInventory(res, want - L);
+			L += mo.CountInv(res) - b;
+		}
+		SetCount(mo, mag, M);
+		SetCount(mo, lent, L);
+		int pouch = mo.CountInv(res) - L;
+		bool e = magOut || (M <= 0 && pouch > 0);
+		if (e) mo.GiveInventory(empty, 1); else mo.TakeInventory(empty, 1);
+		if (pouch > 0) mo.GiveInventory(pouchTok, 1); else mo.TakeInventory(pouchTok, 1);
+		if (M != M0 && RSR.Debug(mo.player))
+			Console.Printf("rsq t%d %s: mag %d pouch %d lent %d%s", level.maptime, GUN[g], M, pouch, L, e ? " EMPTY" : "");
+		lastRes[pn][g] = mo.CountInv(res);
 	}
 
 	// 1.99x (owner): "Reload Non-Standard Guns" (rsq_reload_nonstd). Non-standard = the guns in GUN[]:
@@ -118,7 +222,7 @@ class RSQ_Mag_MG42 : Inventory { Default { Inventory.MaxAmount 100; +INVENTORY.U
 class RSQ_NoMag_MG42 : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_Empty_MG42 : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_Fill_MG42 : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
-class RSQ_Mag_Flamethrower2 : Inventory { Default { Inventory.MaxAmount 200; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Mag_Flamethrower2 : Inventory { Default { Inventory.MaxAmount 100; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_NoMag_Flamethrower2 : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_Empty_Flamethrower2 : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_Fill_Flamethrower2 : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
@@ -130,7 +234,7 @@ class RSQ_Mag_Machinegun : Inventory { Default { Inventory.MaxAmount 100; +INVEN
 class RSQ_NoMag_Machinegun : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_Empty_Machinegun : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_Fill_Machinegun : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
-class RSQ_Mag_Unmaker : Inventory { Default { Inventory.MaxAmount 60; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Mag_Unmaker : Inventory { Default { Inventory.MaxAmount 200; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_NoMag_Unmaker : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_Empty_Unmaker : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_Fill_Unmaker : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
@@ -146,7 +250,15 @@ class RSQ_Mag_HellishMissileLauncher : Inventory { Default { Inventory.MaxAmount
 class RSQ_NoMag_HellishMissileLauncher : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_Empty_HellishMissileLauncher : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_Fill_HellishMissileLauncher : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
-class RSQ_Mag_Minigun : Inventory { Default { Inventory.MaxAmount 100; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Mag_Minigun : Inventory { Default { Inventory.MaxAmount 200; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_NoMag_Minigun : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_Empty_Minigun : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_Fill_Minigun : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Lent_Flamethrower2 : Inventory { Default { Inventory.MaxAmount 999; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Lent_Machinegun : Inventory { Default { Inventory.MaxAmount 999; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Lent_Unmaker : Inventory { Default { Inventory.MaxAmount 999; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Lent_Minigun : Inventory { Default { Inventory.MaxAmount 999; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Pouch_Flamethrower2 : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Pouch_Machinegun : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Pouch_Unmaker : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Pouch_Minigun : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }

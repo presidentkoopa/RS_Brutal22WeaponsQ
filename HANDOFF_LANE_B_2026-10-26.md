@@ -809,3 +809,56 @@ whole-model Skin / atlas-on-glass was in PuristRailGun (MODELDEF.purist) and RSQ
 dry-run-checked on this mesh, if a real cap is ever found.
 
 Not done: headset pass.
+# r6 reloads lane (2026-10-27, box 07:31-08:46): owner r3 report items 13 and 14, branch `newreloads`
+
+## Done (rig only, NOT headset-confirmed)
+### Item 13: real magazines on Flamethrower2 (100), Unmaker (200), Machinegun (100), chaingun = `MiniGun` (200)
+- What was there (1.97): `RSQ_Counters` gave these guns a COUNTER that is a share of the reserve
+  (mag <= reserve). So a magazine as large as the whole reserve (Minigun 200 vs Clip2 200, see the README's
+  old Minigun note) can never run dry before the reserve, and never asks for a reload.
+- Now (`counters.zs` `REAL[]`, `RealTick`): a separate magazine (`RSQ_Mag_<gun>`), a pouch (BD22's own
+  reserve item: Gas, SoulAmmo, Clip2; unchanged) and up to 10 rounds lent from the magazine into the
+  reserve item (`RSQ_Lent_<gun>`, inventory, so it survives maps and saves) so BD22's own fire code
+  (A_JumpIfNoAmmo, DepleteAmmo) still has ammo to spend. Every round BD22 takes is charged to the magazine.
+  Seated: min(cap - mag, pouch) moves from the pouch into the magazine (a top-up; the rounds stay in the
+  magazine while it is out, none are lost). Empty magazine (`RSQ_Empty`) jumps Fire/Hold to Reload (the
+  existing posefix lines). Reload starts only with rounds in the pouch (`RSQ_Pouch_<gun>` token), or to put
+  an out magazine back (`RSQ_NoMag` line added to each gun's Reload).
+- Off (rsq_reload_nonstd 0, rsr_reload 0 or not in VR) and the gun held: the magazine's rounds go back
+  to the reserve (as far as its MaxAmount holds them), lent rounds are taken back: Brutal Doom's gun.
+  Not held: lent rounds are taken back so the Rifle etc. never spend them on Clip2.
+- Flamethrower2: its Reload was already a real path in this pack (BD22's shared ReadyDry/Reload label
+  was split in 1.99, `ca47d85`); unchanged apart from the lines above. Grip/hand rows and flamespout untouched.
+- Parts carried: the existing F10 parts (canister, Unmaker skull, Minigun box, Machinegun box), unchanged.
+- Trap found: ZScript names are case-insensitive. `int m = min(d, M)` re-declared `M`; the counter never
+  went down. Fixed by naming (`fromMag`).
+- Rig evidence, QZD 17.3, load order doom2 -> brutal22test6 -> BD_VoxelPack -> pack + probe,
+  `/home/claude/lane_b_out/r6_reloads_evidence/` (evidence_r6.txt, logs/, r6_reload_frames.png, drivers):
+
+| gun | start | fire held to empty | trigger on empty | hand reload (off hand, Depot mags.at poses) | fire again (80 tics) |
+|---|---|---|---|---|---|
+| Flamethrower2 | mag 100, pouch 150 | 100 spent, empty t370 | 0 spent | EMPTY>CARRY>INSERT>SEATED, mag 0->100, pouch 150->50 | 84 spent |
+| Unmaker | mag 200, pouch 250 | 200 spent (100 shots x 2) | 0 | mag 0->200, pouch 250->50 | 152 |
+| MiniGun | mag 200, pouch 200 (backpack) | 200 spent, empty t871 | 0 | mag 0->200, pouch 200->0 | 27 |
+| Machinegun | mag 100, pouch 300 (backpack) | 100 spent | 0 | mag 0->100, pouch 300->200 | 28 |
+
+- Class sweep (`r6_classes.log`): all 37 weapon classes given, selected, fired, alt-fired, reloaded in one
+  run: no script error or VM abort; only BD_VoxelPack voxeldef lines and DeathSphereHealth (baseline).
+  The six Dual* classes were not selected by `use` (they need BD22's dual pickup); not a regression check of dual.
+- pk3 `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r6-reloads.pk3`, sha256
+  ff62c686a40c36f9ef0042a70b974aac2d7350b5886affe8e5a2e112a2f05583 (build.py reproduces it byte for byte
+  from this branch before the rebase).
+
+## Flagged
+- Frames (`r6_reload_frames.png`): the canister is shown in the off hand and seated. The Unmaker skull is
+  drawn off the hand (mid-air, ~10 cm off) during the carry; the Minigun's carried part draws as a small
+  dark piece by the hand; the Machinegun box is not visible in these camera angles. These are the F10
+  carry poses (item 10: "not refitted" for skull/box), not the magazine code; the logs show each part
+  taken and seated.
+- The HUD shows BD22's reserve item = pouch + up to 10 lent rounds, not the magazine count.
+- Balance: like BD22's own Rifle (RifleAmmo + Clip2), the magazine is carried on top of the reserve:
+  the chaingun can now carry 200 + Clip2's 200/400. That is what the owner's 200 needs; his call to confirm.
+- Each new map starts with a top-up (the handler is per level), as the 1.97 counters did.
+
+## Not reached
+- Item 14 (dual options for every gun): not started in this box.

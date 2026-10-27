@@ -101,8 +101,9 @@ These are behind the **Ballistics** switch. Stock is Brutal Doom's own.
 - **The Nuker uses the BFG's hands.** It is the same model, so it gets the same grip and trigger
   finger, fitted to its size.
 - **Chainsaw** grip hand moved 2 cm left. **Incendiary Launcher** grip hand moved 2 cm forward.
-- **Minigun:** the box holds 100 rounds and reloads. At 200 it could never be emptied below
-  Brutal Doom's own reserve, so a reload never started.
+- **Real magazines** on the Flamethrower (100), Machinegun (100), Unmaker (200) and Minigun (200):
+  every shot comes out of the magazine, the reserve is what is left in your pouch, and a reload
+  moves rounds from the pouch into the gun.
 - **Machinegun:** the 40 mm round, its latch and the hands sat 5 cm high. Fixed.
 - **MG42, Flamethrower, Unmaker:** the gun no longer jumps 5 cm when a reload starts.
 - **Axe and sword** cut only on a down or side swing, never an upswing, and need a harder swing.
