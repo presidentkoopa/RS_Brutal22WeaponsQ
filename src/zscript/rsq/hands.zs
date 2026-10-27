@@ -123,6 +123,9 @@ class RSQ_GunSide : Inventory
 	FbxSqzF: RQFG D -1; Stop;
 	FbxSupP: RQFS A -1; Stop;
 	FbxSupF: RQFS B -1; Stop;
+	// batch 2: BrutalSMG (row 5), the pistol's FBX hand with the index on the SMG trigger
+	FbxTrgS: RQFH A -1; Stop;
+	FbxSqzS: RQFH B -1; Stop;
 	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
 	Nade: RQGN A -1; Stop;	// Ermac's ammo hand round the VR grenade
 	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
@@ -313,6 +316,17 @@ class RSQ_Hands : Weapon
 			}
 			gl = (fsq ? "FbxSqz" : "FbxTrg") .. (i == 4 ? "P" : "F");
 		}
+		if (i == 5)	// batch 2: BrutalSMG squeezes on its FIRE frames (BD22 SMG.dec Fire: SMGF / 2MGF A-C, zoomed SMGZ G-I), trigger otherwise
+		{
+			bool ssq = false;
+			let sgp = p.FindPSprite(PSP_WEAPON);
+			if (sgp && sgp.CurState)
+			{
+				int sf = sgp.Frame;
+				ssq = sgp.CurState.bFullbright || ((sgp.Sprite == Actor.GetSpriteIndex('SMGF') || sgp.Sprite == Actor.GetSpriteIndex('2MGF')) && sf <= 2) || (sgp.Sprite == Actor.GetSpriteIndex('SMGZ') && sf >= 6 && sf <= 8);
+			}
+			gl = ssq ? "FbxSqzS" : "FbxTrgS";
+		}
 		invoker.SetLayer(p, RSQ_Layers.GUNHAND, gs, own != "" ? own : i > 0 && g != "" ? gl : "Hidden");
 		String sp = RSQ_HandTable.Support(i);
 		if (i == 18 && p.ReadyWeapon is 'PuristRifle')
@@ -320,6 +334,8 @@ class RSQ_Hands : Weapon
 		else if (i == 18 && RSK_M203Handler.TriggerGrip(mo))
 			sp = (p.cmd.buttons & BT_OFFHANDATTACK) ? "M2" : "M1";	// 1.31: finger on the M203's trigger (squeezed)
 		String spl = (i == 4 || i == 7) ? (i == 4 ? "FbxSupP" : "FbxSupF") : "Sup" .. sp;	// BD 2.0 b1: the FBX support hands
+		if (i == 5)
+			spl = "FbxSupF";	// batch 2: BrutalSMG, the FBX open palm under its forend (handtable SupportHook / SupportRot row 5)
 		invoker.SetLayer(p, RSQ_Layers.SUPPORT, gs, hold && sp != "" ? spl : "Hidden");
 
 		// 2026-10-23: the VR scope's reticle (rsq/scope.zs). WHETHER the layer is there is this
@@ -759,6 +775,8 @@ class RSQ_Hands : Weapon
 	DFbxSqzP: RQFG B -1; Stop;
 	DFbxTrgF: RQFG C -1; Stop;
 	DFbxSqzF: RQFG D -1; Stop;
+	DFbxTrgS: RQFH A -1; Stop;	// batch 2: dual wield, BrutalSMG
+	DFbxSqzS: RQFH B -1; Stop;
 	Hidden: TNT1 A -1; Stop;
 	}
 }

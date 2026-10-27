@@ -305,8 +305,11 @@ Model BrutalSMG
 	SurfaceSkin 0 2 "BrutalSMG.png"
 	SurfaceSkin 0 3 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.908 -4.560 0.0
+	ZOffset -3.413
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// batch 2 (lane B): gun to the FBX pistol hand
 	NoInterpolation
 	FrameIndex RQBM A 0 3
 }
@@ -321,8 +324,11 @@ Model BrutalSMG
 	SurfaceSkin 0 2 "BrutalSMG.png"
 	SurfaceSkin 0 3 "BrutalSMG.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.908 -4.560 0.0
+	ZOffset -3.413
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// batch 2 (lane B): gun to the FBX pistol hand
 	NoInterpolation
 	FrameIndex RQBM B 0 3
 }
@@ -337,8 +343,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 2 "rsr_clear.png"
 	SurfaceSkin 0 3 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.908 -4.560 0.0
+	ZOffset -3.413
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// batch 2 (lane B): gun to the FBX pistol hand
 	NoInterpolation
 	FrameIndex RQBP B 0 3
 }
@@ -353,8 +362,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 2 "rsr_clear.png"
 	SurfaceSkin 0 3 "BrutalSMG.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.908 -4.560 0.0
+	ZOffset -3.413
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// batch 2 (lane B): gun to the FBX pistol hand
 	NoInterpolation
 	FrameIndex RQBP A 0 3
 }
@@ -963,8 +975,11 @@ Model BrutalSMG
 	SurfaceSkin 0 2 "BrutalSMG.png"
 	SurfaceSkin 0 3 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.908 -4.560 0.0
+	ZOffset -3.413
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// batch 2 (lane B): gun to the FBX pistol hand
 	NoInterpolation
 	FrameIndex RQBM C 0 3
 }

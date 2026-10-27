@@ -365,3 +365,25 @@ Model RSQ_Hands
 	FrameIndex RQFS A 0 0	// pistol cup
 	FrameIndex RQFS B 0 1	// flamethrower: open palm under the tank
 }
+
+// batch 2 (lane B): BrutalSMG (row 5) holds the pistol's FBX gun hand, index re-solved to its trigger (frames baked in place, hook 0)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b2_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFH A 0 0	// BrutalSMG, finger on the trigger
+	FrameIndex RQFH B 0 1	// BrutalSMG, squeezed
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b2_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFH A 0 0	// BrutalSMG, finger on the trigger
+	FrameIndex RQFH B 0 1	// BrutalSMG, squeezed
+}

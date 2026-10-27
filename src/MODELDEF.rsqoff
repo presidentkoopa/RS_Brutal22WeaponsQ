@@ -274,8 +274,11 @@ Model RSQ_Off_BrutalSMG
    Model 0 "BrutalSMG.md3"
    Skin 0 "BrutalSMG.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 0.908 -4.560 0.0
+   ZOffset -3.413
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// batch 2 (lane B): gun to the FBX pistol hand
    Nointerpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
@@ -5609,8 +5612,11 @@ Model RSQ_Off_BrutalSMG
 	SurfaceSkin 0 2 "BrutalSMG.png"
 	SurfaceSkin 0 3 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.908 -4.560 0.0
+	ZOffset -3.413
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// batch 2 (lane B): gun to the FBX pistol hand
 	NoInterpolation
 	FrameIndex RQBM A 0 3
 }
@@ -5625,8 +5631,11 @@ Model RSQ_Off_BrutalSMG
 	SurfaceSkin 0 2 "BrutalSMG.png"
 	SurfaceSkin 0 3 "BrutalSMG.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.908 -4.560 0.0
+	ZOffset -3.413
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// batch 2 (lane B): gun to the FBX pistol hand
 	NoInterpolation
 	FrameIndex RQBM B 0 3
 }
@@ -5782,8 +5791,11 @@ Model RSQ_Off_BrutalSMG
 	SurfaceSkin 0 2 "BrutalSMG.png"
 	SurfaceSkin 0 3 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 0.908 -4.560 0.0
+	ZOffset -3.413
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// batch 2 (lane B): gun to the FBX pistol hand
 	NoInterpolation
 	FrameIndex RQBM C 0 3
 }
@@ -5838,4 +5850,16 @@ Model RSQ_Off_BrutalPistol
 	FrameIndex RQFG B 0 2	// pistol, squeezed
 	FrameIndex RQFG C 0 1	// flamethrower, finger on the lever
 	FrameIndex RQFG D 0 3	// flamethrower, squeezed
+}
+
+// batch 2 (lane B): BrutalSMG (row 5), dual wield holds the pistol's FBX gun hand, index re-solved to its trigger (frames baked in place, hook 0)
+Model RSQ_Off_BrutalSMG
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b2_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFH A 0 0	// BrutalSMG, finger on the trigger
+	FrameIndex RQFH B 0 1	// BrutalSMG, squeezed
 }

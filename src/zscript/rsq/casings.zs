@@ -16,7 +16,7 @@ class RSA_Casings : EventHandler
 	{
 		if (w is 'BrutalPistol')		return (7.2, -0.1, 6.4);	// BD 2.0 b1: moved with the gun to the FBX hand (was -1.0, -1.0, 1.3)
 		if (w is 'Rifle')				return (10.0, -0.6, 2.6);
-		if (w is 'BrutalSMG')			return (14.0, -3.1, -1.0);
+		if (w is 'BrutalSMG')			return (18.7, -0.8, 2.6);	// batch 2: moved with the gun to the FBX hand (was 14.0, -3.1, -1.0)
 		if (w is 'AssaultShotgun')		return (16.0, -1.4, -0.6);
 		if (w is 'Shot_Gun')			return (12.8, -1.5, 0.0);	// 1.97: the port the model-maker named `eject`
 		if (w is 'SSG')					return (4.4, 0.0, 1.9);	// 1.97: the break-open breech, surface `Open`

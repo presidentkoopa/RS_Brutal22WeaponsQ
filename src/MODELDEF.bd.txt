@@ -563,8 +563,11 @@ Model BrutalSMG
    Model 0 "BrutalSMG.md3"
    Skin 0 "BrutalSMG.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 0.908 -4.560 0.0
+   ZOffset -3.413
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// batch 2 (lane B): gun to the FBX pistol hand
    Nointerpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
