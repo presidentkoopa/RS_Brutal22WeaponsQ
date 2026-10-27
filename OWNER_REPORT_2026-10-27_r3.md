@@ -43,3 +43,7 @@ Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning mat
 
 ## Questions answered (in the reply)
 - **"Gun bash"** is a BUTTON: BD22's kick button with a gun in hand does a gun hit instead of the boot. The swing-down gesture with a pistol is the **pistol whip**, a different move. The naming is confusing; consider a rename.
+
+## Added by the owner (2026-10-27 06:50)
+16. **Pistol whip (the one-handed downstroke) only works with the OFF hand,** not the main hand. Fix it so the main hand's downstroke whips.
+17. **The impact hit flash on EVERY melee hit:** punch, butt strike, pistol whip and gun bash all get the RS_CombatFX hit-flash graphic, with its colour assignable (the RSH0 tint options Original/Blue/Green/Amber/White already exist in TRNSLATE.rsq). Today only the gun bash has it (F4).
