@@ -183,6 +183,9 @@ class RSQ_GunSide : Inventory
 	// r11 port: Devastator (row 6)
 	FbxTrgDeva: RQVC A -1; Stop;
 	FbxSqzDeva: RQVC B -1; Stop;
+	// r11 port: SSG (row 20)
+	FbxTrgSSG: RQVD A -1; Stop;
+	FbxSqzSSG: RQVD B -1; Stop;
 	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
 	Nade: RQGN A -1; Stop;	// Ermac's ammo hand round the VR grenade
 	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
@@ -566,6 +569,17 @@ class RSQ_Hands : Weapon
 			}
 			gl = msq ? "FbxSqzDeva" : "FbxTrgDeva";
 		}
+		if (i == 20)	// r11 port: SSG squeezes on its fire frames: SHT2 BCDEFGHIJ, VSSG BCDEFGHIJ or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || (mgp.Sprite == Actor.GetSpriteIndex('SHT2') && (mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 6 || mf == 7 || mf == 8 || mf == 9)) || (mgp.Sprite == Actor.GetSpriteIndex('VSSG') && (mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 6 || mf == 7 || mf == 8 || mf == 9));
+			}
+			gl = msq ? "FbxSqzSSG" : "FbxTrgSSG";
+		}
 		if (i == 18)	// batch 4: Rifle squeezes on its FIRE frames (gunmoves rows 93-95: RIFF / RI2F / 2IFF A-D and the no-tube twins QT09 / QT0A / QT08) or fullbright, trigger otherwise
 		{
 			bool msq = false;
@@ -606,6 +620,8 @@ class RSQ_Hands : Weapon
 		else if (i == 18 && RSK_M203Handler.TriggerGrip(mo))
 			sp = (p.cmd.buttons & BT_OFFHANDATTACK) ? "M2" : "M1";	// 1.31: finger on the M203's trigger (squeezed)
 		String spl = (i == 4 || i == 7) ? (i == 4 ? "FbxSupP" : "FbxSupF") : "Sup" .. sp;	// BD 2.0 b1: the FBX support hands
+		if (i == 20)
+			spl = "FbxSupF";	// r11 port: SSG, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 20)
 		if (i == 6)
 			spl = "FbxSupF";	// r11 port: Devastator, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 6)
 		if (i == 10)
@@ -1136,6 +1152,8 @@ class RSQ_Hands : Weapon
 	DFbxSqzInc: RQV8 B -1; Stop;
 	DFbxTrgDeva: RQVC A -1; Stop;	// r11 port: dual wield, Devastator
 	DFbxSqzDeva: RQVC B -1; Stop;
+	DFbxTrgSSG: RQVD A -1; Stop;	// r11 port: dual wield, SSG
+	DFbxSqzSSG: RQVD B -1; Stop;
 	Hidden: TNT1 A -1; Stop;
 	}
 }

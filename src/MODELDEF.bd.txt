@@ -2614,8 +2614,11 @@ Model SSG
    Model 0 "SSG.md3"
    Skin 0 "ssg.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset -3.813 -3.959 0.0
+   ZOffset -12.773
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r11 port (lane B): gun to the FBX hand fitted from 1.92
    Nointerpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).

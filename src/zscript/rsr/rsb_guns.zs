@@ -41,7 +41,7 @@ class RSB_Guns abstract
 	{
 		switch (i)
 		{
-		case 1:	return (10.7185, 0.0346, -2.4812);
+		case 1:	return (14.6238, 7.0597, -7.8095);	// r11 port: moved with the gun to the FBX hand (was (10.7185, 0.0346, -2.4812))
 		case 2:	return (22.9516, 8.7973, -9.8684);	// r9 port: moved with the gun to the FBX hand (was (18.3427, -0.1278, -3.7417))
 		case 3:	return (14.3673, 2.8003, 1.1952);	// batch 4: moved with the gun to the FBX hand (was 8.9567, 0.0021, -3.3564)
 		case 4:	return (12.5311, -0.0319, 0.2407);
@@ -62,7 +62,7 @@ class RSB_Guns abstract
 	{
 		switch (i)
 		{
-		case 1:	return (0.0000, 1.0000, 0.0000);
+		case 1:	return (-0.0771, 0.9787, 0.1900);	// r11 port: moved with the gun to the FBX hand (was (0.0000, 1.0000, 0.0000))
 		case 2:	return (-0.0771, 0.9787, 0.1900);	// r9 port: moved with the gun to the FBX hand (was (0.0000, 1.0000, 0.0000))
 		case 3:	return (-0.9960, -0.0671, -0.0587);	// batch 4: moved with the gun to the FBX hand (was -1.0000, 0.0000, 0.0000)
 		case 4:	return (0.0000, 1.0000, 0.0000);
@@ -221,8 +221,8 @@ class RSB_Guns abstract
 	{
 		switch (i * 8 + k)
 		{
-		case 8:	return (1.0000, -0.0029, -0.0006);
-		case 9:	return (1.0000, -0.0031, -0.0006);
+		case 8:	return (0.9963, 0.0644, 0.0575);	// r11 port: turned with the gun (was 1.0000, -0.0029, -0.0006)
+		case 9:	return (0.9963, 0.0642, 0.0575);	// r11 port: turned with the gun (was 1.0000, -0.0031, -0.0006)
 		case 16:	return (0.9959, 0.0674, 0.0600);	// r9 port: turned with the gun (was 1.0000, 0.0006, 0.0013)
 		case 24:	return (0.9959, 0.0664, 0.0609);	// batch 4: turned with the gun (was 1.0000, -0.0003, 0.0023)		// the cylinder's own axis
 		case 25:	return (0.9959, 0.0668, 0.0610);	// batch 4: turned with the gun (was 1.0000, 0.0002, 0.0023)
@@ -413,7 +413,7 @@ class RSB_Guns abstract
 	{
 		switch (i)
 		{
-		case 1:	return (0.5363, 0.0089, -0.8440);
+		case 1:	return (0.5712, 0.2083, -0.7940);	// r11 port: moved with the gun to the FBX hand (was (0.5363, 0.0089, -0.8440))
 		case 2:	return (0.2795, 0.2516, -0.9266);	// r9 port: moved with the gun to the FBX hand (was (0.2409, 0.0486, -0.9693))
 		case 3:	return (0.5734, 0.2084, -0.7923);	// batch 4: the hold of the round re-expressed for the moved gun (was 0.5386, 0.0092, -0.8425)
 		case 4:	return (0.5368, 0.0091, -0.8437);
@@ -432,7 +432,7 @@ class RSB_Guns abstract
 	{
 		switch (i)
 		{
-		case 1:	return (-0.0062, 1.0000, 0.0066);
+		case 1:	return (-0.0836, 0.9770, 0.1961);	// r11 port: moved with the gun to the FBX hand (was (-0.0062, 1.0000, 0.0066))
 		case 2:	return (-0.1281, 0.9662, 0.2237);	// r9 port: moved with the gun to the FBX hand (was (-0.0496, 0.9981, 0.0377))
 		case 3:	return (-0.0867, 0.9771, 0.1943);	// batch 4: the hold of the round re-expressed for the moved gun (was -0.0094, 0.9999, 0.0049)
 		case 4:	return (-0.0091, 0.9999, 0.0050);
@@ -451,7 +451,7 @@ class RSB_Guns abstract
 	{
 		switch (i)
 		{
-		case 1:	return (0.8440, 0.0017, 0.5364);
+		case 1:	return (0.8166, -0.0457, 0.5755);	// r11 port: moved with the gun to the FBX hand (was (0.8440, 0.0017, 0.5364))
 		case 2:	return (0.9516, 0.0561, 0.3023);	// r9 port: moved with the gun to the FBX hand (was (0.9693, 0.0390, 0.2429))
 		case 3:	return (0.8147, -0.0427, 0.5783);	// batch 4: the hold of the round re-expressed for the moved gun (was 0.8425, 0.0053, 0.5386)
 		case 4:	return (0.8437, 0.0050, 0.5369);
@@ -470,7 +470,7 @@ class RSB_Guns abstract
 	{
 		switch (i)
 		{
-		case 1:	return (-2.4369, 1.4551, -10.7462);
+		case 1:	return (-10.6178, -2.7365, -10.1548);	// r11 port: moved with the gun to the FBX hand (was (-2.4369, 1.4551, -10.7462))
 		case 2:	return (-12.6708, -0.1753, -13.7160);	// r9 port: moved with the gun to the FBX hand (was (-2.9386, 4.3565, -11.2309))
 		case 3:	return (-2.0938, 2.7285, -15.7199);	// batch 4: the hold of the round re-expressed for the moved gun (was -1.8711, 4.5497, -9.1817)
 		case 4:	return (0.5887, 4.1569, -10.3550);
@@ -568,7 +568,7 @@ class RSB_Guns abstract
 	{
 		switch (i)
 		{
-		case 1:	return (0.0000, 0.0000, -5.0000);
+		case 1:	return (-3.8128, -3.9592, -12.7731);	// r11 port: moved with the gun to the FBX hand (was (0.0000, 0.0000, -5.0000))
 		case 2:	return (-4.9535, -4.6243, -14.0130);	// r9 port: moved with the gun to the FBX hand (was (0.0000, 0.0000, -5.0000))
 		case 3:	return (0.4661, -5.4159, -2.8012);	// batch 4: moved with the gun to the FBX hand (was 0.0000, 0.0000, -5.0000)
 		case 4:	return (0.0000, 0.0000, 0.0000);
@@ -1008,7 +1008,7 @@ class RSB_Guns abstract
 	{
 		switch (i)
 		{
-		case 1:	return (0.9884, 0.0000, 0.1522);
+		case 1:	return (0.9777, 0.0368, 0.2071);	// r11 port: moved with the gun to the FBX hand (was (0.9884, 0.0000, 0.1522))
 		case 2:	return (0.9626, 0.0235, 0.2698);	// r9 port: moved with the gun to the FBX hand (was (0.9762, 0.0000, 0.2169))
 		case 3:	return (0.0000, 0.0050, 1.0000);
 		case 4:	return (0.9895, 0.0000, 0.1448);
