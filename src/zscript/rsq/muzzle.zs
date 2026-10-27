@@ -1,0 +1,153 @@
+// muzzle.zs (r4, owner 2026-10-27: "Ruger 14 / sniper: the bullets leave from below the barrel,
+// as if from the magazine").
+//
+// WHERE A VR SHOT STARTS. On QuestZDoom 17.3 every player hitscan and rail starts at AttackPos,
+// the weapon CONTROLLER (hw_openxrdevice.cpp writes it each frame; p_map.cpp P_LineAttack and
+// P_RailAttack read it). The controller is the grip. On the Ruger that is 62 cm behind the muzzle
+// and 5 cm under the bore, so BD22's gray trail -- the one thing you see of the shot -- came out
+// of the magazine. AttackPos is `native readonly`, and A_RailAttack has no forward offset (its
+// side/up offsets are zeroed in VR unless use_action_spawn_yzoffset is set), so the shot is
+// moved here, without touching the engine, by two stock routes:
+//
+//   HITSCANS  WorldHitscanPreFired cancels the engine's trace and fires the SAME one again with
+//             LineAttack(LAF_ABSPOSITION): the start is an absolute point, the muzzle; the
+//             direction is still the engine's own AttackDir (p_map.cpp: the VR branch sets it
+//             whatever the position flags). Same angle, pitch, damage, puff, range, flags.
+//   THE TRAIL BD22's "Trail effect only" rail (damage 0) is cancelled and drawn again by
+//             Actor.RailAttack from a mount at the muzzle, aimed down the same AttackDir, with
+//             the same FRailParams: colour, duration, sparsity, puff, everything.
+//
+// What is NOT moved: the Ruger's damaging rail (30, "Heavy penetration", colour None, so it draws
+// nothing). Fired from a mount, its damage would be credited to the mount, not to you. It starts
+// at the controller, parallel to the bore and 5 cm under it, as it always has.
+//
+// THE WALL GUARD. A muzzle can be through a wall the hand is not. Before anything moves, the
+// line from the controller to the muzzle is traced; if it hits a wall, floor or ceiling the shot
+// is left exactly as the engine fired it. You never shoot from the far side of a wall.
+//
+// Per gun: the muzzle, cm in the weapon controller's frame (F forward, L left, U up), measured
+// off the held mesh through its MODELDEF chain (Depot tools/kit/rgeo.py to_flu).
+
+class RSQ_MuzzleRail : Actor
+{
+	Default
+	{
+		+NOINTERACTION; +NOBLOCKMAP; +NOGRAVITY; +DONTSPLASH;
+		Height 0; Radius 0; FloatSpeed 0;
+		RenderStyle "None";
+	}
+	States { Spawn: TNT1 A 1; Stop; }
+}
+
+class RSQ_Muzzle : EventHandler
+{
+	bool busy;
+
+	// (0, 0, 0): not moved.
+	//   Sniper  XM21.md3 frame 0 (the only frame; X21G/X21F/P21F all show it), surface 9
+	//           (trigger_safety_low.001_Cylinder.013, the body and barrel), MODELDEF.rsr Scale
+	//           -10.485 10.485 10.485, Offset -0.2816 -44.5467, ZOffset -6.3157: the barrel's tip
+	//           F 62.34, and the bore's centre L 0.28 U 5.03, the same from F 45 to the tip.
+	static Vector3 Muzzle(Weapon w)
+	{
+		if (!w)
+			return (0, 0, 0);
+		Name n = w.GetClassName();
+		if (n == 'Sniper')	return (62.3, 0.3, 5.0);
+		return (0, 0, 0);
+	}
+
+	// the muzzle in the world, or the controller itself when the guard says no
+	static Vector3, bool Where(PlayerPawn mo)
+	{
+		Vector3 hp = RSVR_VRHand.HandPos(mo);
+		if (!mo || !mo.player || !RSVR_VRHand.InVR(mo))
+			return hp, false;
+		Vector3 m = Muzzle(mo.player.ReadyWeapon);
+		if (m == (0, 0, 0))
+			return hp, false;
+		double ps = mo.Level.pixelstretch;
+		if (ps <= 0)
+			ps = 1.2;
+		let cv = CVar.FindCVar('vr_vunits_per_meter');
+		double vu = cv ? cv.GetFloat() : 34;
+		if (vu <= 0)
+			vu = 34;
+		// the same frame casings.zs places brass in
+		Vector3 F = RSVR_VRHand.HandDir(mo, 0, 0, ps);
+		Vector3 L = RSVR_VRHand.HandDir(mo, 90, 0, ps);
+		Vector3 U = RSVR_VRHand.HandDir(mo, 0, 90, ps);
+		Vector3 w3 = (F * m.x + L * m.y + U * m.z) * (vu / 100.0);
+		w3.z /= ps;
+		Vector3 at = hp + w3;
+		// the wall guard
+		double len = w3.Length();
+		if (len > 0)
+		{
+			FLineTraceData tr;
+			mo.LineTrace(VectorAngle(w3.x, w3.y), len, -asin(clamp(w3.z / len, -1, 1)),
+				TRF_ABSPOSITION | TRF_THRUACTORS, hp.z, hp.x, hp.y, tr);
+			if (tr.HitType != TRACE_HitNone)
+				return hp, false;
+		}
+		return at, true;
+	}
+
+	override bool WorldHitscanPreFired(WorldEvent e)
+	{
+		let mo = PlayerPawn(e.Thing);
+		if (busy || !mo || (e.AttackLineFlags & LAF_ISOFFHAND) || (e.AttackLineFlags & LAF_ABSPOSITION))
+			return false;
+		Vector3 at; bool ok;
+		[at, ok] = Where(mo);
+		if (!ok)
+			return false;
+		busy = true;
+		mo.LineAttack(e.AttackAngle, e.AttackDistance, e.AttackPitch, e.Damage, e.DamageType, e.AttackPuffType,
+			e.AttackLineFlags | LAF_ABSPOSITION, null, at.z, at.x, at.y);
+		busy = false;
+		return true;	// the engine's own trace, from the controller, is not run
+	}
+
+	override bool WorldRailgunPreFired(WorldEvent e)
+	{
+		let mo = PlayerPawn(e.Thing);
+		if (busy || !mo || e.RailParams.damage != 0 || (e.RailParams.flags & RGF_ISOFFHAND))
+			return false;	// only the trail-only rail: a damaging one stays the player's own
+		Vector3 at; bool ok;
+		[at, ok] = Where(mo);
+		if (!ok)
+			return false;
+		let r = Actor.Spawn('RSQ_MuzzleRail', at);
+		if (!r)
+			return false;
+		// the engine's own direction for this rail (p_map.cpp P_RailAttack, VR branch)
+		Vector3 ap = mo.AttackDir(mo, e.AttackAngle, e.AttackPitch);
+		r.angle = ap.x;
+		r.pitch = ap.y;
+		r.target = mo;
+		FRailParams p;
+		p.damage = e.RailParams.damage;
+		p.offset_xy = 0;
+		p.offset_z = 0;
+		p.color1 = e.RailParams.color1;
+		p.color2 = e.RailParams.color2;
+		p.maxdiff = e.RailParams.maxdiff;
+		p.flags = (e.RailParams.flags | RGF_CENTERZ) & ~RGF_ISOFFHAND;	// CENTERZ: start at the mount, not at an attack height
+		p.puff = e.RailParams.puff;
+		p.angleoffset = 0;
+		p.pitchoffset = 0;
+		p.distance = e.RailParams.distance;
+		p.duration = e.RailParams.duration;
+		p.sparsity = e.RailParams.sparsity;
+		p.drift = e.RailParams.drift;
+		p.spawnclass = e.RailParams.spawnclass;
+		p.SpiralOffset = e.RailParams.SpiralOffset;
+		p.limit = e.RailParams.limit;
+		busy = true;
+		r.RailAttack(p);
+		busy = false;
+		r.Destroy();
+		return true;	// the engine's trail, from the controller, is not drawn
+	}
+}
