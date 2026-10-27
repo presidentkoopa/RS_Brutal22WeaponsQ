@@ -438,3 +438,25 @@ Model RSQ_Hands
 	FrameIndex RQFJ A 0 0	// Rifle, finger on the trigger
 	FrameIndex RQFJ B 0 1	// Rifle, squeezed
 }
+
+// shotguns (lane B): AssaultShotgun (row 1) holds the FBX gun hand fitted from 1.92's AssaultShotgun hold (frames baked in place, hook 0)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_sg_AssaultShotgun_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFQ A 0 0	// AssaultShotgun, finger on the trigger
+	FrameIndex RQFQ B 0 1	// AssaultShotgun, squeezed
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_sg_AssaultShotgun_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFQ A 0 0	// AssaultShotgun, finger on the trigger
+	FrameIndex RQFQ B 0 1	// AssaultShotgun, squeezed
+}

@@ -64,6 +64,8 @@ class RSQ_Muzzle : EventHandler
 		if (n == 'BrutalRevolver')	return (27.2, -0.03, 4.61);
 		// batch 4: Rifle's drawn muzzle (front-most face centre of the ready frame, 65.80 0.49 2.57 before the move), moved with the gun
 		if (w is 'Rifle')	return (71.18, 6.06, 11.42);
+		// shotguns: AssaultShotgun's drawn muzzle (front-most face centre of the ready frame, 62.87 -0.13 -1.08 before the move), moved with the gun
+		if (w is 'AssaultShotgun')	return (67.36, 11.02, -2.66);
 		return (0, 0, 0);
 	}
 

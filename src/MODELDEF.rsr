@@ -589,8 +589,11 @@ Model AssaultShotgun
 	SurfaceSkin 0 5 "AssaultShotgun.png"
 	SurfaceSkin 0 6 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -4.701 -4.805 0.0
+	ZOffset -12.031
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// shotguns (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQAM A 0 4
 }
@@ -608,8 +611,11 @@ Model AssaultShotgun
 	SurfaceSkin 0 5 "AssaultShotgun.png"
 	SurfaceSkin 0 6 "AssaultShotgun.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -4.701 -4.805 0.0
+	ZOffset -12.031
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// shotguns (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQAM B 0 4
 }
@@ -627,8 +633,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 5 "rsr_clear.png"
 	SurfaceSkin 0 6 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -4.701 -4.805 0.0
+	ZOffset -12.031
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// shotguns (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQAP B 0 4
 }
@@ -646,8 +655,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 5 "rsr_clear.png"
 	SurfaceSkin 0 6 "AssaultShotgun.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -4.701 -4.805 0.0
+	ZOffset -12.031
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// shotguns (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQAP A 0 4
 }
@@ -1027,8 +1039,11 @@ Model AssaultShotgun
 	SurfaceSkin 0 5 "AssaultShotgun.png"
 	SurfaceSkin 0 6 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -4.701 -4.805 0.0
+	ZOffset -12.031
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// shotguns (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQAM C 0 4
 }

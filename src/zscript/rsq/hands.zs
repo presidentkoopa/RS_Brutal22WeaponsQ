@@ -132,6 +132,9 @@ class RSQ_GunSide : Inventory
 	// batch 4: Rifle (row 18)
 	FbxTrgRif: RQFJ A -1; Stop;
 	FbxSqzRif: RQFJ B -1; Stop;
+	// shotguns: AssaultShotgun (row 1)
+	FbxTrgAS: RQFQ A -1; Stop;
+	FbxSqzAS: RQFQ B -1; Stop;
 	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
 	Nade: RQGN A -1; Stop;	// Ermac's ammo hand round the VR grenade
 	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
@@ -328,6 +331,17 @@ class RSQ_Hands : Weapon
 			}
 			gl = (fsq ? "FbxSqz" : "FbxTrg") .. (i == 4 ? "P" : "F");
 		}
+		if (i == 1)	// shotguns: AssaultShotgun squeezes on its FIRE frames (gunmoves rows 0-5: 2SAS B-E, 3SAR I, USAS J N O) or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || (mgp.Sprite == Actor.GetSpriteIndex('2SAS') && mf >= 1 && mf <= 4) || (mgp.Sprite == Actor.GetSpriteIndex('3SAR') && mf == 8) || (mgp.Sprite == Actor.GetSpriteIndex('USAS') && (mf == 9 || mf == 13 || mf == 14));
+			}
+			gl = msq ? "FbxSqzAS" : "FbxTrgAS";
+		}
 		if (i == 18)	// batch 4: Rifle squeezes on its FIRE frames (gunmoves rows 93-95: RIFF / RI2F / 2IFF A-D and the no-tube twins QT09 / QT0A / QT08) or fullbright, trigger otherwise
 		{
 			bool msq = false;
@@ -368,6 +382,8 @@ class RSQ_Hands : Weapon
 		else if (i == 18 && RSK_M203Handler.TriggerGrip(mo))
 			sp = (p.cmd.buttons & BT_OFFHANDATTACK) ? "M2" : "M1";	// 1.31: finger on the M203's trigger (squeezed)
 		String spl = (i == 4 || i == 7) ? (i == 4 ? "FbxSupP" : "FbxSupF") : "Sup" .. sp;	// BD 2.0 b1: the FBX support hands
+		if (i == 1)
+			spl = "FbxSupF";	// shotguns: AssaultShotgun, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 1)
 		if (i == 12)
 			spl = "FbxSupF";	// batch 3: MP40, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 12)
 		if (i == 5)
@@ -832,6 +848,8 @@ class RSQ_Hands : Weapon
 	DFbxSqzM: RQFI B -1; Stop;
 	DFbxTrgRif: RQFJ A -1; Stop;	// batch 4: dual wield, Rifle
 	DFbxSqzRif: RQFJ B -1; Stop;
+	DFbxTrgAS: RQFQ A -1; Stop;	// shotguns: dual wield, AssaultShotgun
+	DFbxSqzAS: RQFQ B -1; Stop;
 	Hidden: TNT1 A -1; Stop;
 	}
 }

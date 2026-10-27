@@ -45,7 +45,7 @@ class RSR_Guns abstract
 		case 2:	return (5.324, 1.418, 3.020);	// BD 2.0 b1: moved with the gun to the FBX hand (was (-3.000, -0.000, -2.200))
 		case 3:	return (22.384, 3.230, -0.313);	// batch 2: moved with the gun to the FBX hand (was (17.800, -0.000, -4.800))
 		case 4:	return (35.546, 4.753, 8.153);	// batch 3: moved with the gun to the FBX hand (was (31.400, -0.000, 1.800))
-		case 5:	return (15.600, 0.000, -4.200);
+		case 5:	return (20.411, 8.574, -8.472);	// shotguns: moved with the gun to the FBX hand (was (15.600, 0.000, -4.200))
 		case 6:	return (22.100, 0.000, -3.500);
 		case 7:	return (12.600, 0.000, -10.000);
 		case 8:	return (13.094, 0.244, 4.909);	// 1.93 Ruger (was (11.600, 0.600, 3.200))
@@ -72,7 +72,7 @@ class RSR_Guns abstract
 		case 2:	return (0.108, -0.180, 0.977);	// BD 2.0 b1: moved with the gun to the FBX hand (was (0.153, 0.001, 0.988))
 		case 3:	return (0.255, -0.164, 0.953);	// batch 2: moved with the gun to the FBX hand (was (0.299, 0.001, 0.954))
 		case 4:	return (-0.045, -0.195, 0.980);	// batch 3: moved with the gun to the FBX hand (was (0.000, -0.001, 1.000))
-		case 5:	return (-0.000, 0.002, 1.000);
+		case 5:	return (-0.045, -0.192, 0.980);	// shotguns: moved with the gun to the FBX hand (was (-0.000, 0.002, 1.000))
 		case 6:	return (0.001, -0.000, 1.000);
 		case 7:	return (-0.192, 0.132, 0.973);
 		case 8:	return (-0.093, -0.003, 0.996);	// 1.93 Ruger (was (-0.066, -0.149, 0.987))
@@ -151,7 +151,7 @@ class RSR_Guns abstract
 		case 2:	return (4.376, 1.870, 0.124);	// BD 2.0 b1: moved with the gun to the FBX hand (was (-4.084, -0.035, -5.084))
 		case 3:	return (18.329, 4.780, -10.081);	// batch 2: moved with the gun to the FBX hand (was (13.292, -0.026, -14.492))
 		case 4:	return (35.775, 5.987, 1.812);	// batch 3: moved with the gun to the FBX hand (was (31.339, -0.015, -4.664))
-		case 5:	return (14.803, -0.113, -2.882);
+		case 5:	return (19.567, 8.155, -7.249);	// shotguns: moved with the gun to the FBX hand (was (14.803, -0.113, -2.882))
 		case 6:	return (21.035, 0.043, -7.475);
 		case 7:	return (18.946, -0.000, -14.794);
 		case 8:	return (13.554, 0.257, -0.027);	// 1.93 Ruger (was (12.381, 0.533, -9.588))
@@ -232,7 +232,7 @@ class RSR_Guns abstract
 		case 2:	return (0.180, -0.977, 0.108);	// BD 2.0 b1: moved with the gun to the FBX hand (was (-0.001, -0.988, 0.153))
 		case 3:	return (0.164, -0.953, 0.255);	// batch 2: moved with the gun to the FBX hand (was (-0.001, -0.954, 0.299))
 		case 4:	return (0.195, -0.980, -0.045);	// batch 3: moved with the gun to the FBX hand (was (0.001, -1.000, 0.000))
-		case 5:	return (-0.002, -1.000, -0.000);
+		case 5:	return (0.192, -0.980, -0.045);	// shotguns: moved with the gun to the FBX hand (was (-0.002, -1.000, -0.000))
 		case 6:	return (0.000, -1.000, 0.001);
 		case 7:	return (-0.132, -0.973, -0.192);
 		case 8:	return (0.000, -0.095, -0.009);	// 1.93 Ruger (was (0.110, -0.731, -0.049))
@@ -285,7 +285,7 @@ class RSR_Guns abstract
 		case 2:	return (1.355, 0.788, 4.653);	// BD 2.0 b1: moved with the gun to the FBX hand (was (-6.900, -0.000, -0.300))
 		case 3:	return (26.687, 5.480, 2.471);	// batch 2: moved with the gun to the FBX hand (was (22.400, 2.400, -2.700))
 		case 4:	return (26.725, 5.073, 9.243);	// batch 3: moved with the gun to the FBX hand (was (22.700, 1.200, 3.200))
-		case 5:	return (11.700, -0.700, -0.800);
+		case 5:	return (16.429, 6.969, -5.502);	// shotguns: moved with the gun to the FBX hand (was (11.700, -0.700, -0.800))
 		case 6:	return (0.000, 0.000, 0.000);
 		case 7:	return (0.000, 0.000, 0.000);
 		case 8:	return (13.854, -2.495, 4.366);	// 1.93 Ruger (was (-4.600, -0.300, 10.200))
@@ -311,7 +311,7 @@ class RSR_Guns abstract
 		case 2:	return (-0.996, -0.067, -0.059);	// BD 2.0 b1: moved with the gun to the FBX hand (was (-1.000, -0.000, -0.000))
 		case 3:	return (-0.978, 0.209, -0.003);	// batch 2: moved with the gun to the FBX hand (was (-0.960, 0.279, 0.000))
 		case 4:	return (-0.996, -0.067, -0.059);	// batch 3: moved with the gun to the FBX hand (was (-1.000, 0.000, 0.000))
-		case 5:	return (-1.000, 0.000, 0.000);
+		case 5:	return (-0.996, -0.067, -0.059);	// shotguns: moved with the gun to the FBX hand (was (-1.000, 0.000, 0.000))
 		case 6:	return (-1.000, 0.000, 0.000);
 		case 7:	return (-1.000, 0.000, 0.000);
 		case 8:	return (-0.999, -0.053, 0.007);	// 1.93 Ruger (was (-1.000, 0.000, -0.000))
@@ -364,7 +364,7 @@ class RSR_Guns abstract
 		case 2:	return (-0.067, -0.059, 0.996);	// BD 2.0 b1: moved with the gun to the FBX hand (was (-0.000, -0.000, 1.000))
 		case 3:	return (0.209, -0.003, 0.978);	// batch 2: moved with the gun to the FBX hand (was (0.279, 0.000, 0.960))
 		case 4:	return (-0.067, -0.059, 0.996);	// batch 3: moved with the gun to the FBX hand (was (0.000, 0.000, 1.000))
-		case 5:	return (0.000, 0.000, 1.000);
+		case 5:	return (-0.067, -0.059, 0.996);	// shotguns: moved with the gun to the FBX hand (was (0.000, 0.000, 1.000))
 		case 6:	return (0.000, 0.000, 1.000);
 		case 7:	return (0.000, 0.000, 1.000);
 		case 8:	return (-0.005, 0.001, 0.095);	// 1.93 Ruger (was (0.000, -0.000, 0.741))
@@ -549,7 +549,7 @@ class RSR_Guns abstract
 		case 2:	return (0.820, -8.333, -1.408);	// BD 2.0 b1: moved with the gun to the FBX hand (was (0.000, 0.000, -5.000))
 		case 3:	return (0.908, -4.560, -3.413);	// batch 2: moved with the gun to the FBX hand (was (0.000, 0.000, -5.000))
 		case 4:	return (-0.982, -4.470, -2.213);	// batch 3: moved with the gun to the FBX hand (was (0.000, 0.000, -5.000))
-		case 5:	return (0.000, 0.000, -5.000);
+		case 5:	return (-4.701, -4.805, -12.031);	// shotguns: moved with the gun to the FBX hand (was (0.000, 0.000, -5.000))
 		case 6:	return (0.000, 0.000, -5.000);
 		case 7:	return (0.000, 0.000, -5.000);
 		case 8:	return (-0.282, -44.547, -6.316);	// 1.93 Ruger (was (6.499, -3.835, 10.913))
