@@ -16,6 +16,7 @@
 - **Spring impulse per shot:** kick (deg of muzzle flip), snap 1-2 tics, then a springy settle with a slight overshoot.
 - **Rapid fire:** stacks up to a cap.
 - **Side jitter:** small and random.
+- **Bracing with the off hand reduces recoil (owner).** When the off hand supports the gun (the pack's existing two-hand steady state), the kick, climb and jitter are scaled down; the factor is tuned with the owner (for example x0.5 to start). REMA's `brace` was dropped in F5 as having "nothing to act on". It does have something here: the size of the visible kick.
 - **Sizes scaled down for VR:** the player's wrist absorbs it. The physics sets each gun's rank and ratio; the absolute size is the owner's, tuned by feel.
 - **Options:** one strength slider, plus a per-gun table.
 - **Proof on the rig:** log tilt per tic over 50 shots and show it returns exactly to zero.
