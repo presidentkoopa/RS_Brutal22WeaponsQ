@@ -54,7 +54,7 @@ damage you do are still exactly Brutal Doom's.
 ### New guns from Brutal Doom 21
 - **BD21 Machinegun** (M249 with an underbarrel 40 mm). Off by default:
   "Machinegun replaces MG42".
-- **Slug revolver**. Off by default: "Slug revolver replaces Shotvolver".
+- **Slug revolver**. Off by default: "Shotvolver Swap for Revolver".
 
 ### Melee
 - **Gun bash**: your kick key bashes with the gun you're holding. It uses Brutal Doom's own kick
