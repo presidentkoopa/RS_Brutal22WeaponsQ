@@ -1183,3 +1183,7 @@ VISIBLE in the off hand while carried, never hidden inside the fist (his RS VR R
 - The skull keeps its seated orientation in the hand (RS VR Reload turns it yaw -75 / pitch 15): turning it needs a
   rotation on the HANDMAG layer in Place(), a code change the owner may want; not built.
 - HUD still shows SoulAmmo (pouch + lent), not the magazine (r6 note).
+- pk3 `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r8-unmaker.pk3`, sha256
+  8a52ba6f573bc3e3bf68f2f52262d878aef7e93dd251c022b51b19166a285119 (build.py from this branch, rebased on ceddb85).
+  Re-run on it after the rebase: phases as above, RELOAD magazine 0 -> 200, pouch 250 -> 50, fires again
+  (200 -> 94 in 80 tics); script errors only BD_VoxelPack's voxeldef lines.
