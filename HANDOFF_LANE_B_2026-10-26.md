@@ -397,3 +397,36 @@ Not yet on the owner's headset.
   (melee.zs) is the one number.
 - Queued after r4 (coordinator): the Moonlight revolver as BD22's normal revolver mesh with a
   break-open speedloader reload (reference/moonlight/README.md). Not started.
+
+---
+
+# Moonlight revolver (queued task), time box 05:59-06:44 2026-10-27
+
+## Done (measured)
+- 41-frame contact sheet, side view, per surface: `reference/moonlight/moonlight_41frames.png`.
+- The frames DO contain a break-open, an eject and a speedloader (no blocker). Frame map,
+  surfaces, placement, hinge, chambers, cylinder and loader seat: `reference/moonlight/README.md`
+  "Measured", reproducible with `measure_moonlight.py` (output `measured.txt`).
+- The Depot's hand-fitted `rev_wm.md3` is rev.md3 frame 0 moved rigidly (residual 0), so the fit carries to
+  all 41 frames: `Scale 1.35 / Offset 0.0262 0.9224 / ZOffset 0.5878`. Rig (QZD 17.3, test-only
+  pk3, not in src): frame 0 sits in the existing revolver hand fit (row 17), frame 26 shows the open
+  break-top (`moonlight_rig_frame0_vs_26.png`); 0 script errors of ours.
+
+## Half done
+- Speedloader baked into frame 0 at its seat (closed-part frame), test asset only
+  (`/home/claude/lane_b_r4/moon/bake.py` -> `moontest/models/moon/rev_seat.md3`, normals not
+  re-baked). Not in src.
+
+## Not done (next, in order)
+1. Meshes into src: `models/bd/Moonlight/rev.md3` + a reload copy with the loader baked at the seat
+   (bake.py) -> gun = surfaces 0+2, part = 1+3, loader = 10 (+ rounds 4-9 for per-round mode).
+2. RSB: new rows in `rsb_guns.zs` cloned from the BD22 Revolver's speedloader entry (index 3; per
+   round 7) with the measured Hinge (8.46, 0, -1.14), Axis (0, 1, 0), OpenDeg 63.3, seat
+   Base/Tip/Bore on the loader axis, Scale/Offset of the new placement; MODELDEF.rsb gun/part/loader
+   blocks (RBRG/RBRP/RBRW pattern). Revolver2 (the Shotvolver) keeps index 8/9 and Revolver.md3.
+3. MODELDEF: BD22 Revolver's sprite frames -> rev.md3 (ready 0; fire recoil 1-14), replacing the
+   411-line Revolver.md3 map.
+4. `gunmoves.zs` Revolver rows are fitted to Revolver.md3's recoil frames: re-fit them to the
+   Moonlight's frame body only (the item 3 lesson), or the hand moves against a still gun.
+5. Rig: `tools/rig/brk.py` (break, load, flick shut) on the Revolver, speedloader and per-round feed;
+   then the 31-gun sweep.
