@@ -659,3 +659,64 @@ Not done:
 - `rsq_scope_sniper` is an archived user cvar: an old 0 survives the 1.99x default of 1 (the rig's ini
   held 0, and the owner's may too). The menu shows the actual mode.
 - Headset pass.
+# Moonlight reload, lane B moon-reload (2026-10-27, 60-min box): the hand-driven VR reload on BrutalRevolver
+
+Worktree `/home/claude/lane_b_moon` (branch `moon-reload`, pushed to `lane-b-1.99x`). Run dir, drivers, logs, dumps:
+`/home/claude/lane_b_moonrun/` (`run.sh` takes the rig lock EXCLUSIVE, `drive.py` = brk.py's moves + firing after,
+`mprobe.pk3` test-only ammo/pieces probe, `sweep.sh`, `sweepcheck_r6m.py`).
+
+## Done (measured, rig-checked on QZD 17.3, doom2 -> brutal22test6 -> BD_VoxelPack -> pack)
+- **Meshes** (`reference/moonlight/bake_reload.py`, output `bake_reload.txt`): `src/models/bd/Moonlight/rev_rsb.md3` =
+  rev.md3 with frames 1-3 baked into the CLOSED gun (hinged part's frame-0 pose): 1 = rounds 4-9 and the speedloader
+  (10) seated, 2 = the empty cage (its six 18-vertex rounds collapsed), 3 = the loader's six rounds only. Normals of
+  every moved vertex turned with it. Firing still uses rev.md3. Pieces by clear skins: gun 0+2, part 1+3, loader 10.
+- **RSB rows** (`rsb_guns.zs`, hand-patched like row 3; header says so): `BrutalRevolver` -> 10 (speedloader) or
+  11 (a round at a time, `rsb_revolver_feed 1`).
+  - Hinge (8.4556, -0.0262, -1.1446) about +L, opening 63.4 deg (frame 26 fit).
+  - Seat (10): base (-2.2256, -0.1653, 1.7203), tip (8.0759, -0.169, 1.8839), bore (0.9999, -0.0004, 0.0159).
+    LoaderDepth 6.23 (rounds' front 8.08 to the cylinder face 1.85).
+  - Rounds (11): surfaces 4-9 from frame 20, slid along their own axis to the loader rounds' rear (F 1.735);
+    6 chambers, depth 4.90.
+  - Ammo: RevolverRounds / BrutalRevolverCylinder, cap 6.
+  - Hold: (10) = VR_Revolver's (5) RsbCell, with the empty cage left in the hand. (11) = BD22 Revolver's (7)
+    RsbShell. Each is re-anchored on the new rear (HandT).
+  - Push band and push face = row 5 (the same mesh at the same placement); PushEdge maps 10/11 to row 5.
+- **MODELDEF.rsqmoon**: RBMG (gun), RBMP (loader mode: A part, B seated rounds, I loader going in, H/J full/empty
+  in hand), RBNP (per round: A part, B-G chambers, H one round in hand), RBMW/RBNW world (cage, loader, thrown round;
+  Scale 1.35 x MODELDEF.rsb's 0.3468, centred).
+- **BrutalRevolver.dec**: Reload -> RSB_Start (BD22 Revolver.dec's protocol), the r5 animation kept as RSB_Stock
+  (not in VR / Real reload off). RSB_Load fills to 6 (speedloader) or one round (`GetCVar("rsb_revolver_feed")`).
+  Bug found and fixed: the reserve check's +1 jump skipped a Goto and landed in the stock animation.
+- **Muzzle** (`muzzle.zs`): (27.2, -0.03, 4.61). CONSTRUCTED: the mesh has no bore. It is the centre of the barrel
+  box's muzzle face (F 27.02-27.38, U 4.04-5.18). Rig: both hitscans from F 27.2 L 0.0 (the probe reads U 5.5;
+  its pixelstretch round trip is known to be off by about 1).
+- **Casings**: a revolver ejects nothing on firing. When the gun is broken open, the six rounds are thrown as the
+  mesh's own round (WorldEject, RSB_Casing): rig, 6 x RSB_Casing at full open (speedloader mode). Per round, the
+  spent rounds only (1 here: one shot fired).
+- **Rig, Depot `tools/rig/brk.py` moves** (open dump `open_BrutalRevolver`, then `drive.py`):
+  - Speedloader: OPENING > OPEN, 6 thrown > CARRY > INSERT (7.2 cm out, 0 off the bore) > loaded >
+    EMPTYLOADER > FREE (cage dropped) > flick 467 deg/s > CLOSING > DONE.
+    Ammo: cylinder 0 -> 6, reserve 60 -> 54. Then 2 shots: cylinder 6 -> 4.
+  - A round at a time: all 6 chambers CARRY > INSERT > loaded; cylinder 0 -> 6 one by one (reserve 60 -> 54);
+    flick shut; 2 shots after.
+  - 0 script errors from our pack (only BD_VoxelPack's voxeldef lines and DeathSphereHealth).
+- **Sheet**: `/home/claude/lane_b_out/moon_reload.png` (in engine, left eye): closed; broken open; loader in the off
+  hand; loader pushed home; rounds seated with the gun still open; flick shut.
+- **Pack**: `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r6-moon.pk3`, from pushed `7b6708f`, sha256
+  `a45ba278cca8bd8766e4957fd4cba3c72954f0a01efcc96ffbe4890ab9ccef03`. Not on the headset yet.
+
+- **Ammo (owner, 2026-10-27)**: RevolverRounds 6 a pickup, carry 72. Backpack max 144, from BD22's rule for all
+  four of its ammo types (Ammo.dec, parsed: backpack max = 2 x max). Backpack amount stays 6 (one speedloader).
+  BD22 has no single rule for that number (shells 8 = 2x the pickup, Clip2 30 = 3x, rockets 6 = 6x, cells
+  20 = 1x), so it is the owner's call. Map spawns: none (unchanged).
+
+## Not done / open
+- Machine: the root volume showed 0 MB free during this box (df: 252G size, 42G used, ~500M available). My frame
+  dumps were deleted after the sheet was made. Something outside this lane is holding the space.
+- Frame dumps slow the rig, so the scripted hand needed retries (`SLOW=3`). Without dumps, every capture is first-try.
+- The loader's rounds sit 0.3 cm off the cylinder axis (L -0.17 U 1.82 vs chambers L -0.01 U 2.15): the mesh's own
+  animation. It is kept as measured.
+- Shut without loading: the cylinder count keeps its live rounds although all six were thrown (the same as rows 3/5).
+- Push-shut uses row 5's face table (VR_Revolver), not re-measured on this hinge (1 cm apart). The flick is what was
+  driven.
+- Dual wield, recoil, `gunmoves.zs` re-fit, the hand pose (batch 2's call), and the pickup art are all not touched.

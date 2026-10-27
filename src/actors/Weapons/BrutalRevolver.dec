@@ -9,8 +9,8 @@
 // this fires one round.
 //
 // AMMO, its own (owner): RevolverRounds in reserve, BrutalRevolverCylinder in the gun, so it never
-// shares RevolverAmmo with the Shotvolver. PLACEHOLDERS, the owner's call: the carry limits, the
-// pickup amounts, the pickup art (BD22's shell sprite / revolver sprite for now) and where either
+// shares RevolverAmmo with the Shotvolver. Owner 2026-10-27: 6 a pickup, carry 72. PLACEHOLDERS, the
+// owner's call: the pickup art (BD22's shell sprite / revolver sprite for now) and where either
 // spawns on maps (nowhere yet: give, idkfa, summon).
 //
 // RELOAD (r5, stock): the mesh's own animation (reference/moonlight/README.md, measured): break-top
@@ -23,10 +23,10 @@
 
 ACTOR RevolverRounds : Ammo
 {
-	Inventory.Amount 6			// PLACEHOLDER (owner's call): one speedloader's worth
-	Inventory.MaxAmount 60		// PLACEHOLDER (owner's call)
-	Ammo.BackpackAmount 6
-	Ammo.BackpackMaxAmount 120
+	Inventory.Amount 6			// owner 2026-10-27: 6 per pickup
+	Inventory.MaxAmount 72		// owner 2026-10-27: carry 72
+	Ammo.BackpackAmount 6		// BD22 has no single rule here (Ammo.dec: shells 2x pickup, Clip2 3x, rockets 6x, cells 1x): one speedloader, owner's call
+	Ammo.BackpackMaxAmount 144	// BD22's rule for every ammo (Ammo.dec, parsed): backpack max = 2 x max
 	Inventory.PickupMessage "Picked up revolver rounds. (placeholder art)"
 	Inventory.Icon "SHELA0"		// PLACEHOLDER art: BD22's shell
 	Tag "Revolver rounds"
