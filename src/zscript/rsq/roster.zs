@@ -10,8 +10,16 @@ class RSQ_Roster : EventHandler
 		let mg = CVar.FindCVar('rsq_mg_replaces_mg42');
 		if (mg && mg.GetInt() != 0 && e.Replacee.GetClassName() == 'MG42')
 			e.Replacement = 'Machinegun';
+		// r4: the swap is made on BD22's RevolverSpawner, NOT on the Revolver class. The engine's
+		// give weapons cheat (player_cheat.zs) skips any weapon whose GetReplacement is not
+		// itself, so replacing the class took the Revolver out of idkfa / give all whenever this
+		// option was on -- and Revolver2 was CHEATNOTWEAPON, so the cheat gave neither gun. And
+		// the class replacement never reached a map pickup anyway: RevolverSpawner, the only way
+		// BD22 puts a revolver in a map (WeaponSpawners.dec), hands it over with
+		// A_GiveInventory, which spawns NO_REPLACE. Not replaced: a Revolver placed directly by
+		// its editor number 5874 (no Doom 2 map has one).
 		let sv = CVar.FindCVar('rsq_slug_replaces_shotvolver');
-		if (sv && sv.GetInt() != 0 && e.Replacee.GetClassName() == 'Revolver')
-			e.Replacement = 'Revolver2';
+		if (sv && sv.GetInt() != 0 && e.Replacee.GetClassName() == 'RevolverSpawner')
+			e.Replacement = 'RSQ_ShotvolverSpawner';
 	}
 }

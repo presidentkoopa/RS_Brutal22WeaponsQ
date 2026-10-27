@@ -14,7 +14,8 @@ ACTOR Revolver2 : BrutalWeapon
     +WEAPON.NOALERT
     +WEAPON.NOAUTOAIM
 	+WEAPON.NOAUTOFIRE
-	+WEAPON.CHEATNOTWEAPON
+	// r4 (owner: "IDKFA gives neither the revolver nor the shotvolver"): no CHEATNOTWEAPON. It is in
+	// slot 2 (KEYCONF.rsq) like BD22's Revolver, so give all / idkfa hand it out like every other gun.
 	Scale 0.9
 	Tag "Revolver"
 	States

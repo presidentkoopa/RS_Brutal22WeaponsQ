@@ -1,2 +1,23 @@
 // 1.97: the BD21 slug revolver (tools/bd22_plus.py revolver)
 #include "actors/Weapons/Revolver2.dec"
+
+// r4: "Shotvolver Swap for Revolver" (rsq_slug_replaces_shotvolver) swaps BD22's map pickup, not the
+// Revolver class (zscript/rsq/roster.zs says why). BD22's RevolverSpawner (WeaponSpawners.dec) with
+// the gun and its rounds changed: the Shotvolver and 6 Clip2 -- the same 6 rounds BD22's spawner
+// gives its own revolver, and one full cylinder (RevolverAmmo MaxAmount 6, Revolver.dec).
+ACTOR RSQ_ShotvolverSpawner : RevolverSpawner
+{
+	Inventory.PickupMessage "You got the Shotvolver! Say farewell to your wrists."
+	States
+	{
+	Pickup:
+		REVP A 0
+		REVP A 0 A_JumpIfInventory("Revolver2", 1, "GimmeOnlyTheAmmo")
+		REVP A 0 A_GiveInventory("Revolver2", 1)
+		REVP A 0 A_GiveInventory("Clip2", 6)
+		Stop
+	GimmeOnlyTheAmmo:
+		REVP A 0 A_GiveInventory("Clip2", 6)
+		Stop
+	}
+}
