@@ -157,7 +157,7 @@ class RSR_Guns abstract
 		case 8:	return (13.554, 0.257, -0.027);	// 1.93 Ruger (was (12.381, 0.533, -9.588))
 		case 9:	return (-11.955, -8.010, 11.389);
 		case 10:	return (14.190, 7.381, 5.400);
-		case 11:	return (27.957, -1.825, -9.496);	// BD 2.0 b1: moved with the gun to the FBX hand (was (27.703, 0.013, -10.374))
+		case 11:	return (36.189, 0.560, -9.220);	// BD 2.0 b1: moved with the gun to the FBX hand (was (27.703, 0.013, -10.374))
 		case 12:	return (14.597, -0.029, -4.035);
 		case 13:	return (11.350, -0.131, 9.854);
 		case 14:	return (17.879, 9.039, 9.982);
