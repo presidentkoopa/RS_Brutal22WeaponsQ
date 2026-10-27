@@ -10,6 +10,9 @@ for VR now.
 - Where a gun's code and its 3D mesh disagree in VR (where the shot starts, the grip, the reload), we change
   the code to fit the mesh and the hands, not the other way around. Example (2026-10-27): the Flamethrower's
   flame starts at the drawn nozzle tip, and the nozzle is never tilted away from the stream.
+- BD22's own features stay as they ship (e.g. the plasma gun's one alt fire: we don't touch it). New
+  VR-only mechanics, such as a 6DoF homing attack, are allowed: we may build one, or decide not to. Each
+  one is the owner's call, never added by default.
 - QuestZDoom 17.3 is never changed (no engine changes); everything is done in ZScript/DECORATE.
 - Work happens in this repo. When the set is finished, it is copied into RSQ_WeaponDepot (the workshop:
   meshes, rig, tools; never shipped to players).
