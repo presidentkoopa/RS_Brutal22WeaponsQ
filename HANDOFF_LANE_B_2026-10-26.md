@@ -959,3 +959,27 @@ RIG ONLY, NOT HEADSET-CONFIRMED.
   (pistol curl), with M/R/P gaps 1.3-1.4. Next: index re-solve plus curl3. Expect it to close: batch 2 had 3.2-3.8 cm left at the joint limits from the web-on-backstrap start.
 - **BrutalRevolver (Moonlight):** not in 1.92 (no reference hold). Not started. Its reload rows (Moonlight lane) would move with the gun.
 - **Sniper (Ruger/XM21):** not started. The Depot's `Sniper.json` is from BD22_main (a different mesh), so there is no 1.92 Ruger hold to measure.
+
+## 4. Gate (QZD 17.3 rig, doom2 -> brutal22test6 -> BD_VoxelPack -> pack, exclusive lock)
+- MP40 and BrutalSMG: give, select, fire, alt-fire, reload, fire. 0 pack script errors (only BD_VoxelPack's lines and
+  DeathSphereHealth). Held, shots 12 / 16, phases DROP,EMPTY: equal to r4 / b1 / b2 (`tools/sweepcheck_b3.py`).
+- Off-hand reload (Depot `tools/rig/mags.py 4 3`): MP40 and BrutalSMG both go IDLE>EMPTY>DROP>EMPTY>CARRY>INSERT>SEATED>DONE>IDLE (`mags_b3.out`).
+- Sheet `/home/claude/lane_b_out/b3_hands.png`: the MP40 at rest, steadied and firing, from the eye and the side, beside 1.92's
+  eye and side renders. Side view: hand around the grip, index at the trigger, palm under the barrel when steadied.
+- The BrutalSMG muzzle row is NOT shown working. The rig sweep logs carry no shot-origin line, and the muzzle path runs only
+  in VR (`RSVR_VRHand.InVR`). It is the same code path as the pistol's and the Ruger's rows.
+- 32-class sweep: batch 2's sweep reached 25 classes on its own pack (all equal to b1/r4). This batch did not finish the rest.
+  - The rig lock rotates between 4 lanes, about 3 minutes per engine run here; the sheet and gates came first.
+  - The 7 left: BIG_FUCKING_GUN, HellishMissileLauncher, Unmaker, FlameCannon, Flamethrower2, HandGrenades, BrutalRevolver.
+  - Run them with `/home/claude/lane_b_b3run/sweep3.sh <pk3> b3`.
+- Pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r6-hands3.pk3`, sha256
+  850b1c40d3f2033f55d169e9d8189711da7617e3aa82aceb50091b508116fed2. Built with `python3 build.py 1.99x-lb-r6-hands3` at the head
+  rebased onto origin (761a392 + handoff; it includes r6 reloads ec08cf6, the RailGun scope and melee r6).
+  - Gated on this exact pack: MP40 and BrutalSMG give / select / fire / alt-fire / reload. 0 pack script errors, held, shots 12 / 16,
+    phases DROP,EMPTY (`logs/fin_b3_*`).
+  - The sheet and `mags.py` ran on the pre-rebase build of the same hands code (`t.pk3`).
+- Next, in order:
+  1. Port the Rifle (numbers ready).
+  2. Shotvolver: index + curls (`curl3.py +Revolver`; it was still solving at the box).
+  3. Finish the sweep.
+  4. BrutalRevolver and Sniper: no 1.92 hold to start from. Owner's call on the reference.
