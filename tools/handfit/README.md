@@ -33,3 +33,17 @@ These tools put the FBX hands on 4 guns tonight: BrutalPistol, Flamethrower2, Br
 - **Done (rig):** BrutalPistol, Flamethrower2, BrutalSMG, MP40.
 - **In progress:** Rifle (fitted), Shotvolver (re-seated), BrutalRevolver, Sniper.
 - **Then:** the remaining guns.
+
+## `port/port_gun.py`: ONE command for the gun move (batch 4, 2026-10-27)
+`python3 tools/handfit/port/port_gun.py <Class> <fit.json> [--src DIR] [--tag "batch 4"] [--dry]`
+- Applies the gun move (MODELDEF Offset/ZOffset/Angle/Pitch/Roll on every gun-controller block, count listed) and moves
+  every dependent table: gunmoves Pivot + fire rows (rows found from `key[]`, md3 frames from the gun's FrameIndex; the
+  original placement must reproduce the shipped rows, asserted), rsr_guns.bd.zs reload case, rsb_guns.zs break rows,
+  casing port, RSQ_Muzzle (moved, or added at the drawn tip), RSQ_ScopeTable, the Rifle's M203 (ToGun/FromGun, FwdHook,
+  purist handguard hook). Optional `hand` in fit.json wires the FBX gun hand (md3, MODELDEF hand blocks, hands.zs /
+  dualhands.zs labels, handtable rows; `support: "move"` moves the existing support pose with the gun).
+- fit.json: `shift` (curl3's, cm in the gun's original frame; the gun keeps the approved pistol's r5 aim) or `place`.
+- A new gun = one entry in `GUNS` (md3, ready frame, base Scale/Offset, handtable row, reload case, casing key, the bd block).
+- Paths: repo-relative (`src/` or `$RSQ_SRC` / `--src`); fitter modules from `../fbx_fitter`. Writes `ported_<Class>.json` (the list) next to the fit.
+- **Verified:** `port/verify_mp40.sh` re-applies batch 3's MP40 move on 19f0203 and diffs against bdf3fae: byte-identical
+  except the BrutalSMG muzzle row that commit also added.
