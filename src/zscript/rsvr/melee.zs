@@ -127,7 +127,40 @@ class RSVR_MeleeHandler : EventHandler
 			bool twoUp = RSVR_VRHand.InVR(mo) && mo.player.ReadyWeapon
 				&& RSVR_Hand.KindOf(mo) == RSVR_Hand.AXE && RSVR_VRHand.TwoHands(mo);
 			mo.SetInventory('RSVR_AxeTwo', twoUp ? 1 : 0);
+			// r6 (item 7): in VR the chainsaw's trigger runs the chain without BD22's swing animation
+			// (Saw.dec RSVR_SawRun); the cutting is RSVR_Hand.Tick's, by contact
+			mo.SetInventory('RSVR_SawVR', RSVR_VRHand.InVR(mo) && mk == RSVR_Hand.SAW ? 1 : 0);
 		}
+	}
+
+	// r6 (owner item 17): THE HIT FLASH ON EVERY MELEE HIT. The gun bash already drew the owner's
+	// RS_CombatFX impact (bash.zs RSQ_BashFX, spawned by DECORATE's RSQ_BashAttack). The punch, the
+	// pistol whip and the butt strike land BD22's own strike actors -- MeleeStrike1's family
+	// (MeleeStrikeNormal, MeleeStrike1Berserked) and KickAttack's (KickAttack, SuperKickAttack) --
+	// so the flash goes where one of those, fired by a player, actually damaged something. One
+	// effect and one colour for all of them: the menu's Melee Hit Flash rows. The bash keeps its
+	// own spawn (excluded here, or it would flash twice), and BD22's downed-enemy probe
+	// (KickAttackDetectDowned, 2 damage) is a probe, not a blow.
+	static bool Descends(Actor a, Name n)
+	{
+		for (class<Object> c = a.GetClass(); c; c = c.GetParentClass())
+			if (c.GetClassName() == n)
+				return true;
+		return false;
+	}
+
+	override void WorldThingDamaged(WorldEvent e)
+	{
+		let inf = e.Inflictor;
+		if (!inf || !e.DamageSource || !e.DamageSource.player || !e.Thing || e.Damage <= 0)
+			return;
+		if (!Descends(inf, 'MeleeStrike1') && !Descends(inf, 'KickAttack'))
+			return;
+		if (Descends(inf, 'RSQ_BashAttack') || Descends(inf, 'KickAttackDetectDowned'))
+			return;
+		let fx = Actor.Spawn('RSQ_BashFX', inf.pos, ALLOW_REPLACE);
+		if (fx)
+			fx.target = e.DamageSource;
 	}
 
 	static RSVR_Hand HandOf(PlayerPawn mo)
@@ -159,6 +192,7 @@ class RSVR_Hand play
 	const SMGBUTT = 10;
 	const MGBUTT = 11;
 	const MG42BUTT = 12;
+	const SAW = 13;			// r6 (owner item 7): the chainsaw cuts whatever its running bar touches
 
 	// swing speed (m/s at the blade's outer point, relative to the player's own
 	// movement) that counts as a blow, and the slowest release that throws
@@ -178,6 +212,9 @@ class RSVR_Hand play
 	const BUTT_REACH = 60.0;
 	const BUTT_PAD = 12.0;
 	const THROW_MIN = 2.5;
+	const SAW_EVERY = 2;		// r6: tics between cuts on one body (BD22's held saw: A_CustomPunch(7) a tic)
+	const SAW_PAD = 4.0;		// r6: the bar's half-height, Chain_saw.md3 surface Cube.002_Cube z -11.3..1.0,
+							// x 1.5 (Scale) x 0.34 (34 units per metre / 100) = 3.1 map units, padded to 4
 	const RISE = 0.15;			// of the blade's speed that may be upward before it is a backswing (about 9 degrees)
 
 	// rsvr_melee_swing scales how hard you have to swing; rsvr_melee_up is how much of the
@@ -235,6 +272,8 @@ class RSVR_Hand play
 	int swingTics;
 	int calmTics;
 	int whooshWait;
+	int sawWait;		// r6: tics until the bar may cut the same body again
+	double lastEdge;	// r6: the axe's last edge-vs-motion cosine (logged by the rig driver)
 	int scrapeWait;
 	bool inWall;
 	Array<Actor> struck;
@@ -288,6 +327,10 @@ class RSVR_Hand play
 	transient SpriteID s4XEG;
 	transient SpriteID s5XEG;
 	transient SpriteID sDSLA;
+	transient SpriteID sSAWG;
+	transient SpriteID s1AWG;
+	transient SpriteID s2AWG;
+	transient SpriteID s3AWG;
 
 	//------------------------------------------------------------------
 	// the blade, in the held model's own units (BrutalAxe.md3 frame 5 = AXEG A,
@@ -316,6 +359,8 @@ class RSVR_Hand play
 			return (26.2, 0.0, -7.0);	// 1.97: BrutalPistol.md3 frame 3, just forward of the hand
 		if (k == REVOLVER)
 			return (29.4, 0.1, -1.5);	// 1.97: Revolver.md3 frame 0, just forward of the hand
+		if (k == SAW)
+			return (84.0, -3.15, -7.7);	// r6: Chain_saw.md3 frame 11, surface Cube.002_Cube (the bar), root x 56.0 -- x MODELDEF Scale 1.5
 		return (38, 0, 16);			// Dragonslayer: guard
 	}
 
@@ -343,6 +388,8 @@ class RSVR_Hand play
 			return (44.2, 0.0, -0.2);	// 1.97: BrutalPistol.md3 frame 3, the muzzle
 		if (k == REVOLVER)
 			return (50.2, 0.0, 2.4);	// 1.97: Revolver.md3 frame 0, the muzzle
+		if (k == SAW)
+			return (155.7, -3.15, -7.7);	// r6: the bar's tip, x 103.8 (z centre -5.15 of -11.3..1.0) -- x 1.5
 		return (90, 0, 159);		// Dragonslayer: point
 	}
 
@@ -387,6 +434,10 @@ class RSVR_Hand play
 		s4XEG = Actor.GetSpriteIndex('4XEG');
 		s5XEG = Actor.GetSpriteIndex('5XEG');
 		sDSLA = Actor.GetSpriteIndex('DSLA');
+		sSAWG = Actor.GetSpriteIndex('SAWG');	// r6: the chainsaw's idle (and, in VR, its running) frames
+		s1AWG = Actor.GetSpriteIndex('1AWG');
+		s2AWG = Actor.GetSpriteIndex('2AWG');
+		s3AWG = Actor.GetSpriteIndex('3AWG');
 		spritesSet = true;
 	}
 
@@ -400,6 +451,8 @@ class RSVR_Hand play
 			return AXE;
 		if (n == 'DSweap')
 			return SWORD;
+		if (n == 'Chain_saw')
+			return SAW;
 		if (RSQ.PlayerInt(mo, 'rsq_butt', 0) != 0)
 		{
 			if (n == 'Rifle')
@@ -433,9 +486,28 @@ class RSVR_Hand play
 		if (!spritesSet)
 			InitSprites();
 		let psp = mo.player.FindPSprite(PSP_WEAPON);
-		if (!psp || psp.Frame != 0)
+		if (!psp)
 			return false;
 		SpriteID s = psp.Sprite;
+		poseFrame = 0;
+		// r6 (owner item 16: "the pistol whip only works with the off hand"). The main hand's pistol
+		// never whipped: BrutalPistol's Ready holds PIST E (loaded), PIST I (empty) or 2IST E, never
+		// frame A, so the `Frame != 0` test below turned the whip off whenever the pistol was ready.
+		// The off hand's downstroke was its free FIST (fists.zs), not a whip. MODELDEF.bd.txt binds
+		// PIST E and 2IST E to model frame 7 and PIST I to frame 3; a rigid fit of BrutalPistol.md3
+		// frame 3 onto frame 7 (all 6828 vertices) moves the whip points by 0.1 unit, so BladeIn /
+		// BladeOut (measured at frame 3) stand for all three.
+		if (k == PISTOL)
+			return (s == sPIST && (psp.Frame == 0 || psp.Frame == 4 || psp.Frame == 8)) || (s == s2IST && (psp.Frame == 0 || psp.Frame == 4));
+		// r6 (item 7): the chainsaw's idle loop is SAWG A..G (and its blood-visor copies), model
+		// frames 11 and 12, which hold the bar in the same place (the vibration)
+		if (k == SAW)
+		{
+			poseFrame = 2;
+			return (s == sSAWG || s == s1AWG || s == s2AWG || s == s3AWG) && psp.Frame <= 6;
+		}
+		if (psp.Frame != 0)
+			return false;
 		if (k == SWORD)
 			return s == sDSLA;
 		if (k == RIFLEBUTT)
@@ -513,7 +585,7 @@ class RSVR_Hand play
 		// The two-handed block moves the model, so the blade must move with it or the
 		// hits stay where the one-handed axe was. Offset.y comes off forward, and
 		// ZOffset off up measured against the shipped block's -5.
-		double sf = poseFrame == 1 ? 8.9584 : 0.0;
+		double sf = poseFrame == 1 ? 8.9584 : poseFrame == 2 ? 10.0 : 0.0;	// 2: Chain_saw's Offset y 10
 		double su = poseFrame == 1 ? -17.2631 : 0.0;
 		double f = 0.01 * (ws * m.x - 30 - oz - sf);
 		double r = 0.01 * (-ws * m.y + ox);
@@ -596,6 +668,35 @@ class RSVR_Hand play
 			return;
 		}
 
+		// r6 (owner item 7): THE CHAINSAW IS NOT SWUNG BY SPEED. While its trigger is held the
+		// chain runs (Saw.dec RSVR_SawRun: no swing animation, the player moves it) and the bar
+		// cuts whatever it touches, moving or still -- BD22's own SawDamageHorizontal (5-6 Cut)
+		// every SAW_EVERY tics into each body the bar is in.
+		if (k == SAW)
+		{
+			if (mo.player.cmd.buttons & BT_ATTACK)
+			{
+				if (--sawWait <= 0)
+				{
+					struck.Clear();		// each body may be cut again: contact, not one hit per swing
+					sawWait = SAW_EVERY;
+				}
+				Sweep(mo, k, prevIn, prevOut, bin, bout, 1.0, SAW_PAD);
+			}
+			else
+			{
+				struck.Clear();
+				sawWait = 0;
+			}
+			prevIn = bin;
+			prevOut = bout;
+			prevPos = mo.pos;
+			prevRel = BodyFrame(mo, bout);
+			prevRelIn = BodyFrame(mo, bin);
+			prevStamp = pStamp;
+			return;
+		}
+
 		bool isButt = k == RIFLEBUTT || k == SGBUTT || k == SSGBUTT || k == ASGBUTT || k == MP40BUTT || k == SMGBUTT || k == MGBUTT || k == MG42BUTT;
 		double thr = (k == AXE ? AXE_SWING : k == SWORD ? SWORD_SWING
 			: isButt ? BUTT_SWING : WHIP_SWING) * vu / 35.
@@ -636,6 +737,21 @@ class RSVR_Hand play
 		// anything that rises more than about 9 degrees is a wind-up
 		if (k == AXE || k == SWORD)
 			backswing = rise > 0.15;
+		// r6 (owner item 9): THE AXE CUTS ONLY WITH ITS EDGE LEADING. BladeIn is the top of the head
+		// and BladeOut the cutting edge, so rel - relIn is the way the edge faces, in the same body
+		// frame as the motion. Held like a gun the edge faces forward and down (BrutalAxe.md3 frame 5:
+		// (11, 0, -10)), so a downswing leads with it and raising the arm leads with the poll -- no cut;
+		// a sideways swing leads with the flat unless the wrist is turned so the edge faces the way it
+		// moves. The motion must be within acos(rsvr_axe_edge) of the edge: 0.5 = 60 degrees, the
+		// same cosine the two-handed bite has always been scored against.
+		if (k == AXE)
+		{
+			Vector3 edge = rel - relIn;
+			double el = edge.Length();
+			lastEdge = (el > 0 && speed > 0) ? (vel dot edge) / (el * speed) : -1;
+			if (lastEdge < clamp(Cv(mo, 'rsvr_axe_edge', 0.5), -1.0, 1.0))
+				backswing = true;
+		}
 		if (isButt)
 		{
 			// 1.97 the butt strike. Not the axe's must-point-DOWN test: this blow drives
@@ -833,6 +949,13 @@ class RSVR_Hand play
 		{
 			Launch(mo, 'DSAttack', p, dir);
 			Launch(mo, 'DSAttack2', p, dir);
+		}
+		else if (k == SAW)
+		{
+			// into the body from the hand: the bar may be still, so its motion is no direction
+			Vector3 into = (t.pos.x, t.pos.y, p.z) - fH;
+			double il = into.Length();
+			Launch(mo, 'SawDamageHorizontal', p, il > 0 ? into / il : dir);
 		}
 		else
 		{
@@ -1158,6 +1281,7 @@ class RSVR_AxeVRThrow : RSVR_Token {}
 class RSVR_MeleeTwo : RSVR_Token {}	// F11: the off grip held near the axe or the sword
 class RSVR_AxeTwo : RSVR_Token {}		// both hands on the haft: the shifted placement
 class RSVR_NotVR : RSVR_Token {}
+class RSVR_SawVR : RSVR_Token {}		// r6: VR with the chainsaw in hand: Saw.dec Fire runs RSVR_SawRun
 
 // a projectile the engine counts as a shot: spawning it buzzes the weapon hand
 class RSVR_Buzz : Actor

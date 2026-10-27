@@ -720,3 +720,57 @@ Worktree `/home/claude/lane_b_moon` (branch `moon-reload`, pushed to `lane-b-1.9
 - Push-shut uses row 5's face table (VR_Revolver), not re-measured on this hinge (1 cm apart). The flick is what was
   driven.
 - Dual wield, recoil, `gunmoves.zs` re-fit, the hand pose (batch 2's call), and the pickup art are all not touched.
+
+## Melee lane r6 (2026-10-27, owner report items 16, 17, 7, 8, 9, 10)
+Everything here is **rig only, not headset-confirmed** (QZD 17.3 rig, doom2 -> brutal22test6 ->
+BD_VoxelPack -> pack). Logs: `lane_b_out/melee_r6_logs/` (`MT` lines from the test driver, which is
+`driver_ZSCRIPT.txt` there: it writes `qzt_rhand` / `qzt_rtrigger` each tic). Sheet: `lane_b_out/melee_fixes.png`.
+Pack: `lane_b_out/BD22_VR-Reloaded_1.99x-lb-r6-melee.pk3` (+ `.sha256`). No script error from the pack
+in any run (only BD_VoxelPack's voxeldef lines and DeathSphereHealth).
+
+### 1. Done (shown on the rig)
+- **16 pistol whip, main hand.** Cause (code): `RSVR_Hand.ReadyPose` required sprite frame A, and
+  BrutalPistol's Ready holds PIST E (loaded), PIST I (empty) or 2IST E, so the whip was never armed.
+  The off hand's "downstroke" was its free fist (fists.zs). Fix: accept those frames. MODELDEF binds
+  them to model frames 7 and 3; a rigid fit of BrutalPistol.md3 frame 3 onto 7 (6828 vertices) moves
+  the whip points 0.1 unit, so the measured points stand. Rig, same 0.21 m/tic down-stroke:
+  before (71957b2) `PIST frm=4 ready=0`, no hit; after `ready=1`, MeleeStrikeNormal 13 at t170.
+- **9 axe edge.** A cut needs cos(edge, motion) >= `rsvr_axe_edge` (0.5, the cosine the two-handed
+  bite already used); edge = BladeOut - BladeIn in the body frame, motion = the edge point's velocity.
+  The old "rises > 0.15 = wind-up" rule is kept as well. Rig (pure translations, 0.21 m/tic):
+  down roll 0 cos +0.60 HIT; up -0.60 none; side roll 0 0.00 none; side left roll +90 +0.96 HIT;
+  side right roll +90 -0.96 none; side left roll -90 -0.96 none; side right roll -90 +0.96 HIT.
+- **7 chainsaw.** In VR the trigger runs `Saw.dec RSVR_SawRun` (SAWG A/B, no swing animation, BD22's
+  loop sound and shake); `melee.zs` kind SAW cuts whatever the bar touches, moving or still, with
+  BD22's SawDamageHorizontal (5-6 Cut) every 2 tics per body. Bar measured from Chain_saw.md3 frame 11,
+  surface Cube.002_Cube, x 56.0..103.8, centre y -2.1 z -5.15, x MODELDEF Scale 1.5, Offset y 10.
+  Rig: bar in the body, trigger off 35 tics: 0 hits; trigger on: a hit every 2 tics.
+- **8 axe lock-on** was already built (F11): `RSVR_AxeLock`, sprite RQLK, one target, kept 1 s after a
+  release. Rig: trigger held pointing at a zombie, RSVR_AxeLock on PistolZombie at t524, held to t566.
+
+### 2. Flagged
+- **17 hit flash.** Code: `RSVR_MeleeHandler.WorldThingDamaged` spawns `RSQ_BashFX` wherever a
+  player's MeleeStrike1-family or KickAttack-family actor damages something (punch, whip, butt strike;
+  the bash keeps its own spawn; KickAttackDetectDowned excluded). The tint now applies to all five
+  effects. Menu row "Bash Impact" renamed "Melee Hit Flash"; the colour row keeps its old name
+  because the colour is NOT proved. Shown: the flash spawns on every whip hit (log, 5 hits, translation
+  set for tints 1-4). NOT shown: the frames draw RSH0 at the gun hand rather than at its spawn point,
+  and tints 1-4 look white rather than blue/green/amber. Needs a look at RSH0's sprite offsets and the
+  `%[...]` ramp on this renderer. Punch and butt strike were not driven on the rig (same code path).
+- **7, out of range.** The test zombie walked after the bar, so "no cut once the bar leaves" is not
+  cleanly shown. One chainsaw frame (sheet row 2, third) draws the saw in a different pose: not traced.
+- **10 two-handed sword: not built.** Cause (engine source, VrInputDefault.cpp 131-175): with
+  `vr_two_handed_weapons` on, an off grip pressed within 50 cm sets weaponStabilised and the engine
+  re-aims the weapon from the main hand AT the off hand. On a sword the off hand is below/behind the
+  main hand, so the blade swings onto the off hand. ZScript cannot clear that cvar outside a menu
+  (vmnatives.cpp 951) and the main controller's own orientation is lost while stabilised.
+  Proposed (owner's call): when the sword is steadied, draw it from a second sprite whose MODELDEF
+  block is turned 180 degrees, so the handle runs from the main hand toward the off hand and the blade
+  points away from it (both hands then genuinely drive it), place the off-hand mesh on the handle at
+  the hands' measured distance, flip BladeIn/BladeOut the same way, and add a quarter strength
+  (DSAttack + DSAttack2 + a 0.25x actor, 1.25x). Needs a sprite lump and rig frames to place.
+
+### 3. Open
+- The shared disk filled to 0 MB twice during this session (other lanes' output); one frame dump was
+  cut short by it.
+- No sweep of all classes was run (time box); the four driven weapons and the whole pack compile clean.

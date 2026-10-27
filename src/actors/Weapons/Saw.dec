@@ -169,6 +169,7 @@ Actor Chain_saw : BrutalWeapon
 
 	Fire:
 		"####" A 0 A_AlertMonsters
+		"####" A 0 A_JumpIfInventory("RSVR_SawVR", 1, "RSVR_SawRun")	// r6 (owner item 7): VR, no swing animation
 		"####" A 0 A_StopSound(6)
 		"####" A 0 A_TakeInventory("ChainsawHitRed", 1)
 		"####" A 0 A_TakeInventory("ChainsawHitBlue", 1)
@@ -410,6 +411,23 @@ Actor Chain_saw : BrutalWeapon
 	DM4:
 		"####" WXYZ 1 A_CustomPunch(7,true,0,"SSawPuff2")
 		goto FireContinue+17
+
+	// r6 (owner item 7): in VR the player swings the chainsaw himself. The chain runs while the
+	// trigger is held and the saw stays exactly where the hand holds it (SAWG A/B, model frames 11/12:
+	// the idle vibration, which is the pose the bar was measured in); zscript/rsvr/melee.zs cuts
+	// whatever the bar touches. Its sound and shake are BD22's own loop's.
+	RSVR_SawRun:
+		SAWG A 0 A_StopSound(6)
+		SAWG A 0 A_Giveinventory("HasCutingWeapon",1)
+		SAWG A 0 A_PlaySound("Chainsaw/Draw", 5)
+		SAWG A 0 A_PlaySoundEx("Chainsaw/Loop","Weapon",1)
+	RSVR_SawRunLoop:
+		SAWG A 0 A_AlertMonsters
+		SAWG A 0 A_Quake(1,2,0,12,"")
+		SAWG ABAB 1
+		SAWG A 0 A_ReFire("RSVR_SawRunLoop")
+		SAWG A 0 A_StopSoundEx("Weapon")
+		Goto Ready
 
 	AltFire:
 		"####" A 0 A_AlertMonsters

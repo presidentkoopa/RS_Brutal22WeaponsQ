@@ -45,7 +45,8 @@ class RSQ_BashAsk : Inventory
 }
 
 // the impact: the effect the owner picked, at the point the bash landed. DECORATE's
-// RSQ_BashAttack spawns this; this picks which of the five to draw, and tints RSH0.
+// RSQ_BashAttack spawns this, and r6 every other melee hit too (melee.zs WorldThingDamaged);
+// this picks which of the five to draw, and tints it.
 class RSQ_BashFX : Actor
 {
 	Default { +NOINTERACTION; +NOBLOCKMAP; +DONTSPLASH; RenderStyle "Add"; Alpha 1.0; }
@@ -62,7 +63,9 @@ class RSQ_BashFX : Actor
 		{
 			a.target = target;
 			int t = RSQ.PlayerInt(PlayerPawn(target), 'rsq_bash_tint', 0);
-			if (FXC[n] == 'RSQ_FX_RSH0' && t > 0 && t < 5)
+			// r6 (owner item 17): the colour is assignable on every effect, not only RSH0 -- the
+			// tints are a luminance ramp (TRNSLATE.rsq), so they recolour any of the five
+			if (t > 0 && t < 5)
 				a.A_SetTranslation(String.Format("RSQ_BashTint%d", t));
 		}
 		Destroy();
