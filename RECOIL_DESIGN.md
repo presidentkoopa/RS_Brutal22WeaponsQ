@@ -24,8 +24,19 @@
 ## Real-world equivalents (owner, 2026-10-27): the reference each gun's feel is judged against
 | BD22 class | Real gun | Note |
 |---|---|---|
-| BrutalPistol | Beretta 92 (9mm) | treat the gun as the mesh is |
+| BrutalPistol | Beretta 92FS (or Colt M1911) | the mesh is a Beretta 92 |
+| BrutalSMG / MP40 | H&K MP5 / MP40 | |
 | Shot_Gun | 12-gauge pump: Remington 870 / Mossberg 500 | |
-| AssaultShotgun | Atchisson AA-12 | the AA-12 is known for LOW felt recoil for a 12-gauge (its constant-recoil spring system), so it should kick far less per shot than the pump, and steady under full auto |
-| Revolver (Moonlight, class BrutalRevolver) | six-shooter, break-action, speedloader | one shot per pull, max 5-6/s |
-| (rest) | ask the owner | |
+| AssaultShotgun | Atchisson AA-12 | the AA-12 is known for LOW felt recoil for a 12-gauge (constant-recoil spring), so it kicks far less per shot than the pump and stays steady on full auto |
+| Revolver (the shell-firing one, the Shotvolver) | S&W Governor / Taurus Judge | |
+| BrutalRevolver (Moonlight) | six-shooter, break action, speedloader | one shot per pull, max 5-6/s |
+| Rifle (assault rifle) | Bushmaster M17S | |
+| MiniGun | GE M134 Minigun | |
+| MG42 | MG42 | |
+| Sniper (Ruger 14 mesh, coded XM21) | M21 Sniper Weapon System (DMR / battle rifle) | |
+| Rocket_Launcher | Carl Gustaf M4 / RPG-7 | |
+| GrenadeLauncher / IncendiaryLauncher (M32) | Milkor MGL or M79 | |
+| Flamethrower2 | M2 flamethrower | |
+| Plasma_Gun | heavily modified M60 frame (styled on the reversed M60 toy); behaves like a sci-fi directed-energy particle accelerator | |
+| RailGun | experimental magnetic-induction railgun | |
+| BFG9000 / BFG10k / others | none given: invent a sci-fi feel with the owner, or leave without kick | |
