@@ -47,3 +47,8 @@ Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning mat
 ## Added by the owner (2026-10-27 06:50)
 16. **Pistol whip (the one-handed downstroke) only works with the OFF hand,** not the main hand. Fix it so the main hand's downstroke whips.
 17. **The impact hit flash on EVERY melee hit:** punch, butt strike, pistol whip and gun bash all get the RS_CombatFX hit-flash graphic, with its colour assignable (the RSH0 tint options Original/Blue/Green/Amber/White already exist in TRNSLATE.rsq). Today only the gun bash has it (F4).
+
+## For 2.0 (owner, 2026-10-27 08:15)
+18. **A skin-tone slider for the FBX hands,** in both BD22 Weapons Q 2.0 and ModelSwapper 2.0.
+    - **Feasible on QuestZDoom 17.3 with no engine change:** a slider of discrete steps. Each step is a pre-recoloured copy of the hand texture, swapped by the option (MODELDEF skin / A_ChangeModel). Gloves could be one of the steps.
+    - **To be checked:** whether a smooth slider is possible through a GLDEFS material shader on 17.3. Prove it on the rig before promising it.
