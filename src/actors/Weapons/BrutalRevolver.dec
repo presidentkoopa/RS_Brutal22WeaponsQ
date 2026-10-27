@@ -9,9 +9,13 @@
 // this fires one round.
 //
 // AMMO, its own (owner): RevolverRounds in reserve, BrutalRevolverCylinder in the gun, so it never
-// shares RevolverAmmo with the Shotvolver. Owner 2026-10-27: 6 a pickup, carry 72. PLACEHOLDERS, the
-// owner's call: the pickup art (BD22's shell sprite / revolver sprite for now) and where either
-// spawns on maps (nowhere yet: give, idkfa, summon).
+// shares RevolverAmmo with the Shotvolver. Owner 2026-10-27 19:06: 6 a pickup; "Our Moonlight is 36 total
+// rounds. If we have 2, it goes up to 72": the reserve cap is 36 with one Revolver and 72 once a second
+// Revolver has been picked up (zscript/rsq/roster.zs RSQ_Roster: token RSQ_MoonPair, cap set every tic,
+// so a backpack does not raise it -- the backpack rule is the owner's open call). The pickup is six
+// rounds in a ring (models/rsq/moonammo, tools/moonammo/make_pickup.py: the pack's 12 ga shell cut down,
+// nosed, recoloured from the Moonlight's texture). Map spawns: roster.zs (beside 1 in 4 of the map's bullet pickups, the Clip2 family).
+// (Revolver2.dec, quoted above for the firing rules, was removed 2026-10-27; it is in git history.)
 //
 // RELOAD (r5, stock): the mesh's own animation (reference/moonlight/README.md, measured): break-top
 // open (frames 16-19), the six rounds out (20-29), the speedloader in (21-30) and away (31-38),
@@ -24,16 +28,18 @@
 ACTOR RevolverRounds : Ammo
 {
 	Inventory.Amount 6			// owner 2026-10-27: 6 per pickup
-	Inventory.MaxAmount 72		// owner 2026-10-27: carry 72
-	Ammo.BackpackAmount 6		// BD22 has no single rule here (Ammo.dec: shells 2x pickup, Clip2 3x, rockets 6x, cells 1x): one speedloader, owner's call
-	Ammo.BackpackMaxAmount 144	// BD22's rule for every ammo (Ammo.dec, parsed): backpack max = 2 x max
-	Inventory.PickupMessage "Picked up revolver rounds. (placeholder art)"
-	Inventory.Icon "SHELA0"		// PLACEHOLDER art: BD22's shell
+	Inventory.MaxAmount 36		// owner 2026-10-27 19:06: 36 with one Revolver (72 with two: roster.zs raises it)
+	Ammo.BackpackAmount 6		// a backpack gives one pickup's worth (BD22 has no single rule: Ammo.dec shells 2x pickup, Clip2 3x, rockets 6x, cells 1x)
+	Ammo.BackpackMaxAmount 36	// OPEN (owner): BD22 doubles every cap with a backpack (Ammo.dec); here the backpack does NOT raise the cap until he says
+	Inventory.PickupMessage "Picked up six revolver rounds."
+	Inventory.PickupSound "SHELPK1"	// BD22's shell pickup sound (the art is a shell cut down)
+	Inventory.Icon "RVRDA0"
 	Tag "Revolver rounds"
+	Scale 1.0
 	States
 	{
 	Spawn:
-		SHEL A -1				// PLACEHOLDER art: BD22's shell pickup until the six-round speedloader art exists
+		RVRD A -1				// models/rsq/moonammo/moon_rounds.md3 (MODELDEF.rsqmoonammo); RVRDA0.png is a render of it for 2D
 		Stop
 	}
 }
@@ -63,6 +69,7 @@ ACTOR BrutalRevolver : BrutalWeapon
 	+WEAPON.NOALERT
 	+WEAPON.NOAUTOAIM
 	+WEAPON.NOAUTOFIRE
+	+INVENTORY.ALWAYSPICKUP		// owner 19:06: a second Revolver raises the rounds cap 36 -> 72, so it is taken even with the reserve full (inventory.zs CallTryPickup); roster.zs sees it go
 	Scale 0.9
 	Tag "Revolver"
 	States
