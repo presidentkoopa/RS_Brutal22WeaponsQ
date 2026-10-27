@@ -424,8 +424,11 @@ Model MP40
 	SurfaceSkin 0 9 "MP40.png"
 	SurfaceSkin 0 10 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -0.982 -4.470 0.0
+	ZOffset -2.213
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// batch 3 (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQMM A 0 2
 }
@@ -447,8 +450,11 @@ Model MP40
 	SurfaceSkin 0 9 "MP40.png"
 	SurfaceSkin 0 10 "MP40.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -0.982 -4.470 0.0
+	ZOffset -2.213
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// batch 3 (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQMM B 0 2
 }
@@ -470,8 +476,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 9 "rsr_clear.png"
 	SurfaceSkin 0 10 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -0.982 -4.470 0.0
+	ZOffset -2.213
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// batch 3 (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQMP B 0 2
 }
@@ -493,8 +502,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 9 "rsr_clear.png"
 	SurfaceSkin 0 10 "MP40.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -0.982 -4.470 0.0
+	ZOffset -2.213
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// batch 3 (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQMP A 0 2
 }

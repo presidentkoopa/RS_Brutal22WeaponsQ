@@ -126,6 +126,9 @@ class RSQ_GunSide : Inventory
 	// batch 2: BrutalSMG (row 5), the pistol's FBX hand with the index on the SMG trigger
 	FbxTrgS: RQFH A -1; Stop;
 	FbxSqzS: RQFH B -1; Stop;
+	// batch 3: MP40 (row 12)
+	FbxTrgM: RQFI A -1; Stop;
+	FbxSqzM: RQFI B -1; Stop;
 	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
 	Nade: RQGN A -1; Stop;	// Ermac's ammo hand round the VR grenade
 	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
@@ -320,6 +323,17 @@ class RSQ_Hands : Weapon
 			}
 			gl = (fsq ? "FbxSqz" : "FbxTrg") .. (i == 4 ? "P" : "F");
 		}
+		if (i == 12)	// batch 3: MP40 squeezes on its FIRE frames (gunmoves rows 42-45: MP40 B D E Q R S, PP40 B D E) or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || (mgp.Sprite == Actor.GetSpriteIndex('MP40') && (mf == 1 || mf == 3 || mf == 4 || (mf >= 16 && mf <= 18))) || (mgp.Sprite == Actor.GetSpriteIndex('PP40') && (mf == 1 || mf == 3 || mf == 4));
+			}
+			gl = msq ? "FbxSqzM" : "FbxTrgM";
+		}
 		if (i == 5)	// batch 2: BrutalSMG squeezes on its FIRE frames (BD22 SMG.dec Fire: SMGF / 2MGF A-C, zoomed SMGZ G-I), trigger otherwise
 		{
 			bool ssq = false;
@@ -338,6 +352,8 @@ class RSQ_Hands : Weapon
 		else if (i == 18 && RSK_M203Handler.TriggerGrip(mo))
 			sp = (p.cmd.buttons & BT_OFFHANDATTACK) ? "M2" : "M1";	// 1.31: finger on the M203's trigger (squeezed)
 		String spl = (i == 4 || i == 7) ? (i == 4 ? "FbxSupP" : "FbxSupF") : "Sup" .. sp;	// BD 2.0 b1: the FBX support hands
+		if (i == 12)
+			spl = "FbxSupF";	// batch 3: MP40, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 12)
 		if (i == 5)
 			spl = "FbxSupF";	// batch 2: BrutalSMG, the FBX open palm under its forend (handtable SupportHook / SupportRot row 5)
 		invoker.SetLayer(p, RSQ_Layers.SUPPORT, gs, hold && sp != "" && !swordTwo ? spl : "Hidden");
@@ -796,6 +812,8 @@ class RSQ_Hands : Weapon
 	DFbxSqzF: RQFG D -1; Stop;
 	DFbxTrgS: RQFH A -1; Stop;	// batch 2: dual wield, BrutalSMG
 	DFbxSqzS: RQFH B -1; Stop;
+	DFbxTrgM: RQFI A -1; Stop;	// batch 3: dual wield, MP40
+	DFbxSqzM: RQFI B -1; Stop;
 	Hidden: TNT1 A -1; Stop;
 	}
 }

@@ -1436,9 +1436,12 @@ Model MP40
    Model 0 "MP40.md3"
    Skin 0 "MP40.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
+   Offset -0.982 -4.470 0.0
+   ZOffset -2.213
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// batch 3 (lane B): gun to the FBX hand fitted from 1.92
    NoInterpolation
-   ZOffset -5
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 

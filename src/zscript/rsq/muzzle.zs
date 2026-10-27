@@ -55,6 +55,9 @@ class RSQ_Muzzle : EventHandler
 		Name n = w.GetClassName();
 		if (n == 'Sniper')	return (62.3, 0.3, 5.0);
 		if (w is 'BrutalPistol')	return (23.3, 2.2, 6.3);	// BD 2.0 b1: BrutalPistol.md3 frame 3 slide face (F 15.18, bore U 0.10 at the 1.99 placement), moved with the gun to the FBX hand
+		// hands b3: BrutalSMG.md3 frame 3, the front-most face (surface 1, F 35.07, L -1.02..1.02, U -5.74..-3.71 at the
+		// 1.99 placement: the barrel end under the rail), its centre moved with the gun by batch 2's move (shift + pistol r5 move)
+		if (w is 'BrutalSMG')	return (39.6, 4.4, 0.8);
 		// moon-reload: rev.md3 frame 0, surface 3 (barrel and top strap), MODELDEF.rsqmoon placement. CONSTRUCTED:
 		// no bore is modelled; the barrel is a box at the muzzle (face F 27.02-27.38, L -1.40..1.35, U 4.04..5.18):
 		// its face's centre (reference/moonlight/bake_reload.txt "muzzle")
