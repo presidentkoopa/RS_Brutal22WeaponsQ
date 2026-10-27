@@ -18,3 +18,10 @@ for VR now.
   meshes, rig, tools; never shipped to players).
 - Before anything goes to the owner's headset, it must run on his load order with no script errors:
   doom2 -> brutal22test6 -> BD_VoxelPack -> this pack.
+
+## Never call something working that has not been SHOWN working (owner, 2026-10-27)
+The Ruger's "Real" scope was reported as working for a week. Nobody ever showed the magnified view in the lens, on the rig or in the headset, and in the owner's headset it was fake glass. That is not allowed again.
+- **Working means shown working:** in-engine frames or a log of the behaviour itself, not "the code exists", "it compiles" or "the option is there".
+- **VR-only behaviour is labelled "rig only, not headset-confirmed"** until the owner confirms it in his headset.
+- **Option names promise only what has been proved.**
+- **Scope:** the owner abandoned the Ruger scope (2026-10-27 07:29) and is removing the mesh. Don't work on scopes unless he asks.
