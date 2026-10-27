@@ -73,7 +73,6 @@ OptionMenu "RSQ_Options"
 	Option "Shot/Revolver Reload", "rsb_revolver_feed", "RSB_RevFeed"
 	Option "Rifle Underbarrel Ammo", "rsm_ammo", "RSM_Ammo"
 	Option "Machinegun replaces MG42", "rsq_mg_replaces_mg42", "OnOff"
-	Option "Shotvolver Swap for Revolver", "rsq_slug_replaces_shotvolver", "OnOff"	// r4: owner's name (was "Slug revolver replaces Shotvolver"); cvar kept so saved settings carry over
 	Option "Sniper Scope", "rsq_scope_sniper", "RSQ_ScopeMode"
 	Option "Railgun Scope", "rsq_scope_railgun", "RSQ_ScopeMode"
 	Option "Ballistics", "rsq_ballistics", "RSQ_Ballistics"

@@ -478,7 +478,7 @@ class RSVR_Hand play
 		}
 		if (n == 'BrutalPistol')
 			return PISTOL;
-		if (n == 'Revolver' || n == 'Revolver2')
+		if (n == 'Revolver')
 			return REVOLVER;
 		return 0;
 	}

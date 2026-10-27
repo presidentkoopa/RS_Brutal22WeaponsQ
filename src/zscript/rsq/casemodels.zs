@@ -93,8 +93,6 @@ class RSQ_CaseModels abstract play
 			return 'RSQ_Hull12ga';
 		if (gun == 'Revolver' && casing == 'ShotgunCasing')
 			return 'RSQ_Hull12ga';
-		if (gun == 'Revolver2' && casing == 'ShotgunCasing')
-			return 'RSQ_Hull12ga';
 		return 'None';
 	}
 
