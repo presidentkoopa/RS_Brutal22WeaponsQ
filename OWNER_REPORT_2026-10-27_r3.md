@@ -1,0 +1,45 @@
+# Owner's headset report on BD22_VR-Reloaded_1.99x-lb-r3 (2026-10-27 05:03)
+
+Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning matters.
+
+## Works / liked
+- Dual flick to reload: "quite nice".
+- Voxels look good.
+- The grenade throw is nice. Throwing in general is probably okay; the axe throw waits for the axe changes below.
+- Punching is good, both forward and side to side.
+- The two-handed butt strike works and he likes the knockback.
+- Minigun: barrels, frame and hand shake when firing. "Whole thing looks damn good".
+- He has been getting ammo with Use.
+
+## Bugs
+1. **Over-under machine gun:** the casings come out of the barrel, not the port.
+2. **Ruger 14 / sniper:** the bullets leave from below the barrel, as if from the magazine.
+3. **Minigun:** after firing, the frame stops shaking and the barrels keep spinning a little (correct), but the hand keeps shaking. The hand shake is tied to the barrel spin; it must follow the frame shake.
+4. **Unmaker carve:** only the top half of the skull pops out. The RS VR Weapons version (the same mesh) has the whole skull come out.
+5. **IDKFA gives neither the revolver nor the shotvolver.** So the shotvolver's slug-shot alt fire can't be verified yet.
+6. **Butt strike range:** too short. Enemies back away as you close in, so extend the range. This is the two-handed rifle with a "punch" from the grip hand, i.e. a stock hit.
+
+## Changes
+7. **Chainsaw:** remove its swing animation. The player swings it physically. It damages whatever comes into range, not by velocity or momentum like the other melee weapons.
+8. **Axe lock-on:** it locks onto one enemy, using the same indicator icon as the Shieldsaw and the saber.
+9. **Axe blade orientation:** hits count only when the blade edge leads the motion, judged from the controller's rotation. In the normal ready pose (pointing like a gun) the blade faces out, so a swing down cuts and an arm raised is the flat of the head, not an attack. Side to side counts only when the controller is rotated so the edge faces the way it moves.
+10. **Two-handed sword:**
+    - stop the weapon snapping to the off hand;
+    - the off-hand mesh snaps to the handle below the main hand, and the main hand still drives the attack;
+    - possibly more damage in this mode.
+11. **Rename the option "Slugrevolver replaces Shotvolver"** to "Shotvolver Swap for Revolver", On/Off.
+12. **Revolver and shotvolver:**
+    - they should be different meshes;
+    - the owner has a measured, reloadable candidate mesh for the normal revolver (ASK HIM FOR IT).
+13. **Reloads for guns that have no idea of a magazine** (weapon code changed to add ammo use and magazines):
+    - Unmaker: 200;
+    - Flamethrower: 100;
+    - over-under machine gun: 100;
+    - chaingun: 200.
+14. **Options to dual-wield every gun,** most of them off by default.
+15. **Ruger scope:** today it is a fake glass texture, and the dot doesn't work. It needs one of:
+    - a truly see-through red-dot sight, with no magnification and a red dot in it;
+    - a real scope that renders a 3x zoom.
+
+## Questions answered (in the reply)
+- **"Gun bash"** is a BUTTON: BD22's kick button with a gun in hand does a gun hit instead of the boot. The swing-down gesture with a pistol is the **pistol whip**, a different move. The naming is confusing; consider a rename.
