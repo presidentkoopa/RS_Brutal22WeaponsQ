@@ -153,6 +153,7 @@ ACTOR BrutalRevolver : BrutalWeapon
 		RVMA A 0 A_JumpIfInventory("BrutalRevolverCylinder",6,"Ready")
 		RVMA A 0 A_JumpIfInventory("RevolverRounds",1,1)
 		Goto Ready
+		RVMA A 0		// (a state for the jump above to land on)
 		Goto RSB_Start	// moon-reload: the hand-driven VR reload (zscript/rsr/rsr_break.zs, rsb_guns.zs rows 10/11)
 	RSB_Stock:		// not in VR, or Real reload off: the mesh's own animation
 		RVMA A 0 A_GiveInventory("Pumping", 1)
