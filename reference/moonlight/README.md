@@ -47,3 +47,11 @@ Every number from the mesh (`rev.md3`, 41 frames, 11 surfaces) through the Depot
   - six chambers on radius 1.8-2.0 cm about L -0.01, U 2.15.
 - **Speedloader seat (frames 25-26, closed frame):** centre F 1.65, L -0.15, U 1.88, axis along F
   (1, -0.004, -0.01), F -2.23 to 8.08 (rounds inside the cylinder, body behind its rear face).
+
+## Owner's decisions (2026-10-27 06:09)
+- **Name:** Moonlight is renamed **Revolver**. BD22 already has a class called `Revolver`, the shotgun-shell revolver (the Shotvolver), so the class becomes `BrutalRevolver` with the tag/name "Revolver". The owner allowed "BrutalRevolver if we absolutely have to".
+- **Ammo: BD22 has no revolver ammo of its own** (parsed from brutal22test6):
+  - BD22 `Revolver` reserve = `AmmoShell` (shotgun shells), cylinder = `RevolverAmmo` (max 6);
+  - our `Revolver2` (slug revolver) reserve = `Clip2`, cylinder = `RevolverAmmo`.
+
+  So the six-shooter needs its own reserve ammo, e.g. `RevolverRounds`, with a pickup. The owner prefers recolouring the Shotvolver's voxel ammo pickup to match the Moonlight mesh's colour; failing that, recolour another voxel or make one. Where it spawns (replacing what, how much) is the owner's call when built.
