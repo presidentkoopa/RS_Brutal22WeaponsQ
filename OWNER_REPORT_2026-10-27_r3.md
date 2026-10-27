@@ -72,5 +72,5 @@ Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning mat
 ## FlameCannon hands (owner, 2026-10-27 16:08)
 21. The FlameCannon is worn on the arm, so it gets no grip pose.
     - **Measured** (FlameCannon.md3, 1 surface, 5085 verts): the housing runs x 11.9 to 78.5. A forearm-shaped mesh sits inside it, with a hose running back from it.
-    - **Gun hand:** the arm sits inside the housing. The wrist is pinned and the gun moves so the arm lines up with the inner forearm. The drawn hand is hidden inside it or barely shows.
+    - **Gun hand: none is drawn** (owner, 18:46-18:48). The mesh's back is solid. Its texture shows a fleshy slit the hand slides into, and the forearm inside is the arm you see. The wrist is pinned, and the cannon moves so the controller sits at that rear slit with the barrel running along the forearm.
     - **Support hand:** open palm, cupped under the big barrel.
