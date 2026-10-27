@@ -1089,3 +1089,49 @@ frame 1, RQFS B, label FbxSupF), never Ermac's glove. Pose data per gun: `tools/
   (dry run passes), but its Base/Tip/Bore/Rest rows and PushZ/PushR scalars are NOT moved yet: do not port it as is.
 - **Revolver2:** shares row 17 and Revolver.md3 with the Revolver (Shotvolver), which the other lane re-ports with
   port_gun.py (Revolver entry has casing2='Revolver2'); not touched here to avoid two moves of one mesh.
+
+# Hands lane, batch 5 (2026-10-27, box 11:22-12:37): FBX support hands on Rifle / Shotvolver / BrutalRevolver; Sniper wrist hold solved, NOT ported (flag). RIG ONLY, NOT HEADSET-CONFIRMED
+
+Worktree `/home/claude/lane_b_b5` (branch `b5-hands`, pushed to `lane-b-1.99x`). One method: the gun hands and guns are batch 4's, unchanged;
+only the support hand is new, and it is placed on the PORTED gun (nothing moves the gun or the gun hand).
+
+## 1. Done (measured; rig only, not headset-confirmed)
+- **`port/support_gun.py <Class> <A|B> <out.json>`**: the FBX support pose (`fbx_b1_L.md3`: A = RQFS A the pistol cup, B = RQFS B the open palm under)
+  at 1.92's SupportPoint (parsed from the 1.92 pack's handtable) moved with the gun (`ported_<Class>.json` R, t), lowered in 1 mm steps
+  until clear (pen <= 0.5 cm, lane_c TOL). The contact under a long polygon is found on the sampled surface (the Rifle mesh has no vertex there).
+  **`port_gun.py <Class> x --support <sup.json>`** writes the handtable row (hook / rot / point) and the hands.zs label. Data: `port/fits/b5/`.
+- **Rifle** (row 18, ~15 min): RQFS B under the M203 tube; the MP40's solved palm-under rotation carried by R_rifle R_mp40^T. Contact (32.12, 4.71, -2.68) cm,
+  lowered 0.2 cm: pen 0.45, palm 0.14 cm from the tube. Hook (-3.232, 11.358, 6.741), rot (-7.927, 2.302, 10.732) (= the MP40's: same r5 aim).
+  The purist rifle keeps its Ermac handguard grip (label condition excludes PuristRifle; see open).
+- **Revolver, Revolver2, BrutalRevolver** (shared row 17, ~20 min): RQFS A, the BrutalPistol's cup (row 4, hook 0) carried from the pistol's 1.92
+  SupportPoint to the Revolver's (rotation R_rev R_pistol^T = identity: same aim), lowered 1.4 cm until clear of BOTH revolvers and BOTH gun hands
+  (`--also BrutalRevolver`): pen 0.50 (Revolver hand) / 0.39 (BrutalRevolver gun) / 0.48 (BrutalRevolver hand), gun 0.00. Hook (0.458, -2.521, -0.373), rot 0.
+  The shared row alone was 0.60 into BrutalRevolver's hand before the joint solve.
+- Sheet `/home/claude/lane_b_out/b5_hands.png` (checked by eye against 1.92): the Rifle's steadied hand is the FBX palm under the tube where 1.92's black
+  glove was; both revolvers show the FBX cup under the gun hand where 1.92's glove cupped. BrutalRevolver has no 1.92 render.
+- **Poses as data:** `poses/Rifle|Revolver|BrutalRevolver.json` now carry `support` (the solve + measurements; BrutalRevolver points at the shared Revolver
+  solve). `rebake.py bake` reproduces all three gun-hand bakes exactly (0.0000 md3 units); the support is a hook on the unchanged fbx_b1_L frames (hook check 0.0000).
+- **Gate** (QZD 17.3 rig, doom2 -> brutal22test6 -> BD_VoxelPack -> pack, `gate_gun.py`, exclusive lock, ini restored; logs `/home/claude/lane_b_b5run/g5`, `g5f`):
+  - smoke and hand reloads re-run on the DELIVERY pack (`g5f`, after the rebase): identical results, 0 pack script errors.
+    (gate_gun.py has no PuristRifle or Shot_Gun entry: those two were not smoked here.)
+  - smoke on the test pack, 0 pack script errors (only BD_VoxelPack's voxeldef lines): Rifle held, 14 shots, DROP/EMPTY; Revolver 2 shots (held False = the
+    probe's class-name match, as r4); Revolver2 held, 12 shots; BrutalRevolver held, 2 shots. Same as batch 4.
+  - hand reloads: Rifle mag IDLE>EMPTY>DROP>EMPTY>CARRY>INSERT>SEATED>DONE>IDLE; M203 latch > open > round in the breech > round home > shut: loaded;
+    Revolver break chamber 0 loaded, 0.0 cm off the bore; BrutalRevolver speedloader loaded > flick 457 deg/s > DONE; per round loaded 6, 0.0 cm off the bore.
+- Pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r8-hands5.pk3` (`python3 build.py 1.99x-lb-r8-hands5`, rebased on c32650c incl. Shot_Gun),
+  sha256 3021ae33f5a317c9a8df2dc6c75347dd35dfb208f93cd80777536b1d520fbee7.
+
+## 2. Not done / flagged
+- **Sniper (Ruger/XM21): the rifle-wrist hold is SOLVED but NOT ported: owner's call.** (`port/sniper_wrist.py`, ~35 min, mostly solver time)
+  - Measured wrist: ~3.3 cm wide; its underside drops from z -1.7 (x -1.8) to -5.5 (x -5.8) behind the trigger; the Rifle's pistol grip runs to z -16.
+  - Start = the Rifle's hold pitched about the trigger; scan 0/20/40/60/-20 deg: 40 best (pen 0.38, M/R/P 1.22/0.23/0.02 rigid).
+    Rigid re-seat: pen 0.18, index pad 0.03, palm 0.30, web 0.29. Curls (index + M/R/P): **pen 0.31, index pad 0.00 on the trigger, M/R/P 0.20/0.20/0.13,
+    thumb 0.06 (over the wrist), palm 0.30**, squeeze 0.60 cm travel. Data: `fits/st2_Sniper.npy`, `fits/curl3_Sniper.json`.
+  - Why not ported: the hand is **39.5 deg** off the approved pistol hand (38 deg pitch; Rifle 8.9, Revolver 7.4, BrutalRevolver 11.7) and the gun
+    would drop 15.6 cm (shift -2.92, 2.43, -15.59). port_gun keeps the pistol's aim, so the drawn hand would sit ~38 deg off the real controller hand;
+    keeping the hand on the controller instead tilts the barrel ~38 deg off the aim. Either is a feel change the owner decides. Port is one command once decided
+    (write `fits/Sniper.json` as Rifle.json: `shift` from curl3, sprite RQFN, squeeze X21F/P21F A-C, support `move` frame 4; then `bake_gun.py`, `port_gun.py`).
+  - Scope: `port/scope_eye.py` puts the left eye 8 cm behind the eyepiece (target from scope.zs, corrected from the probe's logged eye). On the UNMOVED
+    Sniper (test pack): REAL on (skinOn 1, cam 1, fov 4.62) at 11.2 cm eye relief after 2 iterations. Not re-run on a ported Sniper (none).
+- **Purist rifle support:** still Ermac's handguard grip. The same solve on Rifle.md3 alone gave palm 1.59 cm off the handguard after lowering 1.6 cm: not good enough to ship.
+- The revolver cup is lowered 1.4 cm to clear both gun hands; it supports the gun HAND (as 1.92 and the pistol), 2.4 cm from the gun at the palm.
