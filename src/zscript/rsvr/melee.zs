@@ -166,6 +166,17 @@ class RSVR_Hand play
 	const SWORD_SWING = 3.5;
 	const WHIP_SWING = 3.2;		// 1.97: a pistol is lighter than the axe
 	const BUTT_SWING = 3.6;		// 1.97: a long gun is heavy and swung short
+	// r4 (owner: "enemies back away as you close in, so the range is too short"). The butt strike
+	// used to land only where the gun physically was: the stock-to-forward segment, padded 5 map
+	// units (15 cm at vr_vunits_per_meter 34). It now also sweeps BUTT_REACH ahead of the stock,
+	// along the way the stock is moving, padded BUTT_PAD -- the same envelope as Brutal Doom's
+	// own kick, which this blow stands in for. BD22 Melee.dec KickAttack: a FastProjectile of
+	// Speed 30 that lives 2 tics (Spawn: TNT1 AA 1) with Radius 12, fired from the weapon
+	// controller in VR (p_mobj.cpp: AttackPos). 30 x 2 = 60 units of travel, 12 of radius:
+	// 72 map units, 2.1 m. A hit still needs the blow itself (speed, butt leading, two hands)
+	// and a clear line from the hand (Clear), so nothing is struck through a wall.
+	const BUTT_REACH = 60.0;
+	const BUTT_PAD = 12.0;
 	const THROW_MIN = 2.5;
 	const RISE = 0.15;			// of the blade's speed that may be upward before it is a backswing (about 9 degrees)
 
@@ -652,6 +663,17 @@ class RSVR_Hand play
 				whooshWait = 12;
 			}
 			Sweep(mo, k, prevIn, prevOut, bin, bout, power);
+			if (isButt)
+			{
+				// r4: the reach ahead of the stock (BUTT_REACH above)
+				Vector3 sd = bout - prevOut;
+				double sl = sd.Length();
+				if (sl > 0)
+				{
+					sd /= sl;
+					Sweep(mo, k, prevOut, prevOut + sd * BUTT_REACH, bout, bout + sd * BUTT_REACH, power, BUTT_PAD);
+				}
+			}
 		}
 		else if (++calmTics > 2)
 		{
@@ -668,9 +690,9 @@ class RSVR_Hand play
 	//------------------------------------------------------------------
 	// the blade's path this tic (a0-b0 -> a1-b1) against every body near it;
 	// each body is hit once per swing, at the first point the blade reaches it
-	void Sweep(PlayerPawn mo, int k, Vector3 a0, Vector3 b0, Vector3 a1, Vector3 b1, double power)
+	void Sweep(PlayerPawn mo, int k, Vector3 a0, Vector3 b0, Vector3 a1, Vector3 b1, double power, double padAt = 0)
 	{
-		double pad = (k == AXE) ? 3 : 5;
+		double pad = padAt > 0 ? padAt : (k == AXE) ? 3 : 5;
 		Vector3 c = (a0 + b0 + a1 + b1) / 4;
 		double r = max(max((a0 - c).Length(), (b0 - c).Length()), max((a1 - c).Length(), (b1 - c).Length())) + pad;
 		double travel = max((b1 - b0).Length(), (a1 - a0).Length());
