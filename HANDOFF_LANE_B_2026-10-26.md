@@ -473,3 +473,78 @@ aborts; every gun's shots and reload phases equal r3's (Unmaker 40/40 this run).
 - The hands lane shares this working tree. A checkout or stash on their side reverted my uncommitted
   `handtable.zs` line once mid-box; it was re-added and committed. Keep uncommitted edits to shared
   files short.
+
+---
+
+# BD 2.0 hands lane, batch 1 (2026-10-27, box 06:28-07:28): FBX hands on 1.99 r4
+
+Worktree `/home/claude/lane_b_b1` (branch `b1-hands`, pushed to `lane-b-1.99x`). Port script and its
+transform: `/home/claude/lane_b_b1run/tools/` (copies of the scratch `port_b1.py`, `gunmove.py`).
+Rig driver, logs, shots: `/home/claude/lane_b_b1run/`. Pack: `/home/claude/lane_b_out/BD22_VR-Reloaded_2.0-b1.pk3`.
+Sheet: `/home/claude/lane_b_out/b1_hands.png`.
+
+## 1. Done (measured)
+### BrutalPistol and Flamethrower2: lane_c r5's hands, exactly
+- Hands: r5's baked MD3s byte-identical (`models/rsq/fbx/fbx_b1_R.md3`, `fbx_b1_L.md3`, `fbx_hand.png`),
+  new sprites RQFG (gun hand: A pistol trigger, B pistol squeeze, C flamer lever, D flamer squeeze) and
+  RQFS (A pistol cup, B flamer open palm under the tank). Neither sprite exists elsewhere in 1.99.
+- Wiring = r5's: hands.zs labels (squeeze on the gun's own fire frames), dualhands.zs, handtable rows
+  4/7 hooks 0, and also 1.99's new `GunHookTwo` rows 4/7 (it defaulted to the old one-hand hook).
+- The gun move (r5's MODELDEF offsets) on EVERY block that draws the gun on the gun controller, found
+  by parsing all MODELDEF files (11 block groups, counts asserted): bd.txt, purist, rsqoff, rsr pistol
+  RQPM/RQPP, and, new in 1.99, the Flamethrower canister reload blocks RQYM (gun) / RQYP (canister in
+  the gun). Off-hand (RSQ_Hands) and dropped/world blocks deliberately not moved.
+- One rigid transform per gun (`gunmove.py`: the QZD 17.3 MODELDEF chain from lane_c `gunplace.to_local_ao`,
+  base Offset 0 0 / ZOffset -5 -> r5). Check: it reproduces r5's own moved pistol numbers (well, axis,
+  mag centre, grab, pull, casing port) to <= 0.04 cm.
+  - Reload tables: pistol case 2 = r5's values; Flamethrower2 case 11 (not in 1.92) moved by the same
+    transform: Well (36.788, 0.507, -3.364), Axis (-0.032, 0, 1.000), MagCentre (36.189, 0.560, -9.220),
+    WellHook (0, -1, -0.032), Offset (-4.371, -8.313, -5.669). TopInHand/HandHook are hand-frame: kept.
+  - Casing port (pistol): (7.2, -0.1, 6.4) (r5; transform gives 7.24, -0.11, 6.38).
+  - Muzzle: the pistol joins r4's `RSQ_Muzzle` at its drawn muzzle (23.3, 2.2, 6.3): slide face of
+    BrutalPistol.md3 frame 3 (F 15.18, U 0.10 before the move). r5 had reported the 10.5 cm gap and left it.
+  - Flame at the spout: lane_c r6's `flamespout.zs` (RSA_FlameSpout, in ZSCRIPT.rsvr + MAPINFO.rsvr),
+    tip recomputed for the r5 move: (91.25, -2.94, -4.47). r6's own tip point through the same chain
+    gives r6's 88.39 -5.14 -1.42 to 0.001 cm with r6's offsets.
+- Gate (QZD 17.3 rig, doom2 -> brutal22test6 -> BD_VoxelPack -> pack, base probe only):
+  - 0 script errors from our pack in every run (only BD_VoxelPack's own voxeldef / sphere.txt lines).
+  - Sweep, all 31 classes (give, select, fire, alt-fire, reload, fire): identical to r4's sweep on every
+    class: same held / shots / phases, apart from shot-count jitter (Rifle 12 vs 14, FlameCannon 16 vs 14).
+    Chain_Saw, Revolver and RailGun read "held False" in r4's sweep too: that is the probe's class-name
+    match, not a regression. `python3 /home/claude/lane_b_b1run/tools/sweepcheck_b1.py`.
+  - Off-hand reload (Depot `tools/rig/mags.py 2 11`): BrutalPistol and Flamethrower2 both go
+    IDLE>EMPTY>DROP>EMPTY>CARRY>INSERT>SEATED>DONE>IDLE (load 2.5).
+  - Sheet `/home/claude/lane_b_out/b1_hands.png`: rest / steadied / firing for both guns, in-engine,
+    from the eye. Pistol: gun hand on the grip, cup on steady. Flamer: lever hand, and the flame starts at the spout.
+    The palm under the tank is hidden from this eye height.
+- Pack `/home/claude/lane_b_out/BD22_VR-Reloaded_2.0-b1.pk3`, sha256
+  13d1f5b6f2a042f6fdefb2b094e6693fa3b6aebe6f205d167b88d664fc8907f0 (`python3 build.py 2.0-b1`;
+  the build is byte-reproducible).
+
+## 2. Flagged (first measurement, not ground on)
+- **Revolver / Revolver2 (Shotvolver, same Revolver.md3, hand row 17).** These are the only other
+  one-hand pistol-grip guns in 1.99 (the handtable's other cup-support row is the pistol). Measurement:
+  ready frame, 1.99 placement. The grip rake matches the pistol's (backstrap 16.5 deg vs 17.4). But the
+  trigger is 2.8 cm further from the backstrap (10.2 cm vs 7.4), and the grip is about 1.5 cm deeper.
+  So the pistol's approved pose cannot put the web on the backstrap AND the index on the trigger.
+  - Adapting it means re-solving the index (a squeeze-style pad move of 2.8 cm), not just moving the gun.
+  - Also: the Moonlight lane is about to replace this mesh (above). A hand fitted to Revolver.md3
+    now would be refitted.
+  - Owner's call: (a) wait for Moonlight and fit that mesh, or (b) pistol grip on the old mesh with
+    the index re-solved.
+- Not reached: nothing else in batch 1.
+
+## 3. Open
+- Two blockers, said here and in the report:
+  - Another lane writes into the SHARED checkout `/home/claude/rs_brutal22weaponsq` mid-session
+    (untracked `src/*.rsqmoon`, `src/models/bd/Moonlight/`, `src/actors/Weapons/BrutalRevolver.dec`
+    appeared at 06:30). `build.py` zips src/, so a build from that tree carries them. b1 was moved to its
+    own worktree and built there.
+  - `/home/claude/lane_b_r4/r4probe.pk3` now references BrutalRevolver and fails to compile without
+    those files, so b1's gate used the base `probe.pk3` only.
+- The rig lock is `flock -s` (shared), so it does not serialize engines. Lane A runs engines
+  continuously. My sheet queue also started 1 min early and overlapped two sweep runs (06:37-06:38).
+  Those two runs passed, and the sheet was re-shot afterwards.
+- The pistol now fires from its drawn muzzle (RSQ_Muzzle). That is a VR shot-origin change on a
+  BD22 gun, per CLAUDE.md's "code fits the mesh" rule. Worth the owner's eye in the headset.
+- No headset pass yet. The hands still render as bare skin (lane_c REPORT: no glove texture for the FBX UVs).
