@@ -276,3 +276,124 @@ Gate (`lane_b_rig/sweep.sh`, logs `sw_r3_*`): all 31 classes given, selected (he
 fired, alt-fired, reload button pressed, fired again; class BDoomer, rsr_reload 1, ballistics 2.
 0 pack script errors, 0 VM aborts, 0 crashes. The only error lines are BD_VoxelPack's own (four
 voxeldef lines, DeathSphereHealth), present with no pack too. Not yet on the owner's headset.
+
+---
+
+# Round 4 (2026-10-27): branch `lane-b-1.99x`, the owner's r3 headset report items 1-7
+
+Rig: QuestZDoom 17.3 (`/home/claude/rsq_weapondepot/tools/rig/bin`, "qz: engine OK"), doom2 ->
+brutal22test6 -> BD_VoxelPack -> pack, `flock -o -s /home/claude/rig.lock`, one engine at a time.
+Driver `/home/claude/lane_b_r4/run.sh`, test-only probe `/home/claude/lane_b_r4/r4probe.pk3` (logs
+casings, shot origins, hand-follow rows, damage, all in the controller frame, cm). Logs in
+`/home/claude/lane_b_r4/logs/`. Sheet: `/home/claude/lane_b_out/r4_fixes.png`. r3 = the delivered
+`BD22_VR-Reloaded_1.99x-lb-r3.pk3` (7061efe3), r4 = this round.
+
+## 1. Done (measured)
+
+### Item 1: over-under machine gun (Machinegun) casings out of the barrel. FIXED (`1769b47`)
+- Port re-measured off `Machinegun.md3` frame 4 with the Depot's own `bd22_plus.eject_port`
+  (boundary loop, 18 verts): mesh (43.41, -0.27, -4.20) -> controller F 14.3 L -0.3 U -4.3 cm.
+  The shipped number was right.
+- Cause was timing. BD22's casing spawner (`50CaseSpawn2`, Casing.dec) is a Speed 20 projectile;
+  the case is born where the spawner has flown to. `casings.zs` moved it to the port on the NEXT
+  WorldTick, so every case was drawn for one tic out in front. Rig, first shot: r3 EmptyBrass age 0
+  at F 91.5, MGLinks at 155.3 (the gun ends at 68.8); age 1 at the port.
+- Fix: place in `WorldThingSpawned`, which the engine calls from the fresh-thinker pass with target
+  and vel already set (dthinker.cpp: CallPostBeginPlay, then the first Tick, same tic).
+  r4: EmptyBrass and MGLinks age 0 at F 14.9 L -0.3 U -6.0 (the port; the probe's own
+  pixelstretch round trip reads U about 1.3 low), then down the chute. Applies to every gun's brass.
+- Rig frames at 480 px do not resolve a 5 cm case at arm's length (tried four poses, casing size
+  x4); the sheet plots the rig-logged positions on the mesh instead.
+
+### Item 2: Ruger/XM21 bullets from below the barrel. FIXED (`02f433e`)
+- Muzzle measured off `XM21.md3` (frame 0, surface 9 = body and barrel) through MODELDEF.rsr's chain
+  (Depot `tools/kit/rgeo.py to_flu`): tip F 62.34, bore L 0.28 U 5.03 (constant from F 45 to the
+  tip). The controller, where QZD 17.3 starts every player shot (AttackPos), is 62 cm behind and
+  5 cm under it.
+- New `zscript/rsq/muzzle.zs` (`RSQ_Muzzle`): hitscans re-fired with `LineAttack(LAF_ABSPOSITION)`
+  from the muzzle, same angle/pitch/damage/puff/range/flags, direction still the engine's AttackDir;
+  BD22's trail-only rail (damage 0, "Gray") redrawn by `Actor.RailAttack` from a mount at the muzzle
+  with the same FRailParams. Wall guard: if the hand-to-muzzle line hits geometry, nothing moves.
+- Rig: r3 all three hitscans and both rails from (0, 0, 0); r4 hitscans and trail from
+  (62.5, 0.3, 3.8). The damaging rail (30, colour None, invisible) still starts at the controller
+  on purpose: fired from a mount its kills would not be the player's.
+- The rig does not draw particle rail trails in its frame dumps (none visible on r3 either), so the
+  evidence is the log, plotted on the mesh in the sheet.
+
+### Item 3: Minigun hand keeps shaking with the barrel spin. FIXED (`a347fb5`)
+- Measured per surface vs ready frame 4 (`Minigun.md3`, Scale -1 1 1, ZOffset -5): in frames
+  5, 6, 7, 9, 11 the body (`Runko` x3, `Grip`) moves 0.00 cm and only `Pipe` (the barrels) turns;
+  in frames 8 and 10 the body moves 2.04 cm straight back, no turn.
+- `gunmoves.zs` rows 46-48 and 50-52 had been fitted to the whole mesh, barrels included, and read
+  the spin as a 0.5-1.9 degree turn. Now 5-7/9/11 are zero and 8/10 are the 2.04 cm kick (row 49
+  already was).
+- Rig, fire 20 tics then release, spin-down tics 294-360: hand turned in 45 of 57 tics (r3), 0 of 57
+  (r4). While firing the hand still kicks 2.04 cm with the frame.
+
+### Item 4: Unmaker, only the top half of the skull comes out. FIXED (`0a9f677`)
+- The RS VR Weapons version: Depot `sets/plus_0.7` `unmaker_wm.md3` (MODELDEF.rsr `WM_VP_Unmaker`).
+  Same mesh: surfaces of 10931 / 361 / 249 verts, as ours. It draws surfaces 1 (flap) AND 2 (lever)
+  as the part. Ours drew only 1 (`magazine`); 2 (`magazine#2`, the jaw) stayed on the gun.
+  bd22_plus.py's card meant both (`ref_parts skull, skull2 -> magazine`).
+- MODELDEF.rsr: gun = surface 0 only; part, hand and dropped skull = 1 + 2.
+- Rig, reload to CARRY with the skull held clear of the gun: r3 vs r4 differ in exactly two places,
+  the gun's socket (about 300 px) and the hand (about 280 px): the jaw moved from gun to hand.
+
+### Item 5: IDKFA gives neither revolver. FIXED (`1534fd7`)
+- Cause: with "Shotvolver Swap" on, the Revolver class was replaced (roster.zs), and the engine's
+  give-weapons cheat skips any replaced weapon (player_cheat.zs); Revolver2 had CHEATNOTWEAPON.
+  Rig r3: swap off gives Revolver only; swap on gives neither (the owner's report).
+- Also found: the swap never reached map pickups. BD22's `RevolverSpawner` gives "Revolver" with
+  A_GiveInventory (NO_REPLACE). Rig r3, swap on: the pickup gave the BD22 Revolver.
+- Fix: Revolver2 not CHEATNOTWEAPON (it is in slot 2 via KEYCONF.rsq); the swap now replaces
+  `RevolverSpawner` with `RSQ_ShotvolverSpawner` (DECORATE.rsqrev: Revolver2 + 6 Clip2, the same 6
+  rounds BD22's spawner gives and one full cylinder, RevolverAmmo MaxAmount 6).
+- Rig r4: idkfa gives Revolver AND Revolver2, swap on or off, on all five BD22 classes (Purist,
+  Doomer2 pistol, BDoomer rifle, Doomer3 melee, TacticalDoomer). PuristRevolver stays
+  CHEATNOTWEAPON (BD22's own). Pickup, swap on: Revolver2 + Clip2 30 -> 36; swap off: BD22 Revolver.
+- Not swapped: a Revolver placed directly by editor number 5874 (no Doom 2 map has one).
+- For the owner's slug check: the menu row is "Shotvolver Slugshot Alt Fire" (`rsa_rev_magnum`,
+  default off).
+
+### Item 6: butt strike range. EXTENDED (`fc43821`)
+- Old: the hit volume was the gun itself, the stock-to-forward segment, padded 5 map units (15 cm).
+- New: plus a sweep 60 units ahead of the stock along the stock's motion, padded 12. Why those:
+  BD22's own kick (Melee.dec `KickAttack`: FastProjectile Speed 30, lives 2 tics `TNT1 AA 1`,
+  Radius 12, fired from the controller in VR), i.e. 72 units (2.1 m) of reach. The blow gates
+  (speed, butt leading, two hands) and the hand-to-target `Clear` line are unchanged.
+- Rig, steadied two-handed Rifle stroke (off grip 35 cm ahead, gun hand swept 15 cm/tic about it),
+  frozen zombieman ahead: r3 hits at 40 units only (55, 70, 90, 105, 120: miss); r4 hits at 40, 55,
+  70, 90, 105, misses at 120 (stock about 13 units ahead of the pawn + 60 + 12 + radius 16).
+
+### Item 7: option renamed. DONE (`d10b3c2`)
+- MENUDEF.rsq: "Shotvolver Swap for Revolver" (On/Off). Cvar `rsq_slug_replaces_shotvolver` kept so
+  saved settings carry over. README updated.
+- Rig: `openmenu RSQ_Options` renders the row "Shotvolver Swap for Revolver  OFF"
+  (`/home/claude/lane_b_out/r4_item7_menu.png`).
+
+### Gated test pk3 (round 4)
+`/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r4.pk3`, built from `d10b3c2`, sha256
+`0ce5ec20c329397764880c88a4918efe408d9b0d54e6614b235c85e2b5e452cc`.
+Gate (`/home/claude/lane_b_r4/sweep.sh`, logs `logs/sw_r4_*`, one engine at a time): all 31 classes
+given, selected, fired, alt-fired, reload button, fired again; BDoomer, rsr_reload 1, ballistics 2.
+0 pack script errors, 0 VM aborts. The only error lines are BD_VoxelPack's 4 voxeldef lines (baseline).
+Every gun's shot count and reload phases equal r3's, except the Unmaker (r3 20 shot tics, r4 16):
+re-run twice per build, it is 16 or 20 on BOTH builds (trigger-release jitter), so not a regression.
+Not yet on the owner's headset.
+
+## 2. Not done
+- Items 8-15 of the report (chainsaw, axe, sword, reload capacities, dual-wield options, Ruger
+  scope, revolver mesh): out of this round's scope.
+- No rig frame shows a casing or the particle rail trail (see items 1-2); those two are evidenced by
+  the rig log plotted on the mesh.
+- Butt strike through a wall: not driven; the unchanged hand-to-target `Clear` trace gates it.
+
+## 3. Open
+- Item 2 moves the hitscans and the visible trail only. Should the Ruger's damaging rail also start
+  at the muzzle? Possible only from a mount, which would take the kill credit off the player.
+- Item 5: the swap's map-pickup half never worked before r4 (BD22's spawner bypasses class
+  replacement). Worth the owner checking a revolver pickup with the swap ON.
+- Item 6: 72 units (2.1 m) is the kick's reach; if it feels too long in the headset, BUTT_REACH
+  (melee.zs) is the one number.
+- Queued after r4 (coordinator): the Moonlight revolver as BD22's normal revolver mesh with a
+  break-open speedloader reload (reference/moonlight/README.md). Not started.
