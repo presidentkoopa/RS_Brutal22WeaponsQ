@@ -1187,3 +1187,68 @@ VISIBLE in the off hand while carried, never hidden inside the fist (his RS VR R
   8a52ba6f573bc3e3bf68f2f52262d878aef7e93dd251c022b51b19166a285119 (build.py from this branch, rebased on ceddb85).
   Re-run on it after the rebase: phases as above, RELOAD magazine 0 -> 200, pouch 250 -> 50, fires again
   (200 -> 94 in 80 tics); script errors only BD_VoxelPack's voxeldef lines.
+
+# r9 port lane (2026-10-27, box 14:00-15:30, branch `port9` pushed to `lane-b-1.99x`): fit-farm guns + Sniper pistol-style. RIG ONLY, NOT HEADSET-CONFIRMED
+
+Worktree `/home/claude/lane_b_p9`. One method (wrist pinned, the GUN moves to the hand) with `port/port_gun.py`, via `heavies/port_hv.py`
+for the heavies. Inputs: the owner's PC fit farm (batch hv1), copied unchanged to `tools/handfit/port/fits/farm_hv1/<Gun>/`.
+The heavies lane's commits did not cherry-pick onto lane-b (generated files conflicted), so only its tools/fits/poses were taken
+and GrenadeLauncher was re-ported by the tool on the current base.
+
+## 1. Done (measured; rig only, not headset-confirmed)
+| gun (row) | source | gun hand | support (FBX RQFS B palm-under, support_gun.py) | moved |
+|---|---|---|---|---|
+| GrenadeLauncher (8) | heavies fit (farm's gun hand is the same to 1/64 md3 unit) | pad 0.39, pen 0.67, squeeze 0.60 | pen 0.48, palm 1.50 cm under (= support_gun.py's result; the farm's lay ~10 cm off 1.92's SupportPoint) | 6 MODELDEF blocks incl. the off-hand round, Pivot + rows, rsb case 2 Hinge/Axis/PushRef/Offset/Bore + hold rows re-expressed, muzzle |
+| Rocket_Launcher (19) | farm, index re-solved | pad 0.48 (was 2.05), pen 0.88 (FLAG > 0.5) | pen 0.49, palm 0.10 (farm 2.43) | 6 blocks, Pivot + 11 rows, rsr case 9, muzzle |
+| RailGun (16) | farm | pad 0.23, pen 0.58 | pen 0.45, palm 1.10 under (farm 1.76) | 7 blocks, Pivot + 6 rows, rsr case 6, muzzle, scope row 1 |
+| Plasma_Gun (15) | farm (MP40 start) | pad 0.57, pen 0.55 | pen 0.50, palm 0.20 (farm 1.57) | 7 blocks, Pivot + 8 rows, rsr case 7, muzzle |
+| MiniGun (13) | farm | pad 0.28, pen 0.41 | FLAG: no FBX pose clears the side handle (pen 2.12 after 3 cm); Ermac's handle grip (pose E) moved with the gun | 4 blocks incl. Minigun_rsr.md3, Pivot + 7 rows (barrels left out), rsr case 17, muzzle |
+| Sniper (22) | owner: pistol-style. Rifle's st2 hold, translated to the Ruger trigger (`port/sniper_pistol.py`), curls | pad 0.00, squeeze 0.60, M/R/P 0.20/0.65/1.42; FLAG thumb + palm heel 1.61 cm into the stock wrist (x -8.4) | pen 0.50, palm 0.39 | 6 rsr blocks, Pivot 22, rsr case 8, muzzle, scope row 2 |
+(pad = index pad to the trigger face, pen = max penetration, cm.) Poses as data: `tools/handfit/poses/<Class>.json` for all six (FK fit <= 2e-5 cm).
+
+Tool fixes (all in the repo):
+- `port_hv.py`: the MiniGun and M32 reload drawings (`Minigun_rsr.md3`, `m32_rsr.md3`) were not in the registry: they would not have moved.
+- `port_hv.py`: the M79 break-open now follows batch 4's rule. The heavies commit moved Offset(i) but not the off-hand round block,
+  leaving the round ~11 cm off the hand; now RSQ_Hands RBGP H moves, Hand0-2/HandT are re-expressed, and Bore turns.
+- `port_gun.py rsr()`: WellHook / HandleHook keep their row length (the Sniper's rows are 1/scale = 0.0954; it wrote unit vectors).
+  Every earlier row is unit: unchanged.
+- New: `heavies/sup_hv.py`, `heavies/gate_hv.py` (port tools with the heavies registry), `port/sniper_pistol.py`;
+  `scope_eye.py` takes the gun; `unmaker/rig_reload.py` takes ROW/GUN/AMMO.
+
+## 2. Rig evidence (QZD 17.3, doom2 > brutal22test6 > BD_VoxelPack > pack, exclusive lock, ini restored)
+- Smoke (give/select/steady/fire/alt/reload/fire): 0 pack script errors, 0 VM aborts; all six held.
+- Hand reloads on the moved guns: RailGun, Plasma_Gun, Rocket_Launcher, Sniper magazine IDLE>EMPTY>DROP>EMPTY>CARRY>INSERT>SEATED>DONE>IDLE;
+  MiniGun (fire to empty) EMPTY>CARRY>INSERT>SEATED>DONE, box 0 -> 200, fires again; M79 break: open, round in 0.0 cm off the bore, loaded, flick shut.
+- 37-class sweep on r9 vs r7: 37/37 SAME, no pack script error, no VM abort.
+- Scopes: the probe's state is REAL on both moved scopes with the eye 8 cm behind the ocular (Sniper: skinOn 1, cam 1, fov 7.17, eye 1.38 cm
+  from target; RailGun: skinOn 1, cam 1, fov 8.17, eye 0.32 cm). **The lens picture is NOT shown:** on this rig pose the rendered camera
+  sits several cm above the probe's eye, so the frames see the ocular from above. Needs r6-scope's rig pose (lane_b_scope_rig) to show it.
+- Pack **`/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r9.pk3`** (`python3 build.py 1.99x-lb-r9` at pushed head `558494c`),
+  sha256 `1bbab982784f3aa46e2a7834b5cbc5ffcd0f3e2f4987b4e27b87f9f948328d1c`. Spot checks on THIS pack:
+  - Hands sheet `/home/claude/lane_b_out/r9_hands.png` (six guns, side view, steadied and firing, 0 script errors in the 12 runs):
+    FBX gun hand on the grip on all six; FBX palm-under on M79, RPG, RailGun, Plasma, Sniper; MiniGun's handle grip is on the far side (hidden).
+  - Unmaker hand reload: EMPTY > CARRY > INSERT > SEATED > DONE, 200 from the pouch (250 -> 50), fires again, no script error.
+    **Skull visibility NOT re-shown on r9** (the rig's default head view never sees the off hand, also with a clear carry pose);
+    vreload.zs, rsr row 13 and the Unmaker MODELDEF blocks are byte-identical to r8 (`594098c`), where it was shown.
+  - BrutalRevolver speedloader (rsb case 10, `rsb_revolver_feed 0`): OPEN > CARRY > INSERT (0.0 cm off the bore) > loaded > EMPTYLOADER >
+    flick 457 deg/s > CLOSING > DONE. Note: `gate_gun.py hands brkBrutalRevolver:...:1` is the PER-ROUND feed (case 11), not the
+    speedloader; batch 5's "speedloader" line came from that per-round run (loaded 6). Per round on r9 is identical to batch 5.
+  - Sniper and RailGun scopes: probe REAL, lens picture not shown (see above).
+  - Logs: `/home/claude/lane_b_p9run/{gate,gate2,sweep,spot,spot2}`.
+
+## 4. BD22 guns with / without FBX hands after r9
+- **FBX gun hand (14 rows):** BrutalPistol, BrutalSMG, Flamethrower2, MP40, Rifle (+ PuristRifle), Revolver, Revolver2, BrutalRevolver,
+  AssaultShotgun, Shot_Gun, GrenadeLauncher, Rocket_Launcher, RailGun, Plasma_Gun, MiniGun, Sniper.
+  FBX support on all of them except MiniGun (Ermac's handle grip, flag) and PuristRifle (Ermac's handguard grip).
+- **No FBX hand:** SSG, MG42, Machinegun, IncendiaryLauncher, FlameCannon, Unmaker, Devastator, NukeLauncher, HellishMissileLauncher,
+  BIG_FUCKING_GUN, BFG10k; melee/thrown: BrutalAxe, Chain_saw, DSweap, HandGrenades. Dual-wield classes use the dualhands labels of
+  their rows; not shown on the rig (the sweep never holds them, as in r7).
+
+## 3. Not done / flagged
+- **IncendiaryLauncher not ported:** farm fit has the index 5.22 cm from the trigger, pen 1.30, web 1.26. Needs a farm re-fit (better start).
+  Its support placement is ready (`fits/r9/sup_IncendiaryLauncher.json`, pen 0.43), and port_hv now moves `m32_rsr.md3`.
+- MG42 and Machinegun: not in the farm batch's results (status "final": false). Machinegun's M203-style launcher tables need ToGun/FromGun (heavies note).
+- MiniGun support is Ermac's glove (no FBX handle-grip pose exists): needs one fitted on the farm.
+- Rocket_Launcher gun-hand penetration 0.88 cm (> 0.5 tolerance); its support palm turns up under the tube on the side view: owner look.
+- Sniper: the thumb sinks 1.61 cm into the stock wrist (the owner's grip choice); ring/pinky 0.65/1.42 cm short of the wood.
+- Scope lens pictures not shown (above).
