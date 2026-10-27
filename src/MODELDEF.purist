@@ -10985,3 +10985,15 @@ Model PuristRifle
 	FrameIndex RQFJ A 0 0	// Rifle, finger on the trigger
 	FrameIndex RQFJ B 0 1	// Rifle, squeezed
 }
+
+// batch 4 (lane B): Revolver (row 17), dual wield holds the FBX gun hand fitted for it (frames baked in place, hook 0)
+Model PuristRevolver
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_b4_Revolver_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQFK A 0 0	// Revolver, finger on the trigger
+	FrameIndex RQFK B 0 1	// Revolver, squeezed
+}
