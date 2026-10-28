@@ -428,7 +428,28 @@ ACTOR Sniper : BrutalWeapon
 		SNIP D 0 A_Refire
 		Goto Ready2
 
+	// 2.0 scope-toggle (owner 2026-10-28 01:55: "alt fire on the Ruger and RailGun toggles the
+	// scope, for performance"). ALT FIRE TOGGLES THE LIVE SCOPE; the toggle itself is not here: it is
+	// read off the alt-fire button by RSQ_ScopeReal (zscript/rsq/scope_real.zs), the same for every
+	// gun in RSQ_ScopeTable. This state only swallows the press so BD22's zoom no longer runs.
+	//
+	// REPLACED: BD22's aim-down-sights zoom (A_ZoomFactor 6.0 on the whole view, crosshair 41,
+	// "ads/in", the X21A raise and the 2D SNIP overlay frames, then Ready2 / Fire2 while Zoomed).
+	// The shot is the same zoomed or not (Fire2 only adds the zoomed recoil), so no attack is lost.
+	// The old entry is kept verbatim below as ZoomAltFire with every state it leads to, so all
+	// labels and relative jumps still resolve; nothing gives "Zoomed" from this gun any more.
+	// Purist players keep BD22's PuristWarning (PuristSniper has no live scope).
+	//
+	// The one tic is not padding: Ready re-tests the button, and a zero-tic return would spin
+	// Ready -> AltFire -> Ready with no tic in it while the button is held.
 	AltFire:
+		TNT1 A 0 A_JumpIfInventory("IsPlayingAsPurist", 1,"PuristWarning")
+		X21G A 0 A_Takeinventory("FiredSecondary",1)
+		X21G A 0 A_Takeinventory("ZoomHold",1)
+		X21G A 1 A_WeaponReady(WRF_NOSECONDARY)
+		Goto Ready
+
+	ZoomAltFire:
 		TNT1 A 0
 		TNT1 A 0 A_JumpIfInventory("IsPlayingAsPurist", 1,"PuristWarning")
 		TNT1 A 0 A_JumpIfInventory("Zoomed",1,"NoAim")

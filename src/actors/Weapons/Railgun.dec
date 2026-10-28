@@ -417,6 +417,10 @@ Actor RailGun : BrutalWeapon
 		RAIL A 0 A_PlaySound("Plasma/BeepBeep", 6) 
 		Goto Ready
 
+	// 2.0 scope-toggle (owner 2026-10-28 01:55): alt fire now TOGGLES THE LIVE SCOPE. The toggle is
+	// read off the alt-fire button by RSQ_ScopeReal (zscript/rsq/scope_real.zs); this state still
+	// only swallows the press. The note below (2026-10-23) explains why it is a swallow state.
+	//
 	// 2026-10-23: ALT FIRE ON THE RAILGUN IS DELIBERATELY FREE.
 	//
 	// Secondary fire used to be the scope zoom. The scope is now the RSQ scope component

@@ -1896,3 +1896,40 @@ options), MAPINFO.rsvr ("RSQ_ScopeReal" handler), ZSCRIPT.rsvr (2 includes), MOD
 RQRTA0/RQRTB0.png), per-gun MODELDEF SurfaceSkin on the glass (scope_glass.png; never a whole-model Skin), meshes with the glass as
 its own surface. Borrowed: RSVR_VRHand (rsvr/vrhand.zs: InVR/HandPos/HandDir) and the dot layer in rsq/hands.zs (RSQ_GunSide,
 RSQ_Layers.Taken). The manifest is also at the top of scope.zs.
+
+## scope-toggle (2026-10-28, scope lane round 2, branch `lane-scope`): alt fire toggles the live scope. RIG ONLY, NOT HEADSET-CONFIRMED
+Owner 01:55: "I want alt fire on the Ruger and RailGun to toggle the scope, for performance."
+
+### Behaviour
+- Alt fire on the Sniper (Ruger) and the RailGun toggles the live scope picture. **ON** whenever the gun is selected; the state
+  holds while that gun stays the ready weapon (reselect = ON again; rig: off at t=665, Rifle, Sniper back at t=910 -> on).
+- **OFF:** the glass gets its own skin back (plain glass) and the camera texture is drawn nowhere, so the engine does not
+  render it (hw_entrypoint.cpp only re-renders camera textures drawn last frame). The Dot reticle (Dot mode) still works.
+- Toggle cue: BD22's own "ads/in" (on) / "ads/out" (off) sounds, and the lens visibly changes picture <-> glass.
+- Read off the alt-fire button (BT_ALTATTACK rising edge) by RSQ_ScopeReal, for every gun with `RSQ_ScopeTable.AltToggle`;
+  the handler keeps its own last-tic copy (player.oldbuttons already equals this tic's buttons in WorldTick: first try missed presses).
+
+### What alt fire did before, and what is replaced
+- **Sniper (Sniper.dec AltFire, after the integration lane's piercing change d79f10d):** BD22's aim-down-sights zoom:
+  A_ZoomFactor 6.0 on the whole view, crosshair 41, "ads/in", X21A raise, then Ready2 / Fire2 with the 2D SNIP frames while
+  "Zoomed". **Replaced** by the toggle. No attack is lost: the shot (2 x A_FireBullets 50 + the 30-damage piercing
+  A_RailAttack) is the same zoomed or not; Fire2 only added zoomed recoil. The old entry is kept verbatim as `ZoomAltFire`
+  (unreachable), so labels and relative jumps are unchanged. Purist keeps PuristWarning.
+- **RailGun (Railgun.dec AltFire):** already a swallow state since 2026-10-23 (BD22's 5x zoom + light-amp night vision was
+  removed then, kept as `ZoomAltFire`). Alt fire did nothing; now it toggles the scope.
+- Neither gun had a real alt attack, so nothing needed to stay reachable.
+- **Off-hand / dual copy:** only `RSQ_Off_RailGun` exists (DECORATE.rsqdual; no off-hand Sniper). It has **no live scope**
+  (plain scope_glass.png, not in RSQ_ScopeTable: the one camera texture serves the main hand), so there is nothing to toggle.
+  Its alt fire is still **BD22's zoom** (A_ZoomFactor 5.0 on the whole view + PowerLightAmp), unchanged. Owner's call:
+  leave it, swallow it, or give the off-hand a live scope (second camera texture + off-hand transform; not done).
+
+### Rig evidence (QZD 17.3, doom2 > brutal22test6 > BD_VoxelPack > pack, exclusive lock, ini restored)
+- Sheet `/home/claude/lane_b_out/scope_toggle.png`: per gun ON -> alt fire -> OFF (plain glass) -> alt fire -> ON. Lens target
+  46x55 (Sniper) / 48x54 (RailGun) px both times ON, i.e. the same 3x; the outside target stays 15x18 px (no view zoom).
+- Fire after each toggle: Sniper magazine 11 -> 10 (scope off) -> 9 (on); RailGun 5 -> 4 -> 3. `Zoomed` stays 0.
+- Frame time, same gun and view, ON / OFF / ON again (RenderOverlay count over MSTime, medians; llvmpipe, NOT Quest):
+  main view 200x200: Sniper 35.2 / 28.2 / 35.0 ms, RailGun 20.8 / 17.5 / 21.3 ms (off saves 16-20%).
+  main view 960x960: Sniper 131 / 121.5 / 125.6, RailGun 126.8 / 126.0 / 127.7 (the eyes' pixel fill dominates the rig there).
+  The earlier scope-3x "+16-19% at 960" was measured ON-then-OFF only and is withdrawn as a load-drift artefact.
+- 0 pack script errors, 0 VM aborts in all runs. Rig note: a press shorter than one rendered frame is lost on the slow rig
+  (console +altattack; wait 3), so the tests hold alt fire 40 tics; real input does not have that problem.

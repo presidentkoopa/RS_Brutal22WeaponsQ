@@ -3,7 +3,8 @@
 // Two modes per gun (MENUDEF.rsq -> rsq_scope2_<gun>, default REAL):
 //   DOT   a collimated red dot over the view down the bore at 1x (1.99x r6: see-through).
 //   REAL  the view down the bore at 3x, rendered into the scope's own glass surface.
-// Both cost one extra scene render, every frame the gun is held (2.0: always on; scope_real.zs).
+// Both cost one extra scene render, every frame the gun is held with its scope on (2.0: on when
+// selected; alt fire toggles it off, at zero cost, and on again; scope_real.zs).
 //
 // THE DOT IS COLLIMATED, and that is the whole point of it. A reticle painted on the glass
 // has full parallax: move your head and the dot slides off what the gun is pointing at, which
@@ -27,7 +28,7 @@
 //
 // WHAT THE SCOPE IS MADE OF (2.0 scope-3x; the list for lifting it out as its own mod)
 //   zscript/rsq/scope.zs       RSQ_ScopeTable (ALL per-gun data: class, Lens, Axis, Up, Radius,
-//                              GlassSurface, Mag, ModeCVar), RSQ_Scope (eye, hand basis, dot),
+//                              GlassSurface, Mag, AltToggle, ModeCVar), RSQ_Scope (eye, hand basis, dot),
 //                              RSQ_ScopeLayers (reticle psprite id)
 //   zscript/rsq/scope_real.zs  RSQ_ScopeReal (EventHandler: camera + glass skin swap, always on
 //                              while a scoped gun is held), RSQ_ScopeCam (the camera actor)
@@ -38,6 +39,8 @@
 //   MODELDEF.rsq               the dot quad (RQRT A/B, models/rsq/rsq_dot.md3, RQRTA0/RQRTB0.png)
 //   MODELDEF.bd.txt/.rsr       per gun: SurfaceSkin on the glass ("scope_glass.png"), no whole Skin
 //   meshes                     RailGun.md3 surface 1, XM21.md3 surface 10 (glass, UV 0..1 disc)
+//   each gun's AltFire state   must only swallow the press when AltToggle is on (Sniper.dec,
+//                              Railgun.dec: BD22's zoom is kept there as ZoomAltFire, unreachable)
 // Borrowed from the rest of the pack (a lifted copy must bring or replace these):
 //   RSVR_VRHand.InVR / HandPos / HandDir (rsvr/vrhand.zs): the hand transform scope_real.zs places
 //     the camera with;
@@ -134,6 +137,14 @@ class RSQ_ScopeTable abstract
 	{
 		static const double v[] = { 0, 3.0, 3.0 };	// 1.99x r6: 3x (owner); see scope_real.zs FovFor
 		return i > 0 && i < v.Size() ? v[i] : 1.0;
+	}
+
+	// 2.0 scope-toggle: does alt fire toggle this gun's live scope on and off (RSQ_ScopeReal)?
+	// The gun's own AltFire state must then only swallow the press (Sniper.dec, Railgun.dec).
+	clearscope static bool AltToggle(int i)
+	{
+		static const bool v[] = { false, true, true };
+		return i > 0 && i < v.Size() ? v[i] : false;
 	}
 
 	// the cvar that chooses this gun's mode: 0 dot, 1 real
