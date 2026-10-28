@@ -14,12 +14,12 @@ g = mags.tables()
 for i in sorted(g):
     c = mags.CLS[i]
     if c not in only: continue
-    res = g[i]['reserve']; cnt = 'netevent int_cnt_%s_RSQ_Mag_%s; wait 2; ' % (res, c)
+    res = g[i]['reserve']; cnt = 'netevent int_cnt_%s; wait 2; ' % res
     s = mags.with_pouch(mags.script(i, g[i]))
     s = s.replace('give %s; give %s 400; use %s; wait 80; ' % (c, res, c),
                   'give %s; wait 3; give %s 400; use %s; wait 80; %s' % (c, res, c, cnt), 1)
-    s = s.replace('+reload;', cnt + '+reload;', 1).replace('quit', cnt + 'quit')
-    assert s.count('int_cnt') == 3, s
+    s = s.replace('+reload;', cnt + '+reload;', 1).replace('quit', cnt + 'give %s 400; wait 5; ' % res + cnt + 'quit')
+    assert s.count('int_cnt') == 4, s
     name = 'r2rl_%s' % c
     subprocess.run([R + '/run.sh', name, pk3, '300', s, R + '/int20dump.pk3'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     t = open('%s/logs/%s.log' % (R, name), errors='replace').read()
@@ -28,5 +28,7 @@ for i in sorted(g):
     cn = re.findall(r'INT CNT t(\d+) (.*?) main state', t)
     er = [l for l in t.splitlines() if re.search(r'VM abort|Script error|exception', l) and 'voxeldef' not in l.lower()]
     print('%-20s trail %s' % (c, trail), flush=True)
-    for tt, x in cn: print('    t%s %s' % (tt, x), flush=True)
+    labels = ['after the gun and a 400 pickup', 'before the reload', 'after the reload', 'after another 400 pickup']
+    for k, (tt, x) in enumerate(cn): print('    t%s %-32s %s (reserve item = pouch + up to 10 lent from the magazine)' % (tt, labels[k] if k < 4 else '', x.strip()), flush=True)
+    for l in re.findall(r'^rsq t\d+ %s: .*' % c, t, re.M)[:2] + re.findall(r'^rsq t\d+ %s: .*' % c, t, re.M)[-2:]: print('    ' + l, flush=True)
     print('    errors:', er[:3] or 'none', '| refused:', re.findall(r'rsr t\d+: reload refused.*', t)[:1] or 'no', flush=True)
