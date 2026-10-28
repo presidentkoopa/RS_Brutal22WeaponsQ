@@ -141,6 +141,10 @@ class RSQ_GunSide : Inventory
 	FbxWrapSniper: RQWS K -1; Stop;	// Sniper (row 22)
 	FbxWrapMG42: RQWS L -1; Stop;	// MG42 (row 11)
 	FbxWrapMachinegun: RQWS M -1; Stop;	// Machinegun (row 27)
+	FbxWrapNukeLauncher: RQWS N -1; Stop;	// NukeLauncher (row 14)
+	FbxWrapBFG10k: RQWS O -1; Stop;	// BFG10k (row 2)
+	FbxWrapBFG9: RQWS P -1; Stop;	// BIG_FUCKING_GUN (row 3)
+	FbxWrapUnmaker: RQWS Q -1; Stop;	// Unmaker (row 23)
 	// support192 END
 	// batch 2: BrutalSMG (row 5), the pistol's FBX hand with the index on the SMG trigger
 	FbxTrgS: RQFH A -1; Stop;
@@ -717,11 +721,11 @@ class RSQ_Hands : Weapon
 		if (i == 10)
 			spl = "FbxWrapInc";	// support192 batch 2: IncendiaryLauncher, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 10 = 0: baked in place)
 		if (i == 3)
-			spl = "FbxSupF";	// r11 port: BIG_FUCKING_GUN, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 3)
+			spl = "FbxWrapBFG9";	// support192 batch 5: BIG_FUCKING_GUN, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 3 = 0: baked in place)
 		if (i == 2)
-			spl = "FbxSupF";	// r10 port: BFG10k, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 2)
+			spl = "FbxWrapBFG10k";	// support192 batch 5: BFG10k, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 2 = 0: baked in place)
 		if (i == 14)
-			spl = "FbxSupF";	// r10 port: NukeLauncher, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 14)
+			spl = "FbxWrapNukeLauncher";	// support192 batch 5: NukeLauncher, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 14 = 0: baked in place)
 		if (i == 27)
 			spl = "FbxWrapMachinegun";	// support192 batch 3: Machinegun, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 27 = 0: baked in place)
 		if (i == 11)
@@ -756,6 +760,8 @@ class RSQ_Hands : Weapon
 			spl = "FbxSupSaw";	// r12 port: Chain_saw, the FBX L hand on the top handle (melee lane support_top: R fit on the mirrored saw, mirrored back; pen 0.39; owner-approved 2026-10-27) (handtable SupportHook / SupportRot row 25)
 		if (i == 26)
 			spl = "FbxSupDS";	// r12 port: DSweap, the FBX L hand on the hilt below the gun hand (melee lane: the gun hand mirrored, slid 12.5 cm down the handle; pen 0.44; owner-approved 2026-10-27) (handtable SupportHook / SupportRot row 26)
+		if (i == 23)
+			spl = "FbxWrapUnmaker";	// support192 batch 5: Unmaker, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 23 = 0: baked in place)
 		invoker.SetLayer(p, RSQ_Layers.SUPPORT, gs, (hold || swordTwo) && sp != "" ? spl : "Hidden");	// r12 port: the two-handed sword shows its FBX support on the hilt
 
 		// 2026-10-23: the VR scope's reticle (rsq/scope.zs). WHETHER the layer is there is this
