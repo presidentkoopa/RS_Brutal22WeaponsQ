@@ -159,7 +159,10 @@ class RSQ_Roster : EventHandler
 		pistolSwaps++;
 		bool start = Level.maptime < 35;
 		if (start)
+		{
 			mo.SetInventory('BrutalRevolverCylinder', 6);	// a pistol start has the pistol loaded
+			mo.SetInventory('RevolverRounds', 18);			// owner 2026-10-27 20:5x: a full cylinder + 18 spare (two: both full + 18)
+		}
 		if (start && MoonTwo())
 		{
 			mo.GiveInventory('RSQ_Off_BrutalRevolver', 1);
@@ -169,8 +172,9 @@ class RSQ_Roster : EventHandler
 		if (held || start)
 			mo.A_SelectWeapon('BrutalRevolver');
 		if (Debug(mo))
-			Console.Printf("RSQ moon t%d: Brutal Pistol -> Moonlight%s%s", Level.maptime, had ? " (already had one)" : "",
-				start && MoonTwo() ? ", start with two" : "");
+			Console.Printf("RSQ moon t%d: Brutal Pistol -> Moonlight%s%s; cylinder %d, spare RevolverRounds %d", Level.maptime,
+				had ? " (already had one)" : "", start && MoonTwo() ? ", start with two" : "",
+				mo.CountInv('BrutalRevolverCylinder'), mo.CountInv('RevolverRounds'));
 	}
 
 	override void WorldThingSpawned(WorldEvent e)

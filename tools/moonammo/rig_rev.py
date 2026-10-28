@@ -143,3 +143,41 @@ if 'dual' in JOBS:
     log = OUT + '/build/logs/rev_dual.log'
     show('dual rc %d (from %s)' % (rc, log), open(log, errors='replace').read(), r'REV |RSQ moon|Revolver|Cylinder|B22 SHOT')
     print('    frames:', len(glob.glob(fr + '/*')), fr)
+
+# ---- round 5 (owner 20:47): ammo "on top" and the HUD's ammo
+ONTOP = [('Rifle', 'Clip2', 'Clip2', 'RifleAmmo'), ('Minigun', 'Clip2', 'Clip2', 'RSQ_Mag_Minigun'),
+         ('MG42', 'Clip2', 'Clip2', 'RSQ_Mag_MG42'), ('Shot_Gun', 'AmmoShell', 'AmmoShell', 'ShotgunAmmo')]
+if 'ontop' in JOBS:
+    # each gun: reserve filled to its cap with the magazine full (a REAL gun fills its magazine from the pouch the first
+    # time it is held, so the reserve is filled again after), then a pickup of its reserve summoned and walked onto (it
+    # must stay: refused at the cap; every walk starts from MAP01's start, warped to); then, with the Rifle in hand (so a REAL gun's bookkeeping does not read it as
+    # shots), 30 taken from the reserve, the gun back, and a second pickup summoned and walked onto the same way: taken
+    s = PRE + 'rsr_reload 1; rsq_reload_nonstd 1; '
+    for g, res, pick, mag in ONTOP:
+        s += ('warp -96 784; give %s; give %s 999; use %s; wait 160; give %s 999; wait 5; echo REV ONTOP %s FULL; netevent rsq_ontop; wait 3; '
+              'summon %s; wait 3; qz_lstick "0 1"; wait 12; qz_lstick "0 0"; wait 8; echo REV ONTOP %s AFTER_PICKUP; netevent rsq_ontop; '
+              'warp -96 784; use Rifle; wait 40; take %s 30; use %s; wait 90; echo REV ONTOP %s BELOW_CAP; netevent rsq_ontop; '
+              'summon %s; wait 3; qz_lstick "0 1"; wait 12; qz_lstick "0 0"; wait 8; '
+              'echo REV ONTOP %s AFTER_PICKUP_BELOW_CAP; netevent rsq_ontop; wait 3; ' % (g, res, g, res, g, pick, g, res, g, g, pick, g))
+    s += 'quit'
+    rc, t = rig.run('rev_ontop', s, 400); restore_ini()
+    log = OUT + '/build/logs/rev_ontop.log'
+    show('ontop rc %d (from %s)' % (rc, log), open(log, errors='replace').read(), r'REV ONTOP|RSQ ontop|[Pp]icked up|You got|GOT')
+
+if 'hud' in JOBS:
+    # one run per gun, the classic bar (screenblocks 10): HUD Ammo 0 (Magazine + Reserve) for 70 tics, then 1 (Reserve
+    # Only) for 70; netevent rsq_ontop prints the HUD items too; frames dumped (the last of each half is used)
+    for g, extra in (('Rifle', 'give Clip2 120;'), ('Minigun', 'give Clip2 300;'), ('MG42', 'give Clip2 300;'), ('Shot_Gun', 'give AmmoShell 30;'),
+                     ('BrutalRevolver', 'give RevolverRounds 20;'), ('BrutalPistol', 'give Clip1 60; give StartDualWield;')):
+        fr = OUT + '/frames_hud_' + g
+        shutil.rmtree(fr, ignore_errors=True); os.makedirs(fr)
+        os.environ.update(QZ_RES='480', QZ_DUMP_EVERY='5', QZ_DUMP_DIR=fr)
+        s = PRE.replace('screenblocks 12', 'screenblocks 10') + ('rsr_reload 1; rsq_reload_nonstd 1; give %s; %s use %s; wait 170; %s give Clip2 120; give RevolverRounds 20; wait 60; '
+             'rsq_hud_ammo 0; wait 70; echo REV HUD %s MAG_RESERVE; netevent rsq_ontop; rsq_hud_ammo 1; wait 70; echo REV HUD %s RESERVE_ONLY; '
+             'netevent rsq_ontop; wait 3; rsq_hud_ammo 0; quit' % (g, extra.replace('give StartDualWield;', ''), g, 'give StartDualWield;' if 'StartDualWield' in extra else '', g, g))
+        rc, t = rig.run('rev_hud_' + g, s, 300); restore_ini()
+        for k in ('QZ_DUMP_EVERY', 'QZ_DUMP_DIR'):
+            os.environ.pop(k)
+        log = OUT + '/build/logs/rev_hud_%s.log' % g
+        show('hud %s rc %d' % (g, rc), open(log, errors='replace').read(), r'REV HUD|RSQ ontop')
+        print('    frames:', len(glob.glob(fr + '/*')), fr)

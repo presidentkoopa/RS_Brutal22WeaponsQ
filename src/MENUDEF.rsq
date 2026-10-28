@@ -75,6 +75,7 @@ OptionMenu "RSQ_Options"
 	Option "Machinegun replaces MG42", "rsq_mg_replaces_mg42", "OnOff"
 	Option "Moonlight Replaces Pistol", "rsq_moonlight_pistol", "OnOff"
 	Option "Start With Two Moonlights", "rsq_moonlight_two", "OnOff"
+	Option "HUD Ammo", "rsq_hud_ammo", "RSQ_HudAmmo"
 	Option "Sniper Scope", "rsq_scope_sniper", "RSQ_ScopeMode"
 	Option "Railgun Scope", "rsq_scope_railgun", "RSQ_ScopeMode"
 	Option "Ballistics", "rsq_ballistics", "RSQ_Ballistics"
@@ -106,6 +107,13 @@ OptionMenu "RSR_Debug"
 	Title "RELOAD: TUNING AND DEBUG"
 	Option "Show the capture zones", "rsr_assist_debug", "OnOff"
 	Option "Print each reload step", "rsr_debug", "OnOff"
+}
+
+// owner 2026-10-27 20:47: what the HUD shows of the held gun's ammo (zscript/rsq/counters.zs RSQ_Counters.Hud)
+OptionValue "RSQ_HudAmmo"
+{
+	0, "Magazine + Reserve"
+	1, "Reserve Only"
 }
 
 // 1.30 the rifle's M203: what a hand-loaded round costs
