@@ -18,7 +18,9 @@
 //   frame"; binding it for a draw calls FCanvasTexture::NeedUpdate). Until 2.0 the skin swap was
 //   gated on an eye being within 12 cm behind the eyepiece, to spend that render only while
 //   sighting. The owner asked for the picture at all times, so the swap is now on for as long
-//   as a scoped gun is the ready weapon in VR, and off (zero cost) the moment it is not. The
+//   as a scoped gun is the ready weapon in VR, and off (zero cost) the moment it is not.
+//   2.0 scope-toggle (owner 01:55, "for performance"): ALT FIRE turns it off and on again
+//   (scopeOff below); on whenever the gun is selected. The
 //   magnification still follows the eye nearer the bore line (FovFor), so it is 3x from
 //   wherever the lens is seen. Cost on the rig: HANDOFF "scope-3x".
 //
@@ -69,6 +71,16 @@ class RSQ_ScopeReal : EventHandler
 	// Which way a positive camera roll turns the picture against the up vector's lean to the
 	// camera's right. Set from the rig (HANDOFF scope-3x: level picture with the hand rolled 30).
 	const ROLL_SIGN = 1.0;
+
+	// 2.0 scope-toggle: alt fire turns the live scope off and on (RSQ_ScopeTable.AltToggle).
+	// Off = the glass's own skin and the camera texture drawn nowhere, so the engine renders
+	// nothing extra (the cost is zero, rig: HANDOFF scope-toggle). ON whenever a scoped gun is
+	// selected; the state is kept for as long as that gun stays the ready weapon.
+	bool scopeOff;
+	bool altWas;		// alt fire held last tic (our own copy: player.oldbuttons is already this
+						// tic's by the time WorldTick runs, so it never shows the press; rig)
+	const SND_ON = "ads/in";		// BD22's own aim sounds, the ones its zoom played
+	const SND_OFF = "ads/out";
 
 	RSQ_ScopeCam cam;
 	int lastIndex;			// the gun the swap is currently applied to, 0 = none
@@ -243,6 +255,7 @@ class RSQ_ScopeReal : EventHandler
 		lastWeapon = null;
 		lastIndex = 0;
 		lastSurface = -1;
+		scopeOff = false;
 	}
 
 	override void WorldTick()
@@ -291,6 +304,23 @@ class RSQ_ScopeReal : EventHandler
 			lastWeapon = w;
 			lastIndex = i;
 			lastSurface = surface;
+			scopeOff = false;		// a scoped gun is always selected with its scope on
+		}
+
+		// Alt fire toggles, on the press (the button's rising edge, so holding it does nothing more).
+		// Read off the button and not off a state, so it works whatever state the gun is in.
+		bool alt = (mo.player.cmd.buttons & BT_ALTATTACK) != 0;
+		bool press = alt && !altWas;
+		altWas = alt;
+		if (RSQ_ScopeTable.AltToggle(i) && press)
+		{
+			scopeOff = !scopeOff;
+			mo.A_StartSound(scopeOff ? SND_OFF : SND_ON, CHAN_AUTO, CHANF_LOCAL);
+		}
+		if (scopeOff)
+		{
+			ClearSkin();		// plain glass; RSQSCOPE drawn nowhere -> not rendered
+			return;
 		}
 
 		// 2.0: no eye gate. The picture is up for as long as the gun is held (see the header).

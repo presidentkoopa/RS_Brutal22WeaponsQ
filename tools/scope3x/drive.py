@@ -1,5 +1,5 @@
 """TEST ONLY (never ships): scope-3x rig driver, Depot rig (QZD 17.3), exclusive /home/claude/rig.lock, ini restored.
-Env: TURN deg, TSTEP tics/step, EVERY dump interval, SECS, ROLL, HANDANG, SCOPE_OUT (logs/dumps; .ppm -> conv.py deletes them).
+Env: ALTSEQ (console after the eye is placed, e.g. alt-fire presses), TURN deg, TSTEP tics/step, EVERY dump interval, SECS, ROLL, HANDANG, SCOPE_OUT (logs/dumps; .ppm -> conv.py deletes them).
  drive.py <name> <pk3> <Gun> <rhand pitch> <eye off L cm> <eye off U cm> <dump 0/1> [extra console] [res]"""
 import os, sys, re, time, fcntl, subprocess, numpy as np
 H = os.path.dirname(os.path.abspath(__file__))
@@ -59,7 +59,7 @@ if TURN:
         turn += 'qz_hmd "%.4f %.4f %.4f 0 %.2f 0"; qz_rhand "%.4f %.4f %.4f %s %.2f 0"; ' % (tuple(hd) + (th,) + tuple(r) + (pit, th)) + 'wait %s; ' % os.environ.get('TSTEP', '1')
     turn += 'wait 80; '
 s = ('wait 100; god; notarget; rsq_hands 1; rsq_extra_weapons 1; screenblocks 12; crosshair 0; show_messages 0; con_notifytime 0; ' + extra +
-     'qz_rhand "%.4f %.4f %.4f %s 0 %s"; give ammo; give %s; wait 2; use %s; wait 120; qz_hmd "%s"; wait 330; ' % (R + (pit, os.environ.get('ROLL', '0'), gun, gun, hmd)) + turn + 'wait 900; quit')
+     'qz_rhand "%.4f %.4f %.4f %s 0 %s"; give ammo; give %s; wait 2; use %s; wait 120; qz_hmd "%s"; wait 330; ' % (R + (pit, os.environ.get('ROLL', '0'), gun, gun, hmd)) + turn + os.environ.get('ALTSEQ', '') + 'wait 900; quit')
 time.sleep(4)
 with open('/home/claude/rig.lock', 'a') as lf:
     fcntl.flock(lf, fcntl.LOCK_EX)
