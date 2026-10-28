@@ -1347,3 +1347,52 @@ sup_pen / gap, support_gun.py's check). r10's four pose JSONs still lack `suppor
   except MiniGun (Ermac's handle grip) and PuristRifle (Ermac's handguard grip).
 - **No FBX hand:** FlameCannon (owner item 21: no gun hand, arm-worn), Unmaker, HellishMissileLauncher; melee/thrown: BrutalAxe,
   Chain_saw, DSweap, HandGrenades.
+
+# r12 port lane (2026-10-28, branch `port-r12` merged into `lane-b-1.99x`): FlameCannon, MiniGun support, Unmaker, HellishMissileLauncher, BFG10k / NukeLauncher re-fit, Chain_saw, DSweap, BrutalAxe, FBX free off hand. RIG ONLY, NOT HEADSET-CONFIRMED
+
+Same one method (wrist pinned, the weapon moves to the hand, every dependent table moves with it). Inputs: `/home/claude/fitfarm_results`
+(PICKS_r4.md, PICKS_melee.md), copied unchanged to `tools/handfit/port/fits/farm_r4/` and `fits/farm_melee/`; logs in `fits/r12/`.
+Merged in: origin/lane-hands-r4 (8265683) and origin/lane-melee-hands (72f4391); origin/lane-b-1.99x merged (not rebased: the two lane
+merges made a commit-by-commit rebase conflict on handtable.zs in every commit) with handtable.zs merged row by row (theirs: the
+support192 rows 11 / 22; ours: the r12 rows). No support row of MG42 / Nuke / BFG10k / BFG9000 / Sniper was written.
+
+## 1. Done (measured; rig only, not headset-confirmed)
+| weapon (row) | what | numbers |
+|---|---|---|
+| FlameCannon (28, NEW row) | no gun hand; place (0.070, -13.155, -6.744, -3.368, -7.292, -0.038) (fc_place, exact); support FBX L open palm under the barrel (r4 under40, RQXB / FbxSupFC) | handtable row 28 added (25 tables), gunmoves Pivot 28 + 6 recoil rows ADDED (its recoil is in md3 frames 1-6, up to 22.6 cm: without them the palm stayed put while the cannon kicked); muzzle = nozzle tip (bore axis at the nozzle ring's front lip, 49.90 -0.31 -2.67 -> 61.92 -5.02 -14.53); flamespout.zs: flames + sparks start at the tip, flames fly along the drawn barrel. Log: start-to-nozzle 0.00 cm (BD22 start was 27-28 cm off), stream-to-barrel 0.00 deg. Support pen 0.33, palm gap 0.30 |
+| MiniGun (13) support | FBX fist on the side handle (r4 support_r4_bar_ref, RQXA / FbxSupMini), replaces Ermac pose E | pen 0.09, wrap 183-202 deg; thumb 1.32 cm off (farm flag) |
+| Unmaker (23) | FBX fist on the rear hook (r4wrap), place (1.308, -6.492, 0.083, pistol aim) | pen 0.41, palm 0.37; Pivot + 7 rows, rsr case 13 (+ Unmaker_rsr.md3 blocks), muzzle added. Hand reload: EMPTY>CARRY>INSERT>SEATED>DONE, 200 from the pouch (250 -> 50), fires again, no script error. Old support kept: Ermac pose D moved with the gun |
+| HellishMissileLauncher (9) | FBX hand on the hose loop (r4wrap), place (3.610, -7.537, 2.891) | pen 0.18, palm 0.68; Pivot + 6 rows, rsr case 16, muzzle added; old Ermac support D moved with the gun |
+| BFG10k (2) / NukeLauncher (14) | gun hand re-fit r4dense, `port/reseat_gun.py` (moves an already ported gun again, every table by the relative move) | pen 0.20 / 0.21; relative move pure translation 0.683 / 0.369 cm; MODELDEF x4 / x4, Pivot + fire rows, Nuke rsr case 15, muzzles. Support rows NOT touched |
+| Chain_saw (25) | FBX rear-handle hand, index on the trigger (squeezes on its fire frames); FBX L top-handle support (RQXC / FbxSupSaw) | place (3.195, 9.817, -13.640); 24 swing rows refit; gun-hand pen 0.77 (farm flag); support pen 0.39 |
+| DSweap (26) | two hands on the hilt: FBX gun hand + FBX L support (RQXD / FbxSupDS); the DSL2 two-handed block = K . M . DSL1 (K = its 110 deg turn about the controller, measured), the support takes the same turn in hands.zs, the free fist is hidden then | place (2.723, -1.541, -4.336); DSL2 -> (2.7233, -39.1092, -31.9687, -9.6221, 113.6676, 20.0265), residual 0.0000 cm; pen 0.48 / support 0.44 |
+| BrutalAxe (24) | FBX hand on the haft; AXE2 (two hands) = M . AXE2; GunHookTwo = M (H2 H1^-1) M^-1 (the regrip conjugated) | place (2.308, -13.113, -2.195); AXE2 -> (-0.4368, -4.9611, -19.6389, 3.854, 3.363, 10.974); GunHookTwo (-0.926, 9.703, -12.156); 14 swing rows; pen 0.71 (farm flag); support = old Ermac pose E moved |
+Melee hit points: `melee.zs` `RSVR_MeleeMove.Apply(k, poseFrame, p)` (the per-weapon rigid move, in Place()). Rig swings (test driver
+`lane_b_out/r12_logs/mtdriver_zscript.txt`, from r6b + a moved/unmoved print): axe AxeAttack 25 at the moved edge (edge moved 4.5 map units),
+saw SawDamageHorizontal 5-6 every 2 tics at the moved bar (1.8 / 3.1 units), sword DSAttack 200 one-handed and two-handed (tip moved 9.8 units).
+Purist variants: PuristFlameCannon / PuristUnmaker / PuristHellishMissileLauncher inherit the rows (`is`), their MODELDEF.purist blocks carry
+the same move; no variant fitted. HandGrenades skipped (not ready; another lane has since ported its gun hand).
+Hand sprites RQVE Unmaker, RQVF HML, RQVG Chain_saw, RQVH DSweap, RQVI BrutalAxe; supports RQXA-RQXD (free in pack, brutal22test6, BD_VoxelPack, doom2).
+
+## FBX free off hand (coordinator item, 2026-10-28)
+`port/offhand_r12.py` bakes `fbx_r12_free_L.md3` (in place at the off controller, hook 0; the approved FBX pistol wrist mirrored to the left):
+frame 0 relaxed open (RQHN A, FreeHand), 1 fist (RQHN H, AmmoH: the idle free hand and the off-hand trigger punch), 2 index-thumb pinch
+(RQHR A, pads 0.0007 cm apart) + `rsq_ring_fbx.md3` (BD22's ring moved 7.86 cm to the pinch point). Rig eye frames: idle, ring pull, ring pull
+from the side, after the throw. **Stays Ermac (not swapped, each needs its own fit round an object or an owner call):** the reload holds
+RQHN I / J / L / M (magazine, shell, cell, pod: MODELDEF.rsr / .rsb), RQUN (pump shell), RQ2H (M203 round), the Ermac support poses RQSP
+(Unmaker, HML, BrutalAxe until the support lane redoes them), RQGF (the Fists weapon / BD22 punches in the gun hand and DFist in dual wield:
+hands.zs notes the owner's 2026-10-16 rule "fists are Ermac's, both hands": needs the owner's call against the FBX-only rule).
+
+## 2. Rig evidence (QZD 17.3, doom2 > brutal22test6 > BD_VoxelPack > pack, rig.lock exclusive, ini restored, ppm dumps deleted)
+- Pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r12.pk3` (after the origin merge), sha256 `ff1e84eb3656d90b9185f6749d083fd960c3a6b08da5ae93ebc6cf5684a1d4a7`.
+- Smoke on it (give, select, steady, fire, alt, reload, fire), all nine held, 0 pack script errors, 0 VM aborts. Only BD_VoxelPack's own 4 voxeldef lines.
+- Sheet `/home/claude/lane_b_out/port_r12.png`: per weapon eye held / eye fire-swing / side held / side fire-swing, the off hand before/after, the Unmaker reload.
+- `rebake.py check`: 30 poses, every md3 identical (<= 0.0156 md3 units), every MODELDEF / Pivot / fire row regenerated equal; FlameCannon placement only (no hand), HandGrenades now from its lane.
+- Logs `/home/claude/lane_b_out/r12_logs/`.
+
+## 3. Flags (open)
+- **BFG10k / NukeLauncher support:** the gun moved 0.68 / 0.37 cm (pure translation) and the support rows were not touched, so the support sits that far off the gun until the support lane fits at `poses/<Gun>.json` gun_move (r4dense).
+- Unmaker: its old support (Ermac D, moved) is not visible in the side / eye steady frames, same as on the r11 pack (not a regression). The skull in the hand reload is carried by Ermac's reload hold; the skull itself is not clearly seen in these frames.
+- Gun-hand pen > 0.5: Chain_saw 0.77, BrutalAxe 0.71 (farm). HML index lies along the body (farm look). BrutalAxe support is still Ermac's glove (no FBX axe support fitted).
+- After-throw frame on the final pack: the scripted swing did not release the grenade (the grenade lane changed the throw); the sheet's after-throw cell is from the pre-merge r12b pack (same off-hand blocks), where it threw.
+- Butt-strike points (melee.zs RIFLEBUTT etc.) of guns moved in earlier ports were never moved with their guns (pre-existing; not in r12's scope).
