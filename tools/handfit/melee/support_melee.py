@@ -41,13 +41,13 @@ def sword(res, out):
     Xm = Xg - 2.0 * np.outer((Xg - c) @ n, n)	# mirrored across the handle's plane
     rad = np.linalg.norm((Xg - c) - np.outer((Xg - c) @ a, a), axis=1); grip = Xg[rad < 6.0]; tg_ = (grip - c) @ a
     step = float(tg_.max() - tg_.min()); best = None
-    for extra in np.arange(0.0, 3.01, 0.25):	# slide down by the hand's length along the handle, + the least extra so the hands do not touch
-        XL = Xm - (step + extra) * a; m = metrics(XL, F, V, Xg)
-        if m['hand_to_hand_min'] >= 0.3: best = (extra, XL, m); break
-    if best is None: best = (extra, XL, m)
-    extra, XL, m = best; hand_t = float(((XL - c) @ a).min()); m.update(slide_cm=step + extra, handle_axis=a.round(4).tolist(), handle_point=c.round(3).tolist(), lowest_axial_cm=hand_t,
-                                                                         handle_end_axial_cm=float(((Hd - c) @ a).min()))
-    return finish(g, XL, d, m, out, 'mirror of the gun hand across the handle plane, slid %.2f cm down the handle' % (step + extra))
+    for sl in np.arange(6.0, step + 3.01, 0.25):	# the SMALLEST slide down the handle with the hands apart (>= 0.5 cm) and pen <= 0.6 cm
+        XL = Xm - sl * a; m = metrics(XL, F, V, Xg)
+        if m['hand_to_hand_min'] >= 0.5 and m['pen'] <= 0.6: best = (sl, XL, m); break
+    if best is None: best = (sl, XL, m)
+    sl, XL, m = best; hand_t = float(((XL - c) @ a).min()); m.update(slide_cm=float(sl), grip_length_cm=step, handle_axis=a.round(4).tolist(), handle_point=c.round(3).tolist(), lowest_axial_cm=hand_t,
+                                                                   handle_end_axial_cm=float(((Hd - c) @ a).min()))
+    return finish(g, XL, d, m, out, 'mirror of the gun hand across the handle plane, slid %.2f cm down the handle' % sl)
 def saw(res, res_top, out):
     import glob
     J = json.load(open(glob.glob(os.path.join(res, 'curl3_Chain_saw*.json'))[0])); d = np.array(J['shift'])	# Chain_saw or Chain_saw_rear (cropped fit of the same saw)
