@@ -148,3 +148,8 @@ Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning mat
 - SSG: the off hand closes the breach.
 - Pump: the grip hand's middle finger should close more.
 - Over-under MG: the support thumb's wrap; the MG doesn't rack.
+
+## Queued: NOT to start until the owner has tested 2.0.2 (owner, 2026-10-28 18:29)
+40. **Ruger scope glass.** Its glass texture is round but the scope housing is octagonal, so the picture isn't centred and looks rough. Fit the glass and picture to the octagon (see item 30).
+41. **Scope alt fire on the Ruger and the RailGun cycles 1x, 2x, 3x, off, then repeats.**
+42. **Assault Shotgun:** add a slugshot as its secondary fire.
