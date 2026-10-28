@@ -104,3 +104,11 @@ Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning mat
     - **Sword:** two hands on the hilt.
     - Port both as fitted (branch lane-melee-hands, fitfarm_results/Chain_saw and DSweap).
     - Still open: the axe (pen 0.71 cm) and the grenade (not ready, needs a re-solve).
+
+## Hands approved from the sheets (owner, 2026-10-28 00:03)
+29. The owner approves these from the sheets:
+    - Unmaker gun hand: a fist on the rear hook (r4).
+    - MiniGun support: a fist on the side handle (r4 refined, pen 0.09).
+    - FlameCannon: no gun hand, placed at the rear slit, open palm under the barrel (r4 under40).
+    - Rifle support (support fix batch 1).
+    The Unmaker support (a flat palm) is still being redone.
