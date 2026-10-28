@@ -100,6 +100,8 @@ class RSQ_Muzzle : EventHandler
 		if (w is 'Unmaker')	return (72.53, 3.94, 17.03);
 		// r12 port: HellishMissileLauncher's drawn muzzle (front-most face centre of the ready frame, 70.39 0.24 8.67 before the move), moved with the gun
 		if (w is 'HellishMissileLauncher')	return (77.12, 1.68, 22.32);
+		// r12 port: FlameCannon's drawn NOZZLE TIP (bore axis at the nozzle ring's front lip, 49.90 -0.31 -2.67 before the move; bore-face centre +8.06 cm along the housing axis), moved with the gun (fc_place)
+		if (w is 'FlameCannon')	return (61.92, -5.02, -14.53);
 		return (0, 0, 0);
 	}
 

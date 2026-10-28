@@ -123,6 +123,8 @@ class RSQ_GunSide : Inventory
 	FbxSqzF: RQFG D -1; Stop;
 	FbxSupP: RQFS A -1; Stop;
 	FbxSupF: RQFS B -1; Stop;
+	FbxSupFC: RQXB A -1; Stop;	// r12 port: FlameCannon (row 28) support
+	FbxSupMini: RQXA A -1; Stop;	// r12 port: Minigun (row 13) support
 	// support192 BEGIN: the FBX support hands fitted from the 1.92 holds (tools/handfit/support192)
 	FbxWrapSSG: RQWS A -1; Stop;	// SSG (row 20)
 	FbxWrapShotGun: RQWS B -1; Stop;	// Shot_Gun (row 21)
@@ -697,6 +699,10 @@ class RSQ_Hands : Weapon
 			spl = "FbxSupF";	// batch 3: MP40, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 12)
 		if (i == 5)
 			spl = "FbxSupF";	// batch 2: BrutalSMG, the FBX open palm under its forend (handtable SupportHook / SupportRot row 5)
+		if (i == 13)
+			spl = "FbxSupMini";	// r12 port: Minigun, the FBX fist round the side handle (hands r4 support_r4_bar_ref: pen 0.09, wrap I/M/R/P 188/202/198/183 deg; replaces Ermac's pose E; owner-approved 2026-10-28) (handtable SupportHook / SupportRot row 13)
+		if (i == 28)
+			spl = "FbxSupFC";	// r12 port: FlameCannon, the FBX open palm cupped under the barrel 38 cm from the slit (hands r4 FlameCannon_under40: pen 0.33, palm gap 0.30; owner-approved 2026-10-28) (handtable SupportHook / SupportRot row 28)
 		invoker.SetLayer(p, RSQ_Layers.SUPPORT, gs, hold && sp != "" && !swordTwo ? spl : "Hidden");
 
 		// 2026-10-23: the VR scope's reticle (rsq/scope.zs). WHETHER the layer is there is this

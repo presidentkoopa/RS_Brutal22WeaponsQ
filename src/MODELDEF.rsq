@@ -920,3 +920,43 @@ Model RSQ_Hands
 	FrameIndex RQVF A 0 0	// HellishMissileLauncher, finger on the trigger
 	FrameIndex RQVF B 0 1	// HellishMissileLauncher, squeezed
 }
+
+// r12 port (lane B): Minigun (row 13) support hand, its own FBX L frame drawn as RQFS B is (handtable SupportHook / SupportRot row 13): the FBX fist round the side handle (hands r4 support_r4_bar_ref: pen 0.09, wrap I/M/R/P 188/202/198/183 deg; replaces Ermac's pose E; owner-approved 2026-10-28)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_r4_Minigun_bar_L.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQXA A 0 0	// Minigun support
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_r4_Minigun_bar_L.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQXA A 0 0	// Minigun support
+}
+
+// r12 port (lane B): FlameCannon (row 28) support hand, its own FBX L frame drawn as RQFS B is (handtable SupportHook / SupportRot row 28): the FBX open palm cupped under the barrel 38 cm from the slit (hands r4 FlameCannon_under40: pen 0.33, palm gap 0.30; owner-approved 2026-10-28)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_r4_FlameCannon_under40_L.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQXB A 0 0	// FlameCannon support
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_r4_FlameCannon_under40_L.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQXB A 0 0	// FlameCannon support
+}

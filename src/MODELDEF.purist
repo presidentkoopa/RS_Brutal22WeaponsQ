@@ -436,8 +436,11 @@ Model PuristFlameCannon
    Model 0 "FlameCannon.md3"
    Skin 0 "FlameCannon.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 0.070 -13.155 0.0
+   ZOffset -6.744
+   AngleOffset -3.368
+   PitchOffset -7.292
+   RollOffset -0.038	// r12 port (lane B): gun to the FBX hand fitted from 1.92
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
