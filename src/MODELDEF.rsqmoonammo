@@ -1,21 +1,5 @@
-// The Revolver's (Moonlight's) ammo pickup, RevolverRounds (actors/Weapons/BrutalRevolver.dec): six rounds
-// in a ring, tools/moonammo/make_pickup.py (the pack's 12 ga shell cut down to the Moonlight round's length,
-// nosed, recoloured from the Moonlight's texture). Scale: the ring's outer diameter = BD22's 4-shell pickup
-// SHELA0 (16 px x Scale 0.9 = 14.4 map units). Spins like the voxel pack's ammo (MODELDEF.rsqvox).
-Model RevolverRounds
-{
-	Path "models/rsq/moonammo"
-	Model 0 "moon_rounds.md3"
-	SurfaceSkin 0 0 "moon_brass.png"
-	SurfaceSkin 0 1 "moon_case.png"
-	SurfaceSkin 0 2 "moon_primer.png"
-	SurfaceSkin 0 3 "moon_nose.png"
-	Scale 3.5348 3.5348 3.5348
-	AngleOffset 90
-	Rotating
-	Rotation-Speed 0.450045
-	FrameIndex RVRD A 0 0
-}
+// 2026-10-28 (owner 06:46): the Moonlight takes BD22's pistol rounds (Clip1); its own rounds pickup and its
+// ring model (models/rsq/moonammo) are gone. Only the gun's own world pickup is left in this file.
 
 // The Moonlight's own world pickup (BrutalRevolver Spawn: RVMP A), rev.md3 frame 0 lying on its side.
 // Gun surfaces 0-3 of frame 0 run x 15.73-42.48 (26.75 mesh units, measured); BD22's revolver pickup

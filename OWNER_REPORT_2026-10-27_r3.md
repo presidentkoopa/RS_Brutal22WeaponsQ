@@ -93,6 +93,8 @@ Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning mat
     - The Shotvolver stays, with its slug alt fire. No slug revolver ever replaces it.
     - New option "Moonlight Replaces Pistol" (default Off): the Moonlight replaces the Brutal Pistol at the start, in map pickups and in drops.
     - New option "Start With Two Moonlights" (default Off): you start dual, with a 72-round cap.
+    - SUPERSEDED 2026-10-28 06:46 (owner, headset, 2.0): "Change Moonlight to take BrutalPistol ammo, consume 3 ammo per shot,
+      reloads after 18 ammo consumption." No Moonlight rounds or 36 / 72 cap any more (2.0.1, HANDOFF "Moonlight on pistol ammo").
     - The Moonlight-replaces-Shotvolver option is gone.
 25. **HUD ammo:** shows the magazine and the reserve by default, with a "Reserve only" option.
 26. **Ammo balance:** the loaded magazine counts on top of the max carry; the cap is the reserve only.

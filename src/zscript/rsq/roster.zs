@@ -17,15 +17,10 @@
 //   * "Start With Two Moonlights" (server rsq_moonlight_two, default Off; needs the option above): when that swap
 //     happens in the map's first second (a new game, a pistol start), the off-hand Moonlight comes too, both cylinders
 //     full, and the Dual key is pressed once for the player, so both hands hold one.
-//   * CAP (owner 19:06, "Our Moonlight is 36 total rounds. If we have 2, it goes up to 72"):
-//     36 with one Moonlight; 72 while the player holds two -- the off-hand copy RSQ_Off_BrutalRevolver,
-//     which dual.zs gives when a second one is picked up (BD22's rule for dual; BrutalRevolver is
-//     +ALWAYSPICKUP, so the second is taken even with the reserve full) or the start above gives. The cap is
-//     set on the player's RevolverRounds every tic, so nothing else moves it: the backpack does NOT raise it.
-//   * ROUNDS ON MAPS (only while "Moonlight Replaces Pistol" is On): a bullet pickup placed by the
-//     map -- any Clip2 (BD22's replacement of Doom's Clip, ednum 2007, and its subclasses: ClipBox2 for
-//     the box, 2048, and EasyClip2, which is what the rig measured on MAP01 at skill 3) that is on the
-//     map at tic 0, not dropped and not owned -- gets one RevolverRounds beside it, 1 time in 4.
+//   * AMMO (owner 2026-10-28 06:46): the Moonlight takes BD22's Brutal Pistol's reserve, Clip1, 3 a shot
+//     (BrutalRevolver.dec). Its own rounds item, the 36 / 72 cap set here every tic, the 18 spare at a pistol start and
+//     its rounds beside 1 in 4 of the map's bullet pickups are all gone: with the option on, the player keeps BD22's
+//     pistol start ammo and the Moonlight starts with its cylinder full, as BD22's pistol starts with its magazine.
 //   * `netevent rsq_moon_count` (or rsr_debug at tic 1) prints the counts: test and debug only.
 class RSQ_SemiLockOff : Inventory
 {
@@ -42,14 +37,11 @@ class RSQ_SemiLockOff : Inventory
 
 class RSQ_Roster : EventHandler
 {
-	const MOON_CAP_ONE = 36;	// owner 2026-10-27 19:06
-	const MOON_CAP_TWO = 72;	// ...with two Moonlights
-	const MOON_SPAWN_IN = 4;	// one RevolverRounds beside 1 in this many map-placed Clip2 (clips and bullet boxes)
-	const MOON_SPAWN_OFS = 14.0;	// map units from the Clip2 (BD22's SMG spawner puts its Clip1 10, 10 off)
+	const MOON_SPAWN_OFS = 14.0;	// map units from the Clip2 for the Minigun's box (BD22's SMG spawner puts its Clip1 10, 10 off)
 
 	const MINI_SPAWN_IN = 4;	// 2.0: one Minigun ammo box beside every map-placed bullet box and 1 in this many map-placed clips
 	int miniSpawned;		// this map: Minigun ammo boxes put beside the map's Clip2
-	int moonClips, moonSpawned;	// this map: map-placed Clip2 seen, RevolverRounds put beside them
+	int moonClips;			// this map: map-placed Clip2 seen
 	int pistolSwaps;		// this map: Brutal Pistols the player got that became the Moonlight
 	bool wantDual[MAXPLAYERS];	// start with two: press the Dual key once the Moonlight is in hand
 
@@ -81,7 +73,7 @@ class RSQ_Roster : EventHandler
 	void Counts()
 	{
 		// what is in the world now, unowned: the pistol's pickup, the Shotvolver's and the Moonlight's
-		int ps = 0, sv = 0, ml = 0, rr = 0;
+		int ps = 0, sv = 0, ml = 0;
 		let it = ThinkerIterator.Create('Inventory');
 		Inventory a;
 		while (a = Inventory(it.Next()))
@@ -95,12 +87,10 @@ class RSQ_Roster : EventHandler
 				sv++;
 			else if (n == 'BrutalRevolver')
 				ml++;
-			else if (n == 'RevolverRounds')
-				rr++;
 		}
-		Console.Printf("RSQ moon: map %s, moonlight_pistol %d two %d: in the world Pistol %d, Shotvolver %d, Moonlight %d, "
-			.. "RevolverRounds %d; pistols swapped for the Moonlight this map %d; map bullet pickups %d, RevolverRounds put beside %d, Minigun ammo boxes put beside %d",
-			Level.MapName, MoonPistol(), MoonTwo(), ps, sv, ml, rr, pistolSwaps, moonClips, moonSpawned, miniSpawned);
+		Console.Printf("RSQ moon: map %s, moonlight_pistol %d two %d: in the world Pistol %d, Shotvolver %d, Moonlight %d; "
+			.. "pistols swapped for the Moonlight this map %d; map bullet pickups %d, Minigun ammo boxes put beside %d",
+			Level.MapName, MoonPistol(), MoonTwo(), ps, sv, ml, pistolSwaps, moonClips, miniSpawned);
 	}
 
 	override void NetworkProcess(ConsoleEvent e)
@@ -133,20 +123,6 @@ class RSQ_Roster : EventHandler
 				else if (Level.maptime > 350)
 					wantDual[n] = false;
 			}
-			let am = mo.FindInventory('RevolverRounds');
-			if (!am)
-				continue;
-			bool two = mo.FindInventory('RSQ_Off_BrutalRevolver') != null;
-			int cap = two ? MOON_CAP_TWO : MOON_CAP_ONE;
-			if (am.MaxAmount != cap)
-			{
-				if (Debug(mo))
-					Console.Printf("RSQ moon t%d: RevolverRounds cap %d -> %d (%s Moonlight%s), holding %d", Level.maptime,
-						am.MaxAmount, cap, two ? "two" : "one", two ? "s" : "", am.Amount);
-				am.MaxAmount = cap;
-				if (am.Amount > cap)
-					am.Amount = cap;
-			}
 		}
 	}
 
@@ -157,13 +133,14 @@ class RSQ_Roster : EventHandler
 		mo.TakeInventory('BrutalPistol', 1);
 		mo.TakeInventory('RSQ_Off_BrutalPistol', 1);
 		bool had = mo.FindInventory('BrutalRevolver') != null;
+		int clip = mo.CountInv('Clip1');
 		mo.GiveInventory('BrutalRevolver', 1);
+		mo.SetInventory('Clip1', clip);	// 2.0.1: the swap keeps BD22's own pistol ammo; the Moonlight's pickup 18 is not added on top
 		pistolSwaps++;
 		bool start = Level.maptime < 35;
 		if (start)
 		{
-			mo.SetInventory('BrutalRevolverCylinder', 6);	// a pistol start has the pistol loaded
-			mo.SetInventory('RevolverRounds', 18);			// owner 2026-10-27 20:5x: a full cylinder + 18 spare (two: both full + 18)
+			mo.SetInventory('BrutalRevolverCylinder', 6);	// a pistol start has the pistol loaded; the reserve is BD22's own pistol start (Clip1)
 		}
 		if (start && MoonTwo())
 		{
@@ -174,9 +151,9 @@ class RSQ_Roster : EventHandler
 		if (held || start)
 			mo.A_SelectWeapon('BrutalRevolver');
 		if (Debug(mo))
-			Console.Printf("RSQ moon t%d: Brutal Pistol -> Moonlight%s%s; cylinder %d, spare RevolverRounds %d", Level.maptime,
+			Console.Printf("RSQ moon t%d: Brutal Pistol -> Moonlight%s%s; cylinder %d shots, pistol reserve Clip1 %d", Level.maptime,
 				had ? " (already had one)" : "", start && MoonTwo() ? ", start with two" : "",
-				mo.CountInv('BrutalRevolverCylinder'), mo.CountInv('RevolverRounds'));
+				mo.CountInv('BrutalRevolverCylinder'), mo.CountInv('Clip1'));
 	}
 
 	override void WorldThingSpawned(WorldEvent e)
@@ -185,7 +162,7 @@ class RSQ_Roster : EventHandler
 		if (!a)
 			return;
 		Name n = a.GetClassName();
-		// the map's own Clip2 gets the Moonlight's rounds beside it, 1 in MOON_SPAWN_IN, while the option is on
+		// the map's own Clip2: the Minigun's box beside it (below)
 		if (Level.maptime > 0 || !(a is 'Clip2') || a.bDropped || Inventory(a).Owner)
 			return;
 		moonClips++;
@@ -196,12 +173,6 @@ class RSQ_Roster : EventHandler
 			if (Beside(a, 'RSQ_MinigunAmmo', Random[RSQMiniSpawn](0, 359)))
 				miniSpawned++;
 		}
-		if (!MoonPistol())
-			return;
-		if (Random[RSQMoonSpawn](1, MOON_SPAWN_IN) != 1)
-			return;
-		if (Beside(a, 'RevolverRounds', Random[RSQMoonSpawn](0, 359)))
-			moonSpawned++;
 	}
 	// one pickup MOON_SPAWN_OFS map units from the map's Clip2, on the floor (on the Clip2's own spot if there is no room)
 	static bool Beside(Actor a, class<Actor> cls, double ang)

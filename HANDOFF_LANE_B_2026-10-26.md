@@ -2162,3 +2162,44 @@ tools), mini20.py. No .ppm left.
 - Minigun ammo box uses BD22's bullet-box art unchanged: on the floor it looks like a Clip2 box (the pickup message tells them apart).
 - Purist-class guns not re-shot this round (MODELDEF.purist equals the Brutal blocks: variants_all.py, 0 differing).
 - The off-hand RSQ_Off_RailGun still has BD22's zoom alt (scope lane flag, owner call).
+
+# 2.0.1: the Moonlight on pistol ammo (2026-10-28, branch `moonlight-pistol-ammo`, fast-forwarded into `main`). RIG ONLY, NOT HEADSET-CONFIRMED
+Owner 06:46 (headset, 2.0): "Moonlight -- your ammo model is not meshing well with the voxels. Change Moonlight to take
+BrutalPistol ammo, consume 3 ammo per shot, reloads after 18 ammo consumption."
+
+## Done (measured)
+- **Reserve = BD22's Brutal Pistol's, `Clip1`** (parsed: brutal22test6 `actors/Weapons/Pistol.dec:3` `Weapon.AmmoType1 "Clip1"`,
+  this pack's copy `src/actors/Weapons/Pistol.dec:4`; class `actors/MISC/Ammo.dec:50`, cap 100, backpack 200).
+  `BrutalRevolverCylinder` / `...Off` stay the gun's SHOTS (0-6). Every load of one chamber takes 3 Clip1 and needs 3
+  (stock speedloader Fill, RSB_TopUp1, RSB_LoadOne, off-hand Fill; the "anything to load?" checks are `Clip1 >= 3`).
+  A full cylinder = 18. Firing takes one shot from the cylinder; the reserve moves only at a reload (as BD22's own pistol:
+  BDPistolAmmo in the gun, Clip1 in reserve). Pickup `AmmoGive1` 18 (one cylinder; was 6 own rounds).
+- Hand reload: `rsb_guns.zs` rows 10 / 11 reserve -> "Clip1" and new `RSB_Guns.ReservePer(i)` (3 for rows 10/11, else 1);
+  `rsr_break.zs` CanTakeRound / the pair check need `need * ReservePer`. Patched by hand (header note; re-apply after gen_rsb.py).
+- **RevolverRounds removed:** the actor, its ring model (`models/rsq/moonammo/*`), `RVRDA0.png`, its MODELDEF block
+  (`MODELDEF.rsqmoonammo` keeps only the gun's world pickup), roster.zs's 36 / 72 cap tick, the 1-in-4 spawn beside map
+  Clip2 and the 18-spare start grant. `RSQ_Roster.SwapPistol` now restores Clip1 after giving the Moonlight, so with
+  "Moonlight Replaces Pistol" the player keeps BD22's pistol start ammo exactly (rig: 45 with the option off, 45 on).
+  Options, dual wield, FBX holds, damage, fire rate untouched. HUD (counters.zs GunAmmo, generic): cylinder SHOTS | Clip1.
+- README (Revolvers and ammo), OWNER_REPORT item 24 marked superseded. VERSION 2.0.1.
+
+## Rig evidence (QZD 17.3, doom2 > brutal22test6 > BD_VoxelPack > pack, `flock -o -x /home/claude/rig.lock`, fresh default ini
+`int20_rig/ini.f20` copied in per run; driver `tools/moonammo/rig_moonpistol.py`; full log `/home/claude/lane_b_out/m201_rig_moonpistol.txt`)
+- Boot: 0 pack script errors (only BD_VoxelPack's own voxeldef errors and its DeathSphereHealth warning, as on 2.0).
+- Fire: `Clip1=60 Cylinder=6` -> one shot -> `Clip1=60 Cylinder=5` -> five more -> `Clip1=60 Cylinder=0`.
+- Hand reload, speedloader (rsb gun 10, IDLE>OPENING>OPEN>CLOSING>DONE): `Clip1=60 Cyl=0` -> `Clip1=42 Cyl=6`.
+  Only 9 in reserve: `Clip1=9 Cyl=0` -> `Clip1=0 Cyl=3`. A round at a time (gun 11, 6 chambers driven), 9: -> `Clip1=0 Cyl=3`.
+- Stock reload (rsr_reload 0): 60/0 -> 42/6; 10/0 -> 1/3.
+- Dual (both Moonlights, shared Clip1 60): off hand fired empty, flick -> `Clip1=42`, off cylinder 6; main emptied, flick -> `Clip1=24`.
+- Gone: `summon RevolverRounds` -> "Unknown actor or visual thinker 'RevolverRounds'"; `give` -> "Unknown item"; MAP01 / MAP07 with
+  the option on: no such class can exist; no "RevolverRounds" string in the pk3's text lumps.
+- Start (Pistol class): option off Clip1 45; on: `Brutal Pistol -> Moonlight; cylinder 6 shots, pistol reserve Clip1 45`; two: both 6, 45.
+- HUD: 2 shots fired, Clip1 57: bar reads `4 | 57` (`/home/claude/lane_b_out/m201_hud_moonlight.png`, `..._bar.png`).
+- pk3 `/home/claude/lane_b_out/BD22_VR-Reloaded_2.0.1.pk3`.
+
+## Not done / open
+- Nothing run on the owner's headset.
+- The speedloader mesh still shows six rounds when the reserve only fills 3 shots (as before with a short reserve).
+- `tools/moonammo/make_pickup.py`, `rig_rev.py` (workshop tools) still name the removed class; they are history, not shipped.
+- Read of "consume 3 ammo per shot": the pistol reserve does NOT drop on a shot; it drops 3 per chamber loaded. Total pistol
+  rounds held (reserve + 3 x cylinder) drop 3 a shot. If the owner wants the reserve itself to tick down per shot, say so.

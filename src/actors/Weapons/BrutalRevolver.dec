@@ -8,48 +8,29 @@
 // designed with the owner (RECOIL_DESIGN.md). Revolver2's shotgun-pellet particles are left out:
 // this fires one round.
 //
-// AMMO, its own (owner): RevolverRounds in reserve, BrutalRevolverCylinder in the gun, so it never
-// shares RevolverAmmo with the Shotvolver. Owner 2026-10-27 19:06: 6 a pickup; "Our Moonlight is 36 total
-// rounds. If we have 2, it goes up to 72": the reserve cap is 36 with one Revolver and 72 while the player
-// holds two (the off-hand copy below, given by dual.zs when a second one is picked up; zscript/rsq/roster.zs
-// sets the cap every tic, so the backpack does not raise it: owner 19:40). The pickup is six rounds in a
-// ring (models/rsq/moonammo, tools/moonammo/make_pickup.py: the pack's 12 ga shell cut down, nosed,
-// recoloured from the Moonlight's texture). On maps (roster.zs, option "Moonlight Replaces Pistol",
-// rsq_moonlight_pistol, owner 20:45): the gun takes the Brutal Pistol's place (start, map pistols, the pistol
-// zombie's drop); its rounds sit beside 1 in 4 of the map's bullet pickups while that option is on.
+// AMMO (owner 2026-10-28 06:46, from the headset: "Change Moonlight to take BrutalPistol ammo, consume 3 ammo
+// per shot, reloads after 18 ammo consumption"): the reserve is BD22's Brutal Pistol's own, Clip1 (brutal22test6
+// actors/Weapons/Pistol.dec:3 Weapon.AmmoType1 "Clip1"; this pack's copy src/actors/Weapons/Pistol.dec:4; the class
+// is brutal22test6 actors/MISC/Ammo.dec:50, cap 100 / 200 with a backpack). BrutalRevolverCylinder counts SHOTS in
+// the gun (0-6). Loading one chamber takes 3 Clip1, so a full cylinder is 18 pistol rounds and a shot spends 3 of
+// them. With fewer than 3 in the reserve a chamber cannot be loaded. The Moonlight's own rounds item (its ring
+// pickup, its map spawns beside bullet pickups, its 36 / 72 cap) is gone.
+// On maps (roster.zs, option "Moonlight Replaces Pistol", rsq_moonlight_pistol, owner 20:45): the gun takes the
+// Brutal Pistol's place (start, map pistols, the pistol zombie's drop).
 // (Revolver2.dec, quoted above for the firing rules, was removed 2026-10-27; it is in git history.)
 // DUAL (owner 2026-10-27 19:40, "Dual Revolvers, of course"): RSQ_Off_BrutalRevolver at the end of this
 // file is the off-hand copy (dual.zs / dualtable.zs index 10), written by hand on the pattern of
 // DECORATE.rsqdual's generated copies: its own cylinder (BrutalRevolverCylinderOff), the shared reserve,
 // one shot per pull of the OFF trigger (RSQ_SemiLockOff, roster.zs), and the flick reload (flick.zs),
-// which plays the mesh's own reload animation. Holding it raises the RevolverRounds cap to 72.
+// which plays the mesh's own reload animation. Both cylinders load from the one shared Clip1 reserve.
 //
 // RELOAD (r5, stock): the mesh's own animation (reference/moonlight/README.md, measured): break-top
 // open (frames 16-19), the six rounds out (20-29), the speedloader in (21-30) and away (31-38),
-// shut (30-36). The speedloader fills the cylinder from the reserve, up to 6, in one go.
+// shut (30-36). The speedloader fills the cylinder from the reserve, up to 6 shots (3 Clip1 each), in one go.
 // moon-reload: in VR with Real reload on, Reload goes to RSB_Start: the hand-driven break-open
 // (rsb_guns.zs rows 10 speedloader / 11 a round at a time, rev_rsb.md3); the stock animation is RSB_Stock.
 //
 // Sprites RVMA A-Z = rev.md3 frames 0-25, RVMB A-O = frames 26-40 (MODELDEF.rsqmoon).
-
-ACTOR RevolverRounds : Ammo
-{
-	Inventory.Amount 6			// owner 2026-10-27: 6 per pickup
-	Inventory.MaxAmount 36		// owner 2026-10-27 19:06: 36 with one Revolver (72 with two: roster.zs raises it)
-	Ammo.BackpackAmount 6		// a backpack gives one pickup's worth (BD22 has no single rule: Ammo.dec shells 2x pickup, Clip2 3x, rockets 6x, cells 1x)
-	Ammo.BackpackMaxAmount 36	// OPEN (owner): BD22 doubles every cap with a backpack (Ammo.dec); here the backpack does NOT raise the cap until he says
-	Inventory.PickupMessage "Picked up six revolver rounds."
-	Inventory.PickupSound "SHELPK1"	// BD22's shell pickup sound (the art is a shell cut down)
-	Inventory.Icon "RVRDA0"
-	Tag "Revolver rounds"
-	Scale 1.0
-	States
-	{
-	Spawn:
-		RVRD A -1				// models/rsq/moonammo/moon_rounds.md3 (MODELDEF.rsqmoonammo); RVRDA0.png is a render of it for 2D
-		Stop
-	}
-}
 
 ACTOR BrutalRevolverCylinder : Ammo
 {
@@ -65,9 +46,9 @@ ACTOR BrutalRevolver : BrutalWeapon
 	Weapon.SelectionOrder 1350
 	Weapon.AmmoUse1 0
 	Weapon.AmmoUse2 0
-	Weapon.AmmoGive1 6
+	Weapon.AmmoGive1 18		// 2026-10-28: a full cylinder's worth of pistol rounds (was 6 of its own rounds = 6 shots)
 	Weapon.AmmoGive2 0
-	Weapon.AmmoType1 "RevolverRounds"
+	Weapon.AmmoType1 "Clip1"	// BD22's Brutal Pistol's reserve (header)
 	Weapon.AmmoType2 "BrutalRevolverCylinder"
 	Inventory.PickupMessage "You got the Moonlight Revolver!"
 	Inventory.PickupSound "Revolver/Hammer"
@@ -76,7 +57,7 @@ ACTOR BrutalRevolver : BrutalWeapon
 	+WEAPON.NOALERT
 	+WEAPON.NOAUTOAIM
 	+WEAPON.NOAUTOFIRE
-	+INVENTORY.ALWAYSPICKUP		// owner 19:06: a second Revolver raises the rounds cap 36 -> 72, so it is taken even with the reserve full (inventory.zs CallTryPickup); roster.zs sees it go
+	+INVENTORY.ALWAYSPICKUP		// a second Revolver is taken even with the pistol reserve full, so dual.zs can make it the off-hand copy
 	Scale 0.9
 	Tag "Revolver"
 	States
@@ -155,7 +136,7 @@ ACTOR BrutalRevolver : BrutalWeapon
 
 	NoAmmo:
 		RVMA A 0 A_PlaySound("Weapon/Empty", 4)
-		RVMA A 0 A_JumpIfInventory("RevolverRounds",1,"Reload")
+		RVMA A 0 A_JumpIfInventory("Clip1",3,"Reload")
 	NoAmmo2:
 		RVMA A 5 A_WeaponReady(WRF_ALLOWRELOAD | WRF_NOFIRE)
 		RVMA A 0 A_JumpIfInventory("Reloading",1,"Reload")
@@ -165,7 +146,7 @@ ACTOR BrutalRevolver : BrutalWeapon
 	Reload:
 		RVMA A 0 A_TakeInventory("Reloading", 1)
 		RVMA A 0 A_JumpIfInventory("BrutalRevolverCylinder",6,"Ready")
-		RVMA A 0 A_JumpIfInventory("RevolverRounds",1,1)
+		RVMA A 0 A_JumpIfInventory("Clip1",3,1)
 		Goto Ready
 		RVMA A 0		// (a state for the jump above to land on)
 		Goto RSB_Start	// moon-reload: the hand-driven VR reload (zscript/rsr/rsr_break.zs, rsb_guns.zs rows 10/11)
@@ -179,12 +160,12 @@ ACTOR BrutalRevolver : BrutalWeapon
 		RVMA UVWXYZ 2
 		RVMB ABCD 2
 		RVMB E 2 A_PlaySound("Revolver/Reload", 5)
-	Fill:		// the speedloader: up to 6 from the reserve
+	Fill:		// the speedloader: up to 6 shots from the reserve, 3 Clip1 a shot
 		RVMB E 0 A_JumpIfInventory("BrutalRevolverCylinder",6,"Shut")
-		RVMB E 0 A_JumpIfInventory("RevolverRounds",1,1)
+		RVMB E 0 A_JumpIfInventory("Clip1",3,1)
 		Goto Shut
 		RVMB E 0 A_GiveInventory("BrutalRevolverCylinder",1)
-		RVMB E 0 A_TakeInventory("RevolverRounds",1,TIF_NOTAKEINFINITE)
+		RVMB E 0 A_TakeInventory("Clip1",3,TIF_NOTAKEINFINITE)
 		Loop
 	Shut:		// shut, the speedloader away (31-40)
 		RVMB FGH 2
@@ -215,22 +196,22 @@ ACTOR BrutalRevolver : BrutalWeapon
 	RSB_Eject:		// the script throws the mesh's own rounds itself (WorldEject): nothing to spawn
 		"####" "#" 0 A_TakeInventory("RSB_EjectT", 8)
 		Goto RSB_Wait
-	RSB_Load:		// speedloader home: fill the cylinder to 6; a round at a time (rsb_revolver_feed 1): one
+	RSB_Load:		// speedloader home: fill the cylinder to 6 shots; a round at a time (rsb_revolver_feed 1): one. 3 Clip1 a shot
 		"####" "#" 0 A_TakeInventory("RSB_LoadT", 1)
 		"####" "#" 0 A_JumpIf(GetCVar("rsb_revolver_feed") != 0, "RSB_LoadOne")
 	RSB_TopUp1:
 		"####" "#" 0 A_JumpIfInventory("BrutalRevolverCylinder", 6, "RSB_Wait")
-		"####" "#" 0 A_JumpIfInventory("RevolverRounds", 1, 1)
+		"####" "#" 0 A_JumpIfInventory("Clip1", 3, 1)
 		Goto RSB_Wait
 		"####" "#" 0 A_GiveInventory("BrutalRevolverCylinder", 1)
-		"####" "#" 0 A_TakeInventory("RevolverRounds", 1, TIF_NOTAKEINFINITE)
+		"####" "#" 0 A_TakeInventory("Clip1", 3, TIF_NOTAKEINFINITE)
 		Goto RSB_TopUp1
 	RSB_LoadOne:
 		"####" "#" 0 A_JumpIfInventory("BrutalRevolverCylinder", 6, "RSB_Wait")
-		"####" "#" 0 A_JumpIfInventory("RevolverRounds", 1, 1)
+		"####" "#" 0 A_JumpIfInventory("Clip1", 3, 1)
 		Goto RSB_Wait
 		"####" "#" 0 A_GiveInventory("BrutalRevolverCylinder", 1)
-		"####" "#" 0 A_TakeInventory("RevolverRounds", 1, TIF_NOTAKEINFINITE)
+		"####" "#" 0 A_TakeInventory("Clip1", 3, TIF_NOTAKEINFINITE)
 		Goto RSB_Wait
 	RSB_TopUp:		// not used by rows 10/11 (Cap 6 = chambers x per load); kept for the protocol
 		"####" "#" 0 A_TakeInventory("RSB_TopUpT", 1)
@@ -262,7 +243,7 @@ ACTOR RSQ_Off_BrutalRevolver : BrutalRevolver
 	+WEAPON.NOHANDSWITCH
 	+WEAPON.CHEATNOTWEAPON
 	-INVENTORY.ALWAYSPICKUP
-	Weapon.AmmoType1 "RevolverRounds"
+	Weapon.AmmoType1 "Clip1"
 	Weapon.AmmoType2 "BrutalRevolverCylinderOff"
 	States
 	{
@@ -308,7 +289,7 @@ ACTOR RSQ_Off_BrutalRevolver : BrutalRevolver
 
 	Reload:		// the flick (flick.zs) sets this state on the off hand
 		RVMA A 0 A_JumpIfInventory("BrutalRevolverCylinderOff",6,"Ready")
-		RVMA A 0 A_JumpIfInventory("RevolverRounds",1,1)
+		RVMA A 0 A_JumpIfInventory("Clip1",3,1)
 		Goto Ready
 		RVMA A 0
 		Goto RSB_Stock	// the mesh's own reload (the hand-driven break-open is the main hand's; RSB_Start is never given from here)
@@ -321,10 +302,10 @@ ACTOR RSQ_Off_BrutalRevolver : BrutalRevolver
 		RVMB E 2 A_PlaySound("Revolver/Reload", 5)
 	Fill:
 		RVMB E 0 A_JumpIfInventory("BrutalRevolverCylinderOff",6,"Shut")
-		RVMB E 0 A_JumpIfInventory("RevolverRounds",1,1)
+		RVMB E 0 A_JumpIfInventory("Clip1",3,1)
 		Goto Shut
 		RVMB E 0 A_GiveInventory("BrutalRevolverCylinderOff",1)
-		RVMB E 0 A_TakeInventory("RevolverRounds",1,TIF_NOTAKEINFINITE)
+		RVMB E 0 A_TakeInventory("Clip1",3,TIF_NOTAKEINFINITE)
 		Loop
 	Shut:
 		RVMB FGH 2

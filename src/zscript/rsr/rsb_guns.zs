@@ -10,6 +10,9 @@
 // PATCHED BY HAND 2026-10-27 (lane rev-unmaker, owner r3 item 20): BD21's Revolver2 is gone from the pack.
 // Rows 8 / 9 (its speedloader / per-round rows) are RETIRED: Index() never returns them and Cls() is 'None'.
 // Their numbers stay so rows 10 / 11 keep their index. Re-apply after gen_rsb.py.
+// PATCHED BY HAND 2026-10-28 (owner 06:46, Moonlight on pistol ammo): rows 10 / 11 reserve is BD22's Brutal
+// Pistol's Clip1 (Pistol.dec:3) and ReservePer() was added: reserve items one loaded round costs (3 for the
+// Moonlight, 1 for every other row). Re-apply after gen_rsb.py.
 // Real VR reload, break-open guns and revolvers: per gun. Positions cm in the weapon
 // controller's frame (F, L, U); turns right-handed about the axis, opening positive.
 
@@ -792,8 +795,8 @@ class RSB_Guns abstract
 		case 7:	return "AmmoShell";
 		case 8:	return "Clip2";		// retired row (BD21's Revolver2, removed 2026-10-27)
 		case 9:	return "Clip2";		// retired row, as 8
-		case 10:	return "RevolverRounds";
-		case 11:	return "RevolverRounds";
+		case 10:	return "Clip1";		// 2026-10-28 (owner 06:46): BD22's Brutal Pistol's reserve, 3 a shot (ReservePer)
+		case 11:	return "Clip1";
 		}
 		return "";
 	}
@@ -946,6 +949,13 @@ class RSB_Guns abstract
 		case 10:	return true;		// BrutalRevolver: the Moonlight's cage (rev_rsb.md3 frame 2) stays in the hand
 		}
 		return false;
+	}
+
+	// 2026-10-28 (owner 06:46, by hand): reserve items one loaded round costs. The Moonlight takes 3 of BD22's
+	// pistol rounds (Clip1) per shot in its cylinder; every other row 1.
+	clearscope static int ReservePer(int i)
+	{
+		return (i == 10 || i == 11) ? 3 : 1;
 	}
 
 	clearscope static bool ReserveHoldsLoaded(int i)

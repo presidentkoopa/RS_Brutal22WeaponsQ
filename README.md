@@ -66,7 +66,9 @@ the pack. It has not yet been confirmed in a headset.
 
 ### Revolvers and ammo
 - Two revolvers: the **Shotvolver** (its slug alt fire is now on by default) and the **Moonlight**.
-  The Moonlight has its own rounds: 36, or 72 with a second Moonlight.
+  The Moonlight takes the Brutal Pistol's ammo (2.0.1): each shot costs 3 pistol rounds, so a full
+  six-shot cylinder is 18. A reload moves 3 pistol rounds per chamber from your pistol reserve; two
+  Moonlights share that reserve. Its HUD reads shots in the cylinder (0-6) | pistol rounds in reserve.
 - Options: **Moonlight Replaces Pistol** (start, pickups, drops) and **Start With Two Moonlights**.
   Both are off by default.
 - **HUD Ammo:** the magazine and the reserve (e.g. 24 | 120), or Reserve Only.

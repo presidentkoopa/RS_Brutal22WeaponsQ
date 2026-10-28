@@ -491,7 +491,7 @@ class RSB_State play
 		int res = RSB.Count(mo, RSB_Guns.Reserve(i));
 		// V+ super shotgun: its shells stay in the reserve until fired (its reload takes none)
 		int need = RSB_Guns.ReserveHoldsLoaded(i) ? LiveCount() + 1 : 1;
-		if (res < need)
+		if (res < need * RSB_Guns.ReservePer(i))		// 2026-10-28: the Moonlight's round costs 3 pistol rounds
 			return false;
 		Vector3 palm = OffPoint(RSR.PalmGrab());
 		Vector3 mid = RSB.HingeTurn(i, (RSB_Guns.Base(i, 0) + RSB_Guns.Tip(i, 0)) / 2, theta);
@@ -727,7 +727,7 @@ class RSB_State play
 				// and the reserve has two; pushed home together, they fill both barrels at once.
 				int need2 = RSB_Guns.ReserveHoldsLoaded(i) ? LiveCount() + 2 : 2;
 				pair = nch == 2 && !RSB_Guns.Loader(i) && ch[0] == RSB.EMPTY && ch[1] == RSB.EMPTY
-					&& RSB.Count(mo, RSB_Guns.Reserve(i)) >= need2 && RSB.PlayerInt(mo.player, 'rsr_ssg_pair', 1) != 0;
+					&& RSB.Count(mo, RSB_Guns.Reserve(i)) >= need2 * RSB_Guns.ReservePer(i) && RSB.PlayerInt(mo.player, 'rsr_ssg_pair', 1) != 0;
 				SetHand(mo, RSB.CARRY);
 				for (int k = 0; k < nch; k++)
 					sAt[k] = 999;
