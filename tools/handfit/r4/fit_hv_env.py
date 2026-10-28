@@ -2,6 +2,11 @@
 import os, sys, json
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, os.path.join(HERE, '..', 'heavies'))
 os.environ.setdefault('HV_RUN', os.path.join(os.environ.get('TMPDIR', '/tmp'), 'hv_run_r4'))
+# the batch run dirs fit_hv imports (/home/claude/lane_b_b1run..b4run/tools) may be gone from this box: RSQ_RUNS_HOME = a mirror
+# of them (e.g. the fit farm's home/ with its farmpaths.py), put ahead of the cloud paths
+RH = os.environ.get('RSQ_RUNS_HOME')
+if RH:
+    for p in (RH, RH + '/lane_b_b1run/tools', RH + '/lane_b_b2run/tools', RH + '/lane_b_b3run/tools', RH + '/lane_b_b4run/tools'): sys.path.insert(0, p)
 import fit_hv as H
 for k, v in json.load(open(os.path.join(HERE, '..', 'farm', 'guns.json'))).items():
     if k.startswith('_'): continue

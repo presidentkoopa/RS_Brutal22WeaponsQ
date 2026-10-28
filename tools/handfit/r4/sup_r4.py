@@ -1,5 +1,6 @@
 """Hands r4: FBX SUPPORT hand (left) solved on a moved gun, any hold, then baked as an RQFS-style frame + its support row.
-usage: python3 sup_r4.py <scenario.json> <outdir> [--nfev N] [--seeds K]
+usage: python3 sup_r4.py <scenario.json> <outdir> [--nfev N] [--seeds K] [--x0 sup_<name>.json] [--thr 0.25] [--h 0.3]
+  --x0: refine a previous result (its x is the only seed); --thr: penetration hinge (cm); --h: distance-grid step (cm)
 scenario.json (written by the gun's setup script, every number measured there):
   gun: {path (under src/models/bd), frame, scale, off}, move: {R, t} (shipped controller frame -> drawn), gunhand: md3 + frame (or null)
   hold: 'under' (open palm cupped under a cylinder) | 'bar' (fist round a bar/handle: the bar runs THROUGH the fist)
@@ -25,6 +26,7 @@ LANE = C.LANE
 def load_L():
     L = dict(json.load(open(os.path.join(LANE, 'landmarks_fbx.json')))['L']); L['_reg'] = json.load(open(os.path.join(LANE, 'regions.json')))['fbx']; return L
 FTIP = dict(I='INDEX', M='MIDDLE_F', R='RING', P='PINK')
+THR = [0.25]; GRID = [0.3]
 class Model:
     def __init__(s, sc):
         s.sc = sc; s.H = handmodel.FbxHand('L'); s.L = load_L(); s.scale = json.load(open(os.path.join(LANE, 'calib.json')))['scale']
@@ -36,10 +38,10 @@ class Model:
         s.a = np.array(sc['a'], float); s.a /= np.linalg.norm(s.a); s.c = np.array(sc['c'], float); s.r = float(sc['r'])
         ctr = s.c + s.a * (sc['s0'] if sc['hold'] == 'under' else 0.5 * (sc['s_lo'] + sc['s_hi'])); B = float(sc.get('box', 20.0))
         # the solve uses signed distance grids (gunfield.Field, 0.3 cm, a box round the hold); the reported numbers use exactpen
-        s.fg = gunfield.Field(s.Vg, F, ctr - B, ctr + B, h=0.3, band=1.0)
-        s.fh = gunfield.Field(s.Xh, np.asarray(T), ctr - B, ctr + B, h=0.3, band=1.0) if s.exh is not None else None
+        s.fg = gunfield.Field(s.Vg, F, ctr - B, ctr + B, h=GRID[0], band=1.0)
+        s.fh = gunfield.Field(s.Xh, np.asarray(T), ctr - B, ctr + B, h=GRID[0], band=1.0) if s.exh is not None else None
         s.reg = {k: evaluate.reg(s.L, k) for k in ('palm', 'web', 'pad_I', 'pad_M', 'pad_R', 'pad_P', 'pad_T')}
-        s.cuff = np.array(s.L['cuff']); s.sub = np.arange(0, len(s.H.Vh), 2)
+        s.cuff = np.array(s.L['cuff']); s.sub = np.arange(0, len(s.H.Vh), 2 if THR[0] >= 0.2 else 1)
         x_, y_, n_ = s.H.axes(); s.ax = dict(x=x_, y=y_, n=n_)
         V0, J0 = s.H.pose(np.zeros(18)); s.palm0 = V0[s.reg['palm']].mean(0)
         s.q0 = np.clip(np.array(sc.get('q_prior', [0.5, 0.5, 0] * 4 + [0.4, 0.3, 0, 0] + [0, 0])), handmodel.QLO, handmodel.QHI)
@@ -53,9 +55,9 @@ class Model:
         e1, e2 = s.frame2(); _, rr = s.radial(P); return np.degrees(np.arctan2(rr @ e2, rr @ e1))
     def res(s, x, full=False):
         X, J, R = s.X(x); r = []; sc = s.sc; m = {}
-        dg = s.exg.depth(X) if full else np.maximum(0, -s.fg(X[s.sub])); r += list(6.0 * np.maximum(0, dg - 0.25)); m['pen_gun'] = float(dg.max())
+        dg = s.exg.depth(X) if full else np.maximum(0, -s.fg(X[s.sub])); r += list(6.0 * np.maximum(0, dg - THR[0])); m['pen_gun'] = float(dg.max())
         if s.exh is not None:
-            dh = s.exh.depth(X) if full else np.maximum(0, -s.fh(X[s.sub])); r += list(6.0 * np.maximum(0, dh - 0.25)); m['pen_gunhand'] = float(dh.max())
+            dh = s.exh.depth(X) if full else np.maximum(0, -s.fh(X[s.sub])); r += list(6.0 * np.maximum(0, dh - THR[0])); m['pen_gunhand'] = float(dh.max())
         r += list(0.3 * (x[6:24] - s.q0) / np.array([1, 1, 30] * 4 + [1, 1, 30, 30] + [30, 30]))
         pc = X[s.reg['palm']].mean(0)
         ug = (lambda k: float(s.exg.unsigned(X[s.reg[k]]).min())) if full else (lambda k: float(np.abs(s.fg(X[s.reg[k]])).min()))
@@ -108,9 +110,11 @@ def ref_cuff():
     Lc = json.load(open(os.path.join(LANE, 'landmarks_fbx.json')))['R']['cuff']; return Xf[Lc]
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument('scenario'); ap.add_argument('out'); ap.add_argument('--nfev', type=int, default=200); ap.add_argument('--seeds', type=int, default=99)
-    a = ap.parse_args(); sc = json.load(open(a.scenario)); os.makedirs(a.out, exist_ok=True); M = Model(sc); t0 = time.time()
+    ap.add_argument('--x0'); ap.add_argument('--thr', type=float, default=0.25); ap.add_argument('--h', type=float, default=0.3)
+    a = ap.parse_args(); sc = json.load(open(a.scenario)); os.makedirs(a.out, exist_ok=True); THR[0] = a.thr; GRID[0] = a.h; M = Model(sc); t0 = time.time()
     lo = np.r_[[-np.inf] * 6, handmodel.QLO]; hi = np.r_[[np.inf] * 6, handmodel.QHI]; best = None; log = []
-    for k, x0 in enumerate(seeds(M)[:a.seeds]):
+    S0 = [np.array(json.load(open(a.x0))['x'])] if a.x0 else seeds(M)[:a.seeds]
+    for k, x0 in enumerate(S0):
         x0[6:] = np.clip(x0[6:], handmodel.QLO + 1e-6, handmodel.QHI - 1e-6)
         s = least_squares(M.res, x0, bounds=(lo, hi), max_nfev=a.nfev, x_scale=np.r_[[0.05] * 3, [1] * 3, [0.1, 0.1, 5] * 4 + [0.1, 0.1, 5, 5] + [5, 5]])
         _, m = M.res(s.x, full=True); c = float(s.cost); log.append(dict(seed=k, cost=c, nfev=int(s.nfev), **m)); print('seed', k, 'cost %.3f' % c, json.dumps({kk: round(v, 2) for kk, v in m.items()}), flush=True)
@@ -121,7 +125,7 @@ def main():
     pc = X[M.reg['palm']].mean(0)
     o = dict(name=sc['name'], hold=sc['hold'], best_seed=k, cost=c, metrics=m, x=x.tolist(), q=x[6:24].tolist(), R=R.tolist(), t=x[3:6].tolist(), scale=M.scale,
              sup_hook=r0['hook'], sup_rot=r0['rot'], sup_point_m=(pc / 100).round(4).tolist(), bake_check_max_cm=r0['bake_check_max_cm'], md3=os.path.basename(paths['L']), frame=0,
-             wrist_vs_RQFSB=dict(rot_deg=r0['wrist_rot_deg'], move_cm=r0['wrist_move_cm']), seeds=log, minutes=round((time.time() - t0) / 60, 2), scenario=sc,
+             wrist_vs_RQFSB=dict(rot_deg=r0['wrist_rot_deg'], move_cm=r0['wrist_move_cm']), seeds=log, refined_from=a.x0, thr=a.thr, grid=a.h, minutes=round((time.time() - t0) / 60, 2), scenario=sc,
              X=X.round(4).tolist())
     json.dump(o, open(os.path.join(a.out, 'sup_%s.json' % sc['name']), 'w'), indent=1, default=float)
     print('BEST seed', k, 'cost %.3f' % c, json.dumps(m, default=float), 'hook', r0['hook'], 'rot', r0['rot'], 'bake_check', r0['bake_check_max_cm'], 'minutes', o['minutes'])

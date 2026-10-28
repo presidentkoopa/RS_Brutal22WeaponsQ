@@ -32,11 +32,11 @@ def gun(a):
                         squeeze=dict(pose_vector=xs.tolist(), solved_params='hold (no trigger: wrap)' if J.get('wrap') else 'x[6:9] (index squeeze 0.6 cm along the bore)')),
              wrist=dict(R=st[:9].reshape(3, 3).tolist(), t=st[9:12].tolist(), shift_cm=F['shift'], note='hand placed X = X_pistol R^T + t in the pistol gun frame; the wrist stays pinned, the gun moves by shift'),
              gun_move=dict(modeldef_place=[float(v) for v in p], place_residual_cm=res, R=Rm.tolist(), t=tm.tolist(), note='controller-frame point -> drawn point after the move'),
-             baked=a.md3, metrics=dict(curl={k: J[k] for k in ('rigid_only', 'trigger', 'squeeze', 'squeeze_travel')}, stage2=job['metrics'].get('stage2'), mode=('wrap' if J.get('wrap') else 'dense'), thr=J.get('thr')),
-             farm=dict(job=job['job']['token'], minutes=job['minutes'], batch_dir=os.path.basename(os.path.normpath(D))))
+             baked=a.md3, metrics=dict(curl={k: J[k] for k in ('rigid_only', 'trigger', 'squeeze', 'squeeze_travel')}, stage2=job.get('metrics', {}).get('stage2'), mode=('wrap' if J.get('wrap') else 'dense'), thr=J.get('thr')),
+             farm=dict(job=job['job']['token'], status=job.get('status'), note=F.get('baked_by'), minutes=job['minutes'], batch_dir=os.path.basename(os.path.normpath(D))))
     o['poses']['support'] = sup_block(json.load(open(a.sup))) if a.sup else dict(source='fbx_b1_L.md3 frame 1 (RQFS B, FBX open palm-under; shipped), placed by fit_hv bake', hook=F['hand']['support']['sup_hook'],
                                                                                    rot=F['hand']['support']['sup_rot'], point_m=F['hand']['support']['sup_point_m'], joint_angles='those of the source pose (not re-solved for this gun)',
-                                                                                   metrics={k: job['metrics']['bake'].get(k) for k in ('sup_pen', 'sup_gap', 'sup_dz')})
+                                                                                   metrics={k: F['metrics']['bake'].get(k) for k in ('sup_pen', 'sup_gap', 'sup_dz')})
     return g, o
 def cannon(a):
     FC = json.load(open(a.fc)); S = json.load(open(a.sup))

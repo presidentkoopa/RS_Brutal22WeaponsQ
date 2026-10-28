@@ -62,7 +62,7 @@ def _fit(H, g, skip_stage, bake_only, idx, dense=False, thr=None, wrap=False, se
         o2 = H.curl(g)
         if o2['trigger']['padI_trig'] > 1.0:
             print(g, 'curl (M/R/P only)', json.dumps(o2['trigger'], default=float), '-> index solved too', flush=True); o2 = H.curl(g, idx=True)
-    print(g, 'curl', json.dumps({k: ({a: round(b, 2) for a, b in v.items()} if isinstance(v, dict) else v) for k, v in o2.items()}, default=float), flush=True)
+    print(g, 'curl', json.dumps({k: ({a: (round(b, 2) if isinstance(b, float) else b) for a, b in v.items()} if isinstance(v, dict) else v) for k, v in o2.items()}, default=float), flush=True)
     CROP[0] = False   # the bake places the support hand forward on the gun: it measures against the whole mesh
     o3, sup, md3 = H.bake_it(g); print(g, 'bake', json.dumps(o3, default=float), flush=True)
     os.makedirs(H.FITS, exist_ok=True); name = 'fbx_hv_%s_R.md3' % g; shutil.copyfile(md3, os.path.join(H.FITS, name))
