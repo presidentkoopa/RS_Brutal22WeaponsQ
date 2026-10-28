@@ -210,7 +210,7 @@ statusbar Fullscreen, fullscreenoffsets, forcescaled
 				{
 					InInventory not NoReloading,1 || IsPlayingAsPurist,1
 					{
-					drawimage ammoicon2, -44, -22, centerbottom;
+					IsSelected not "Machinegun" { drawimage ammoicon2, -44, -22, centerbottom; }	// rsq: its AmmoType2 is the 40 mm, not its magazine
 					drawnumber 2147483647, HUDFONT_DOOM, untranslated, RSQ_HudMag, drawshadow, -55, -38;
 					InInventory RSQ_HudHasMagOff, 1 { drawnumber 2147483647, HUDFONT_DOOM, untranslated, RSQ_HudMagOff, drawshadow, -110, -38; }	// rsq: off hand
 					}
@@ -264,7 +264,7 @@ statusbar Fullscreen, fullscreenoffsets, forcescaled
 
 			IsSelected "TankGun","ArtilleryTankGun"
 			{
-				drawimage ammoicon2, -44, -22, centerbottom;
+				IsSelected not "Machinegun" { drawimage ammoicon2, -44, -22, centerbottom; }	// rsq: its AmmoType2 is the 40 mm, not its magazine
 				drawnumber 2147483647, HUDFONT_DOOM, untranslated, RSQ_HudMag, drawshadow, -55, -38;
 				drawimage ammoicon1, -44, -4, centerbottom;
 				drawnumber 2147483647, HUDFONT_DOOM, untranslated, RSQ_HudRes, drawshadow, -55, -20;
@@ -272,7 +272,7 @@ statusbar Fullscreen, fullscreenoffsets, forcescaled
 
 			IsSelected "attackhelicopterGun"
 			{
-				drawimage ammoicon2, -44, -22, centerbottom;
+				IsSelected not "Machinegun" { drawimage ammoicon2, -44, -22, centerbottom; }	// rsq: its AmmoType2 is the 40 mm, not its magazine
 				drawnumber 2147483647, HUDFONT_DOOM, untranslated, RSQ_HudMag, drawshadow, -55, -38;
 				drawimage ammoicon1, -44, -4, centerbottom;
 				drawnumber 2147483647, HUDFONT_DOOM, untranslated, RSQ_HudRes, drawshadow, -55, -20;
@@ -349,7 +349,7 @@ statusbar Fullscreen, fullscreenoffsets, forcescaled
 				{
 					InInventory not NoReloading,1 || IsPlayingAsPurist,1
 					{
-					drawimage ammoicon2, -14, -22, centerbottom;
+					IsSelected not "Machinegun" { drawimage ammoicon2, -14, -22, centerbottom; }	// rsq: its AmmoType2 is the 40 mm, not its magazine
 					drawnumber 2147483647, HUDFONT_DOOM, untranslated, RSQ_HudMag, drawshadow, -25, -38;
 					}
 			
@@ -399,7 +399,7 @@ statusbar Fullscreen, fullscreenoffsets, forcescaled
 
 			IsSelected "TankGun","ArtilleryTankGun"
 			{
-				drawimage ammoicon2, -14, -22, centerbottom;
+				IsSelected not "Machinegun" { drawimage ammoicon2, -14, -22, centerbottom; }	// rsq: its AmmoType2 is the 40 mm, not its magazine
 				drawnumber 2147483647, HUDFONT_DOOM, untranslated, RSQ_HudMag, drawshadow, -25, -38;
 				drawimage ammoicon1, -14, -4, centerbottom;
 				drawnumber 2147483647, HUDFONT_DOOM, untranslated, RSQ_HudRes, drawshadow, -25, -20;
@@ -407,7 +407,7 @@ statusbar Fullscreen, fullscreenoffsets, forcescaled
 
 			IsSelected "attackhelicopterGun"
 			{
-				drawimage ammoicon2, -14, -22, centerbottom;
+				IsSelected not "Machinegun" { drawimage ammoicon2, -14, -22, centerbottom; }	// rsq: its AmmoType2 is the 40 mm, not its magazine
 				drawnumber 2147483647, HUDFONT_DOOM, untranslated, RSQ_HudMag, drawshadow, -25, -38;
 				drawimage ammoicon1, -14, -4, centerbottom;
 				drawnumber 2147483647, HUDFONT_DOOM, untranslated, RSQ_HudRes, drawshadow, -25, -20;
@@ -536,7 +536,7 @@ statusbar Fullscreen, fullscreenoffsets, forcescaled
 			{
 				InInventory RSQ_HudHasMag, 1
 				{
-					drawimage ammoicon2, -125, -25, center;
+					IsSelected not "Machinegun" { drawimage ammoicon2, -125, -25, center; }	// rsq: its AmmoType2 is the 40 mm, not its magazine
 					drawnumber 4, DIGINUMBER, untranslated, RSQ_HudMag, drawshadow, alignment(center), -130, -15, 0;
 				}
 			}
@@ -680,7 +680,7 @@ statusbar Fullscreen, fullscreenoffsets, forcescaled
 			{
 				InInventory RSQ_HudHasMag, 1
 				{
-					drawimage ammoicon2, -85, -25, center;
+					IsSelected not "Machinegun" { drawimage ammoicon2, -85, -25, center; }	// rsq: its AmmoType2 is the 40 mm, not its magazine
 					drawnumber 4, DIGINUMBER, untranslated, RSQ_HudMag, drawshadow, alignment(center), -87, -15, 0;
 				}
 			}

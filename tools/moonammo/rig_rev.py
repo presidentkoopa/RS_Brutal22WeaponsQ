@@ -150,13 +150,16 @@ ONTOP = [('Rifle', 'Clip2', 'Clip2', 'RifleAmmo'), ('Minigun', 'Clip2', 'Clip2',
 if 'ontop' in JOBS:
     # each gun: reserve filled to its cap with the magazine full (a REAL gun fills its magazine from the pouch the first
     # time it is held, so the reserve is filled again after), then a pickup of its reserve summoned and walked onto (it
-    # must stay: refused at the cap; every walk starts from MAP01's start, warped to); then, with the Rifle in hand (so a REAL gun's bookkeeping does not read it as
+    # must stay: refused at the cap; every walk starts from MAP07's yard, warped to); then, with the Rifle in hand (so a REAL gun's bookkeeping does not read it as
     # shots), 30 taken from the reserve, the gun back, and a second pickup summoned and walked onto the same way: taken
-    s = PRE + 'rsr_reload 1; rsq_reload_nonstd 1; '
+    # round 6: on MAP07's flat yard (-1010 -1138, facing west). MAP01's start is a ledge (z 56): the summoned pickup
+    # dropped to the floor below it (z 8) and the player, still on the ledge, never touched it -- a test artifact that
+    # made round 5's at-cap 'refused' and the Shot_Gun's 'not taken' meaningless (tools/moonammo/pickprobe shows it).
+    s = PRE + 'rsr_reload 1; rsq_reload_nonstd 1; map map07; wait 20; '
     for g, res, pick, mag in ONTOP:
-        s += ('warp -96 784; give %s; give %s 999; use %s; wait 160; give %s 999; wait 5; echo REV ONTOP %s FULL; netevent rsq_ontop; wait 3; '
+        s += ('warp -1010 -1138; give %s; give %s 999; use %s; wait 160; give %s 999; wait 5; echo REV ONTOP %s FULL; netevent rsq_ontop; wait 3; '
               'summon %s; wait 3; qz_lstick "0 1"; wait 12; qz_lstick "0 0"; wait 8; echo REV ONTOP %s AFTER_PICKUP; netevent rsq_ontop; '
-              'warp -96 784; use Rifle; wait 40; take %s 30; use %s; wait 90; echo REV ONTOP %s BELOW_CAP; netevent rsq_ontop; '
+              'warp -1010 -1138; use Rifle; wait 40; take %s 30; use %s; wait 90; echo REV ONTOP %s BELOW_CAP; netevent rsq_ontop; '
               'summon %s; wait 3; qz_lstick "0 1"; wait 12; qz_lstick "0 0"; wait 8; '
               'echo REV ONTOP %s AFTER_PICKUP_BELOW_CAP; netevent rsq_ontop; wait 3; ' % (g, res, g, res, g, pick, g, res, g, g, pick, g))
     s += 'quit'

@@ -1545,3 +1545,19 @@ the HUD / on-top / sweep / MG42 runs used; doom2 > brutal22test6 > BD_VoxelPack 
 ## 4. Open
 - Machinegun's ammoicon2 on the fullscreen styles is BD22's rocket icon next to its magazine count (the number is right).
 - The Shot_Gun pickup test (above). Any old save: the five converted guns start their magazine fresh from the pouch.
+
+# Lane rev-unmaker, round 6 (30-min box; branch `lane-rev-unmaker`). RIG ONLY, NOT HEADSET-CONFIRMED
+- **The shell pickup: a test artifact, not a bug.** Test-only `tools/moonammo/pickprobe` (positions, counts) on MAP01's
+  start: the player stands on a ledge (z 56); `summon` puts the pickup 56 units ahead, past the ledge's edge, and it drops to
+  the floor below (z 8). After the walk the player is at y 841 still at z 56 (its box still over the ledge) with the shell at
+  z 8 under it: no touch. Stock BD22 (no pack) does exactly the same, Clip2 too. On MAP07's flat yard (-1010 -1138) both are
+  taken, with the pack and in stock BD22 (`Picked up 4 Shotgun Shells`, AmmoShell 20 -> 24; Clip2 130 -> 140).
+  So round 5's at-cap "refused" lines for Rifle / Minigun / MG42 were artifacts too: the ontop job now runs on MAP07's yard.
+- **On top, re-shown (MAP07, same walk at and below cap):** Rifle `Clip2 200 / cap 200; magazine 31` -> the pickup stays;
+  below cap 170 -> 200 (both taken). Minigun `Clip2 210 / cap 210, lent 10; magazine 200; pouch 200` -> stays; below cap pouch
+  170 -> 190. MG42 `lent 10; magazine 100; pouch 200` -> stays; below 170 -> 190. Shot_Gun `AmmoShell 50 / cap 50; magazine 9`
+  -> stays; below 20 -> 28 (`Picked up 4 Shotgun Shells` x2).
+- **Machinegun HUD icon:** make_sbarinfo.py keeps `drawimage ammoicon2` off the Machinegun (8 places); frame
+  `/home/claude/lane_b_out/revunm6_machinegun_hud_icon_before_after.png` (rocket icon by 100 before, none after).
+- Pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-revunm6.pk3`, sha256
+  `7b08db6af3d2f854d7b305552316c3242cf746b8eb234097d90bdd930c58385b`; runs: no script error of ours (BD_VoxelPack voxeldef only).
