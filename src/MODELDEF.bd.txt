@@ -1269,8 +1269,11 @@ Model HellishMissileLauncher
    Model 0 "HellishMissile.md3"
    Skin 0 "HellishMissile.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 3.610 -7.537 0.0
+   ZOffset 2.891
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -2904,8 +2907,11 @@ Model Unmaker
    Model 0 "Unmaker.md3"
    Skin 0 "Unmaker.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 1.308 -6.492 0.0
+   ZOffset 0.083
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -2996,11 +3002,11 @@ Model BFG10k
    Model 0 "BFG_10k.md3"
    Skin 0 "BFG_10k2.png"
    Scale -1.0 1.0 1.0
-   Offset -0.344 -2.493 0.0
-   ZOffset -0.730
+   Offset -0.826 -2.653 0.0
+   ZOffset -0.272
    AngleOffset 3.854
    PitchOffset 3.363
-   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92, re-fitted (r4 dense; was -0.344 -2.493 -0.730 3.854 3.363 10.974)
 
    FrameIndex	BG2G	A	0	4
    FrameIndex	BG2G	B	0	4
@@ -3033,11 +3039,11 @@ Model BFG10k
    Model 0 "BFG_10k.md3"
    Skin 0 "BFG_10k.png"
    Scale -1.0 1.0 1.0
-   Offset -0.344 -2.493 0.0
-   ZOffset -0.730
+   Offset -0.826 -2.653 0.0
+   ZOffset -0.272
    AngleOffset 3.854
    PitchOffset 3.363
-   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92, re-fitted (r4 dense; was -0.344 -2.493 -0.730 3.854 3.363 10.974)
 
    FrameIndex	BG2G	S	0	0
    FrameIndex	BG2G	T	0	1
@@ -3089,11 +3095,11 @@ Model NukeLauncher
    Model 0 "Nuker.md3"
    Skin 0 "Nuker.png"
    Scale -1.1 1.1 1.1
-   Offset 0.463 -2.370 0.0
-   ZOffset 4.577
+   Offset 0.118 -2.391 0.0
+   ZOffset 4.448
    AngleOffset 3.854
    PitchOffset 3.363
-   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92, re-fitted (r4 dense; was 0.463 -2.370 4.577 3.854 3.363 10.974)
 
    FrameIndex	NKLF	A	0	5
    FrameIndex	NKLF	B	0	5

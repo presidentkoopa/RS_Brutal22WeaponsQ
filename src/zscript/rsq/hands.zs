@@ -199,6 +199,12 @@ class RSQ_GunSide : Inventory
 	// r11 port: SSG (row 20)
 	FbxTrgSSG: RQVD A -1; Stop;
 	FbxSqzSSG: RQVD B -1; Stop;
+	// r12 port: Unmaker (row 23)
+	FbxTrgUnm: RQVE A -1; Stop;
+	FbxSqzUnm: RQVE B -1; Stop;
+	// r12 port: HellishMissileLauncher (row 9)
+	FbxTrgHML: RQVF A -1; Stop;
+	FbxSqzHML: RQVF B -1; Stop;
 	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
 	Nade: RQGN A -1; Stop;	// Ermac's ammo hand round the VR grenade
 	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
@@ -592,6 +598,28 @@ class RSQ_Hands : Weapon
 				msq = mgp.CurState.bFullbright || (mgp.Sprite == Actor.GetSpriteIndex('SHT2') && (mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 6 || mf == 7 || mf == 8 || mf == 9)) || (mgp.Sprite == Actor.GetSpriteIndex('VSSG') && (mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 6 || mf == 7 || mf == 8 || mf == 9));
 			}
 			gl = msq ? "FbxSqzSSG" : "FbxTrgSSG";
+		}
+		if (i == 23)	// r12 port: Unmaker squeezes on its fire frames: 2NHF BCDEFGH, UNHF BCDEFGH or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || (mgp.Sprite == Actor.GetSpriteIndex('2NHF') && (mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 6 || mf == 7)) || (mgp.Sprite == Actor.GetSpriteIndex('UNHF') && (mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 6 || mf == 7));
+			}
+			gl = msq ? "FbxSqzUnm" : "FbxTrgUnm";
+		}
+		if (i == 9)	// r12 port: HellishMissileLauncher squeezes on its fire frames: PVCG BCDEFHIJKL, RVCG BCDEFHIJKL or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || (mgp.Sprite == Actor.GetSpriteIndex('PVCG') && (mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 7 || mf == 8 || mf == 9 || mf == 10 || mf == 11)) || (mgp.Sprite == Actor.GetSpriteIndex('RVCG') && (mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 7 || mf == 8 || mf == 9 || mf == 10 || mf == 11));
+			}
+			gl = msq ? "FbxSqzHML" : "FbxTrgHML";
 		}
 		if (i == 18)	// batch 4: Rifle squeezes on its FIRE frames (gunmoves rows 93-95: RIFF / RI2F / 2IFF A-D and the no-tube twins QT09 / QT0A / QT08) or fullbright, trigger otherwise
 		{
@@ -1160,6 +1188,10 @@ class RSQ_Hands : Weapon
 	DFbxSqzDeva: RQVC B -1; Stop;
 	DFbxTrgSSG: RQVD A -1; Stop;	// r11 port: dual wield, SSG
 	DFbxSqzSSG: RQVD B -1; Stop;
+	DFbxTrgUnm: RQVE A -1; Stop;	// r12 port: dual wield, Unmaker
+	DFbxSqzUnm: RQVE B -1; Stop;
+	DFbxTrgHML: RQVF A -1; Stop;	// r12 port: dual wield, HellishMissileLauncher
+	DFbxSqzHML: RQVF B -1; Stop;
 	Hidden: TNT1 A -1; Stop;
 	}
 }

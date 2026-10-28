@@ -93,6 +93,10 @@ class RSQ_DualHands : EventHandler
 					label = firing ? "DFbxSqzDeva" : "DFbxTrgDeva";
 				if (i == 20)	// r11 port: SSG
 					label = firing ? "DFbxSqzSSG" : "DFbxTrgSSG";
+				if (i == 23)	// r12 port: Unmaker
+					label = firing ? "DFbxSqzUnm" : "DFbxTrgUnm";
+				if (i == 9)	// r12 port: HellishMissileLauncher
+					label = firing ? "DFbxSqzHML" : "DFbxTrgHML";
 				if (i == 18)	// batch 4: Rifle
 					label = firing ? "DFbxSqzRif" : "DFbxTrgRif";
 				if (i == 12)	// batch 3: MP40

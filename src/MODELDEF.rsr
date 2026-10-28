@@ -1633,8 +1633,11 @@ Model Unmaker
 	SurfaceSkin 0 1 "rsr_clear.png"
 	SurfaceSkin 0 2 "rsr_clear.png"	// r4: the skull is surfaces 1 AND 2
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 1.308 -6.492 0.0
+	ZOffset 0.083
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQWM A 0 0
 }
@@ -1648,8 +1651,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 1 "Unmaker.png"
 	SurfaceSkin 0 2 "Unmaker.png"	// r4: the skull is surfaces 1 AND 2
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 1.308 -6.492 0.0
+	ZOffset 0.083
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQWP A 0 0
 }
@@ -1782,11 +1788,11 @@ Model NukeLauncher
 	SurfaceSkin 0 4 "Nuker.png"
 	SurfaceSkin 0 5 "Nuker.png"
 	Scale -1.1000 1.1000 1.1000
-	Offset 0.463 -2.370 0.0
-	ZOffset 4.577
+	Offset 0.118 -2.391 0.0
+	ZOffset 4.448
 	AngleOffset 3.854
 	PitchOffset 3.363
-	RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
+	RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92, re-fitted (r4 dense; was 0.463 -2.370 4.577 3.854 3.363 10.974)
 	NoInterpolation
 	FrameIndex RQOM A 0 0
 }
@@ -1803,11 +1809,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 4 "rsr_clear.png"
 	SurfaceSkin 0 5 "rsr_clear.png"
 	Scale -1.1000 1.1000 1.1000
-	Offset 0.463 -2.370 0.0
-	ZOffset 4.577
+	Offset 0.118 -2.391 0.0
+	ZOffset 4.448
 	AngleOffset 3.854
 	PitchOffset 3.363
-	RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
+	RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92, re-fitted (r4 dense; was 0.463 -2.370 4.577 3.854 3.363 10.974)
 	NoInterpolation
 	FrameIndex RQOP A 0 0
 }
@@ -1860,8 +1866,11 @@ Model HellishMissileLauncher
 	SurfaceSkin 0 0 "HellishMissile.png"
 	SurfaceSkin 0 1 "rsr_clear.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 3.610 -7.537 0.0
+	ZOffset 2.891
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQIM A 0 0
 }
@@ -1874,8 +1883,11 @@ Model RSR_GunParts
 	SurfaceSkin 0 0 "rsr_clear.png"
 	SurfaceSkin 0 1 "HellishMissile.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset 3.610 -7.537 0.0
+	ZOffset 2.891
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQIP A 0 0
 }

@@ -9,7 +9,7 @@ class RSQ_GunMoves abstract play
 	// from where the hand models turn
 	clearscope static Vector3 Pivot(int i)
 	{
-		static const double v[] = { 0.000, 0.000, 0.000, 4.701, -2.031, 19.195, 0.344, 9.270, 21.507, 0.338, 9.218, 21.036, -0.820, 8.592, 15.667, -0.908, 6.587, 19.440, 0.518, 13.456, 8.527, 4.371, 4.331, 15.687, 4.954, -4.013, 19.376, 0.000, 5.000, 24.000, 8.579, -2.450, -11.927, 0.730, 9.558, 21.141, 0.982, 7.787, 19.530, 1.156, 8.077, 18.894, -0.463, 14.577, 21.630, 0.978, 9.735, 19.631, 0.895, 8.253, 18.901, -0.466, 7.199, 18.584, -0.348, 8.188, 18.088, -0.259, 10.657, 19.392, 3.813, -2.773, 20.041, 3.502, 1.027, 19.743, 4.310, 5.776, -27.099, 0.000, 5.000, 24.000, 0.000, 5.000, 24.000, 0.000, 5.000, 34.000, 0.000, 5.000, 24.000 };
+		static const double v[] = { 0.000, 0.000, 0.000, 4.701, -2.031, 19.195, 0.826, 9.728, 21.347, 0.338, 9.218, 21.036, -0.820, 8.592, 15.667, -0.908, 6.587, 19.440, 0.518, 13.456, 8.527, 4.371, 4.331, 15.687, 4.954, -4.013, 19.376, -3.610, 12.891, 16.463, 8.579, -2.450, -11.927, 0.730, 9.558, 21.141, 0.982, 7.787, 19.530, 1.156, 8.077, 18.894, -0.118, 14.448, 21.609, 0.978, 9.735, 19.631, 0.895, 8.253, 18.901, -0.466, 7.199, 18.584, -0.348, 8.188, 18.088, -0.259, 10.657, 19.392, 3.813, -2.773, 20.041, 3.502, 1.027, 19.743, 4.310, 5.776, -27.099, -1.308, 10.083, 17.508, 0.000, 5.000, 24.000, 0.000, 5.000, 34.000, 0.000, 5.000, 24.000 };
 		if (i <= 0 || 3 * i + 2 >= v.Size())
 			return (0, 0, 0);
 		return (v[3 * i], v[3 * i + 1], v[3 * i + 2]);
@@ -59,11 +59,11 @@ class RSQ_GunMoves abstract play
 			0.00, 0.00, 0.00, -0.07, -0.06, 1.03,	// shotguns: row 3 AssaultShotgun, refitted for the moved gun
 			0.99, 2.85, 12.56, -1.53, -0.09, 0.10,	// shotguns: row 4 AssaultShotgun, refitted for the moved gun
 			0.00, 0.00, 0.00, -0.19, -0.16, 2.78,	// shotguns: row 5 AssaultShotgun, refitted for the moved gun
-			0.00, 0.00, 0.00, -0.92, -0.81, 13.72,	// r10 port: row 6 BFG10k, refitted for the moved gun
-			0.00, 0.00, 0.00, -1.85, -1.62, 27.43,	// r10 port: row 7 BFG10k, refitted for the moved gun
-			1.99, 9.77, 0.94, -2.62, 5.87, 18.76,	// r10 port: row 8 BFG10k, refitted for the moved gun
-			1.48, 7.39, 0.68, -1.48, 3.51, 10.16,	// r10 port: row 9 BFG10k, refitted for the moved gun
-			0.31, 1.57, 0.13, -0.24, 0.52, 1.73,	// r10 port: row 10 BFG10k, refitted for the moved gun
+			0.00, 0.00, 0.00, -0.92, -0.81, 13.72,	// r12 port: row 6 BFG10k, refitted for the re-fitted gun
+			0.00, 0.00, 0.00, -1.85, -1.62, 27.43,	// r12 port: row 7 BFG10k, refitted for the re-fitted gun
+			1.99, 9.77, 0.94, -2.61, 5.83, 18.71,	// r12 port: row 8 BFG10k, refitted for the re-fitted gun
+			1.48, 7.39, 0.68, -1.47, 3.48, 10.12,	// r12 port: row 9 BFG10k, refitted for the re-fitted gun
+			0.31, 1.57, 0.13, -0.24, 0.52, 1.72,	// r12 port: row 10 BFG10k, refitted for the re-fitted gun
 			0.00, 0.00, 0.00, -0.92, -0.81, 13.72,	// r11 port: row 11 BIG_FUCKING_GUN, refitted for the moved gun
 			0.00, 0.00, 0.00, -1.85, -1.62, 27.43,	// r11 port: row 12 BIG_FUCKING_GUN, refitted for the moved gun
 			1.99, 9.77, 0.94, -2.60, 5.79, 18.78,	// r11 port: row 13 BIG_FUCKING_GUN, refitted for the moved gun
@@ -86,12 +86,12 @@ class RSQ_GunMoves abstract play
 			0.00, 0.00, 0.00, -0.07, -0.06, 1.02,	// r9 port: row 30 GrenadeLauncher, refitted for the moved gun
 			0.00, 0.00, 0.00, -0.07, -0.06, 1.02,	// r9 port: row 31 GrenadeLauncher, refitted for the moved gun
 			0.00, 0.00, 0.00, -0.14, -0.12, 2.03,	// r9 port: row 32 GrenadeLauncher, refitted for the moved gun
-			0.15, 3.26, 1.36, 0.05, 3.39, 35.31,
-			0.44, 4.98, 5.02, 0.44, 4.72, 29.96,
-			0.20, 3.03, 1.82, 0.09, 1.90, 11.80,
-			-0.20, 3.03, -1.82, -0.07, 2.61, 25.17,
-			-0.44, 4.98, -5.02, -0.44, 4.72, 29.96,
-			-0.15, 3.26, -1.36, -0.07, 2.23, 14.95,
+			0.69, 3.07, 1.62, -2.64, 0.86, 34.82,	// r12 port: row 33 HellishMissileLauncher, refitted for the moved gun
+			1.08, 4.46, 5.42, -1.52, 2.37, 29.35,	// r12 port: row 34 HellishMissileLauncher, refitted for the moved gun
+			0.67, 2.80, 2.06, -0.65, 0.83, 11.38,	// r12 port: row 35 HellishMissileLauncher, refitted for the moved gun
+			0.49, 3.12, -1.57, -2.44, 0.61, 24.67,	// r12 port: row 36 HellishMissileLauncher, refitted for the moved gun
+			0.82, 5.30, -4.57, -3.93, 1.94, 29.16,	// r12 port: row 37 HellishMissileLauncher, refitted for the moved gun
+			0.56, 3.31, -1.08, -1.60, 0.81, 14.45,	// r12 port: row 38 HellishMissileLauncher, refitted for the moved gun
 			1.47, 7.32, 0.67, -0.48, -0.73, 7.88,	// r11 port: row 39 IncendiaryLauncher, refitted for the moved gun
 			0.09, 0.44, 0.04, -0.13, 0.08, 1.45,	// r10 port: row 40 MG42, refitted for the moved gun
 			0.17, 0.88, 0.07, -0.27, 0.19, 2.90,	// r10 port: row 41 MG42, refitted for the moved gun
@@ -106,10 +106,10 @@ class RSQ_GunMoves abstract play
 			0.00, 0.00, 0.00, 0.00, 0.00, 0.00,	// r9 port: row 50 Minigun, refitted for the moved gun
 			0.00, 0.00, 0.00, -0.14, -0.12, 2.03,	// r9 port: row 51 Minigun, refitted for the moved gun
 			0.00, 0.00, 0.00, 0.00, 0.00, 0.00,	// r9 port: row 52 Minigun, refitted for the moved gun
-			0.07, -0.78, -0.74, -0.21, -0.39, 2.24,	// r10 port: row 53 NukeLauncher, refitted for the moved gun
-			0.08, -0.71, -0.66, -0.11, 0.07, 0.02,	// r10 port: row 54 NukeLauncher, refitted for the moved gun
-			0.09, -0.53, -0.49, -0.07, 0.06, -0.02,	// r10 port: row 55 NukeLauncher, refitted for the moved gun
-			0.10, -0.31, -0.28, -0.03, 0.04, -0.04,	// r10 port: row 56 NukeLauncher, refitted for the moved gun
+			0.07, -0.78, -0.74, -0.21, -0.39, 2.24,	// r12 port: row 53 NukeLauncher, refitted for the re-fitted gun
+			0.08, -0.71, -0.66, -0.11, 0.07, 0.01,	// r12 port: row 54 NukeLauncher, refitted for the re-fitted gun
+			0.09, -0.53, -0.49, -0.07, 0.06, -0.02,	// r12 port: row 55 NukeLauncher, refitted for the re-fitted gun
+			0.10, -0.31, -0.28, -0.03, 0.04, -0.04,	// r12 port: row 56 NukeLauncher, refitted for the re-fitted gun
 			0.60, 3.03, 0.26, -0.58, -0.61, 8.87,	// r9 port: row 57 Plasma_Gun, refitted for the moved gun
 			0.23, 1.18, 0.09, -0.28, -0.39, 4.46,	// r9 port: row 58 Plasma_Gun, refitted for the moved gun
 			0.00, 0.00, 0.00, -0.34, -0.30, 5.08,	// r9 port: row 59 Plasma_Gun, refitted for the moved gun
@@ -191,13 +191,13 @@ class RSQ_GunMoves abstract play
 			-0.15, 0.12, 0.59, 0.07, -0.07, 2.61,
 			-0.22, 0.23, -0.83, -0.13, -0.11, 3.13,
 			-0.30, 0.33, -2.23, -0.34, -0.16, 3.21,
-			0.00, 0.00, 0.00, 0.00, 0.00, 0.73,
-			0.00, 0.00, 0.00, 0.00, 0.00, 2.33,
-			0.00, 0.00, 0.00, 0.00, 0.00, 3.92,
-			0.00, 0.00, 0.00, 0.00, 0.00, 4.64,
-			0.00, 0.67, 0.00, 1.15, -0.36, 3.51,
-			0.00, 0.00, 0.00, 0.26, -1.58, 3.10,
-			0.00, -0.53, 0.00, -1.20, -0.66, 3.07,
+			0.00, 0.00, 0.00, -0.05, -0.04, 0.73,	// r12 port: row 138 Unmaker, refitted for the moved gun
+			0.00, 0.00, 0.00, -0.16, -0.14, 2.32,	// r12 port: row 139 Unmaker, refitted for the moved gun
+			0.00, 0.00, 0.00, -0.26, -0.23, 3.91,	// r12 port: row 140 Unmaker, refitted for the moved gun
+			0.00, 0.00, 0.00, -0.31, -0.27, 4.62,	// r12 port: row 141 Unmaker, refitted for the moved gun
+			0.13, 0.66, 0.05, 0.98, -0.41, 3.50,	// r12 port: row 142 Unmaker, refitted for the moved gun
+			0.00, 0.00, 0.00, 0.35, -1.68, 3.03,	// r12 port: row 143 Unmaker, refitted for the moved gun
+			-0.10, -0.52, -0.04, -1.26, -1.00, 3.00,	// r12 port: row 144 Unmaker, refitted for the moved gun
 			0.00, 7.17, 0.00, 0.00, 1.38, 0.24,
 			0.00, 12.05, 0.00, 0.00, 2.17, 1.01,
 			0.00, 8.13, 0.00, 0.00, 0.63, -0.06,

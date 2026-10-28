@@ -876,3 +876,47 @@ Model RSQ_Hands
 	FrameIndex RQWS M 0 10	// Machinegun
 }
 // support192 END
+
+// r12 port (lane B): Unmaker (row 23) holds the FBX gun hand fitted from 1.92's Unmaker hold (frames baked in place, hook 0)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_Unmaker_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVE A 0 0	// Unmaker, finger on the trigger
+	FrameIndex RQVE B 0 1	// Unmaker, squeezed
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_Unmaker_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVE A 0 0	// Unmaker, finger on the trigger
+	FrameIndex RQVE B 0 1	// Unmaker, squeezed
+}
+
+// r12 port (lane B): HellishMissileLauncher (row 9) holds the FBX gun hand fitted from 1.92's HellishMissileLauncher hold (frames baked in place, hook 0)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_HellishMissileLauncher_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVF A 0 0	// HellishMissileLauncher, finger on the trigger
+	FrameIndex RQVF B 0 1	// HellishMissileLauncher, squeezed
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_HellishMissileLauncher_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVF A 0 0	// HellishMissileLauncher, finger on the trigger
+	FrameIndex RQVF B 0 1	// HellishMissileLauncher, squeezed
+}

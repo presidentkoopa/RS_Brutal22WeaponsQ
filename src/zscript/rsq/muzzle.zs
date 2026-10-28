@@ -85,9 +85,9 @@ class RSQ_Muzzle : EventHandler
 		// r10 port: Machinegun's drawn muzzle (front-most face centre of the ready frame, 68.76 -0.04 4.77 before the move), moved with the gun
 		if (w is 'Machinegun')	return (72.13, 6.28, 13.43);
 		// r10 port: NukeLauncher's drawn muzzle (front-most face centre of the ready frame, 53.57 0.00 -2.87 before the move), moved with the gun
-		if (w is 'NukeLauncher')	return (55.74, 5.70, 11.67);
+		if (w is 'NukeLauncher')	return (55.76, 6.04, 11.54);	// r12 port: moved with the re-fitted gun (was 55.74, 5.70, 11.67)
 		// r10 port: BFG10k's drawn muzzle (front-most face centre of the ready frame, 88.00 0.01 -4.00 before the move), moved with the gun
-		if (w is 'BFG10k')	return (90.20, 9.05, 7.27);
+		if (w is 'BFG10k')	return (90.36, 9.53, 7.73);	// r12 port: moved with the re-fitted gun (was 90.20, 9.05, 7.27)
 		// r11 port: BIG_FUCKING_GUN's drawn muzzle (front-most face centre of the ready frame, 84.70 0.00 11.24 before the move), moved with the gun
 		if (w is 'BIG_FUCKING_GUN')	return (86.71, 5.85, 21.97);
 		// r11 port: IncendiaryLauncher's drawn muzzle (front-most face centre of the ready frame, 55.69 0.03 3.09 before the move), moved with the gun
@@ -96,6 +96,10 @@ class RSQ_Muzzle : EventHandler
 		if (w is 'Devastator')	return (66.55, 4.36, 21.68);
 		// r11 port: SSG's drawn muzzle (front-most face centre of the ready frame, 36.84 0.04 1.12 before the move), moved with the gun
 		if (w is 'SSG')	return (40.48, 8.12, -2.75);
+		// r12 port: Unmaker's drawn muzzle (front-most face centre of the ready frame, 66.71 0.00 6.40 before the move), moved with the gun
+		if (w is 'Unmaker')	return (72.53, 3.94, 17.03);
+		// r12 port: HellishMissileLauncher's drawn muzzle (front-most face centre of the ready frame, 70.39 0.24 8.67 before the move), moved with the gun
+		if (w is 'HellishMissileLauncher')	return (77.12, 1.68, 22.32);
 		return (0, 0, 0);
 	}
 

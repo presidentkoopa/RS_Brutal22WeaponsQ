@@ -55,13 +55,25 @@ GUNS_HV = {
  'SSG': dict(md3='models/bd/SSG/SSG.md3', names=['SSG.md3'], ready=1, scale=[-1, 1, 1], off=[0, 0, -5], row=20, rsbcase=1, casing='SSG',
     blocks=None, skip=['RBSW'], skipcls=['RSB_Round'], bdblock=('MODELDEF.bd.txt', 'SSG'),
     dual=[('MODELDEF.rsqdual', 'SSG'), ('MODELDEF.rsqoff', 'RSQ_Off_SSG'), ('MODELDEF.purist', 'PuristSSG')]),
+ # r12 (farm/guns.json _note_r4: ready frame 0, Scale -1 1 1, Offset 0 0, ZOffset -5; handtable rows 23 / 9; rsr cases 13 / 16 and their reload
+ # drawings Unmaker_rsr.md3 / HellishMissile_rsr.md3 (MODELDEF.rsr: the gun without its magazine + RSR_GunParts at the gun move; RSQ_Hands = the
+ # skull / drum in the off hand and RSR_DroppedMag stay). FlameCannon: no handtable row in the tree (r12 adds row 28 for its support), no rsr case.
+ 'Unmaker': dict(md3='models/bd/Unmaker/Unmaker.md3', names=['Unmaker.md3'], names_extra=['Unmaker_rsr.md3'], ready=0, scale=[-1, 1, 1], off=[0, 0, -5], row=23, rsr=13,
+    blocks=None, skip=[], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'Unmaker'),
+    dual=D('Unmaker', [('MODELDEF.purist', 'PuristUnmaker')])),
+ 'HellishMissileLauncher': dict(md3='models/bd/HellishMissile/HellishMissile.md3', names=['HellishMissile.md3'], names_extra=['HellishMissile_rsr.md3'], ready=0, scale=[-1, 1, 1], off=[0, 0, -5], row=9, rsr=16,
+    blocks=None, skip=[], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'HellishMissileLauncher'),
+    dual=D('HellishMissileLauncher', [('MODELDEF.purist', 'PuristHellishMissileLauncher')])),
+ 'FlameCannon': dict(md3='models/bd/FlameCannon/FlameCannon.md3', names=['FlameCannon.md3'], ready=0, scale=[-1, 1, 1], off=[0, 0, -5], row=28,
+    blocks=None, skip=[], skipcls=['RSQ_Hands', 'RSR_DroppedMag'], bdblock=('MODELDEF.bd.txt', 'FlameCannon'), dual=[]),
 }
 pg.GUNS.update(GUNS_HV)
 # hand sprites (new; free in the pack, brutal22test6 and BD_VoxelPack: checked by name) and state-label suffixes
 HANDSPR = {'MG42': ('RQV1', 'MG42'), 'Machinegun': ('RQV2', 'MGun'), 'Minigun': ('RQV3', 'Mini'), 'Plasma_Gun': ('RQV4', 'Plas'), 'RailGun': ('RQV5', 'Rail'),
            'Rocket_Launcher': ('RQV6', 'RL'), 'GrenadeLauncher': ('RQV7', 'GL'), 'IncendiaryLauncher': ('RQV8', 'Inc'),
            'NukeLauncher': ('RQV9', 'Nuke'), 'BFG10k': ('RQVA', 'BFGk'),
-           'BIG_FUCKING_GUN': ('RQVB', 'BFG9'), 'Devastator': ('RQVC', 'Deva'), 'SSG': ('RQVD', 'SSG')}	# r11: RQV8 / RQVB / RQVC / RQVD free in the pack, brutal22test6 and BD_VoxelPack (checked)	# r10: RQV9 free in the pack, brutal22test6 and BD_VoxelPack (checked)
+           'BIG_FUCKING_GUN': ('RQVB', 'BFG9'), 'Devastator': ('RQVC', 'Deva'), 'SSG': ('RQVD', 'SSG'),
+           'Unmaker': ('RQVE', 'Unm'), 'HellishMissileLauncher': ('RQVF', 'HML')}	# r12: RQVE / RQVF free in the pack, brutal22test6, BD_VoxelPack and doom2 (checked)	# r11: RQV8 / RQVB / RQVC / RQVD free in the pack, brutal22test6 and BD_VoxelPack (checked)	# r10: RQV9 free in the pack, brutal22test6 and BD_VoxelPack (checked)
 EXTRA_SQZ = {'Machinegun': [('MGN1', 'BCDEFK')]}	# no gunmoves rows: its Fire frames (Machinegun.dec Fire: MGN1 B-F, K)
 def squeeze_expr(G):
     """the gun hand squeezes on the gun's fire frames: the sprites/frames gunmoves.zs keys to its handtable row (+ EXTRA_SQZ)"""
