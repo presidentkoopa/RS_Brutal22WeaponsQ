@@ -7,9 +7,10 @@ class RSQ_GunMoves abstract play
 {
 	// where the gun model turns when its layer is offset (raise, lower, a kick by Offset),
 	// from where the hand models turn
+	// r12 port: row 27 (Machinegun) has no pivot: (0, 0, 0), as before; row 28 = FlameCannon (base (0, 5, 24), moved by its port)
 	clearscope static Vector3 Pivot(int i)
 	{
-		static const double v[] = { 0.000, 0.000, 0.000, 4.701, -2.031, 19.195, 0.344, 9.270, 21.507, 0.338, 9.218, 21.036, -0.820, 8.592, 15.667, -0.908, 6.587, 19.440, 0.518, 13.456, 8.527, 4.371, 4.331, 15.687, 4.954, -4.013, 19.376, 0.000, 5.000, 24.000, 8.579, -2.450, -11.927, 0.730, 9.558, 21.141, 0.982, 7.787, 19.530, 1.156, 8.077, 18.894, -0.463, 14.577, 21.630, 0.978, 9.735, 19.631, 0.895, 8.253, 18.901, -0.466, 7.199, 18.584, -0.348, 8.188, 18.088, -0.259, 10.657, 19.392, 3.813, -2.773, 20.041, 3.502, 1.027, 19.743, 4.310, 5.776, -27.099, 0.000, 5.000, 24.000, 0.000, 5.000, 24.000, 0.000, 5.000, 34.000, 0.000, 5.000, 24.000 };
+		static const double v[] = { 0.000, 0.000, 0.000, 4.701, -2.031, 19.195, 0.826, 9.728, 21.347, 0.338, 9.218, 21.036, -0.820, 8.592, 15.667, -0.908, 6.587, 19.440, 0.518, 13.456, 8.527, 4.371, 4.331, 15.687, 4.954, -4.013, 19.376, -3.610, 12.891, 16.463, 8.579, -2.450, -11.927, 0.730, 9.558, 21.141, 0.982, 7.787, 19.530, 1.156, 8.077, 18.894, -0.118, 14.448, 21.609, 0.978, 9.735, 19.631, 0.895, 8.253, 18.901, -0.466, 7.199, 18.584, -0.348, 8.188, 18.088, -0.259, 10.657, 19.392, 3.813, -2.773, 20.041, 3.502, 1.027, 19.743, 4.310, 5.776, -27.099, -1.308, 10.083, 17.508, -2.308, 7.805, 10.887, -3.195, -3.640, 33.817, -2.723, 5.664, 22.459, 0.000, 0.000, 0.000, -0.070, 3.256, 10.845 };
 		if (i <= 0 || 3 * i + 2 >= v.Size())
 			return (0, 0, 0);
 		return (v[3 * i], v[3 * i + 1], v[3 * i + 2]);
@@ -50,8 +51,8 @@ class RSQ_GunMoves abstract play
 	// 5-7 / 9 / 11 are still, 8 and 10 kick back 2.04 (row 49 already said so for frame 8).
 	static Vector3, Vector3 Frame(int i, int sprite, int frame)
 	{
-		static const int key[] = { 1, 0, 1, 1, 1, 2, 1, 3, 1, 4, 1, 0, 1, 1, 1, 2, 1, 3, 1, 5, 2, 6, 2, 7, 2, 8, 2, 9, 2, 10, 3, 11, 3, 12, 3, 13, 3, 14, 4, 15, 4, 16, 4, 17, 4, 15, 4, 16, 4, 17, 5, 18, 5, 19, 5, 20, 5, 18, 5, 19, 5, 20, 5, 18, 5, 19, 5, 20, 6, 21, 6, 22, 6, 23, 6, 24, 6, 25, 6, 26, 6, 27, 7, 28, 7, 29, 8, 30, 8, 31, 8, 32, 8, 30, 8, 31, 8, 32, 9, 33, 9, 34, 9, 35, 9, 36, 9, 37, 9, 38, 9, 33, 9, 34, 9, 35, 9, 36, 9, 37, 9, 38, 10, 39, 11, 40, 11, 41, 11, 40, 11, 41, 12, 42, 12, 43, 12, 44, 12, 45, 12, 42, 12, 43, 12, 44, 13, 46, 13, 47, 13, 48, 13, 46, 13, 47, 13, 49, 13, 50, 13, 51, 13, 52, 13, 46, 13, 47, 13, 48, 13, 49, 13, 50, 13, 51, 13, 52, 14, 53, 14, 54, 14, 55, 14, 56, 15, 57, 15, 58, 15, 59, 15, 60, 15, 61, 15, 62, 15, 63, 15, 64, 15, 57, 15, 58, 16, 65, 16, 66, 16, 67, 16, 68, 16, 69, 16, 70, 16, 65, 16, 66, 16, 67, 16, 68, 16, 69, 16, 70, 17, 71, 17, 72, 17, 73, 17, 74, 17, 75, 17, 76, 17, 77, 17, 78, 17, 79, 17, 80, 17, 81, 17, 82, 17, 83, 17, 71, 17, 72, 17, 73, 17, 74, 17, 75, 17, 76, 17, 77, 17, 78, 17, 79, 17, 80, 17, 81, 17, 82, 17, 83, 17, 84, 17, 85, 17, 86, 17, 87, 17, 88, 17, 89, 17, 90, 17, 91, 17, 92, 18, 93, 18, 94, 18, 95, 18, 93, 18, 94, 18, 95, 18, 93, 18, 94, 18, 95, 19, 96, 19, 97, 19, 98, 19, 99, 19, 100, 19, 101, 19, 102, 19, 96, 19, 97, 19, 98, 19, 99, 19, 100, 19, 101, 19, 102, 19, 103, 19, 104, 19, 105, 19, 106, 20, 107, 20, 108, 20, 109, 20, 110, 20, 111, 20, 112, 20, 113, 20, 114, 20, 107, 20, 108, 20, 109, 20, 110, 20, 111, 20, 112, 20, 113, 20, 114, 21, 115, 21, 116, 21, 117, 21, 118, 21, 119, 21, 120, 21, 121, 21, 122, 21, 123, 21, 124, 21, 125, 21, 126, 21, 127, 21, 128, 21, 129, 21, 115, 21, 116, 21, 118, 21, 115, 21, 116, 21, 117, 21, 118, 21, 119, 21, 120, 21, 121, 21, 122, 21, 123, 21, 124, 21, 125, 21, 126, 21, 127, 21, 128, 21, 129, 21, 130, 21, 131, 21, 132, 21, 133, 21, 134, 99, 135, 99, 136, 99, 137, 99, 135, 99, 136, 99, 137, 23, 138, 23, 139, 23, 140, 23, 141, 23, 142, 23, 143, 23, 144, 23, 138, 23, 139, 23, 140, 23, 141, 23, 142, 23, 143, 23, 144, 24, 145, 24, 146, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 145, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 152, 24, 153, 24, 154, 24, 155, 24, 156, 24, 157, 24, 158, 24, 145, 24, 146, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 145, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 152, 24, 153, 24, 154, 24, 155, 24, 156, 24, 157, 24, 158, 24, 145, 24, 146, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 145, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 152, 24, 153, 24, 154, 24, 155, 24, 156, 24, 157, 24, 158, 24, 145, 24, 146, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 152, 24, 153, 24, 154, 24, 145, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 152, 24, 153, 24, 154, 24, 155, 24, 156, 24, 157, 24, 158, 24, 145, 24, 146, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 145, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 152, 24, 153, 24, 154, 24, 155, 24, 156, 24, 157, 24, 158, 24, 145, 24, 146, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 152, 24, 153, 24, 154, 24, 155, 24, 145, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 152, 24, 153, 24, 154, 24, 155, 24, 156, 24, 157, 24, 158, 25, 159, 25, 160, 25, 161, 25, 162, 25, 163, 25, 164, 25, 165, 25, 166, 25, 167, 25, 168, 25, 169, 25, 170, 25, 171, 25, 172, 25, 173, 25, 174, 25, 175, 25, 176, 25, 177, 25, 178, 25, 179, 25, 180, 25, 181, 25, 182, 25, 159, 25, 160, 25, 161, 25, 162, 25, 163, 25, 164, 25, 165, 25, 166, 25, 167, 25, 168, 25, 169, 25, 170, 25, 171, 25, 172, 25, 173, 25, 174, 25, 175, 25, 176, 25, 177, 25, 178, 25, 179, 25, 180, 25, 181, 25, 182, 25, 159, 25, 160, 25, 161, 25, 162, 25, 163, 25, 164, 25, 165, 25, 166, 25, 167, 25, 168, 25, 169, 25, 170, 25, 171, 25, 172, 25, 173, 25, 174, 25, 175, 25, 176, 25, 177, 25, 178, 25, 179, 25, 180, 25, 181, 25, 182, 25, 159, 25, 160, 25, 161, 25, 162, 25, 163, 25, 164, 25, 165, 25, 166, 25, 167, 25, 168, 25, 169, 25, 170, 25, 171, 25, 172, 25, 173, 25, 174, 25, 175, 25, 176, 25, 177, 25, 178, 25, 179, 25, 180, 25, 181, 25, 182, 25, 159, 25, 160, 25, 161, 25, 162, 25, 163, 25, 164, 25, 165, 25, 166, 25, 167, 25, 168, 25, 169, 25, 170, 25, 171, 25, 172, 25, 173, 25, 174, 25, 175, 25, 176, 25, 177, 25, 178, 25, 179, 25, 180, 25, 181, 25, 182 };
-		static const String spr[] = { "2SASB", "2SASC", "2SASD", "2SASE", "3SARI", "USASBH", "USASCI", "USASDK", "USASEL", "USASJNO", "BG2GM", "BG2GNO", "BG2GP", "BG2GQ", "BG2GR", "BFGAA", "BFGAB", "BFGACD", "BFGAEF", "2ISTB", "2ISTC", "2ISTD", "PISTB", "PISTC", "PISTD", "2MGFA", "2MGFB", "2MGFC", "SMGFA", "SMGFB", "SMGFC", "SMGZG", "SMGZH", "SMGZI", "DEVABJ", "DEVACK", "DEVADL", "DEVAEM", "DEVAFN", "DEVAGO", "DEVAHP", "FLMTDH", "FLMTEG", "2RLNB", "2RLNCD", "2RLNE", "GRLNB", "GRLNCD", "GRLNE", "PVCGBC", "PVCGDE", "PVCGF", "PVCGHI", "PVCGJK", "PVCGL", "RVCGBC", "RVCGDE", "RVCGF", "RVCGHI", "RVCGJK", "RVCGL", "M202B", "HBUSBF", "HBUSC", "PBUSBF", "PBUSC", "MP40B", "MP40DR", "MP40ES", "MP40Q", "PP40B", "PP40D", "PP40E", "CHAEBC", "CHAED", "CHAEEF", "CHAFS", "CHAFT", "CHAFAGKO", "CHAFBHLP", "CHAFCDIM", "CHAFEFJNQ", "CHAGBC", "CHAGD", "CHAGEF", "CHAVGKO", "CHAVHL", "CHAVIM", "CHAVJN", "NKLFABCD", "NKLFEF", "NKLFGH", "NKLFIJ", "2RSGD", "2RSGE", "PRSAA", "PRSAB", "PRSACD", "PRSAE", "PRSAFG", "PRSAHI", "PRSGD", "PRSGE", "2AIFB", "2AIFC", "2AIFD", "2AIFE", "2AIFF", "2AIFG", "RAIFB", "RAIFC", "RAIFD", "RAIFE", "RAIFF", "RAIFG", "2EVOD", "2EVOE", "2EVOF", "2EVOG", "2EVOH", "2EVOI", "2EVOJ", "2EVOK", "2EVOL", "2EVOM", "2EVON", "2EVOO", "2EVOP", "REVOD", "REVOE", "REVOF", "REVOG", "REVOH", "REVOI", "REVOJ", "REVOK", "REVOL", "REVOM", "REVON", "REVOO", "REVOP", "REVRB", "REVRC", "REVRD", "REVRE", "REVRF", "REVRG", "REVRHI", "REVRJK", "REVRLMNOPQ", "2IFFAD", "2IFFB", "2IFFC", "RI2FAD", "RI2FB", "RI2FC", "RIFFAD", "RIFFB", "RIFFC", "2ISFAHO", "2ISFBIP", "2ISFCJQ", "2ISFDKR", "2ISFELS", "2ISFFMT", "2ISFGNU", "MISFAHO", "MISFBIP", "MISFCJQ", "MISFDKR", "MISFELS", "MISFFMT", "MISFGNU", "MISGBG", "MISGCH", "MISGDE", "MISGJ", "SHT2B", "SHT2C", "SHT2D", "SHT2E", "SHT2F", "SHT2G", "SHT2H", "SHT2IJ", "VSSGB", "VSSGC", "VSSGD", "VSSGE", "VSSGF", "VSSGG", "VSSGH", "VSSGIJ", "2HTAB", "2HTAC", "2HTAD", "2HTAE", "2HTNB", "2HTNC", "2HTND", "2HTNE", "2HTNFG", "2HTNH", "2HTNIJ", "2HTNK", "2HTNLMN", "2HTNP", "2HTNQ", "SHT8D", "SHT8E", "SHT8F", "SHTAB", "SHTAC", "SHTAD", "SHTAE", "SHTNB", "SHTNC", "SHTND", "SHTNE", "SHTNFGS", "SHTNH", "SHTNIJ", "SHTNK", "SHTNLMN", "SHTNP", "SHTNQ", "SHTNTU[]", "SHTNV", "SHTNW", "SHTNX", "SHTNYZ", "P21FA", "P21FB", "P21FC", "X21FA", "X21FB", "X21FC", "2NHFB", "2NHFC", "2NHFD", "2NHFE", "2NHFF", "2NHFG", "2NHFH", "UNHFB", "UNHFC", "UNHFD", "UNHFE", "UNHFF", "UNHFG", "UNHFH", "1XEAA", "1XEAB", "1XEAF", "1XEAG", "1XEAHI", "1XEAJ", "1XEAK", "1XEGB", "1XEGF", "1XEGG", "1XEGHI", "1XEGJ", "1XEGKM", "1XEGC", "1XEGD", "1XEGE", "1XEGL", "1XEGN", "1XEGO", "1XEGP", "2XEAA", "2XEAB", "2XEAF", "2XEAG", "2XEAHI", "2XEAJ", "2XEAK", "2XEGB", "2XEGF", "2XEGG", "2XEGHI", "2XEGJ", "2XEGKM", "2XEGC", "2XEGD", "2XEGE", "2XEGL", "2XEGN", "2XEGO", "2XEGP", "3XEAA", "3XEAB", "3XEAF", "3XEAG", "3XEAHI", "3XEAJ", "3XEAK", "3XEGB", "3XEGF", "3XEGG", "3XEGHI", "3XEGJ", "3XEGKM", "3XEGC", "3XEGD", "3XEGE", "3XEGL", "3XEGN", "3XEGO", "3XEGP", "4XEAA", "4XEAB", "4XEAF", "4XEAG", "4XEAHI", "4XEAJ", "4XEAK", "4XEAC", "4XEAD", "4XEAE", "4XEGB", "4XEGF", "4XEGG", "4XEGHI", "4XEGJ", "4XEGKM", "4XEGC", "4XEGD", "4XEGE", "4XEGL", "4XEGN", "4XEGO", "4XEGP", "5XEAA", "5XEAB", "5XEAF", "5XEAG", "5XEAHI", "5XEAJ", "5XEAK", "5XEGB", "5XEGF", "5XEGG", "5XEGHI", "5XEGJ", "5XEGKM", "5XEGC", "5XEGD", "5XEGE", "5XEGL", "5XEGN", "5XEGO", "5XEGP", "AXEAA", "AXEAB", "AXEAF", "AXEAG", "AXEAHI", "AXEAJ", "AXEAK", "AXEAC", "AXEAD", "AXEAE", "AXEAL", "AXEGB", "AXEGF", "AXEGG", "AXEGHI", "AXEGJ", "AXEGKM", "AXEGC", "AXEGD", "AXEGE", "AXEGL", "AXEGN", "AXEGO", "AXEGP", "1AWFAR", "1AWFBQ", "1AWFCP", "1AWFDO", "1AWFEM", "1AWFFL", "1AWFGK", "1AWFHIJ", "1AWFN", "1AWFSW", "1AWFTX", "1AWFUY", "1AWFVZ", "1AWGH", "1AWGI", "1AWGJ", "1AWGK", "1AWGL", "1AWGM", "1AWGO", "1AWGP", "1AWGQSUY[", "1AWGRTXZ", "1AWGW", "2AWFAR", "2AWFBQ", "2AWFCP", "2AWFDO", "2AWFEM", "2AWFFL", "2AWFGK", "2AWFHIJ", "2AWFN", "2AWFSW", "2AWFTX", "2AWFUY", "2AWFVZ", "2AWGH", "2AWGI", "2AWGJ", "2AWGK", "2AWGL", "2AWGM", "2AWGO", "2AWGP", "2AWGQSUY[", "2AWGRTXZ", "2AWGW", "3AWFAR", "3AWFBQ", "3AWFCP", "3AWFDO", "3AWFEM", "3AWFFL", "3AWFGK", "3AWFHIJ", "3AWFN", "3AWFSW", "3AWFTX", "3AWFUY", "3AWFVZ", "3AWGH", "3AWGI", "3AWGJ", "3AWGK", "3AWGL", "3AWGM", "3AWGO", "3AWGP", "3AWGQSUY[", "3AWGRTXZ", "3AWGW", "PAWFAR", "PAWFBQ", "PAWFCP", "PAWFDO", "PAWFEM", "PAWFFL", "PAWFGK", "PAWFHIJ", "PAWFN", "PAWFSW", "PAWFTX", "PAWFUY", "PAWFVZ", "PAWGH", "PAWGI", "PAWGJ", "PAWGK", "PAWGL", "PAWGM", "PAWGO", "PAWGP", "PAWGQSU", "PAWGRT", "PAWGW", "SAWFAR", "SAWFBQ", "SAWFCP", "SAWFDO", "SAWFEM", "SAWFFL", "SAWFGK", "SAWFHIJ", "SAWFN", "SAWFSW", "SAWFTX", "SAWFUY", "SAWFVZ", "SAWGH", "SAWGI", "SAWGJ", "SAWGK", "SAWGL", "SAWGM", "SAWGO", "SAWGP", "SAWGQSUY[", "SAWGRTXZ", "SAWGW" };
+		static const int key[] = { 1, 0, 1, 1, 1, 2, 1, 3, 1, 4, 1, 0, 1, 1, 1, 2, 1, 3, 1, 5, 2, 6, 2, 7, 2, 8, 2, 9, 2, 10, 3, 11, 3, 12, 3, 13, 3, 14, 4, 15, 4, 16, 4, 17, 4, 15, 4, 16, 4, 17, 5, 18, 5, 19, 5, 20, 5, 18, 5, 19, 5, 20, 5, 18, 5, 19, 5, 20, 6, 21, 6, 22, 6, 23, 6, 24, 6, 25, 6, 26, 6, 27, 7, 28, 7, 29, 8, 30, 8, 31, 8, 32, 8, 30, 8, 31, 8, 32, 9, 33, 9, 34, 9, 35, 9, 36, 9, 37, 9, 38, 9, 33, 9, 34, 9, 35, 9, 36, 9, 37, 9, 38, 10, 39, 11, 40, 11, 41, 11, 40, 11, 41, 12, 42, 12, 43, 12, 44, 12, 45, 12, 42, 12, 43, 12, 44, 13, 46, 13, 47, 13, 48, 13, 46, 13, 47, 13, 49, 13, 50, 13, 51, 13, 52, 13, 46, 13, 47, 13, 48, 13, 49, 13, 50, 13, 51, 13, 52, 14, 53, 14, 54, 14, 55, 14, 56, 15, 57, 15, 58, 15, 59, 15, 60, 15, 61, 15, 62, 15, 63, 15, 64, 15, 57, 15, 58, 16, 65, 16, 66, 16, 67, 16, 68, 16, 69, 16, 70, 16, 65, 16, 66, 16, 67, 16, 68, 16, 69, 16, 70, 17, 71, 17, 72, 17, 73, 17, 74, 17, 75, 17, 76, 17, 77, 17, 78, 17, 79, 17, 80, 17, 81, 17, 82, 17, 83, 17, 71, 17, 72, 17, 73, 17, 74, 17, 75, 17, 76, 17, 77, 17, 78, 17, 79, 17, 80, 17, 81, 17, 82, 17, 83, 17, 84, 17, 85, 17, 86, 17, 87, 17, 88, 17, 89, 17, 90, 17, 91, 17, 92, 18, 93, 18, 94, 18, 95, 18, 93, 18, 94, 18, 95, 18, 93, 18, 94, 18, 95, 19, 96, 19, 97, 19, 98, 19, 99, 19, 100, 19, 101, 19, 102, 19, 96, 19, 97, 19, 98, 19, 99, 19, 100, 19, 101, 19, 102, 19, 103, 19, 104, 19, 105, 19, 106, 20, 107, 20, 108, 20, 109, 20, 110, 20, 111, 20, 112, 20, 113, 20, 114, 20, 107, 20, 108, 20, 109, 20, 110, 20, 111, 20, 112, 20, 113, 20, 114, 21, 115, 21, 116, 21, 117, 21, 118, 21, 119, 21, 120, 21, 121, 21, 122, 21, 123, 21, 124, 21, 125, 21, 126, 21, 127, 21, 128, 21, 129, 21, 115, 21, 116, 21, 118, 21, 115, 21, 116, 21, 117, 21, 118, 21, 119, 21, 120, 21, 121, 21, 122, 21, 123, 21, 124, 21, 125, 21, 126, 21, 127, 21, 128, 21, 129, 21, 130, 21, 131, 21, 132, 21, 133, 21, 134, 99, 135, 99, 136, 99, 137, 99, 135, 99, 136, 99, 137, 23, 138, 23, 139, 23, 140, 23, 141, 23, 142, 23, 143, 23, 144, 23, 138, 23, 139, 23, 140, 23, 141, 23, 142, 23, 143, 23, 144, 24, 145, 24, 146, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 145, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 152, 24, 153, 24, 154, 24, 155, 24, 156, 24, 157, 24, 158, 24, 145, 24, 146, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 145, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 152, 24, 153, 24, 154, 24, 155, 24, 156, 24, 157, 24, 158, 24, 145, 24, 146, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 145, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 152, 24, 153, 24, 154, 24, 155, 24, 156, 24, 157, 24, 158, 24, 145, 24, 146, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 152, 24, 153, 24, 154, 24, 145, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 152, 24, 153, 24, 154, 24, 155, 24, 156, 24, 157, 24, 158, 24, 145, 24, 146, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 145, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 152, 24, 153, 24, 154, 24, 155, 24, 156, 24, 157, 24, 158, 24, 145, 24, 146, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 152, 24, 153, 24, 154, 24, 155, 24, 145, 24, 147, 24, 148, 24, 149, 24, 150, 24, 151, 24, 152, 24, 153, 24, 154, 24, 155, 24, 156, 24, 157, 24, 158, 25, 159, 25, 160, 25, 161, 25, 162, 25, 163, 25, 164, 25, 165, 25, 166, 25, 167, 25, 168, 25, 169, 25, 170, 25, 171, 25, 172, 25, 173, 25, 174, 25, 175, 25, 176, 25, 177, 25, 178, 25, 179, 25, 180, 25, 181, 25, 182, 25, 159, 25, 160, 25, 161, 25, 162, 25, 163, 25, 164, 25, 165, 25, 166, 25, 167, 25, 168, 25, 169, 25, 170, 25, 171, 25, 172, 25, 173, 25, 174, 25, 175, 25, 176, 25, 177, 25, 178, 25, 179, 25, 180, 25, 181, 25, 182, 25, 159, 25, 160, 25, 161, 25, 162, 25, 163, 25, 164, 25, 165, 25, 166, 25, 167, 25, 168, 25, 169, 25, 170, 25, 171, 25, 172, 25, 173, 25, 174, 25, 175, 25, 176, 25, 177, 25, 178, 25, 179, 25, 180, 25, 181, 25, 182, 25, 159, 25, 160, 25, 161, 25, 162, 25, 163, 25, 164, 25, 165, 25, 166, 25, 167, 25, 168, 25, 169, 25, 170, 25, 171, 25, 172, 25, 173, 25, 174, 25, 175, 25, 176, 25, 177, 25, 178, 25, 179, 25, 180, 25, 181, 25, 182, 25, 159, 25, 160, 25, 161, 25, 162, 25, 163, 25, 164, 25, 165, 25, 166, 25, 167, 25, 168, 25, 169, 25, 170, 25, 171, 25, 172, 25, 173, 25, 174, 25, 175, 25, 176, 25, 177, 25, 178, 25, 179, 25, 180, 25, 181, 25, 182, 28, 183, 28, 184, 28, 185, 28, 186, 28, 187, 28, 188, 28, 183, 28, 184, 28, 185, 28, 186, 28, 187, 28, 188 };
+		static const String spr[] = { "2SASB", "2SASC", "2SASD", "2SASE", "3SARI", "USASBH", "USASCI", "USASDK", "USASEL", "USASJNO", "BG2GM", "BG2GNO", "BG2GP", "BG2GQ", "BG2GR", "BFGAA", "BFGAB", "BFGACD", "BFGAEF", "2ISTB", "2ISTC", "2ISTD", "PISTB", "PISTC", "PISTD", "2MGFA", "2MGFB", "2MGFC", "SMGFA", "SMGFB", "SMGFC", "SMGZG", "SMGZH", "SMGZI", "DEVABJ", "DEVACK", "DEVADL", "DEVAEM", "DEVAFN", "DEVAGO", "DEVAHP", "FLMTDH", "FLMTEG", "2RLNB", "2RLNCD", "2RLNE", "GRLNB", "GRLNCD", "GRLNE", "PVCGBC", "PVCGDE", "PVCGF", "PVCGHI", "PVCGJK", "PVCGL", "RVCGBC", "RVCGDE", "RVCGF", "RVCGHI", "RVCGJK", "RVCGL", "M202B", "HBUSBF", "HBUSC", "PBUSBF", "PBUSC", "MP40B", "MP40DR", "MP40ES", "MP40Q", "PP40B", "PP40D", "PP40E", "CHAEBC", "CHAED", "CHAEEF", "CHAFS", "CHAFT", "CHAFAGKO", "CHAFBHLP", "CHAFCDIM", "CHAFEFJNQ", "CHAGBC", "CHAGD", "CHAGEF", "CHAVGKO", "CHAVHL", "CHAVIM", "CHAVJN", "NKLFABCD", "NKLFEF", "NKLFGH", "NKLFIJ", "2RSGD", "2RSGE", "PRSAA", "PRSAB", "PRSACD", "PRSAE", "PRSAFG", "PRSAHI", "PRSGD", "PRSGE", "2AIFB", "2AIFC", "2AIFD", "2AIFE", "2AIFF", "2AIFG", "RAIFB", "RAIFC", "RAIFD", "RAIFE", "RAIFF", "RAIFG", "2EVOD", "2EVOE", "2EVOF", "2EVOG", "2EVOH", "2EVOI", "2EVOJ", "2EVOK", "2EVOL", "2EVOM", "2EVON", "2EVOO", "2EVOP", "REVOD", "REVOE", "REVOF", "REVOG", "REVOH", "REVOI", "REVOJ", "REVOK", "REVOL", "REVOM", "REVON", "REVOO", "REVOP", "REVRB", "REVRC", "REVRD", "REVRE", "REVRF", "REVRG", "REVRHI", "REVRJK", "REVRLMNOPQ", "2IFFAD", "2IFFB", "2IFFC", "RI2FAD", "RI2FB", "RI2FC", "RIFFAD", "RIFFB", "RIFFC", "2ISFAHO", "2ISFBIP", "2ISFCJQ", "2ISFDKR", "2ISFELS", "2ISFFMT", "2ISFGNU", "MISFAHO", "MISFBIP", "MISFCJQ", "MISFDKR", "MISFELS", "MISFFMT", "MISFGNU", "MISGBG", "MISGCH", "MISGDE", "MISGJ", "SHT2B", "SHT2C", "SHT2D", "SHT2E", "SHT2F", "SHT2G", "SHT2H", "SHT2IJ", "VSSGB", "VSSGC", "VSSGD", "VSSGE", "VSSGF", "VSSGG", "VSSGH", "VSSGIJ", "2HTAB", "2HTAC", "2HTAD", "2HTAE", "2HTNB", "2HTNC", "2HTND", "2HTNE", "2HTNFG", "2HTNH", "2HTNIJ", "2HTNK", "2HTNLMN", "2HTNP", "2HTNQ", "SHT8D", "SHT8E", "SHT8F", "SHTAB", "SHTAC", "SHTAD", "SHTAE", "SHTNB", "SHTNC", "SHTND", "SHTNE", "SHTNFGS", "SHTNH", "SHTNIJ", "SHTNK", "SHTNLMN", "SHTNP", "SHTNQ", "SHTNTU[]", "SHTNV", "SHTNW", "SHTNX", "SHTNYZ", "P21FA", "P21FB", "P21FC", "X21FA", "X21FB", "X21FC", "2NHFB", "2NHFC", "2NHFD", "2NHFE", "2NHFF", "2NHFG", "2NHFH", "UNHFB", "UNHFC", "UNHFD", "UNHFE", "UNHFF", "UNHFG", "UNHFH", "1XEAA", "1XEAB", "1XEAF", "1XEAG", "1XEAHI", "1XEAJ", "1XEAK", "1XEGB", "1XEGF", "1XEGG", "1XEGHI", "1XEGJ", "1XEGKM", "1XEGC", "1XEGD", "1XEGE", "1XEGL", "1XEGN", "1XEGO", "1XEGP", "2XEAA", "2XEAB", "2XEAF", "2XEAG", "2XEAHI", "2XEAJ", "2XEAK", "2XEGB", "2XEGF", "2XEGG", "2XEGHI", "2XEGJ", "2XEGKM", "2XEGC", "2XEGD", "2XEGE", "2XEGL", "2XEGN", "2XEGO", "2XEGP", "3XEAA", "3XEAB", "3XEAF", "3XEAG", "3XEAHI", "3XEAJ", "3XEAK", "3XEGB", "3XEGF", "3XEGG", "3XEGHI", "3XEGJ", "3XEGKM", "3XEGC", "3XEGD", "3XEGE", "3XEGL", "3XEGN", "3XEGO", "3XEGP", "4XEAA", "4XEAB", "4XEAF", "4XEAG", "4XEAHI", "4XEAJ", "4XEAK", "4XEAC", "4XEAD", "4XEAE", "4XEGB", "4XEGF", "4XEGG", "4XEGHI", "4XEGJ", "4XEGKM", "4XEGC", "4XEGD", "4XEGE", "4XEGL", "4XEGN", "4XEGO", "4XEGP", "5XEAA", "5XEAB", "5XEAF", "5XEAG", "5XEAHI", "5XEAJ", "5XEAK", "5XEGB", "5XEGF", "5XEGG", "5XEGHI", "5XEGJ", "5XEGKM", "5XEGC", "5XEGD", "5XEGE", "5XEGL", "5XEGN", "5XEGO", "5XEGP", "AXEAA", "AXEAB", "AXEAF", "AXEAG", "AXEAHI", "AXEAJ", "AXEAK", "AXEAC", "AXEAD", "AXEAE", "AXEAL", "AXEGB", "AXEGF", "AXEGG", "AXEGHI", "AXEGJ", "AXEGKM", "AXEGC", "AXEGD", "AXEGE", "AXEGL", "AXEGN", "AXEGO", "AXEGP", "1AWFAR", "1AWFBQ", "1AWFCP", "1AWFDO", "1AWFEM", "1AWFFL", "1AWFGK", "1AWFHIJ", "1AWFN", "1AWFSW", "1AWFTX", "1AWFUY", "1AWFVZ", "1AWGH", "1AWGI", "1AWGJ", "1AWGK", "1AWGL", "1AWGM", "1AWGO", "1AWGP", "1AWGQSUY[", "1AWGRTXZ", "1AWGW", "2AWFAR", "2AWFBQ", "2AWFCP", "2AWFDO", "2AWFEM", "2AWFFL", "2AWFGK", "2AWFHIJ", "2AWFN", "2AWFSW", "2AWFTX", "2AWFUY", "2AWFVZ", "2AWGH", "2AWGI", "2AWGJ", "2AWGK", "2AWGL", "2AWGM", "2AWGO", "2AWGP", "2AWGQSUY[", "2AWGRTXZ", "2AWGW", "3AWFAR", "3AWFBQ", "3AWFCP", "3AWFDO", "3AWFEM", "3AWFFL", "3AWFGK", "3AWFHIJ", "3AWFN", "3AWFSW", "3AWFTX", "3AWFUY", "3AWFVZ", "3AWGH", "3AWGI", "3AWGJ", "3AWGK", "3AWGL", "3AWGM", "3AWGO", "3AWGP", "3AWGQSUY[", "3AWGRTXZ", "3AWGW", "PAWFAR", "PAWFBQ", "PAWFCP", "PAWFDO", "PAWFEM", "PAWFFL", "PAWFGK", "PAWFHIJ", "PAWFN", "PAWFSW", "PAWFTX", "PAWFUY", "PAWFVZ", "PAWGH", "PAWGI", "PAWGJ", "PAWGK", "PAWGL", "PAWGM", "PAWGO", "PAWGP", "PAWGQSU", "PAWGRT", "PAWGW", "SAWFAR", "SAWFBQ", "SAWFCP", "SAWFDO", "SAWFEM", "SAWFFL", "SAWFGK", "SAWFHIJ", "SAWFN", "SAWFSW", "SAWFTX", "SAWFUY", "SAWFVZ", "SAWGH", "SAWGI", "SAWGJ", "SAWGK", "SAWGL", "SAWGM", "SAWGO", "SAWGP", "SAWGQSUY[", "SAWGRTXZ", "SAWGW", "FLMGB", "FLMGC", "FLMGD", "FLMGE", "FLMGHJ", "FLMGIK", "2LMGB", "2LMGC", "2LMGD", "2LMGE", "2LMGHJ", "2LMGIK" };
 		static const double v[] = {
 			0.00, 0.00, 0.00, -0.10, -0.09, 1.52,	// shotguns: row 0 AssaultShotgun, refitted for the moved gun
 			0.00, 0.00, 0.00, -0.21, -0.18, 3.05,	// shotguns: row 1 AssaultShotgun, refitted for the moved gun
@@ -59,11 +60,11 @@ class RSQ_GunMoves abstract play
 			0.00, 0.00, 0.00, -0.07, -0.06, 1.03,	// shotguns: row 3 AssaultShotgun, refitted for the moved gun
 			0.99, 2.85, 12.56, -1.53, -0.09, 0.10,	// shotguns: row 4 AssaultShotgun, refitted for the moved gun
 			0.00, 0.00, 0.00, -0.19, -0.16, 2.78,	// shotguns: row 5 AssaultShotgun, refitted for the moved gun
-			0.00, 0.00, 0.00, -0.92, -0.81, 13.72,	// r10 port: row 6 BFG10k, refitted for the moved gun
-			0.00, 0.00, 0.00, -1.85, -1.62, 27.43,	// r10 port: row 7 BFG10k, refitted for the moved gun
-			1.99, 9.77, 0.94, -2.62, 5.87, 18.76,	// r10 port: row 8 BFG10k, refitted for the moved gun
-			1.48, 7.39, 0.68, -1.48, 3.51, 10.16,	// r10 port: row 9 BFG10k, refitted for the moved gun
-			0.31, 1.57, 0.13, -0.24, 0.52, 1.73,	// r10 port: row 10 BFG10k, refitted for the moved gun
+			0.00, 0.00, 0.00, -0.92, -0.81, 13.72,	// r12 port: row 6 BFG10k, refitted for the re-fitted gun
+			0.00, 0.00, 0.00, -1.85, -1.62, 27.43,	// r12 port: row 7 BFG10k, refitted for the re-fitted gun
+			1.99, 9.77, 0.94, -2.61, 5.83, 18.71,	// r12 port: row 8 BFG10k, refitted for the re-fitted gun
+			1.48, 7.39, 0.68, -1.47, 3.48, 10.12,	// r12 port: row 9 BFG10k, refitted for the re-fitted gun
+			0.31, 1.57, 0.13, -0.24, 0.52, 1.72,	// r12 port: row 10 BFG10k, refitted for the re-fitted gun
 			0.00, 0.00, 0.00, -0.92, -0.81, 13.72,	// r11 port: row 11 BIG_FUCKING_GUN, refitted for the moved gun
 			0.00, 0.00, 0.00, -1.85, -1.62, 27.43,	// r11 port: row 12 BIG_FUCKING_GUN, refitted for the moved gun
 			1.99, 9.77, 0.94, -2.60, 5.79, 18.78,	// r11 port: row 13 BIG_FUCKING_GUN, refitted for the moved gun
@@ -86,12 +87,12 @@ class RSQ_GunMoves abstract play
 			0.00, 0.00, 0.00, -0.07, -0.06, 1.02,	// r9 port: row 30 GrenadeLauncher, refitted for the moved gun
 			0.00, 0.00, 0.00, -0.07, -0.06, 1.02,	// r9 port: row 31 GrenadeLauncher, refitted for the moved gun
 			0.00, 0.00, 0.00, -0.14, -0.12, 2.03,	// r9 port: row 32 GrenadeLauncher, refitted for the moved gun
-			0.15, 3.26, 1.36, 0.05, 3.39, 35.31,
-			0.44, 4.98, 5.02, 0.44, 4.72, 29.96,
-			0.20, 3.03, 1.82, 0.09, 1.90, 11.80,
-			-0.20, 3.03, -1.82, -0.07, 2.61, 25.17,
-			-0.44, 4.98, -5.02, -0.44, 4.72, 29.96,
-			-0.15, 3.26, -1.36, -0.07, 2.23, 14.95,
+			0.69, 3.07, 1.62, -2.64, 0.86, 34.82,	// r12 port: row 33 HellishMissileLauncher, refitted for the moved gun
+			1.08, 4.46, 5.42, -1.52, 2.37, 29.35,	// r12 port: row 34 HellishMissileLauncher, refitted for the moved gun
+			0.67, 2.80, 2.06, -0.65, 0.83, 11.38,	// r12 port: row 35 HellishMissileLauncher, refitted for the moved gun
+			0.49, 3.12, -1.57, -2.44, 0.61, 24.67,	// r12 port: row 36 HellishMissileLauncher, refitted for the moved gun
+			0.82, 5.30, -4.57, -3.93, 1.94, 29.16,	// r12 port: row 37 HellishMissileLauncher, refitted for the moved gun
+			0.56, 3.31, -1.08, -1.60, 0.81, 14.45,	// r12 port: row 38 HellishMissileLauncher, refitted for the moved gun
 			1.47, 7.32, 0.67, -0.48, -0.73, 7.88,	// r11 port: row 39 IncendiaryLauncher, refitted for the moved gun
 			0.09, 0.44, 0.04, -0.13, 0.08, 1.45,	// r10 port: row 40 MG42, refitted for the moved gun
 			0.17, 0.88, 0.07, -0.27, 0.19, 2.90,	// r10 port: row 41 MG42, refitted for the moved gun
@@ -106,10 +107,10 @@ class RSQ_GunMoves abstract play
 			0.00, 0.00, 0.00, 0.00, 0.00, 0.00,	// r9 port: row 50 Minigun, refitted for the moved gun
 			0.00, 0.00, 0.00, -0.14, -0.12, 2.03,	// r9 port: row 51 Minigun, refitted for the moved gun
 			0.00, 0.00, 0.00, 0.00, 0.00, 0.00,	// r9 port: row 52 Minigun, refitted for the moved gun
-			0.07, -0.78, -0.74, -0.21, -0.39, 2.24,	// r10 port: row 53 NukeLauncher, refitted for the moved gun
-			0.08, -0.71, -0.66, -0.11, 0.07, 0.02,	// r10 port: row 54 NukeLauncher, refitted for the moved gun
-			0.09, -0.53, -0.49, -0.07, 0.06, -0.02,	// r10 port: row 55 NukeLauncher, refitted for the moved gun
-			0.10, -0.31, -0.28, -0.03, 0.04, -0.04,	// r10 port: row 56 NukeLauncher, refitted for the moved gun
+			0.07, -0.78, -0.74, -0.21, -0.39, 2.24,	// r12 port: row 53 NukeLauncher, refitted for the re-fitted gun
+			0.08, -0.71, -0.66, -0.11, 0.07, 0.01,	// r12 port: row 54 NukeLauncher, refitted for the re-fitted gun
+			0.09, -0.53, -0.49, -0.07, 0.06, -0.02,	// r12 port: row 55 NukeLauncher, refitted for the re-fitted gun
+			0.10, -0.31, -0.28, -0.03, 0.04, -0.04,	// r12 port: row 56 NukeLauncher, refitted for the re-fitted gun
 			0.60, 3.03, 0.26, -0.58, -0.61, 8.87,	// r9 port: row 57 Plasma_Gun, refitted for the moved gun
 			0.23, 1.18, 0.09, -0.28, -0.39, 4.46,	// r9 port: row 58 Plasma_Gun, refitted for the moved gun
 			0.00, 0.00, 0.00, -0.34, -0.30, 5.08,	// r9 port: row 59 Plasma_Gun, refitted for the moved gun
@@ -191,51 +192,57 @@ class RSQ_GunMoves abstract play
 			-0.15, 0.12, 0.59, 0.07, -0.07, 2.61,
 			-0.22, 0.23, -0.83, -0.13, -0.11, 3.13,
 			-0.30, 0.33, -2.23, -0.34, -0.16, 3.21,
-			0.00, 0.00, 0.00, 0.00, 0.00, 0.73,
-			0.00, 0.00, 0.00, 0.00, 0.00, 2.33,
-			0.00, 0.00, 0.00, 0.00, 0.00, 3.92,
-			0.00, 0.00, 0.00, 0.00, 0.00, 4.64,
-			0.00, 0.67, 0.00, 1.15, -0.36, 3.51,
-			0.00, 0.00, 0.00, 0.26, -1.58, 3.10,
-			0.00, -0.53, 0.00, -1.20, -0.66, 3.07,
-			0.00, 7.17, 0.00, 0.00, 1.38, 0.24,
-			0.00, 12.05, 0.00, 0.00, 2.17, 1.01,
-			0.00, 8.13, 0.00, 0.00, 0.63, -0.06,
-			0.00, -13.16, 0.00, 0.00, -0.16, -8.84,
-			0.00, -34.71, 0.00, 0.00, 3.40, -14.73,
-			0.00, -53.66, 0.00, 0.00, 4.02, -15.39,
-			0.00, -66.91, 0.00, 0.00, -14.56, -8.80,
-			0.00, 14.73, 0.00, 0.00, 2.52, 2.04,
-			0.00, 15.79, 0.00, 0.00, 2.59, 2.87,
-			0.00, 16.00, 0.00, 0.00, 2.57, 3.18,
-			0.00, -74.00, 0.00, 0.00, -15.13, -11.02,
-			0.00, -47.19, 0.00, 0.00, -11.53, -3.64,
-			0.00, -24.25, 0.00, 0.00, -6.11, -0.25,
-			0.00, -9.01, 0.00, 0.00, -2.09, 0.15,
-			57.88, 6.31, 29.13, -4.46, 3.88, -9.64,
-			54.93, 8.75, 34.09, -3.98, 3.70, -8.33,
-			44.72, 10.46, 46.81, -2.54, 3.67, -5.58,
-			28.60, 7.85, 62.31, -1.00, 2.56, -1.97,
-			0.02, -0.01, 80.00, -1.16, 1.45, 0.00,
-			-21.38, 1.69, 69.46, 0.02, -2.50, -1.62,
-			-47.42, 0.93, 55.01, 2.22, -9.97, -7.72,
-			-47.18, -3.77, 44.64, 2.33, -10.71, -7.31,
-			11.86, 2.79, 75.06, -0.97, 1.14, -0.50,
-			0.01, -0.02, 85.02, -1.13, 1.55, 0.00,
-			0.00, 0.04, 85.01, -1.19, 1.53, -0.24,
-			0.01, -0.02, 85.02, -1.13, 1.55, 0.00,
-			0.00, 0.04, 85.01, -1.19, 1.53, -0.24,
-			3.01, -1.04, 30.01, -2.05, 1.79, -0.14,
-			19.99, 2.11, 29.65, -5.07, 4.31, -2.15,
-			46.30, 4.60, 29.15, -5.27, 4.78, -6.91,
-			-4.60, -1.17, 15.93, -0.70, -0.73, 0.10,
-			-15.23, -3.90, 22.80, -0.76, -3.18, -0.30,
-			-30.76, -5.39, 32.59, 0.58, -6.75, -2.10,
-			0.00, -6.35, 0.00, 0.00, -0.58, 0.00,
-			-0.05, 3.46, 0.02, -0.06, 2.02, -0.61,
-			0.00, 20.97, 0.00, 0.00, 5.58, -2.67,
-			-0.06, 20.35, 0.00, -0.06, 2.80, -1.92,
-			-0.06, -20.75, 0.05, -0.07, -2.41, -0.94
+			0.00, 0.00, 0.00, -0.05, -0.04, 0.73,	// r12 port: row 138 Unmaker, refitted for the moved gun
+			0.00, 0.00, 0.00, -0.16, -0.14, 2.32,	// r12 port: row 139 Unmaker, refitted for the moved gun
+			0.00, 0.00, 0.00, -0.26, -0.23, 3.91,	// r12 port: row 140 Unmaker, refitted for the moved gun
+			0.00, 0.00, 0.00, -0.31, -0.27, 4.62,	// r12 port: row 141 Unmaker, refitted for the moved gun
+			0.13, 0.66, 0.05, 0.98, -0.41, 3.50,	// r12 port: row 142 Unmaker, refitted for the moved gun
+			0.00, 0.00, 0.00, 0.35, -1.68, 3.03,	// r12 port: row 143 Unmaker, refitted for the moved gun
+			-0.10, -0.52, -0.04, -1.26, -1.00, 3.00,	// r12 port: row 144 Unmaker, refitted for the moved gun
+			1.40, 7.01, 0.64, 0.07, -0.31, -0.11,	// r12 port: row 145 BrutalAxe, refitted for the moved gun
+			2.42, 11.78, 1.18, 0.10, -0.73, 0.53,	// r12 port: row 146 BrutalAxe, refitted for the moved gun
+			1.60, 7.95, 0.74, 0.28, -1.26, -0.49,	// r12 port: row 147 BrutalAxe, refitted for the moved gun
+			-2.43, -12.90, -0.75, -0.03, 3.21, -7.52,	// r12 port: row 148 BrutalAxe, refitted for the moved gun
+			-6.57, -34.05, -0.75, -1.33, 10.82, -9.78,	// r12 port: row 149 BrutalAxe, refitted for the moved gun
+			-11.62, -52.59, 1.29, -2.13, 13.55, -6.39,	// r12 port: row 150 BrutalAxe, refitted for the moved gun
+			-18.04, -65.40, 5.81, 0.66, -4.43, 2.47,	// r12 port: row 151 BrutalAxe, refitted for the moved gun
+			3.01, 14.38, 1.52, 0.09, -1.09, 1.52,	// r12 port: row 152 BrutalAxe, refitted for the moved gun
+			3.24, 15.41, 1.66, 0.07, -1.33, 2.34,	// r12 port: row 153 BrutalAxe, refitted for the moved gun
+			3.29, 15.62, 1.69, 0.06, -1.41, 2.65,	// r12 port: row 154 BrutalAxe, refitted for the moved gun
+			-24.57, -72.07, 11.35, 0.78, -4.82, 1.95,	// r12 port: row 155 BrutalAxe, refitted for the moved gun
+			-9.60, -46.28, 0.25, 0.32, -2.94, 3.16,	// r12 port: row 156 BrutalAxe, refitted for the moved gun
+			-4.47, -23.79, -0.96, 0.01, -1.02, 2.35,	// r12 port: row 157 BrutalAxe, refitted for the moved gun
+			-1.67, -8.82, -0.57, -0.05, -0.08, 0.88,	// r12 port: row 158 BrutalAxe, refitted for the moved gun
+			56.03, -5.96, 26.59, -7.21, 4.14, -10.29,	// r12 port: row 159 Chain_saw, refitted for the moved gun
+			53.05, -3.25, 32.03, -7.36, 4.23, -8.66,	// r12 port: row 160 Chain_saw, refitted for the moved gun
+			42.18, -0.09, 45.93, -7.42, 5.28, -5.49,	// r12 port: row 161 Chain_saw, refitted for the moved gun
+			24.52, 0.47, 62.45, -7.13, 5.81, -1.83,	// r12 port: row 162 Chain_saw, refitted for the moved gun
+			-6.47, -1.04, 79.84, -7.91, 6.56, -0.15,	// r12 port: row 163 Chain_saw, refitted for the moved gun
+			-26.36, 3.94, 67.25, -5.51, 1.72, -1.27,	// r12 port: row 164 Chain_saw, refitted for the moved gun
+			-51.07, 6.16, 48.92, -0.47, -6.51, -7.21,	// r12 port: row 165 Chain_saw, refitted for the moved gun
+			-50.32, 1.54, 38.59, 0.57, -8.09, -7.35,	// r12 port: row 166 Chain_saw, refitted for the moved gun
+			6.06, -0.79, 75.36, -7.50, 5.78, -0.60,	// r12 port: row 167 Chain_saw, refitted for the moved gun
+			-6.85, -0.79, 84.84, -7.97, 7.24, -0.11,	// r12 port: row 168 Chain_saw, refitted for the moved gun
+			-6.85, -0.73, 84.83, -8.01, 7.22, -0.35,	// r12 port: row 169 Chain_saw, refitted for the moved gun
+			-6.85, -0.79, 84.84, -7.97, 7.24, -0.11,	// r12 port: row 170 Chain_saw, refitted for the moved gun
+			-6.85, -0.73, 84.83, -8.01, 7.22, -0.35,	// r12 port: row 171 Chain_saw, refitted for the moved gun
+			0.55, -3.08, 30.02, -5.61, 2.25, -0.56,	// r12 port: row 172 Chain_saw, refitted for the moved gun
+			17.83, -3.33, 30.00, -8.85, 4.22, -2.69,	// r12 port: row 173 Chain_saw, refitted for the moved gun
+			44.26, -5.81, 27.96, -8.51, 4.79, -7.62,	// r12 port: row 174 Chain_saw, refitted for the moved gun
+			-5.80, -1.20, 15.55, -2.33, -0.62, -0.13,	// r12 port: row 175 Chain_saw, refitted for the moved gun
+			-17.19, -2.27, 21.39, -2.57, -2.77, -0.76,	// r12 port: row 176 Chain_saw, refitted for the moved gun
+			-33.36, -1.67, 29.20, -1.32, -5.49, -2.52,	// r12 port: row 177 Chain_saw, refitted for the moved gun
+			-1.19, -6.22, -0.42, 0.15, -0.50, -0.74,	// r12 port: row 178 Chain_saw, refitted for the moved gun
+			0.61, 3.39, 0.30, -0.44, 1.99, -0.13,	// r12 port: row 179 Chain_saw, refitted for the moved gun
+			4.47, 20.44, 2.44, -1.15, 5.95, -0.10,	// r12 port: row 180 Chain_saw, refitted for the moved gun
+			4.26, 19.85, 2.34, -0.71, 3.15, 0.45,	// r12 port: row 181 Chain_saw, refitted for the moved gun
+			-3.88, -20.34, -0.89, 0.54, -1.81, -3.31,	// r12 port: row 182 Chain_saw, refitted for the moved gun
+			0.00, 1.56, -0.09, 0.18, 0.78, 3.05,	// r12 port: row 183 FlameCannon md3 frame 1 (FLMG / 2LMG B), fitted at the ported placement
+			-0.02, 4.99, -0.29, 0.57, 3.10, 9.62,	// r12 port: row 184 FlameCannon md3 frame 2 (FLMG / 2LMG C), fitted at the ported placement
+			-0.06, 9.98, -0.59, 1.11, 7.89, 18.72,	// r12 port: row 185 FlameCannon md3 frame 3 (FLMG / 2LMG D), fitted at the ported placement
+			-0.02, 4.99, -0.29, 0.57, 3.10, 9.62,	// r12 port: row 186 FlameCannon md3 frame 4 (FLMG / 2LMG E), fitted at the ported placement
+			0.00, 1.31, -0.08, 0.33, 1.11, 5.64,	// r12 port: row 187 FlameCannon md3 frame 5 (FLMG / 2LMG H/J), fitted at the ported placement
+			0.00, 1.82, -0.11, 0.26, 1.07, 4.42	// r12 port: row 188 FlameCannon md3 frame 6 (FLMG / 2LMG I/K), fitted at the ported placement
 		};
 		String f = String.Format("%c", 65 + frame);
 		for (int k = 0; k < spr.Size(); k++)

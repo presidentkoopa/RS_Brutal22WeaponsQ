@@ -235,9 +235,12 @@ Model BrutalAxe
    Model 0 "BrutalAxe.md3"
    Skin 0 "BrutalAxe.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
+   Offset 2.308 -13.113 0.0
+   ZOffset -2.195
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92
    NoInterpolation
-   ZOffset -5
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -677,8 +680,11 @@ Model Chain_saw
    Model 0 "Chain_saw.md3"
    Skin 0 "Chain_saw.png"
    Scale -1.5 1.5 1.5
-   Offset 0.0 10.0 0.0
-   ZOffset -5
+   Offset 3.195 9.817 0.0
+   ZOffset -13.640
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92
    NOINTERPOLATION
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
@@ -1094,8 +1100,11 @@ Model DSweap
    Model 0 "DSweap.md3"
    Skin 0 "DSweap.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 2.723 -1.541 0.0
+   ZOffset -4.336
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -1123,9 +1132,11 @@ Model DSweap
    Model 0 "DSweap.md3"
    Skin 0 "DSweap.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 -40.26 0.0
-   ZOffset -33.19
-   PitchOffset 110
+   Offset 2.7233 -39.1092 0.0
+   ZOffset -31.9687
+   AngleOffset -9.6221
+   PitchOffset 113.6676
+   RollOffset 20.0265	// r12 port (lane B): the two-handed block = its 110 deg turn K (about the controller) of the one-handed block moved to the FBX hand (was Offset 0.0 -40.26, ZOffset -33.19, PitchOffset 110.0)
    FrameIndex	DSL2	A	0	0
 }
 
@@ -1138,8 +1149,11 @@ Model FlameCannon
    Model 0 "FlameCannon.md3"
    Skin 0 "FlameCannon.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 0.070 -13.155 0.0
+   ZOffset -6.744
+   AngleOffset -3.368
+   PitchOffset -7.292
+   RollOffset -0.038	// r12 port (lane B): gun to the FBX hand fitted from 1.92
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -1269,8 +1283,11 @@ Model HellishMissileLauncher
    Model 0 "HellishMissile.md3"
    Skin 0 "HellishMissile.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 3.610 -7.537 0.0
+   ZOffset 2.891
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -2904,8 +2921,11 @@ Model Unmaker
    Model 0 "Unmaker.md3"
    Skin 0 "Unmaker.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 1.308 -6.492 0.0
+   ZOffset 0.083
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -2996,11 +3016,11 @@ Model BFG10k
    Model 0 "BFG_10k.md3"
    Skin 0 "BFG_10k2.png"
    Scale -1.0 1.0 1.0
-   Offset -0.344 -2.493 0.0
-   ZOffset -0.730
+   Offset -0.826 -2.653 0.0
+   ZOffset -0.272
    AngleOffset 3.854
    PitchOffset 3.363
-   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92, re-fitted (r4 dense; was -0.344 -2.493 -0.730 3.854 3.363 10.974)
 
    FrameIndex	BG2G	A	0	4
    FrameIndex	BG2G	B	0	4
@@ -3033,11 +3053,11 @@ Model BFG10k
    Model 0 "BFG_10k.md3"
    Skin 0 "BFG_10k.png"
    Scale -1.0 1.0 1.0
-   Offset -0.344 -2.493 0.0
-   ZOffset -0.730
+   Offset -0.826 -2.653 0.0
+   ZOffset -0.272
    AngleOffset 3.854
    PitchOffset 3.363
-   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92, re-fitted (r4 dense; was -0.344 -2.493 -0.730 3.854 3.363 10.974)
 
    FrameIndex	BG2G	S	0	0
    FrameIndex	BG2G	T	0	1
@@ -3089,11 +3109,11 @@ Model NukeLauncher
    Model 0 "Nuker.md3"
    Skin 0 "Nuker.png"
    Scale -1.1 1.1 1.1
-   Offset 0.463 -2.370 0.0
-   ZOffset 4.577
+   Offset 0.118 -2.391 0.0
+   ZOffset 4.448
    AngleOffset 3.854
    PitchOffset 3.363
-   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92, re-fitted (r4 dense; was 0.463 -2.370 4.577 3.854 3.363 10.974)
 
    FrameIndex	NKLF	A	0	5
    FrameIndex	NKLF	B	0	5
@@ -3244,7 +3264,8 @@ Model ThrowedAxe
    Model 0 "BrutalAxe.md3"
    Skin 0 "BrutalAxe.png"
    Scale 0.35 0.35 0.35
-   Offset -11.93 0.0 2.31
+   Offset -11.93 0.0 0.0
+   ZOffset 2.31
    NoInterpolation
    Rotating
    Rotation-Speed -11.4
@@ -3268,7 +3289,8 @@ Model ThrowedAxeStrong
    Model 0 "BrutalAxe.md3"
    Skin 0 "BrutalAxe.png"
    Scale 0.35 0.35 0.35
-   Offset -11.93 0.0 2.31
+   Offset -11.93 0.0 0.0
+   ZOffset 2.31
    NoInterpolation
    Rotating
    Rotation-Speed -11.4
@@ -3297,9 +3319,12 @@ Model BrutalAxe
    Model 0 "BrutalAxe.md3"
    Skin 0 "BrutalAxe.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 8.9584 0.0
+   Offset -0.4368 -4.9611 0.0
+   ZOffset -19.6389
+   AngleOffset 3.8540
+   PitchOffset 3.3630
+   RollOffset 10.9740	// r12 port (lane B): the two-handed placement moved with the weapon to the FBX hand (was Offset 0.0 8.9584, ZOffset -22.2631)
    NoInterpolation
-   ZOffset -22.2631
    FrameIndex	AXE2	A	0	5
 }
 
@@ -3309,7 +3334,8 @@ Model BrutalAxeOnWall
    Model 0 "BrutalAxe.md3"
    Skin 0 "BrutalAxe.png"
    Scale 0.35 0.35 0.35
-   Offset -4.68 0.0 12.46
+   Offset -4.68 0.0 0.0
+   ZOffset 12.46
    PitchOffset -51
    NoInterpolation
 
@@ -3323,7 +3349,8 @@ Model BrutalAxe
    Model 0 "BrutalAxe.md3"
    Skin 0 "BrutalAxe.png"
    Scale 0.35 0.35 0.35
-   Offset -11.93 1.69 0.5
+   Offset -11.93 1.69 0.0
+   ZOffset 0.5
    RollOffset 90
    NoInterpolation
 

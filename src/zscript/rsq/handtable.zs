@@ -39,32 +39,33 @@ class RSQ_HandTable abstract
 		if (w is 'Chain_saw')	return 25;
 		if (w is 'DSweap')	return 26;
 		if (w is 'Machinegun')	return 27;	// 1.97: the BD21 Machinegun (c2q/bd22_mg.py: kit ICP on the REMA card's palm / supportat)	// 2026-10-23: the Dragonslayer, two-handed (work/ds_fit.py)
+		if (w is 'FlameCannon')	return 28;	// r12 port: the arm-worn FlameCannon (owner item 21): no gun hand, its support hand only
 		return 0;
 	}
 
 	clearscope static String GunOne(int i)
 	{
-		static const String v[] = { "", "F", "G", "G", "A", "F", "F", "F", "C", "E", "F", "F", "F", "F", "G", "F", "F", "A", "F", "E", "D", "C", "F", "F", "H", "H", "H", "F" };
+		static const String v[] = { "", "F", "G", "G", "A", "F", "F", "F", "C", "E", "F", "F", "F", "F", "G", "F", "F", "A", "F", "E", "D", "C", "F", "F", "H", "H", "H", "F", "" };
 		return i > 0 && i < v.Size() ? v[i] : "";
 	}
 
 	clearscope static String GunTwo(int i)
 	{
-		static const String v[] = { "", "F", "G", "G", "B", "F", "F", "F", "C", "E", "F", "F", "F", "F", "G", "F", "F", "B", "F", "E", "D", "C", "F", "F", "H", "H", "H", "F" };
+		static const String v[] = { "", "F", "G", "G", "B", "F", "F", "F", "C", "E", "F", "F", "F", "F", "G", "F", "F", "B", "F", "E", "D", "C", "F", "F", "H", "H", "H", "F", "" };
 		return i > 0 && i < v.Size() ? v[i] : "";
 	}
 
 	clearscope static String Support(int i)
 	{
-		static const String v[] = { "", "B", "D", "D", "A", "B", "E", "B", "C", "D", "E", "B", "B", "E", "D", "B", "B", "A", "C", "D", "C", "B", "E", "D", "E", "E", "E", "B" };
+		static const String v[] = { "", "B", "D", "D", "A", "B", "E", "B", "C", "D", "E", "B", "B", "E", "D", "B", "B", "A", "C", "D", "C", "B", "E", "D", "E", "E", "E", "B", "B" };
 		return i > 0 && i < v.Size() ? v[i] : "";
 	}
 
 	clearscope static Vector3 GunHook(int i)
 	{
-		static const double x[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 3.590, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.140, -4.580, -8.910, -4.400, 0.000 };
-		static const double y[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, -8.080, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, -6.020, 0.150, 5.610, 0.250, 0.000 };
-		static const double z[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 3.600, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, -0.390, 12.850, 1.040, 1.270, 0.000 };
+		static const double x[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000 };
+		static const double y[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000 };
+		static const double z[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000 };
 		if (i <= 0 || i >= x.Size())
 			return (0, 0, 0);
 		return (x[i], y[i], z[i]);
@@ -72,14 +73,18 @@ class RSQ_HandTable abstract
 
 	clearscope static Vector3 GunRot(int i)
 	{
-		static const double x[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.890, -17.470, 0.970, 0.000 };
-		static const double y[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 16.590, -6.320, 31.450, 0.000 };
-		static const double z[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.930, 26.850, 1.160, 0.000 };
+		static const double x[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000 };
+		static const double y[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000 };
+		static const double z[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000 };
 		if (i <= 0 || i >= x.Size())
 			return (0, 0, 0);
 		return (x[i], y[i], z[i]);
 	}
 
+	// r12 port: row 26 (DSweap) = the FBX L hand on the hilt below the gun hand (melee lane: the gun hand mirrored, slid 12.5 cm down the handle; pen 0.44; owner-approved 2026-10-27) (fbx_melee_DSweap_sup_L.md3, FbxSupDS)
+	// r12 port: row 25 (Chain_saw) = the FBX L hand on the top handle (melee lane support_top: R fit on the mirrored saw, mirrored back; pen 0.39; owner-approved 2026-10-27) (fbx_melee_Chain_saw_sup_L.md3, FbxSupSaw)
+	// r12 port: row 28 (FlameCannon) = the FBX open palm cupped under the barrel 38 cm from the slit (hands r4 FlameCannon_under40: pen 0.33, palm gap 0.30; owner-approved 2026-10-28) (fbx_r4_FlameCannon_under40_L.md3, FbxSupFC)
+	// r12 port: row 13 (Minigun) = the FBX fist round the side handle (hands r4 support_r4_bar_ref: pen 0.09, wrap I/M/R/P 188/202/198/183 deg; replaces Ermac's pose E; owner-approved 2026-10-28) (fbx_r4_Minigun_bar_L.md3, FbxSupMini)
 	// r9 port: row 8 (GrenadeLauncher) = the FBX palm-under (RQFS B) under the gun at its SupportPoint, moved with the gun (fit_hv.py)
 	// r9 port: row 19 (Rocket_Launcher) = the FBX palm-under (RQFS B) at 1.92's SupportPoint moved with the gun, lowered 0.1 cm until clear: pen 0.49, palm 0.10 cm from the gun (support_gun.py via heavies/sup_hv.py, fits/r9/sup_Rocket_Launcher.json)
 	// r9 port: row 16 (RailGun) = the FBX palm-under (RQFS B) at 1.92's SupportPoint moved with the gun, lowered 1.1 cm until clear: pen 0.45, palm 1.10 cm from the gun (support_gun.py via heavies/sup_hv.py, fits/r9/sup_RailGun.json)
@@ -94,6 +99,8 @@ class RSQ_HandTable abstract
 	// r11 port: row 10 (IncendiaryLauncher) = the FBX palm-under (RQFS B), the farm's placement (fit_hv.py): pen 0.43, palm 1.10 cm from the gun (<= 0.5: kept)
 	// r11 port: row 6 (Devastator) = the FBX palm-under (RQFS B), the farm's placement (fit_hv.py): pen 0.49, palm 1.69 cm from the gun (<= 0.5: kept)
 	// r11 port: row 20 (SSG) = the FBX palm-under (RQFS B), the farm's placement (fit_hv.py): pen 0.44, palm 1.30 cm from the gun (<= 0.5: kept)
+	// r12 port: row 23 (Unmaker) = r12: the old support (Ermac hand2 pose D, frame 3) moved with the gun; the support lane is redoing it (owner 2026-10-28)
+	// r12 port: row 9 (HellishMissileLauncher) = r12: the old support (Ermac hand2 pose D, frame 3) moved with the gun; the support lane is redoing it (owner 2026-10-28)
 	// batch 5: row 17 (Revolver, Revolver2, BrutalRevolver) = the FBX cup under the gun hand (RQFS A), clear of both revolvers and both gun hands, at 1.92's SupportPoint moved with the gun (support_gun.py)
 	// batch 5: row 18 (Rifle) = the FBX open palm under its handguard / M203 (RQFS B) at 1.92's SupportPoint moved with the gun (support_gun.py)
 	// shotguns: row 1 (AssaultShotgun) = the FBX palm-under (RQFS B) under the AssaultShotgun forend at 1.92's SupportPoint, moved with the gun (bake_sg.py)
@@ -103,9 +110,9 @@ class RSQ_HandTable abstract
 	// batch 2: row 5 (BrutalSMG) = the FBX palm-under (RQFS B) moved under the SMG forend (bake_b2.py)
 	clearscope static Vector3 SupportHook(int i)
 	{
-		static const double x[] = { 0, -0.000, -3.355, -3.438, 0.000, -4.436, -0.000, 0.000, 0.000, 1.750, -0.000, -2.018, -2.185, -7.496, -2.653, -0.000, -0.000, 0.458, 0.000, -0.000, 0.000, 0.000, -2.329, 1.750, -0.270, 12.240, -0.720, -0.000 };
-		static const double y[] = { 0, -0.000, 9.356, 9.300, 0.000, 10.601, -0.000, 0.000, -0.000, -24.530, 0.000, 19.467, 21.316, -30.917, 11.451, -0.000, -0.000, -2.521, -0.000, 0.000, 0.000, -0.000, 17.166, -9.720, -26.270, -10.370, 7.760, -0.000 };
-		static const double z[] = { 0, 0.000, 6.131, 5.667, 0.000, 9.638, 0.000, 0.000, -0.000, 2.080, 0.000, 6.492, -4.391, -7.798, 9.613, -0.000, 0.000, -0.373, 0.000, -0.000, 0.000, -0.000, 5.374, -1.520, 30.800, -9.450, 38.380, -0.000 };
+		static const double x[] = { 0, -0.000, -3.355, -3.438, 0.000, -4.436, -0.000, 0.000, 0.000, 1.937, -0.000, -0.000, -2.185, -49.060, -2.653, -0.000, -0.000, 0.458, 0.000, -0.000, 0.000, 0.000, 0.000, 3.736, -4.716, 5.190, -1.695, -0.000, -3.094 };
+		static const double y[] = { 0, -0.000, 9.356, 9.300, 0.000, 10.601, -0.000, 0.000, -0.000, -15.462, 0.000, 0.000, 21.316, 1.105, 11.451, -0.000, -0.000, -2.521, -0.000, 0.000, 0.000, -0.000, 0.000, -3.803, -15.643, -32.258, -10.904, -0.000, 18.392 };
+		static const double z[] = { 0, 0.000, 6.131, 5.667, 0.000, 9.638, 0.000, 0.000, -0.000, -6.036, 0.000, 0.000, -4.391, 37.564, 9.613, -0.000, 0.000, -0.373, 0.000, -0.000, 0.000, -0.000, -0.000, -8.585, 22.971, -16.986, 5.289, -0.000, 2.135 };
 		if (i <= 0 || i >= x.Size())
 			return (0, 0, 0);
 		return (x[i], y[i], z[i]);
@@ -113,9 +120,9 @@ class RSQ_HandTable abstract
 
 	clearscope static Vector3 SupportRot(int i)
 	{
-		static const double x[] = { 0, -0.000, -7.927, -7.927, 0.000, -7.927, -0.000, 0.000, 0.000, 0.000, -0.000, -7.927, -7.927, 9.447, -7.927, -0.000, -0.000, -0.000, 0.000, -0.000, 0.000, 0.000, -7.927, 0.000, -35.120, 2.090, 163.990, 0.000 };
-		static const double y[] = { 0, 0.000, 2.302, 2.302, 0.000, 2.302, 0.000, 0.000, 0.000, 0.000, 0.000, 2.302, 2.302, 17.111, 2.302, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 2.302, 0.000, -29.640, 14.790, 19.250, 0.000 };
-		static const double z[] = { 0, -0.000, 10.732, 10.732, 0.000, 10.732, 0.000, 0.000, -0.000, 0.000, 0.000, 10.732, 10.732, 107.081, 10.732, -0.000, -0.000, -0.000, 0.000, 0.000, -0.000, 0.000, 10.732, 0.000, 19.180, 69.910, 174.630, 0.000 };
+		static const double x[] = { 0, -0.000, -7.927, -7.927, 0.000, -7.927, -0.000, 0.000, 0.000, -3.854, -0.000, -0.000, -7.927, 64.324, -7.927, -0.000, -0.000, -0.000, 0.000, -0.000, 0.000, 0.000, 0.000, -3.854, -42.463, 36.766, -15.393, 0.000, 3.574 };
+		static const double y[] = { 0, 0.000, 2.302, 2.302, 0.000, 2.302, 0.000, 0.000, 0.000, 3.363, 0.000, 0.000, 2.302, 31.932, 2.302, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 3.363, -20.362, -5.490, 11.318, 0.000, -37.502 };
+		static const double z[] = { 0, -0.000, 10.732, 10.732, 0.000, 10.732, 0.000, 0.000, -0.000, 10.974, 0.000, 0.000, 10.732, -175.346, 10.732, -0.000, -0.000, -0.000, 0.000, 0.000, -0.000, 0.000, -0.000, 10.974, 26.638, 116.769, 26.710, 0.000, -0.526 };
 		if (i <= 0 || i >= x.Size())
 			return (0, 0, 0);
 		return (x[i], y[i], z[i]);
@@ -123,9 +130,9 @@ class RSQ_HandTable abstract
 
 	clearscope static Vector3 SupportPoint(int i)
 	{
-		static const double x[] = { 0, 0.446, 0.327, 0.332, -0.047, 0.305, 0.381, 0.480, 0.245, 0.300, 0.449, 0.326, 0.440, 0.358, 0.278, 0.445, 0.471, 0.043, 0.336, 0.262, 0.178, 0.431, 0.346, 0.300, -0.195, 0.331, -0.024, 0.428 };
-		static const double y[] = { 0, 0.098, 0.064, 0.064, 0.027, 0.038, 0.070, 0.000, 0.087, 0.000, 0.129, 0.045, 0.050, 0.259, 0.060, 0.075, 0.070, 0.064, 0.033, 0.023, 0.069, 0.086, 0.062, 0.000, 0.000, 0.121, -0.000, 0.064 };
-		static const double z[] = { 0, -0.052, -0.027, -0.027, -0.127, 0.003, -0.029, -0.133, -0.081, -0.223, -0.138, 0.093, 0.101, 0.070, -0.010, -0.004, 0.009, -0.080, 0.080, 0.132, -0.057, -0.023, -0.027, -0.084, -0.278, 0.115, -0.144, 0.006 };
+		static const double x[] = { 0, 0.446, 0.327, 0.332, -0.047, 0.305, 0.381, 0.480, 0.245, 0.383, 0.449, 0.326, 0.440, 0.353, 0.278, 0.445, 0.471, 0.043, 0.336, 0.262, 0.178, 0.431, 0.346, 0.366, -0.052, 0.316, -0.003, 0.428, 0.321 };
+		static const double y[] = { 0, 0.098, 0.064, 0.064, 0.027, 0.038, 0.070, 0.000, 0.087, 0.047, 0.129, 0.045, 0.050, 0.216, 0.060, 0.075, 0.070, 0.064, 0.033, 0.023, 0.069, 0.086, 0.062, 0.043, 0.038, 0.113, 0.019, 0.064, -0.037 };
+		static const double z[] = { 0, -0.052, -0.027, -0.027, -0.127, 0.003, -0.029, -0.133, -0.081, -0.104, -0.138, 0.093, 0.101, 0.091, -0.010, -0.004, 0.009, -0.080, 0.080, 0.132, -0.057, -0.023, -0.027, 0.004, -0.238, 0.092, -0.118, 0.006, -0.232 };
 		if (i <= 0 || i >= x.Size())
 			return (0, 0, 0);
 		return (x[i], y[i], z[i]);
@@ -135,7 +142,7 @@ class RSQ_HandTable abstract
 	// each gun's trigger (tf/ rig, fitted per gun); "" keeps the plain grip frame
 	clearscope static String Trigger(int i)
 	{
-		static const String v[] = { "", "A", "B", "B", "C", "D", "E", "E", "F", "G", "H", "I", "J", "E", "B", "L", "M", "N", "O", "G", "P", "Q", "", "E", "", "R", "", "I" };
+		static const String v[] = { "", "A", "B", "B", "C", "D", "E", "E", "F", "G", "H", "I", "J", "E", "B", "L", "M", "N", "O", "G", "P", "Q", "", "E", "", "R", "", "I", "" };
 		return i > 0 && i < v.Size() ? v[i] : "";
 	}
 
@@ -144,9 +151,9 @@ class RSQ_HandTable abstract
 	// regrips: the axe does (owner 2026-10-23), sliding up the haft to the head.
 	clearscope static Vector3 GunHookTwo(int i)
 	{
-		static const double x[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 3.590, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.140, -4.300, -8.910, -4.400, 0.000 };
-		static const double y[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, -8.080, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, -6.020, 5.310, 5.610, 0.250, 0.000 };
-		static const double z[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 3.600, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, -0.390, -1.850, 1.040, 1.270, 0.000 };
+		static const double x[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, -0.926, 0.000, 0.000, 0.000, 0.000 };
+		static const double y[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 9.703, 0.000, 0.000, 0.000, 0.000 };
+		static const double z[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, -12.156, 0.000, 0.000, 0.000, 0.000 };
 		return i > 0 && i < x.Size() ? (x[i], y[i], z[i]) : (0, 0, 0);
 	}
 
@@ -155,9 +162,9 @@ class RSQ_HandTable abstract
 	// regrips: the axe does (owner 2026-10-23), sliding up the haft to the head.
 	clearscope static Vector3 GunRotTwo(int i)
 	{
-		static const double x[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.890, -17.470, 0.970, 0.000 };
-		static const double y[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 16.590, -6.320, 31.450, 0.000 };
-		static const double z[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.930, 26.850, 1.160, 0.000 };
+		static const double x[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000 };
+		static const double y[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000 };
+		static const double z[] = { 0, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000 };
 		return i > 0 && i < x.Size() ? (x[i], y[i], z[i]) : (0, 0, 0);
 	}
 

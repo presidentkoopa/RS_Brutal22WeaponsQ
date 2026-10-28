@@ -436,8 +436,11 @@ Model PuristFlameCannon
    Model 0 "FlameCannon.md3"
    Skin 0 "FlameCannon.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 0.070 -13.155 0.0
+   ZOffset -6.744
+   AngleOffset -3.368
+   PitchOffset -7.292
+   RollOffset -0.038	// r12 port (lane B): gun to the FBX hand fitted from 1.92
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -561,8 +564,11 @@ Model PuristHellishMissileLauncher
    Model 0 "HellishMissile.md3"
    Skin 0 "HellishMissile.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 3.610 -7.537 0.0
+   ZOffset 2.891
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -2150,8 +2156,11 @@ Model PuristUnmaker
    Model 0 "Unmaker.md3"
    Skin 0 "Unmaker.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset 1.308 -6.492 0.0
+   ZOffset 0.083
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
@@ -2239,11 +2248,11 @@ Model PuristBFG10k
    Model 0 "BFG_10k.md3"
    Skin 0 "BFG_10k2.png"
    Scale -1.0 1.0 1.0
-   Offset -0.344 -2.493 0.0
-   ZOffset -0.730
+   Offset -0.826 -2.653 0.0
+   ZOffset -0.272
    AngleOffset 3.854
    PitchOffset 3.363
-   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92, re-fitted (r4 dense; was -0.344 -2.493 -0.730 3.854 3.363 10.974)
 
    FrameIndex	BG2G	A	0	4
    FrameIndex	BG2G	B	0	4
@@ -2275,11 +2284,11 @@ Model PuristBFG10k
    Model 0 "BFG_10k.md3"
    Skin 0 "BFG_10k.png"
    Scale -1.0 1.0 1.0
-   Offset -0.344 -2.493 0.0
-   ZOffset -0.730
+   Offset -0.826 -2.653 0.0
+   ZOffset -0.272
    AngleOffset 3.854
    PitchOffset 3.363
-   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92, re-fitted (r4 dense; was -0.344 -2.493 -0.730 3.854 3.363 10.974)
 
    FrameIndex	BG2G	S	0	0
    FrameIndex	BG2G	T	0	1
@@ -2327,11 +2336,11 @@ Model PuristNukeLauncher
    Model 0 "Nuker.md3"
    Skin 0 "Nuker.png"
    Scale -1.1 1.1 1.1
-   Offset 0.463 -2.370 0.0
-   ZOffset 4.577
+   Offset 0.118 -2.391 0.0
+   ZOffset 4.448
    AngleOffset 3.854
    PitchOffset 3.363
-   RollOffset 10.974	// r10 port (lane B): gun to the FBX hand fitted from 1.92
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92, re-fitted (r4 dense; was 0.463 -2.370 4.577 3.854 3.363 10.974)
 
    FrameIndex	NKLF	A	0	5
    FrameIndex	NKLF	B	0	5
@@ -10577,9 +10586,12 @@ Model PuristHandGrenades
    Model 0 "nade.md3"
    Skin 0 "nade.png"
    Scale -0.92 0.92 0.92
-   Offset -4.01 -2.04 -1.45
+   Offset -12.075 -8.898 0.0
    NoInterpolation
-   ZOffset -5
+   ZOffset 2.326
+   AngleOffset -18.317
+   PitchOffset -17.735
+   RollOffset 3.457	// grenade hand (lane B): gun to the FBX hand, fit_nade.py
    FrameIndex RQNP C 0 2
 }
 
@@ -10593,9 +10605,12 @@ Model PuristHandGrenades
    SurfaceSkin 0 3 "nade.png"
    SurfaceSkin 0 4 "nade.png"
    Scale -0.92 0.92 0.92
-   Offset -4.01 -2.04 -1.45
+   Offset -12.075 -8.898 0.0
    NoInterpolation
-   ZOffset -5
+   ZOffset 2.326
+   AngleOffset -18.317
+   PitchOffset -17.735
+   RollOffset 3.457	// grenade hand (lane B): gun to the FBX hand, fit_nade.py
    FrameIndex RQNP A 0 2
 }
 
@@ -10609,9 +10624,12 @@ Model PuristHandGrenades
    SurfaceSkin 0 3 "rsr_clear.png"
    SurfaceSkin 0 4 "rsr_clear.png"
    Scale -0.92 0.92 0.92
-   Offset -4.01 -2.04 -1.45
+   Offset -12.075 -8.898 0.0
    NoInterpolation
-   ZOffset -5
+   ZOffset 2.326
+   AngleOffset -18.317
+   PitchOffset -17.735
+   RollOffset 3.457	// grenade hand (lane B): gun to the FBX hand, fit_nade.py
    FrameIndex RQNP B 0 2
 }
 
@@ -10857,14 +10875,15 @@ Model PuristUnmaker
 	FrameIndex RQGU E 0 19
 }
 
+// 2.0 int r2: the grenade hand as HandGrenades' (MODELDEF.rsqdual, fit_nade.py FBX hand); variants copy (r3 item 23)
 Model PuristHandGrenades
 {
-	Path "models/rsq"
-	Model 0 "ammo_hand.md3"
-	Skin 0 "hand.png"
+	Path "models/rsq/fbx"
+	Model 0 "fbx_nade_R.md3"
+	Skin 0 "fbx_hand.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -24.0 -10.0
-	FrameIndex RQGN A 0 3
+	FrameIndex RQGN A 0 0	// grenade hand (lane B): the FBX hand, fit_nade.py (frame baked in place, hook 0)
 }
 
 Model PuristRifle
@@ -11953,4 +11972,28 @@ Model PuristSniper
 	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQKM B 0 0
+}
+
+// r12 port (lane B): Unmaker (row 23), dual wield holds the FBX gun hand fitted from 1.92's Unmaker hold (frames baked in place, hook 0)
+Model PuristUnmaker
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_Unmaker_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVE A 0 0	// Unmaker, finger on the trigger
+	FrameIndex RQVE B 0 1	// Unmaker, squeezed
+}
+
+// r12 port (lane B): HellishMissileLauncher (row 9), dual wield holds the FBX gun hand fitted from 1.92's HellishMissileLauncher hold (frames baked in place, hook 0)
+Model PuristHellishMissileLauncher
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_HellishMissileLauncher_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVF A 0 0	// HellishMissileLauncher, finger on the trigger
+	FrameIndex RQVF B 0 1	// HellishMissileLauncher, squeezed
 }

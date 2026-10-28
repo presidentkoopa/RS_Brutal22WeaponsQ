@@ -3,7 +3,8 @@ so their pads close onto the grip (target gap 0.2 cm) with no penetration beyond
 pistol curl (stage 2 already puts its pad on the trigger), then the squeeze = pad 0.6 cm back along the bore (index 3 params).
 Output Xt/Xs in the pistol's original gun frame with the gun SHIFTED by d (the frame bake_b2 / revindex use)."""
 import sys, json, numpy as np
-sys.path.insert(0, '/home/claude/lane_b_b3run/tools')
+import os as _fl_os; FITTER_LIB = _fl_os.environ.get('RS_FITTER_LIB', _fl_os.path.join(_fl_os.path.dirname(_fl_os.path.abspath(__file__)), '..', 'fitter_lib'))	# the batch 1-4 fitter modules (were /home/claude/lane_b_b*run/tools)
+sys.path.insert(0, FITTER_LIB)
 from rigid3 import *
 def run(g, nfev=40, idx=False):
     ctx, x, to_g, Xf, delta = revindex.setup(); L = ctx.L

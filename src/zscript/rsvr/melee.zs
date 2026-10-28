@@ -270,7 +270,8 @@ class RSVR_Hand play
 	Actor lockTarget;	// the monster painted while a throw is readied
 	Actor lockRing;
 	int lockKeep;		// F11: a release that was not a throw keeps the paint until this tic
-	int poseFrame;		// 0 = one hand, 1 = the two-handed placement
+	int poseFrame;
+	int placeK;		// r12 port: which weapon Place() is placing (RSVR_MeleeMove)		// 0 = one hand, 1 = the two-handed placement
 	int lastPoseFrame;
 	int swingTics;
 	int calmTics;
@@ -494,6 +495,7 @@ class RSVR_Hand play
 			return false;
 		SpriteID s = psp.Sprite;
 		poseFrame = 0;
+		placeK = k;	// r12 port
 		// r6 (owner item 16: "the pistol whip only works with the off hand"). The main hand's pistol
 		// never whipped: BrutalPistol's Ready holds PIST E (loaded), PIST I (empty) or 2IST E, never
 		// frame A, so the `Frame != 0` test below turned the whip off whenever the pistol was ready.
@@ -605,6 +607,11 @@ class RSVR_Hand play
 		double f = 0.01 * (ws * m.x - 30 - oz - sf);
 		double r = 0.01 * (-ws * m.y + ox);
 		double u = 0.01 * (ws * m.z + oy + su);
+		// r12 port: the weapon is drawn moved to the FBX hand: its points move the same way (RSVR_MeleeMove, F / L / U cm)
+		Vector3 mv = RSVR_MeleeMove.Apply(placeK, poseFrame, (100 * f, -100 * r, 100 * u));
+		f = 0.01 * mv.x;
+		r = -0.01 * mv.y;
+		u = 0.01 * mv.z;
 		Vector3 w = fF * f + fR * r + fU * u;
 		w.z /= ps;
 		return fH + w * vu;
@@ -1187,6 +1194,7 @@ class RSVR_Hand play
 
 		// fastest step of the axe's edge over the last few tics: people slow
 		// down as they let go
+		placeK = AXE;	// r12 port: the axe's own move (RSVR_MeleeMove)
 		Vector3 t1 = Place(BladeOut(AXE));
 		Vector3 p1 = mo.pos;
 		double best = 0;
@@ -1357,5 +1365,29 @@ class RSVR_AxeLock : Actor
 	Spawn:
 		RQLK ABCD 3 Bright;
 		Loop;
+	}
+}
+
+// r12 port (lane B): the melee weapons are drawn moved to the fitted FBX hand (MODELDEF Offset / Angle, tools/handfit/port/melee_r12.py),
+// so their hit points move with them: the point Place() computed in the ORIGINAL placement (controller frame, F / L / U cm, the
+// QZD chain at vr_weaponScale 1.02) -> R p + t, the weapon's own rigid move. One block per weapon and placement (poseFrame).
+class RSVR_MeleeMove abstract
+{
+	static Vector3 Apply(int k, int pf, Vector3 p)
+	{
+		// r12 port: BrutalAxe
+		if (k == RSVR_Hand.AXE && pf == 0)	// BrutalAxe one-handed
+			return (0.996020 * p.x + -0.077127 * p.y + -0.044664 * p.z + 12.9934, 0.067099 * p.x + 0.978743 * p.y + -0.193804 * p.z + -0.2948, 0.058662 * p.x + 0.190036 * p.y + 0.980023 * p.z + 4.5647);
+		if (k == RSVR_Hand.AXE && pf == 1)	// BrutalAxe AXE2 (two hands)
+			return (0.996020 * p.x + -0.077127 * p.y + -0.044664 * p.z + 12.9934, 0.067099 * p.x + 0.978743 * p.y + -0.193804 * p.z + -0.2948, 0.058662 * p.x + 0.190036 * p.y + 0.980023 * p.z + 4.5647);
+		// r12 port: DSweap
+		if (k == RSVR_Hand.SWORD && pf == 0)	// DSweap one-handed
+			return (0.996020 * p.x + -0.077127 * p.y + -0.044664 * p.z + 1.4218, 0.067099 * p.x + 0.978743 * p.y + -0.193804 * p.z + -0.7103, 0.058662 * p.x + 0.190036 * p.y + 0.980023 * p.z + 2.4235);
+		if (k == RSVR_Hand.SWORD && pf == 3)	// DSweap DSL2 (two hands): K M K^-1 on the old DSL2 point
+			return (0.986393 * p.x + -0.152196 * p.y + -0.062166 * p.z + -2.7636, 0.159167 * p.x + 0.978743 * p.y + 0.129337 * p.z + -0.7103, 0.041160 * p.x + -0.137472 * p.y + 0.989650 * p.z + 0.5072);
+		// r12 port: Chain_saw
+		if (k == RSVR_Hand.SAW && pf == 2)	// Chain_saw saw
+			return (0.996020 * p.x + -0.077127 * p.y + -0.044664 * p.z + 0.0242, 0.067099 * p.x + 0.978743 * p.y + -0.193804 * p.z + -0.5114, 0.058662 * p.x + 0.190036 * p.y + 0.980023 * p.z + -6.2932);
+		return p;
 	}
 }

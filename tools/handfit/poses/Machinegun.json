@@ -197,7 +197,7 @@
   "form": "support192",
   "md3": "models/rsq/fbx/fbx_s192_L.md3",
   "sprite": "RQWS",
-  "frame": 10,
+  "frame": 12,
   "letter": "M",
   "label": "FbxWrapMachinegun",
   "handtable_row": 27,
