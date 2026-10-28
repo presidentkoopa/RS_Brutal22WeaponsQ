@@ -845,7 +845,7 @@ Model RSQ_Hands
 }
 // support192 BEGIN
 
-// support192 (support192 batch 3): the FBX support hands fitted from the 1.92 holds (tools/handfit/support192), baked in place
+// support192 (support192 batch 4): the FBX support hands fitted from the 1.92 holds (tools/handfit/support192), baked in place
 Model RSQ_GunSide
 {
 	Path "models/rsq/fbx"
@@ -863,7 +863,8 @@ Model RSQ_GunSide
 	FrameIndex RQWS H 0 7	// Rocket_Launcher
 	FrameIndex RQWS I 0 8	// Plasma_Gun
 	FrameIndex RQWS J 0 9	// RailGun
-	FrameIndex RQWS M 0 10	// Machinegun
+	FrameIndex RQWS K 0 10	// Sniper
+	FrameIndex RQWS M 0 11	// Machinegun
 }
 Model RSQ_Hands
 {
@@ -882,6 +883,7 @@ Model RSQ_Hands
 	FrameIndex RQWS H 0 7	// Rocket_Launcher
 	FrameIndex RQWS I 0 8	// Plasma_Gun
 	FrameIndex RQWS J 0 9	// RailGun
-	FrameIndex RQWS M 0 10	// Machinegun
+	FrameIndex RQWS K 0 10	// Sniper
+	FrameIndex RQWS M 0 11	// Machinegun
 }
 // support192 END

@@ -1,7 +1,7 @@
 """sdf.py: a signed distance to a mesh, fast enough to sit inside a least-squares solve.
 |d| = distance to dense surface samples (every ~0.1 cm on the triangles, KD-tree; error <= ~0.07 cm).
 sign = inside by the generalized winding number (gunfield.winding, the exactpen rule) of 0.25 cm grid cells, computed the
-first time a cell is visited and cached; triangles = those in the box round the region plus a 4 cm margin. The final numbers of every fit are re-checked with exactpen (no grid)."""
+first time a cell is visited and cached; all triangles (a cropped mesh is open: its winding number is wrong near the cut). The final numbers of every fit are re-checked with exactpen (no grid)."""
 import numpy as np
 from scipy.spatial import cKDTree
 import gunfield
@@ -16,8 +16,7 @@ def samples(A, B, C, step=0.1):
 class SDF:
     def __init__(s, V, F, lo, hi, fine=0.15, margin=4.0, step=0.2):
         A, B, C = V[F[:, 0]], V[F[:, 1]], V[F[:, 2]]
-        k = ((np.minimum(np.minimum(A, B), C) < hi + margin) & (np.maximum(np.maximum(A, B), C) > lo - margin)).all(1)
-        s.A, s.B, s.C = A[k], B[k], C[k]; s.ntri = int(k.sum())
+        s.A, s.B, s.C = A, B, C; s.ntri = len(A)	# the sign uses EVERY triangle (exactpen's rule): a cropped mesh is open and its winding lies
         kk = ((np.minimum(np.minimum(s.A, s.B), s.C) < hi + 1) & (np.maximum(np.maximum(s.A, s.B), s.C) > lo - 1)).all(1)
         S = samples(s.A[kk], s.B[kk], s.C[kk], step) if kk.any() else np.zeros((1, 3)) + 1e6
         s.tree = cKDTree(S); s.lo = np.asarray(lo, float); s.hi = np.asarray(hi, float); s.fine = fine

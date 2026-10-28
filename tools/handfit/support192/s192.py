@@ -43,14 +43,14 @@ def gunhand_md3(g):
 class Scene:
     def __init__(s, g, names=None, gun192=None):
         s.g = g; G = s.G = PG.GUNS[g]; s.row = G['row']
-        P = jl(os.path.join(FITS, 'ported_%s.json' % g)); s.place = np.array(P['place'])
+        s.place = np.array(G['place']) if 'place' in G else np.array(jl(os.path.join(FITS, 'ported_%s.json' % g))['place'])
         names = names or G['names'][:1]; d = os.path.dirname(os.path.join(PG.SRC, G['md3'])); VV = []; FF = []; n = 0
         for nm in names:
             X, F = md3_mesh(os.path.join(d, nm), G['ready']); VV.append(PG.chain(G['scale'], s.place[:3], s.place[3:])(X)); FF.append(F + n); n += len(X)
         s.Vg = np.concatenate(VV); s.Fg = np.concatenate(FF); s.names = names
         # the gun hand (trigger frame) where it is drawn
-        gh = gunhand_md3(g); s.gh_md3 = gh
-        Xh, Fh = md3_mesh(gh, 0); s.Xh = draw(PG.md3_frames(gh)[0][0], ht_row('GunHook', s.row), ht_row('GunRot', s.row)); s.Fh = Fh
+        gh = G.get('gunhand') or gunhand_md3(g); s.gh_md3 = gh
+        Xh, Fh = md3_mesh(gh, 0); s.Xh = draw(PG.md3_frames(gh)[0][0], *((ht_row('GunHook', s.row), ht_row('GunRot', s.row)) if s.row else ((0, 0, 0), (0, 0, 0)))); s.Fh = Fh
         # 1.92: the gun and Ermac's support
         R192 = jl(os.path.join(LANE, 'rows192.json'))[gun192 or g]; s.r192 = R192
         _, V192 = scene.merged(R192['gun']); V1, _ = md3_mesh(os.path.join(d, names[0]), G['ready'])
@@ -118,7 +118,7 @@ def onto_vgrip(S, p, c, a):
     tk = np.asarray(c, float) - Rk @ cc
     return apply_rigid(S, p, Rk, tk)
 
-def retarget(S, g, names=None):
+def retarget(S, g, names=None, at=None):
     """a gun with NO 1.92 hold (Sniper, Machinegun): the seed is another gun's 1.92 hold (S, built for that gun), moved by the
     difference of the two guns' handtable SupportPoints (both guns keep the approved pistol aim after the port, so only a
     translation). S is changed in place to hold gun g (mesh, gun hand) with that moved seed."""
@@ -133,10 +133,21 @@ def retarget(S, g, names=None):
     for k in ('HL', 'lm_e', 'L', 'Fl', 'Fe', 'Rseed', 'Rm', 'tm', 'move_res'): setattr(T, k, getattr(S, k))
     # then onto THIS gun's underside: the palm landmark 0.5 cm under the lowest surface point within 1.5 cm (F, L) of the
     # target SupportPoint (the surface sampled every 2 mm: long polygons have no vertex there), as support_gun.py does
-    sp = 100 * ht_row('SupportPoint', T.row); Tr = T.Vg[T.Fg]; k = np.where((Tr.min(1)[:, 0] < sp[0] + 1.5) & (Tr.max(1)[:, 0] > sp[0] - 1.5) & (Tr.min(1)[:, 1] < sp[1] + 1.5) & (Tr.max(1)[:, 1] > sp[1] - 1.5))[0]
+    sp = 100 * ht_row('SupportPoint', T.row)
+    if at is not None:	# a measured support part (F, L of a point on the mesh's grippable underside, cm drawn) instead of the SupportPoint
+        dsp = dsp + np.r_[at[0] - sp[0], at[1] - sp[1], 0.0]; sp = np.r_[at[0], at[1], sp[2]]
+    Tr = T.Vg[T.Fg]; k = np.where((Tr.min(1)[:, 0] < sp[0] + 1.5) & (Tr.max(1)[:, 0] > sp[0] - 1.5) & (Tr.min(1)[:, 1] < sp[1] + 1.5) & (Tr.max(1)[:, 1] > sp[1] - 1.5))[0]
     import sdf as _sdf
     Ps = _sdf.samples(Tr[k][:, 0], Tr[k][:, 1], Tr[k][:, 2], 0.2); Ps = Ps[(np.abs(Ps[:, 0] - sp[0]) < 1.5) & (np.abs(Ps[:, 1] - sp[1]) < 1.5)]
     under = Ps[np.argmin(Ps[:, 2])]; pal = (S.X0 + dsp)[S.L['palm']]; dsp = dsp + (under - np.array([0, 0, 0.5]) - pal)
     T.p0 = S.p0.copy(); T.tseed = S.tseed + dsp; T.E = S.E + dsp; T.X0 = S.X0 + dsp
-    T.r192 = dict(S.r192, seed_from=S.g, support_point_shift_cm=list(np.round(dsp, 2)), underside_cm=list(np.round(under, 2)))
+    T.r192 = dict(S.r192, seed_from=S.g, at_cm=None if at is None else list(at), support_point_shift_cm=list(np.round(dsp, 2)), underside_cm=list(np.round(under, 2)))
     T.exg = exactpen.Exact(T.Vg, T.Fg); T.exh = exactpen.Exact(T.Xh, T.Fh); return T
+
+def register_staged(g, poses_json, gunhand_md3_path):
+    """a gun whose gun hand is NOT in this branch yet (staged, owner's call): its placement from the other lane's pose JSON
+    (gun_move.modeldef_place), its mesh / ready frame / Scale / Offset from 1.92's rows192 (the same MODELDEF block), the gun hand
+    baked in place (hook 0) from the given md3. No handtable row is read or written."""
+    r = jl(os.path.join(LANE, 'rows192.json'))[g]['gun']; rel = r['path'].split('/bd22q_192/')[1]
+    PG.GUNS[g] = dict(md3=rel, names=[os.path.basename(rel)], ready=r['frame'], scale=r['scale'], off=r['off'], row=None,
+                      place=jl(poses_json)['gun_move']['modeldef_place'], gunhand=gunhand_md3_path)

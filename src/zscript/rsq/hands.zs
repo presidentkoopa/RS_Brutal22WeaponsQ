@@ -134,6 +134,7 @@ class RSQ_GunSide : Inventory
 	FbxWrapRL: RQWS H -1; Stop;	// Rocket_Launcher (row 19)
 	FbxWrapPlasmaGun: RQWS I -1; Stop;	// Plasma_Gun (row 15)
 	FbxWrapRailGun: RQWS J -1; Stop;	// RailGun (row 16)
+	FbxWrapSniper: RQWS K -1; Stop;	// Sniper (row 22)
 	FbxWrapMachinegun: RQWS M -1; Stop;	// Machinegun (row 27)
 	// support192 END
 	// batch 2: BrutalSMG (row 5), the pistol's FBX hand with the index on the SMG trigger
@@ -648,7 +649,7 @@ class RSQ_Hands : Weapon
 		if (i == 11)
 			spl = "FbxSupF";	// r10 port: MG42, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 11)
 		if (i == 22)
-			spl = "FbxSupF";	// r9 port: Sniper, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 22)
+			spl = "FbxWrapSniper";	// support192 batch 4: Sniper, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 22 = 0: baked in place)
 		if (i == 15)
 			spl = "FbxWrapPlasmaGun";	// support192 batch 3: Plasma_Gun, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 15 = 0: baked in place)
 		if (i == 16)

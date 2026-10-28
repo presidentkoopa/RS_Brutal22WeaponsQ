@@ -90,7 +90,10 @@ def port(new, run, tag):
     wr('zscript/rsq/handtable.zs', tx)
 	# 5. poses
     for g, r in zip(guns, rows):
-        if g not in new: continue
+        if g not in new:	# an earlier gun keeps its pose; only its frame number moves when a gun earlier in ORDER is added
+            pp = os.path.join(POSES, '%s.json' % g); J = json.load(open(pp))
+            if J['support'].get('frame') != guns.index(g): J['support']['frame'] = guns.index(g); json.dump(J, open(pp, 'w'), indent=1)
+            continue
         F = fits[g]; pp = os.path.join(POSES, '%s.json' % g)
         J = json.load(open(pp)) if os.path.exists(pp) else dict(cls=g, note='variant of %s: the gun hand, gun move and placement are %s\'s (poses/%s.json); only the support is its own' % (VARIANT[g], VARIANT[g], VARIANT[g]))
         J['support'] = dict(form='support192', md3='models/rsq/fbx/' + MD3, sprite=SPR, frame=guns.index(g), letter=letter(g), label=label(g),

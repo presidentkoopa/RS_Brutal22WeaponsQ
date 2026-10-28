@@ -162,46 +162,146 @@
  },
  "bake_md3": "fits/bake/fbx_r9_Sniper_R.md3",
  "support": {
-  "cls": "Sniper",
-  "pose": "B",
-  "frame": 1,
+  "form": "support192",
+  "md3": "models/rsq/fbx/fbx_s192_L.md3",
+  "sprite": "RQWS",
+  "frame": 10,
+  "letter": "K",
+  "label": "FbxWrapSniper",
+  "handtable_row": 22,
   "sup_hook": [
-   -2.329,
-   17.166,
-   5.374
+   0.0,
+   0.0,
+   -0.0
   ],
   "sup_rot": [
-   -7.927,
-   2.302,
-   10.732
+   0.0,
+   0.0,
+   -0.0
   ],
-  "sup_point_m": [
-   0.346,
-   0.062,
-   -0.027
+  "bake_check_max_cm": 0.007965579695248692,
+  "p": [
+   0.01888814036340647,
+   -0.20205573113313255,
+   -0.6437312376979003,
+   14.610300670268622,
+   7.831894543253295,
+   4.439454161367058,
+   2.7589485551815818,
+   0.3663258636763584,
+   0.5106817808201947,
+   -4.237904134812574,
+   0.9149718449076096,
+   0.2136439373498658,
+   -5.882694715086896,
+   0.7701479300137526,
+   0.44989288531505617,
+   -8.633064172756052,
+   1.048458999619655,
+   0.030230935204765393,
+   19.02692151489053,
+   0.5790341842839704,
+   -0.8718749029027988,
+   -33.97993265202674,
+   -23.169563049089767,
+   -24.07897844237305,
+   14.357891429806363
   ],
-  "sp192_cm": [
-   27.9,
-   0.4,
-   -5.7
+  "Rseed": [
+   [
+    0.996020376007261,
+    -0.08371100081017982,
+    -0.030592138233737465
+   ],
+   [
+    0.06709852807028935,
+    0.9302200117465926,
+    -0.36081645926560496
+   ],
+   [
+    0.05866172610104974,
+    0.3573278579813296,
+    0.9321349708069747
+   ]
   ],
-  "dz": -0.4,
-  "pen_at_contact": 0.55,
-  "pen_gun": 0.5,
-  "pen_gunhand": null,
-  "pen_also_gun_hand": [],
-  "palm_gap_to_gun": 0.39,
-  "check": 0.0,
+  "tseed": [
+   14.013073478783328,
+   3.2550113962003184,
+   -4.283979369662793
+  ],
+  "seed_1_92": {
+   "hand2_frame": 2,
+   "seed_refit": {
+    "seed": "the finished fit of Rifle, moved onto this gun"
+   },
+   "measured": {
+    "pen_gun": 1.63,
+    "pen_gunhand": 0.0,
+    "touch9": 0,
+    "wrap_deg": 0,
+    "contact_cm": {
+     "palm": 0.09,
+     "pad_I": 4.46,
+     "pad_M": 3.45,
+     "pad_R": 4.1,
+     "pad_P": 3.52,
+     "pad_T": 0.44,
+     "prox_I": 3.07,
+     "prox_M": 4.23,
+     "prox_R": 4.64,
+     "prox_P": 4.89,
+     "prox_T": 0.76
+    }
+   }
+  },
+  "measured": {
+   "pen_gun": 0.2,
+   "pen_gunhand": 0.0,
+   "touch9": 6,
+   "wrap_deg": 139,
+   "contact_cm": {
+    "palm": 0.53,
+    "pad_I": 0.02,
+    "pad_M": 0.01,
+    "pad_R": 0.16,
+    "pad_P": 0.0,
+    "pad_T": 0.01,
+    "prox_I": 0.12,
+    "prox_M": 0.54,
+    "prox_R": 1.71,
+    "prox_P": 1.58,
+    "prox_T": 1.06
+   },
+   "cost": 46.46714902050295,
+   "nfev": 49,
+   "secs": 167,
+   "cuff_move_cm": 4.99,
+   "seed_refit": {
+    "seed": "the finished fit of Rifle, moved onto this gun"
+   },
+   "palm_move_cm": 3.15,
+   "move192_res": 1.2789769243681803e-13,
+   "sframe": 2,
+   "seed_fit_rms_cm": 1.7033880590345205
+  },
   "names": [
    "XM21.md3"
   ],
-  "under": [
-   33.264,
-   4.672,
-   3.448
-  ],
-  "md3": "models/rsq/fbx/fbx_b1_L.md3",
-  "label": "FbxSupF (RQFS B)",
-  "how": "support_gun.py Sniper B, applied with port_gun.py --support (handtable row 22)"
+  "weights": {
+   "pen": 20,
+   "penh": 6.0,
+   "con": 3.0,
+   "palmc": 3.0,
+   "across": 0.0,
+   "across_cos": 0.5,
+   "thumb": 0.7,
+   "cuff": 0.1,
+   "palm": 0.1,
+   "q": 0.1,
+   "tol_pen": 0.05,
+   "tol_penh": 0.2,
+   "tol_con": 0.15
+  },
+  "how": "tools/handfit/support192/fit192.py Sniper (seed = 1.92 Ermac hand2 frame 2 on the gun, FBX left hand re-fitted to it, then closed onto the gun), port192.py port"
  }
 }
