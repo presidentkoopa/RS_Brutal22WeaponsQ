@@ -2,14 +2,23 @@
 
 # BD22 VR Weapons 2.0
 
-Brutal Doom v22 in VR, with your hands.
+**Brutal Doom v22 in VR. Your hands. Every gun.**
 
-Coordinated, directed and tested by PresidentKoopa, coded by Claude.
+Grab the rifle by its handguard and the trigger is under your finger. Rip the magazine out, reach
+to your belt, slam a fresh one home, and rack it. Break the Super Shotgun, thumb in two shells, flick
+it shut. Hold the Ruger to your eye and the scope is a real 3x window, not a sticker. Pull the pin
+with your other hand and throw. Choke up on the chainsaw by its top handle. Swing the Dragonslayer
+two-handed. Every gun in Brutal Doom, held, aimed, fired and reloaded with your own two hands.
+
+Project conceptualized, directed and coordinated by **PresidentKoopa**. All coding done by
+agentic **Claude**.
 
 A VR weapon pack for **Brutal Doom v22** (`brutal22test6.pk3`) on **QuestZDoom 17.3**, built for
 **standalone Quest**. It runs on the stock engine with no engine changes. It's an add-on: Brutal
 Doom stays Brutal Doom. It replaces none of its guns, every gun fires at Brutal Doom's own rate
 and does its own damage, and with the options off it plays exactly as Brutal Doom shipped.
+
+![Every weapon in hand, 2.0](renders/2.0_every_weapon_in_hand.png)
 
 ## Install
 
@@ -231,6 +240,9 @@ Weapon models: **br_vr** by ajantaju (Brutal Doom VR Weapons, BD v21), made from
 - Player Ballistics (Bullet mode): ported from PresidentKoopa's RS_Ballistics `enemyfire.zs`
 
 ## Screenshots
+
+![Hands on every reload](renders/2.0_reload_hands.png)
+![Live 3x scope, toggled on alt fire](renders/2.0_scope_3x.png)
 
 ![Kitbash M4 + M203](renders/m4_m203.png)
 
