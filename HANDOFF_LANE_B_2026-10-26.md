@@ -1490,3 +1490,58 @@ sha256 `b129b363c07a662885676c40e596cecf3e2439613d639ebaee31ee76f6153d5b`; doom2
 - With the option On the player keeps BD22's pistol start ammo (Clip1 45) unused; the Moonlight starts with 6 rounds + a full
   cylinder (two: 6 + both full). Owner's call if the start should give more rounds.
 - Purist class pistols (PuristPistol) are not swapped (purist has no reloading; BD22's own gun).
+
+# Lane rev-unmaker, round 5 (owner 20:47 + 20:5x; branch `lane-rev-unmaker`). RIG ONLY, NOT HEADSET-CONFIRMED
+
+## 1. How ammo was drawn and carried (found)
+- HUD: BD22's `SBARINFO.BD` (brutal22test6.pk3) draws, in every style (classic bar 8-57, fullscreen sbartype1 184+,
+  sbartype2 460+, sbartype3 749+, sbartype4 958+), `ammo2` as the magazine and `ammo1` as the reserve when the gun
+  `UsesSecondaryAmmo` and reloading is on (e.g. SBARINFO.BD:21-28). The pack had no SBARINFO. That is right for the guns whose
+  magazine is AmmoType2 (Pistol BDPistolAmmo, Rifle RifleAmmo, SMG, MP40, Shot_Gun ShotgunAmmo, ASG, Plasma, Railgun,
+  Rocket_Launcher RocketRounds, Sniper xm21Ammo, Revolver RevolverAmmo, Moonlight cylinder, SSG), wrong for this pack's
+  magazines (counters.zs: Unmaker, Minigun, Flamethrower2, Machinegun -- whose AmmoType2 is its 40 mm --, MG42,
+  IncendiaryLauncher, Devastator, NukeLauncher, HellishMissileLauncher: RSQ_Mag_<gun>), and it could not be switched off.
+- Carry: AmmoType2 magazines are separate items, so their loaded rounds were already on top of the reserve's cap. The five
+  COUNTER guns (MG42, Incendiary, Devastator, Nuke, Hellish) counted their magazine inside the reserve: loaded rounds ate the
+  cap. The four REAL guns lent up to 10 magazine rounds into the reserve item: those ate up to 10 of the cap.
+
+## 2. Done
+- **HUD Ammo** (user `rsq_hud_ammo`, menu "HUD Ammo": Magazine + Reserve (default) / Reserve Only). `src/SBARINFO.rsq` is
+  generated (`tools/hud/make_sbarinfo.py`) from BD22's SBARINFO.BD, every style: `ammo2` -> `RSQ_HudMag`, `ammo1` ->
+  `RSQ_HudRes`, `UsesSecondaryAmmo` -> `InInventory RSQ_HudHasMag, 1` (22 / 23 / 6 places). counters.zs `RSQ_Counters.Hud`
+  sets them every tic: magazine = the REAL gun's RSQ_Mag_<gun> (while its magazine is live) else AmmoType2; reserve =
+  AmmoType1 minus the lent rounds; HasMag only in Magazine + Reserve mode and when the gun has a magazine (guns with none:
+  reserve only). **Dual: both hands** -- the off-hand copy's own magazine (`RSQ_HudMagOff`) is drawn above the main one on the
+  classic bar and left of it on the ZDoom-style fullscreen (BD22's default sbartype1); the other three fullscreen styles
+  show the main hand only.
+- **On top:** the five counter guns are REAL magazines now (counters.zs REAL[] all 1; their .dec Reload / RSR_Out as the
+  Minigun's: the magazine's rounds stay with it). A REAL gun's reserve item cap is BD22's cap + exactly the rounds it lends
+  (CapBase: MaxAmount, BackpackMaxAmount with a backpack, AmmoM202 48), so a pickup fills the pouch to BD22's cap; every
+  other reserve is put back to its base the same tic. Bug found and fixed on the rig: a gun handing its lent rounds back
+  read as another gun on the same Clip2 firing (MG42 100 -> 90): reserve-last-tic is now read after all nine ran.
+- **Moonlight start** (owner): with Moonlight Replaces Pistol a new game gives a full cylinder + 18 spare RevolverRounds
+  (two: both cylinders full + 18). Purist keeps BD22's pistol (unchanged).
+
+## 3. Rig evidence (pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-revunm5.pk3`, build.py at `05b82ed`,
+sha256 `9e549f3460e66af3814879653c1221353b77d560295ebb8c8fe2aa061fe5ab9f`; its members are byte-identical to the test build
+the HUD / on-top / sweep / MG42 runs used; doom2 > brutal22test6 > BD_VoxelPack > pack, lock, ini restored)
+- Every run `script errors (not BD_VoxelPack voxeldef): none` / `ERRORS: none`; only BD_VoxelPack voxeldef 66/72/77/892.
+- On top (`netevent rsq_ontop`, rig job ontop; reserve at cap, magazine full, a pickup walked onto, then 30 taken and a
+  second pickup walked onto): Rifle `Clip2 200 / cap 200; magazine 31` -> pickup stays (1 within 256), below cap `170 -> 180`
+  (taken); Minigun `Clip2 210 / cap 210, lent 10; magazine 200; pouch 200` -> stays, below cap pouch `170 -> 180`; MG42
+  `lent 10; magazine 100; pouch 200` -> stays, below cap `170 -> 180`. Shot_Gun `AmmoShell 50 / cap 50; magazine 9` at cap,
+  but its summoned shell pickup was not taken below the cap either (the walk never picked it up): not shown for it.
+- HUD (`revunm5_hud_ammo_modes.png`, classic bar, both modes; log `HUD: mag N (shown 1|0), reserve N`): Rifle 31|200 ->
+  200; Minigun 200|120 -> 120; MG42 100|200 -> 200; Shot_Gun 9|30 -> 30; Moonlight 0|36 -> 36; dual BrutalPistol 16|60 with
+  the off hand's 16 above -> 60. `revunm5_hud_full_frames.png` (full frames), `revunm5_menu.png` (the option).
+- Sweep of the converted + REAL guns (give/select/fire/alt/reload): no script error; first fills e.g. `Devastator: RELOAD
+  magazine 0 -> 50, 50 from the pouch, pouch 99 -> 49`, Nuke 0 -> 1, Hellish 0 -> 6, Incendiary 0 -> 4. MG42 hand reload:
+  IDLE>EMPTY>DROP>EMPTY>CARRY>INSERT>SEATED>DONE, `MG42: RELOAD magazine 0 -> 100, 100 from the pouch`, fires again.
+  Unmaker hand reload unchanged (0 -> 200, pouch 250 -> 50).
+- Moonlight start: `Brutal Pistol -> Moonlight; cylinder 6, spare RevolverRounds 18` (`RevolverRounds (18/36)`); two:
+  `start with two; cylinder 6, spare RevolverRounds 18`, both cylinders 6/6, `(18/72)`.
+- Slug, drops, dual, cap: as round 4 (re-run, no errors).
+
+## 4. Open
+- Machinegun's ammoicon2 on the fullscreen styles is BD22's rocket icon next to its magazine count (the number is right).
+- The Shot_Gun pickup test (above). Any old save: the five converted guns start their magazine fresh from the pouch.
