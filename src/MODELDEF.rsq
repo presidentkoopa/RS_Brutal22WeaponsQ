@@ -864,7 +864,8 @@ Model RSQ_GunSide
 	FrameIndex RQWS I 0 8	// Plasma_Gun
 	FrameIndex RQWS J 0 9	// RailGun
 	FrameIndex RQWS K 0 10	// Sniper
-	FrameIndex RQWS M 0 11	// Machinegun
+	FrameIndex RQWS L 0 11	// MG42
+	FrameIndex RQWS M 0 12	// Machinegun
 }
 Model RSQ_Hands
 {
@@ -884,6 +885,7 @@ Model RSQ_Hands
 	FrameIndex RQWS I 0 8	// Plasma_Gun
 	FrameIndex RQWS J 0 9	// RailGun
 	FrameIndex RQWS K 0 10	// Sniper
-	FrameIndex RQWS M 0 11	// Machinegun
+	FrameIndex RQWS L 0 11	// MG42
+	FrameIndex RQWS M 0 12	// Machinegun
 }
 // support192 END

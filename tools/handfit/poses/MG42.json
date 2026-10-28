@@ -192,5 +192,152 @@
    "gap_web": 0.23539518084498523
   },
   "squeeze_travel": 0.5999949773835156
+ },
+ "support": {
+  "form": "support192",
+  "md3": "models/rsq/fbx/fbx_s192_L.md3",
+  "sprite": "RQWS",
+  "frame": 11,
+  "letter": "L",
+  "label": "FbxWrapMG42",
+  "handtable_row": 11,
+  "sup_hook": [
+   -0.0,
+   0.0,
+   0.0
+  ],
+  "sup_rot": [
+   -0.0,
+   0.0,
+   0.0
+  ],
+  "bake_check_max_cm": 0.007967985623626106,
+  "p": [
+   -0.76020765322133,
+   -0.1588781894493519,
+   -0.6615946876980004,
+   33.02767724215971,
+   3.3899299196929302,
+   -3.5019892079252064,
+   2.7589485551815818,
+   0.6706105106710059,
+   -0.09994465336291812,
+   12.743187273905752,
+   0.9176917917690616,
+   -0.09999996578121713,
+   -10.757451998345136,
+   0.8104146114291705,
+   -0.07645670657837483,
+   3.001424516573864,
+   0.6358614527510039,
+   0.11164090616206479,
+   10.19131321625354,
+   0.4220318082609154,
+   -0.47646524870185913,
+   -19.236697337803598,
+   5.3471819291277,
+   -20.55813604665848,
+   -10.413213423434541
+  ],
+  "Rseed": [
+   [
+    0.9960203760072613,
+    -0.07712697355505296,
+    -0.04466363765516172
+   ],
+   [
+    0.06709852807029089,
+    0.9787430001988593,
+    -0.1938038366300757
+   ],
+   [
+    0.05866172610104372,
+    0.19003570588701124,
+    0.9800230774726023
+   ]
+  ],
+  "tseed": [
+   -6.436140621205503,
+   -2.404179587200164,
+   3.281659293802422
+  ],
+  "seed_1_92": {
+   "hand2_frame": 1,
+   "seed_refit": {
+    "seed": "the finished fit of AssaultShotgun, moved onto this gun",
+    "at_cm": null,
+    "lowered_cm": 1.7
+   },
+   "measured": {
+    "pen_gun": 0.25,
+    "pen_gunhand": 0.0,
+    "touch9": 1,
+    "wrap_deg": 32,
+    "contact_cm": {
+     "palm": 2.11,
+     "pad_I": 3.5,
+     "pad_M": 1.97,
+     "pad_R": 1.4,
+     "pad_P": 1.23,
+     "pad_T": 0.06,
+     "prox_I": 4.91,
+     "prox_M": 5.61,
+     "prox_R": 4.58,
+     "prox_P": 3.16,
+     "prox_T": 1.9
+    }
+   }
+  },
+  "measured": {
+   "pen_gun": 0.52,
+   "pen_gunhand": 0.0,
+   "touch9": 6,
+   "wrap_deg": 170,
+   "contact_cm": {
+    "palm": 0.78,
+    "pad_I": 0.02,
+    "pad_M": 0.02,
+    "pad_R": 0.02,
+    "pad_P": 0.11,
+    "pad_T": 0.01,
+    "prox_I": 1.87,
+    "prox_M": 1.46,
+    "prox_R": 0.65,
+    "prox_P": 0.13,
+    "prox_T": 1.05
+   },
+   "cost": 70.23710885013344,
+   "nfev": 80,
+   "secs": 169,
+   "cuff_move_cm": 1.3,
+   "seed_refit": {
+    "seed": "the finished fit of AssaultShotgun, moved onto this gun",
+    "at_cm": null,
+    "lowered_cm": 1.7
+   },
+   "palm_move_cm": 1.82,
+   "move192_res": 3.836930773104541e-13,
+   "sframe": 1,
+   "seed_fit_rms_cm": 1.3471032616119405
+  },
+  "names": [
+   "HitlersBuzzsaw.md3"
+  ],
+  "weights": {
+   "pen": 10,
+   "penh": 6.0,
+   "con": 3.0,
+   "palmc": 3.0,
+   "across": 0.0,
+   "across_cos": 0.5,
+   "thumb": 0.7,
+   "cuff": 0.1,
+   "palm": 0.03,
+   "q": 0.1,
+   "tol_pen": 0.1,
+   "tol_penh": 0.2,
+   "tol_con": 0.15
+  },
+  "how": "tools/handfit/support192/fit192.py MG42 (seed = 1.92 Ermac hand2 frame 1 on the gun, FBX left hand re-fitted to it, then closed onto the gun), port192.py port"
  }
 }
