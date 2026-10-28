@@ -111,4 +111,5 @@ Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning mat
     - MiniGun support: a fist on the side handle (r4 refined, pen 0.09).
     - FlameCannon: no gun hand, placed at the rear slit, open palm under the barrel (r4 under40).
     - Rifle support (support fix batch 1).
+    - Rocket_Launcher support (redone, batch 3) and RailGun support (palm under the box, batch 3). The RailGun barrel redo is cancelled.
     The Unmaker support (a flat palm) is still being redone.
