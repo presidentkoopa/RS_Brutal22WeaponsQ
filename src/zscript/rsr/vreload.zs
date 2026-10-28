@@ -1084,20 +1084,16 @@ class RSR_ReloadHandler : EventHandler
 		return mo && mo.player && RSR.PlayerInt(mo.player, 'rsr_reload', 0) == 1 && RSVR_VRHand.InVR(mo);
 	}
 
-	// 1.99x item 10: which of Ermac's ammo_hand holds takes the part. Frame 3 (his chaingun magazine,
+	// 1.99x item 10 (history; the holds are FBX since 2026-10-28): which of Ermac's ammo_hand holds took the part. Frame 3 (his chaingun magazine,
 	// "RsrHold") for every gun but the two whose part is a big block: the Nuker's warhead block and the
 	// Hellish launcher's drum take frame 6, his BFG pod hold ("RsrHoldPod"). Each part was fitted to its
 	// frame's own contact patch (translation only), so TopInHand / HandHook belong to that frame.
 	clearscope static String HoldState(int i)
 	{
-		switch (i)
-		{
-		case 13:	// lb-r8: the Unmaker skull, held open-handed so it shows (RS VR Reload: the bfg hand set)
-		case 15:
-		case 16:
-			return "RsrHoldPod";
-		}
-		return "RsrHold";
+		// off-hand FBX lane (owner 2026-10-28: the reload holds become FBX): each gun's own FBX frame round its own part
+		// (MODELDEF.rsq RQHF <letter> = OhHold<letter>, tools/handfit/offhand). Was Ermac's ammo_hand 3 (RsrHold) / 6 (RsrHoldPod: 13, 15, 16).
+		static const String h[] = { "RsrHold", "OhHoldA", "OhHoldB", "OhHoldC", "OhHoldD", "OhHoldE", "OhHoldF", "OhHoldG", "OhHoldH", "OhHoldI", "OhHoldJ", "OhHoldK", "OhHoldL", "OhHoldM", "OhHoldN", "OhHoldO", "OhHoldP", "OhHoldQ", "OhHoldR" };
+		return i >= 1 && i < h.Size() ? h[i] : "RsrHold";
 	}
 
 	// rsq/hands.zs: the free hand's state while a reload has it ("" = not busy)

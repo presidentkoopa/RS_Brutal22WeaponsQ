@@ -18,14 +18,15 @@ HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import s192
 from s192 import PG
 import bake, scene, handmodel, calib
+sys.path.insert(0, os.path.join(HERE, '..', 'port')); import melee_r12	# BrutalAxe (row 24) in port_gun.GUNS: its support is fitted by axe192.py
 ORDER = ['SSG', 'Shot_Gun', 'AssaultShotgun', 'Rifle', 'Devastator', 'IncendiaryLauncher', 'GrenadeLauncher', 'Rocket_Launcher', 'Plasma_Gun',
-         'RailGun', 'Sniper', 'MG42', 'Machinegun', 'NukeLauncher', 'BFG10k', 'BIG_FUCKING_GUN']
+         'RailGun', 'Sniper', 'MG42', 'Machinegun', 'NukeLauncher', 'BFG10k', 'BIG_FUCKING_GUN', 'Unmaker', 'HellishMissileLauncher', 'BrutalAxe']
 VARIANT = {}	# owner rule (report item 23): variants are never fitted; they copy the Brutal gun's rows (PuristRifle takes the Rifle's frame)
 def GUN(g): return PG.GUNS[g]
 SPR = 'RQWS'; MD3 = 'fbx_s192_L.md3'
 POSES = os.path.join(HERE, '..', 'poses')
 def letter(g): return chr(ord('A') + ORDER.index(g))
-def label(g): return 'FbxWrap' + {'BIG_FUCKING_GUN': 'BFG9', 'IncendiaryLauncher': 'Inc', 'Rocket_Launcher': 'RL', 'GrenadeLauncher': 'GL', 'AssaultShotgun': 'AS'}.get(g, g.replace('_', ''))
+def label(g): return 'FbxWrap' + {'BIG_FUCKING_GUN': 'BFG9', 'IncendiaryLauncher': 'Inc', 'Rocket_Launcher': 'RL', 'GrenadeLauncher': 'GL', 'AssaultShotgun': 'AS', 'HellishMissileLauncher': 'HML'}.get(g, g.replace('_', ''))
 def rd(p): return open(os.path.join(PG.SRC, p), encoding='latin1').read()
 def wr(p, t): open(os.path.join(PG.SRC, p), 'w', encoding='latin1', newline='').write(t)
 def X_of(S):
@@ -74,7 +75,10 @@ def port(new, run, tag):
     for g in new:
         row = GUN(g)['row']
         pat = r'\t\tif \(i == %d( && !\(p\.ReadyWeapon is \'PuristRifle\'\))?\)\n\t\t\tspl = "[A-Za-z0-9]+";[^\n]*\n' % row
-        m = re.search(pat, tx); assert m, 'support label line of row %d' % row
+        m = re.search(pat, tx)
+        if not m:	# a row with no FBX support line yet (r12 guns: Ermac RQSP by RSQ_HandTable.Support): one is added before the SUPPORT layer call
+            k = tx.index('\t\tinvoker.SetLayer(p, RSQ_Layers.SUPPORT'); m = re.match('', tx[k:]); tx = tx[:k] + '\t\tif (i == %d)\n\t\t\tspl = "x";\n' % row + tx[k:]
+            m = re.search(pat, tx); assert m, 'support label line of row %d' % row
         tx = tx[:m.start()] + '\t\tif (i == %d)\n\t\t\tspl = "%s";\t// %s: %s, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row %d = 0: baked in place)\n' % (row, label(g), tag, g, row) + tx[m.end():]
         if g == 'Rifle':	# owner: PuristRifle copies Rifle
             tx, n1 = re.subn(r'\t\tif \(i == 18 && p\.ReadyWeapon is \'PuristRifle\'\)\n\t\t\tsp = "B";[^\n]*\n\t\telse if', '\t\tif', tx)

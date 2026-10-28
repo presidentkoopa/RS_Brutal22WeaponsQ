@@ -73,11 +73,14 @@ Model RSQ_GunSide
 // 2026-10-16 (owner): the gun hand's own fist and grenade hold, Ermac's meshes at his own
 // placement (no hook): his fist (hand.md3 frame 1, the free hand's fist too), and his
 // the VR grenade's hand: the FBX hand (fbx/fbx_nade_R.md3, fit_nade.py), was Ermac's ammo hand (ammo_hand.md3 frame 3)
+// off-hand FBX lane (owner 2026-10-28: the fists become FBX, overriding the 2026-10-16 "fists are Ermac's"): the FBX hand's fist
+// fitted IN PLACE of Ermac's fist (hand.md3 frame 1, same block, knuckles forward; tools/handfit/offhand/free_oh.py, poses/offhand/free.json).
+// One right-hand frame draws both fists, as Ermac's did: the engine mirrors the off controller.
 Model RSQ_GunSide
 {
-	Path "models/rsq"
-	Model 0 "hand.md3"
-	Skin 0 "hand.png"
+	Path "models/rsq/fbx"
+	Model 0 "fbx_oh_free_R.md3"
+	Skin 0 "fbx_hand.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQGF A 0 1
@@ -93,14 +96,17 @@ Model RSQ_GunSide
 	FrameIndex RQGN A 0 0	// grenade hand (lane B): the FBX hand, fit_nade.py (frame baked in place, hook 0)
 }
 
-// the free hand (off controller): open, or a fist
-// r12 port (coordinator 2026-10-28, owner rule: FBX hands, never Ermac's glove): the FBX LEFT hand, baked in place at the off
-// controller (tools/handfit/port/offhand_r12.py: the approved FBX pistol hand's wrist mirrored to the left; frame 0 relaxed open,
-// frame 1 fist). Was Ermac's hand.md3 frames 0 / 1. The off-hand trigger punch draws this same fist.
+// the free hand (off controller): open, or a fist; and the VR grenade's ring between finger and thumb (ONE block: two blocks
+// on the same frame draw only one of them, 1.1).
+// off-hand FBX lane (2026-10-28): the FBX RIGHT rig fitted in place of Ermac's own frames (tools/handfit/offhand/free_oh.py,
+// poses/offhand/free.json): frame 0 open (hand.md3 0), 1 fist (hand.md3 1), 2 the ring pinch (ammo_hand.md3 1, index and thumb
+// pads closed); the ring = rsq_ring.md3 moved 2.05 cm from Ermac's pinch point to the FBX one (rsq_ring_oh.md3). Baked in place.
+// Was r12's fbx_r12_free_L.md3: the pistol hand mirrored to L, which the engine's off-controller mirror turned back into a
+// RIGHT hand on the left controller (rig frames lane_b_out/offhand_gate/shots/hand0_left*.png).
 Model RSQ_Hands
 {
 	Path "models/rsq/fbx"
-	Model 0 "fbx_r12_free_L.md3"
+	Model 0 "fbx_oh_free_R.md3"
 	Skin 0 "fbx_hand.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -24.0 -10.0
@@ -108,18 +114,14 @@ Model RSQ_Hands
 	FrameIndex RQHN H 0 1
 }
 
-// the VR grenade's ring in the free hand's fingers, BD22's ring baked into the hand's own frame, ONE block: two blocks on
-// the same frame draw only one of them (that hid the hand, 1.1). r12 port: the FBX left hand's pinch (frame 2: index and
-// thumb pads together, offhand_r12.py) and the ring moved to that pinch point (rsq_ring_fbx.md3 = rsq_ring.md3 translated).
-// Was Ermac's ammo_hand.md3 frame 1 (one-shell pinch) with rsq_ring.md3.
 Model RSQ_Hands
 {
 	Path "models/rsq/fbx"
 	// 2.0 int r2: the ring's Model 1 line comes FIRST. build.py moves the FBX hand to Model 7, and QZD sizes a block by its LAST
 	// Model line (models.cpp: modelsAmount = index + 1), so "Model 7 ... Model 1" was 2 slots: "Too many models in RSQ_Hands".
-	Model 1 "rsq_ring_fbx.md3"
+	Model 1 "rsq_ring_oh.md3"
 	Skin 1 "models/bd/Grenade/nade.png"
-	Model 0 "fbx_r12_free_L.md3"
+	Model 0 "fbx_oh_free_R.md3"
 	Skin 0 "fbx_hand.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -24.0 -10.0
@@ -851,7 +853,7 @@ Model RSQ_Hands
 }
 // support192 BEGIN
 
-// support192 (support192 batch 4): the FBX support hands fitted from the 1.92 holds (tools/handfit/support192), baked in place
+// support192 (support192 batch 6): the FBX support hands fitted from the 1.92 holds (tools/handfit/support192), baked in place
 Model RSQ_GunSide
 {
 	Path "models/rsq/fbx"
@@ -872,6 +874,12 @@ Model RSQ_GunSide
 	FrameIndex RQWS K 0 10	// Sniper
 	FrameIndex RQWS L 0 11	// MG42
 	FrameIndex RQWS M 0 12	// Machinegun
+	FrameIndex RQWS N 0 13	// NukeLauncher
+	FrameIndex RQWS O 0 14	// BFG10k
+	FrameIndex RQWS P 0 15	// BIG_FUCKING_GUN
+	FrameIndex RQWS Q 0 16	// Unmaker
+	FrameIndex RQWS R 0 17	// HellishMissileLauncher
+	FrameIndex RQWS S 0 18	// BrutalAxe
 }
 Model RSQ_Hands
 {
@@ -893,6 +901,12 @@ Model RSQ_Hands
 	FrameIndex RQWS K 0 10	// Sniper
 	FrameIndex RQWS L 0 11	// MG42
 	FrameIndex RQWS M 0 12	// Machinegun
+	FrameIndex RQWS N 0 13	// NukeLauncher
+	FrameIndex RQWS O 0 14	// BFG10k
+	FrameIndex RQWS P 0 15	// BIG_FUCKING_GUN
+	FrameIndex RQWS Q 0 16	// Unmaker
+	FrameIndex RQWS R 0 17	// HellishMissileLauncher
+	FrameIndex RQWS S 0 18	// BrutalAxe
 }
 // support192 END
 
@@ -1084,4 +1098,41 @@ Model RSQ_Hands
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQVI A 0 0	// BrutalAxe, finger on the trigger
 	FrameIndex RQVI B 0 1	// BrutalAxe, squeezed
+}
+
+// off-hand FBX lane (owner 2026-10-28: every off-hand reload hold becomes FBX for 2.0): the FBX hand round each held object as the
+// engine draws it (tools/handfit/offhand/hold_fit.py from the Ermac hold, wire_holds.py; poses/offhand/holds.json). One frame per object,
+// baked in place (hook 0); the objects keep their place, so no reload row moved.
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_oh_hold_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQHF A 0 0	// rsr01_Rifle (was Ermac ammo_hand.md3 frame 3)
+	FrameIndex RQHF B 0 1	// rsr02_BrutalPistol (was Ermac ammo_hand.md3 frame 3)
+	FrameIndex RQHF C 0 2	// rsr03_BrutalSMG (was Ermac ammo_hand.md3 frame 3)
+	FrameIndex RQHF D 0 3	// rsr04_MP40 (was Ermac ammo_hand.md3 frame 3)
+	FrameIndex RQHF E 0 4	// rsr05_AssaultShotgun (was Ermac ammo_hand.md3 frame 3)
+	FrameIndex RQHF F 0 5	// rsr06_RailGun (was Ermac ammo_hand.md3 frame 3)
+	FrameIndex RQHF G 0 6	// rsr07_Plasma_Gun (was Ermac ammo_hand.md3 frame 3)
+	FrameIndex RQHF H 0 7	// rsr08_Sniper (was Ermac ammo_hand.md3 frame 3)
+	FrameIndex RQHF I 0 8	// rsr09_Rocket_Launcher (was Ermac ammo_hand.md3 frame 3)
+	FrameIndex RQHF J 0 9	// rsr10_MG42 (was Ermac ammo_hand.md3 frame 3)
+	FrameIndex RQHF K 0 10	// rsr11_Flamethrower2 (was Ermac ammo_hand.md3 frame 3)
+	FrameIndex RQHF L 0 11	// rsr12_IncendiaryLauncher (was Ermac ammo_hand.md3 frame 3)
+	FrameIndex RQHF M 0 12	// rsr13_Unmaker (was Ermac ammo_hand.md3 frame 6)
+	FrameIndex RQHF N 0 13	// rsr14_Devastator (was Ermac ammo_hand.md3 frame 3)
+	FrameIndex RQHF O 0 14	// rsr15_NukeLauncher (was Ermac ammo_hand.md3 frame 6)
+	FrameIndex RQHF P 0 15	// rsr16_HellishMissileLauncher (was Ermac ammo_hand.md3 frame 6)
+	FrameIndex RQHF Q 0 16	// rsr17_Minigun (was Ermac ammo_hand.md3 frame 3)
+	FrameIndex RQHF R 0 17	// rsr18_Machinegun (was Ermac ammo_hand.md3 frame 3)
+	FrameIndex RQHF S 0 18	// rsb01_SSG (was Ermac ammo_hand.md3 frame 1)
+	FrameIndex RQHF T 0 19	// rsb02_GrenadeLauncher (was Ermac ammo_hand.md3 frame 3)
+	FrameIndex RQHF U 0 20	// rsb03_Revolver (was Ermac ammo_hand.md3 frame 1)
+	FrameIndex RQHF V 0 21	// rsb10_BrutalRevolver (was Ermac ammo_hand.md3 frame 5)
+	FrameIndex RQHF W 0 22	// rsb11_BrutalRevolver_round (was Ermac ammo_hand.md3 frame 1)
+	FrameIndex RQHF X 0 23	// rsp01_Shot_Gun (was Ermac ammo_hand.md3 frame 1)
+	FrameIndex RQHF Y 0 24	// rsm_M203_round (was Ermac ammo_hand.md3 frame 5)
 }

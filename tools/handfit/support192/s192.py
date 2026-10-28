@@ -39,6 +39,8 @@ def gunhand_md3(g):
         if os.path.exists(p):
             h = jl(p).get('hand') or {}
             if h.get('md3_name') or h.get('md3'): return os.path.join(PG.SRC, 'models/rsq/fbx', h.get('md3_name') or h.get('md3'))
+    p = os.path.join(PG.SRC, 'models/rsq/fbx', 'fbx_hv_%s_R.md3' % g)	# r12 port: the gun hand baked in place (hook 0), no fit JSON in fits/
+    if os.path.exists(p): return p
     raise SystemExit('no gun-hand md3 for %s' % g)
 class Scene:
     def __init__(s, g, names=None, gun192=None):

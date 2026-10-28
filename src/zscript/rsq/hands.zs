@@ -7,8 +7,8 @@
 // (handtable.zs, one per set).
 //
 //   gun hand      always on the gun (none for melee weapons, two-gun weapons and the flame
-//                 cannon your arm goes into). Fists and punches: Ermac's fist, in both
-//                 hands; the VR grenade: his ammo hand round it (OwnHand)
+//                 cannon your arm goes into). Fists and punches: the FBX fist (2026-10-28,
+//                 was Ermac's), in both hands; the VR grenade: the FBX nade hand round it (OwnHand)
 //   off hand      free on the off controller. When the engine steadies the gun
 //                 with both hands (the off hand brought to the gun and grip
 //                 pressed: vr_two_handed_weapons), it takes hold of the front
@@ -141,6 +141,12 @@ class RSQ_GunSide : Inventory
 	FbxWrapSniper: RQWS K -1; Stop;	// Sniper (row 22)
 	FbxWrapMG42: RQWS L -1; Stop;	// MG42 (row 11)
 	FbxWrapMachinegun: RQWS M -1; Stop;	// Machinegun (row 27)
+	FbxWrapNukeLauncher: RQWS N -1; Stop;	// NukeLauncher (row 14)
+	FbxWrapBFG10k: RQWS O -1; Stop;	// BFG10k (row 2)
+	FbxWrapBFG9: RQWS P -1; Stop;	// BIG_FUCKING_GUN (row 3)
+	FbxWrapUnmaker: RQWS Q -1; Stop;	// Unmaker (row 23)
+	FbxWrapHML: RQWS R -1; Stop;	// HellishMissileLauncher (row 9)
+	FbxWrapBrutalAxe: RQWS S -1; Stop;	// BrutalAxe (row 24)
 	// support192 END
 	// batch 2: BrutalSMG (row 5), the pistol's FBX hand with the index on the SMG trigger
 	FbxTrgS: RQFH A -1; Stop;
@@ -220,7 +226,7 @@ class RSQ_GunSide : Inventory
 	// r12 port: BrutalAxe (row 24)
 	FbxTrgAxe: RQVI A -1; Stop;
 	FbxSqzAxe: RQVI B -1; Stop;
-	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
+	Fist: RQGF A -1; Stop;	// the FBX fist (the free hand's fist too, fbx_oh_free_R.md3 frame 1): fists, punches
 	Nade: RQGN A -1; Stop;	// the FBX hand round the VR grenade (fbx_nade_R.md3, fit_nade.py)
 	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
 	// Its own sprite, so it carries its own flat quad in MODELDEF and nothing about it is tied
@@ -344,7 +350,8 @@ class RSQ_Hands : Weapon
 		if (rsr == "" && mo.CountInv('RSG_RingHand') > 0)
 			rsr = "RsgRing";				// the VR grenade's ring, pinched (rsg/grenade.zs)
 		int i = on ? RSQ_HandTable.Index(p.ReadyWeapon) : 0;
-		// 2026-10-16 (owner): fists are Ermac's, both hands, and the VR grenade sits in his hand
+		// 2026-10-28 (owner, overrides his 2026-10-16 "fists are Ermac's, both hands"): the fists are the FBX hand, both hands
+		// (MODELDEF RQGF / RQHN H: one FBX fist frame fitted in place of Ermac's, tools/handfit/offhand); the VR grenade sits in the FBX nade hand
 		String own = on ? invoker.OwnHand(p) : "";
 		invoker.showOwn = own != "";
 		if (own != "")
@@ -716,11 +723,11 @@ class RSQ_Hands : Weapon
 		if (i == 10)
 			spl = "FbxWrapInc";	// support192 batch 2: IncendiaryLauncher, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 10 = 0: baked in place)
 		if (i == 3)
-			spl = "FbxSupF";	// r11 port: BIG_FUCKING_GUN, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 3)
+			spl = "FbxWrapBFG9";	// support192 batch 5: BIG_FUCKING_GUN, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 3 = 0: baked in place)
 		if (i == 2)
-			spl = "FbxSupF";	// r10 port: BFG10k, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 2)
+			spl = "FbxWrapBFG10k";	// support192 batch 5: BFG10k, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 2 = 0: baked in place)
 		if (i == 14)
-			spl = "FbxSupF";	// r10 port: NukeLauncher, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 14)
+			spl = "FbxWrapNukeLauncher";	// support192 batch 5: NukeLauncher, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 14 = 0: baked in place)
 		if (i == 27)
 			spl = "FbxWrapMachinegun";	// support192 batch 3: Machinegun, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 27 = 0: baked in place)
 		if (i == 11)
@@ -755,6 +762,12 @@ class RSQ_Hands : Weapon
 			spl = "FbxSupSaw";	// r12 port: Chain_saw, the FBX L hand on the top handle (melee lane support_top: R fit on the mirrored saw, mirrored back; pen 0.39; owner-approved 2026-10-27) (handtable SupportHook / SupportRot row 25)
 		if (i == 26)
 			spl = "FbxSupDS";	// r12 port: DSweap, the FBX L hand on the hilt below the gun hand (melee lane: the gun hand mirrored, slid 12.5 cm down the handle; pen 0.44; owner-approved 2026-10-27) (handtable SupportHook / SupportRot row 26)
+		if (i == 23)
+			spl = "FbxWrapUnmaker";	// support192 batch 5: Unmaker, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 23 = 0: baked in place)
+		if (i == 9)
+			spl = "FbxWrapHML";	// support192 batch 6: HellishMissileLauncher, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 9 = 0: baked in place)
+		if (i == 24)
+			spl = "FbxWrapBrutalAxe";	// support192 batch 6: BrutalAxe, the FBX L fist on the haft 1 cm below the two-handed gun hand (seed: the FBX gun hand mirrored, axe192.py; the axe has no 1.92 support hold) (handtable SupportHook / SupportRot row 24 = 0: baked in place)
 		invoker.SetLayer(p, RSQ_Layers.SUPPORT, gs, (hold || swordTwo) && sp != "" ? spl : "Hidden");	// r12 port: the two-handed sword shows its FBX support on the hilt
 
 		// 2026-10-23: the VR scope's reticle (rsq/scope.zs). WHETHER the layer is there is this
@@ -1146,13 +1159,39 @@ class RSQ_Hands : Weapon
 	// the free hand (MODELDEF.rsq): open, or a fist
 	FreeHand: RQHN A -1; Stop;
 	AmmoH: RQHN H -1; Stop;		// a closed hand
-	RspShell: RQUN A -1; Stop;	// RSR-PUMP: Ermac's one-shell hold (ammo_hand frame 1), round the gun's own shell
-	RsrHold: RQHN I -1; Stop;	// real reload: Ermac's hold, round the gun's own magazine (rsr)
-	RsrHoldPod: RQHN M -1; Stop;	// 1.99x: Ermac's BFG pod hold (ammo_hand 6), round the Nuker block / Hellish drum
-	RsbShell: RQHN J -1; Stop;	// RSR-BREAK: Ermac's hold of one shell (ammo_hand 1), round the gun's own round
-	RsbCell: RQHN L -1; Stop;	// RSR-BREAK: Ermac's hold of a cell (ammo_hand 5), round the gun's own speedloader
+	RspShell: RQUN A -1; Stop;	// RSR-PUMP: the FBX hand round the gun's own shell (RQUN A = RQHF X; was Ermac's ammo_hand 1)
+	RsrHold: RQHN I -1; Stop;	// real reload: was Ermac's hold (ammo_hand 3); now RQHF A, no shipped gun uses it (vreload HoldState: OhHold<letter>)
+	RsrHoldPod: RQHN M -1; Stop;	// was Ermac's BFG pod hold (ammo_hand 6); now RQHF O, unused (OhHold<letter>)
+	RsbShell: RQHN J -1; Stop;	// RSR-BREAK: was Ermac's one-shell hold; now RQHF S, unused (rsb HoldState: OhHold<letter>)
+	RsbCell: RQHN L -1; Stop;	// RSR-BREAK: was Ermac's cell hold; now RQHF V, unused (OhHold<letter>)
 	RsgRing: RQHR A -1; Stop;
-	RsmRound: RQ2H A -1; Stop;	// 1.30 RSR-M203: Ermac's open grip (ammo_hand 3) round a 40 mm round
+	// off-hand FBX lane (2026-10-28): each reload hold's own FBX frame (MODELDEF.rsq RQHF; vreload / rsb HoldState)
+	OhHoldA: RQHF A -1; Stop;	// rsr01_Rifle
+	OhHoldB: RQHF B -1; Stop;	// rsr02_BrutalPistol
+	OhHoldC: RQHF C -1; Stop;	// rsr03_BrutalSMG
+	OhHoldD: RQHF D -1; Stop;	// rsr04_MP40
+	OhHoldE: RQHF E -1; Stop;	// rsr05_AssaultShotgun
+	OhHoldF: RQHF F -1; Stop;	// rsr06_RailGun
+	OhHoldG: RQHF G -1; Stop;	// rsr07_Plasma_Gun
+	OhHoldH: RQHF H -1; Stop;	// rsr08_Sniper
+	OhHoldI: RQHF I -1; Stop;	// rsr09_Rocket_Launcher
+	OhHoldJ: RQHF J -1; Stop;	// rsr10_MG42
+	OhHoldK: RQHF K -1; Stop;	// rsr11_Flamethrower2
+	OhHoldL: RQHF L -1; Stop;	// rsr12_IncendiaryLauncher
+	OhHoldM: RQHF M -1; Stop;	// rsr13_Unmaker
+	OhHoldN: RQHF N -1; Stop;	// rsr14_Devastator
+	OhHoldO: RQHF O -1; Stop;	// rsr15_NukeLauncher
+	OhHoldP: RQHF P -1; Stop;	// rsr16_HellishMissileLauncher
+	OhHoldQ: RQHF Q -1; Stop;	// rsr17_Minigun
+	OhHoldR: RQHF R -1; Stop;	// rsr18_Machinegun
+	OhHoldS: RQHF S -1; Stop;	// rsb01_SSG
+	OhHoldT: RQHF T -1; Stop;	// rsb02_GrenadeLauncher
+	OhHoldU: RQHF U -1; Stop;	// rsb03_Revolver
+	OhHoldV: RQHF V -1; Stop;	// rsb10_BrutalRevolver
+	OhHoldW: RQHF W -1; Stop;	// rsb11_BrutalRevolver_round
+	OhHoldX: RQHF X -1; Stop;	// rsp01_Shot_Gun
+	OhHoldY: RQHF Y -1; Stop;	// rsm_M203_round
+	RsmRound: RQ2H A -1; Stop;	// 1.30 RSR-M203: the FBX hand round a 40 mm round (RQ2H A = RQHF Y + the round; was Ermac's ammo_hand 5)
 	RsmGrip: RQ2H B -1; Stop;	// ...the same grip, the round on the gun
 	// dual wield (rsq/dualhands.zs): the gun hand as a layer CALLED BY A GUN must use weapon
 	// states (an inventory item's states are refused for a weapon caller), so they live here

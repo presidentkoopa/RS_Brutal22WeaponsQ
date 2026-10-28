@@ -480,11 +480,11 @@ Model RSB_GunParts
 // his ammo: the gun's own round / speedloader is drawn in it on layer 2202 (MODELDEF.rsb above)
 Model RSQ_Hands
 {
-	Path "models/rsq"
-	Model 0 "ammo_hand.md3"
-	Skin 0 "hand.png"
+	Path "models/rsq/fbx"
+	Model 0 "fbx_oh_hold_R.md3"
+	Skin 0 "fbx_hand.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -24.0 -10.0
-	FrameIndex RQHN J 0 1
-	FrameIndex RQHN L 0 5
+	FrameIndex RQHN J 0 18	// off-hand FBX lane: was Ermac ammo_hand 1; = the FBX SSG shell hold (RQHF S)
+	FrameIndex RQHN L 0 21	// was Ermac ammo_hand 5; = the FBX Moonlight speedloader hold (RQHF V)
 }

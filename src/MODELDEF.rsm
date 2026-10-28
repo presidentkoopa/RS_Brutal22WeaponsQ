@@ -56,25 +56,25 @@ Model RSR_GunParts
 
 Model RSQ_Hands
 {
-	Path "models/rsq"
-	Model 0 "ammo_hand.md3"
-	Skin 0 "hand.png"
+	Path "models/rsq"	// one Path for both models: the round stays in models/rsq
+	Model 0 "fbx/fbx_oh_hold_R.md3"
+	Skin 0 "fbx/fbx_hand.png"
 	Model 1 "m203_round_hand.md3"
 	Skin 1 "models/bd/Rifle/m203_round.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -24.0 -10.0
-	FrameIndex RQ2H A 0 5
+	FrameIndex RQ2H A 0 24	// off-hand FBX lane: the FBX hand round the 40 mm round (RQHF Y); was Ermac ammo_hand 5
 	FrameIndex RQ2H A 1 0
 }
 
 Model RSQ_Hands
 {
-	Path "models/rsq"
-	Model 0 "ammo_hand.md3"
-	Skin 0 "hand.png"
+	Path "models/rsq/fbx"
+	Model 0 "fbx_oh_hold_R.md3"
+	Skin 0 "fbx_hand.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -24.0 -10.0
-	FrameIndex RQ2H B 0 5
+	FrameIndex RQ2H B 0 24	// the same FBX grip, the round on the gun
 }
 
 Model RSM_SpentCase
