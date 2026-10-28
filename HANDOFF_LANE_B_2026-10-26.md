@@ -1886,22 +1886,43 @@ was kept and finished.
    before = no tube, support hand under the handguard, alt plays Weapon/Empty; after = tube drawn with the hand on it, the same
    frame as the Rifle's; alt: no sound, no projectile, ammo and inventory unchanged.
    /home/claude/lane_b_out/int20/purist_r2/purist_before_after.png (top before, bottom after), r2_Rifle.png (reference).
-5. **Merges:** origin/lane-b-1.99x f3674cf (owner approvals) and b1225c4 (FBX grenade hand), no conflicts. origin/lane-scope
-   does not exist (the local lane-scope branch is still at 74417cd), so nothing was merged from it.
-   Final pk3, boot: no script errors from the pack (only BD_VoxelPack's own voxeldef.txt lines 66, 72, 77, 892). Sweep, all 31
-   guns held and fired, no errors: /home/claude/lane_b_out/int20_sweep.png (frames r2_*.png). Alt "nothing seen" on SSG, Rifle,
-   Machinegun, GrenadeLauncher and the HandGrenades row are the same as the round-1 sweep (one-round guns / hand-loaded M203 /
-   the throw needs the real VR swing), not regressions.
+5. **Merges:** origin/lane-b-1.99x f3674cf (owner approvals), b1225c4 (FBX grenade hand) and 5e6944e (r12 port); lane-scope
+   8e6c737 (real 3x scope + alt-fire scope toggle, cvars rsq_scope2_*). Conflicts only in HANDOFF (all sections kept) and
+   MODELDEF.purist (PuristSniper and the r12 Purist hand blocks: both kept). PuristHandGrenades synced to the moved grenade and its
+   FBX hand (tools/int20_rig/purist_sync.py; tools/int20_rig/variants_all.py: every Purist block now equals its Brutal block).
+6. **Script error from the r12 port, fixed (blocker on the owner's load order):** `"MODELDEF.rsq" line 118: Too many models in
+   RSQ_Hands`. The free-hand ring block lists the FBX hand as Model 0 then the ring as Model 1; build.py moves the hand to Model 7,
+   and QZD sizes a block by its LAST Model line (models.cpp: modelsAmount = index + 1), so the block had 2 slots. The ring line now
+   comes first. tools/int20_rig/mdslots.py checks a built pk3 (0 bad blocks). **origin/lane-b-1.99x still has this error.**
+7. **Butt strike / pistol whip hit points moved with the guns (port lane bug).** RSVR_MeleeMove.Apply rows for Rifle, Shot_Gun,
+   SSG, AssaultShotgun, MP40, BrutalSMG, Machinegun, MG42 (butt) and BrutalPistol, Revolver (whip): each gun's gun_move
+   (tools/handfit/poses/<Class>.json) as port_gun.rigid_move from the original placement (Scale -1 1 1, ZOffset -5: the chain
+   Place() assumes); equals the json's own R / t where it has one (diff 0). The moves are 5 to 9 cm. tools/int20_rig/butt_move.py.
+   Rig: the butt point drawn as a blue dot (buttprobe.pk3) floats behind the stock before and sits on the drawn stock after,
+   Rifle / Shot_Gun / MG42 (/home/claude/lane_b_out/int20/butt_r2/butt_marks_side.png, left before, right after). Butt strike on
+   the final pk3 (both hands on, gun hand swung forward over the front hand, tools/int20_rig/butt.py): Rifle, Shot_Gun and MG42
+   each land BD22's Kickattack on a summoned Cyberdemon (14 damage), 45-66 map units ahead of the butt point, inside the 60-unit
+   BUTT_REACH envelope the sweep runs ahead of the stock.
+8. **Final pk3 checks (after 6 and 7):** boot: no pack script errors (only BD_VoxelPack voxeldef.txt 66, 72, 77, 892). Sweep, 31
+   guns held and fired, no errors: /home/claude/lane_b_out/int20_sweep.png (Sniper and Railgun rows included). Alt "nothing seen"
+   on Shot_Gun, SSG, Sniper, Rifle, Machinegun, GrenadeLauncher, NukeLauncher, HandGrenades: the sweep counts only ammo / projectiles /
+   tokens. The Sniper's alt now toggles the scope, which none of those count. Shot_Gun and Nuke vary from run to run (their round-1
+   rows were FAIL too, and neither file changed this round). The others are as in round 1. Scope 3x on this pk3 (scope3x drive.py,
+   eye 8.2 cm behind the eyepiece): the lens target is 50 x 55 px against 15 x 18 px outside, about 3.3x across and 3.06x up, both
+   guns: /home/claude/lane_b_out/int20/scope3x_r2.png.
 
 ### Not done / open
 - Clip2 400 applies to every Clip2 gun (shared reserve): owner call.
+- The off-hand RSQ_Off_RailGun still has BD22's zoom alt fire (scope lane flag, owner call).
 - The Shotvolver slug refires while the secondary stays held through the hammer (designed in 1.37: held 40 tics = 2 slugs).
 - The pump driver constants in the Depot's pump.py are still stale (casecap.py uses the live table, as rsweep.py).
 
 ### Files
-pk3: /home/claude/lane_b_out/int20/BD22_VR-Reloaded_2.0-int-r2.pk3 (`python build.py 2.0-int-r2`, 102 FBX hand blocks to slot 7;
-sha256 in the lane report; not byte-reproducible). Test-only tools: tools/int20_rig/ casecap.py, slugtest.py, rl3.py,
-puristcap.py, purist_m203.py, final.sh, logger/ (INT CASE / INT SPAWN / per-frame B22 FRAME lines added).
+pk3: /home/claude/lane_b_out/int20/BD22_VR-Reloaded_2.0-int-r2.pk3 (`python build.py 2.0-int-r2`, 127 FBX hand blocks to slot 7;
+sha256 bbf220293c816bf71d3e8bb7113f17505898e53ef29972e35d2f5f0d795cd17b; not byte-reproducible). Test-only tools:
+tools/int20_rig/ casecap.py, slugtest.py, rl3.py, puristcap.py, purist_m203.py, purist_sync.py, variants_all.py, mdslots.py,
+butt_move.py (writes melee.zs rows), butt.py, buttmark.py, buttprobe/, final.sh, final2.sh, logger/ (INT CASE / INT SPAWN /
+per-frame B22 FRAME lines added).
 
 
 # r12 port lane (2026-10-28, branch `port-r12` merged into `lane-b-1.99x`): FlameCannon, MiniGun support, Unmaker, HellishMissileLauncher, BFG10k / NukeLauncher re-fit, Chain_saw, DSweap, BrutalAxe, FBX free off hand. RIG ONLY, NOT HEADSET-CONFIRMED
