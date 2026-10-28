@@ -48,7 +48,7 @@ def nozzle_tip(G, P):
     r = np.linalg.norm(np.cross(V - mu, ax), axis=1); ring = V[(r >= 4) & (r < 6)]; f = float(((ring - mu) @ ax).max())
     return mu + f * ax, f
 
-if __name__ == '__main__':
+if __name__ == '__main__' and sys.argv[1:2] != ['--fire-rows']:
     ap = argparse.ArgumentParser(); ap.add_argument('place'); ap.add_argument('sup'); ap.add_argument('--tag', default='r12 port'); ap.add_argument('--dry', action='store_true')
     pg.ARGS = A = ap.parse_args()
     P = json.load(open(A.place)); S = json.load(open(A.sup))
@@ -71,3 +71,30 @@ if __name__ == '__main__':
                      os.path.join(os.path.dirname(os.path.abspath(A.sup)), S['md3']), S.get('frame', 0))
     pg.flush(); print('moved %d items%s' % (len(pg.MOVED), ' (dry run: nothing written)' if A.dry else ''))
     if not A.dry: json.dump(dict(cls='FlameCannon', place=list(p), R=R.tolist(), t=t.tolist(), nozzle_tip=nt.tolist(), barrel_axis=fwd.tolist(), moved=pg.MOVED), open(os.path.join(HERE, 'fits', 'ported_FlameCannon.json'), 'w'), indent=1)
+
+def add_fire_rows(tag='r12 port'):
+    """r12 (rig: the support hand stayed put while the cannon kicked): FlameCannon.md3 carries its recoil in model frames 1-6 (vertex
+    travel up to 22.6 cm off frame 0), and gunmoves had no rows for it. Adds them for row 28, fitted with port_gun.fire_rows at the
+    ported placement (the same fit every other gun's rows use): sprites FLMG / 2LMG frames B C D E (md3 1-4), H J (5), I K (6),
+    from MODELDEF.bd.txt FlameCannon's FrameIndex lines."""
+    import json as _j
+    P = _j.load(open(os.path.join(HERE, 'fits', 'ported_FlameCannon.json'))); p = np.array(P['place'])
+    G = dict(pg.GUNS['FlameCannon'], cls='FlameCannon'); G['md3'] = os.path.join(pg.SRC, G['md3'])
+    tx = pg.rd('zscript/rsq/gunmoves.zs')
+    i0 = tx.index('static const double v[] = {'); i1 = tx.index('\t\t};', i0); body = tx[i0:i1]
+    nrow = len(re.findall(r'(?m)^\s*-?\d+\.\d+(?:, -?\d+\.\d+){5},?', body)); assert 'FLMG' not in tx
+    groups = [('B', 1), ('C', 2), ('D', 3), ('E', 4), ('HJ', 5), ('IK', 6)]; rows = pg.fire_rows(G, p[:3], p[3:], [f for _, f in groups])
+    lines = ['\t\t\t%s%s\t// %s: row %d FlameCannon md3 frame %d (FLMG / 2LMG %s), fitted at the ported placement' % (', '.join('%.2f' % pg.z0(v, 0.005) for v in r), ',' if k < len(rows) - 1 else '', tag, nrow + k, f, '/'.join(l), ) for k, ((l, f), r) in enumerate(zip(groups, rows))]
+    last = body.rstrip('\n').split('\n')[-1]; assert not last.rstrip().split('//')[0].rstrip().endswith(','), last
+    nb = body.rstrip('\n'); cut = nb.rfind('\n') + 1; ll = nb[cut:]; m = re.match(r'^(\s*-?\d+\.\d+(?:, -?\d+\.\d+){5})(.*)$', ll); nb = nb[:cut] + m.group(1) + ',' + m.group(2) + '\n' + '\n'.join(lines) + '\n'
+    tx = tx[:i0] + nb + tx[i1:]
+    spr_new = []; key_new = []
+    for s in ('FLMG', '2LMG'):
+        for k, (l, f) in enumerate(groups): spr_new.append('"%s%s"' % (s, l)); key_new += [str(ROW), str(nrow + k)]
+    tx = re.sub(r'(static const String spr\[\] = \{ )([^}]*?)( \};)', lambda m_: m_.group(1) + m_.group(2) + ', ' + ', '.join(spr_new) + m_.group(3), tx, count=1)
+    tx = re.sub(r'(static const int key\[\] = \{ )([^}]*?)( \};)', lambda m_: m_.group(1) + m_.group(2) + ', ' + ', '.join(key_new) + m_.group(3), tx, count=1)
+    pg.wr('zscript/rsq/gunmoves.zs', tx)
+    for (l, f), r in zip(groups, rows): pg.note('gunmoves FlameCannon row ADDED md3 frame %d (%s)' % (f, l), ', '.join('%.2f' % v for v in r))
+
+if __name__ == '__main__' and sys.argv[1:2] == ['--fire-rows']:
+    pg.ARGS = argparse.Namespace(dry='--dry' in sys.argv); add_fire_rows(); pg.flush(); print('moved %d items' % len(pg.MOVED))
