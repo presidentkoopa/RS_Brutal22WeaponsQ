@@ -195,5 +195,49 @@
    "gap_web": 0.17612821679588048
   },
   "squeeze_travel": 0.6003213035947065
+ },
+ "support": {
+  "md3": "models/rsq/fbx/fbx_b1_L.md3",
+  "label": "FbxSupF (RQFS B)",
+  "pose": "B",
+  "frame": 1,
+  "handtable_row": 10,
+  "sup_hook": [
+   -0.374,
+   -3.809,
+   -7.091
+  ],
+  "sup_rot": [
+   -7.927,
+   2.302,
+   10.732
+  ],
+  "sup_point_m": [
+   0.449,
+   0.129,
+   -0.138
+  ],
+  "shipped_from": "the fit farm placement (fit_hv.py bake): sup_pen 0.43, sup_gap 1.10 cm",
+  "check_support_gun": {
+   "sup_hook": [
+    -0.373,
+    -3.809,
+    -7.091
+   ],
+   "sup_rot": [
+    -7.927,
+    2.302,
+    10.732
+   ],
+   "sup_point_m": [
+    0.449,
+    0.129,
+    -0.138
+   ],
+   "pen_gun": 0.43,
+   "palm_gap_to_gun": 1.1,
+   "check": 0.0
+  },
+  "how": "heavies/port_hv.py (handtable SupportHook / SupportRot / SupportPoint row 10), hands.zs spl = \"FbxSupF\""
  }
 }
