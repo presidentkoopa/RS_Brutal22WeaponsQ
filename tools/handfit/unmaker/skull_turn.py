@@ -43,8 +43,10 @@ RD = Rz(YAW) @ Ry(PITCH) @ Rx(ROLL)
 FR = 6								# Ermac's pod hold (vreload HoldState(13) = RsrHoldPod)
 txt = open(SRC + 'zscript/rsr/rsr_guns.bd.zs').read()
 def row(fn):
-    m = re.search(r'static Vector3 %s\(int i\).*?case 13:\s*return \(([^)]*)\)' % fn, txt, re.S)
-    return np.array([float(x) for x in m.group(1).split(',')])
+    # lb-r8's row (the unturned fit this script starts from): the '(was (...))' a later edit of this row keeps, else the row
+    m = re.search(r'static Vector3 %s\(int i\).*?case 13:\s*return \(([^)]*)\);([^\n]*)' % fn, txt, re.S)
+    w = re.search(r'\(was \(([^)]*)\)\)', m.group(2))
+    return np.array([float(x) for x in (w or m).group(1).split(',')])
 H0 = row('HandHook')
 SC, OFF = sh.SC, sh.OFF
 t0 = loc_to_flu(H0 * np.array([SC[0], SC[2], SC[1]]))		# shift_hook inverted: the F L U move of the hook
@@ -144,3 +146,47 @@ if os.environ.get('SKULL_SHIFT'):
           % (tuple(dd) + tuple(hk) + tuple(yp) + tuple(top) + tuple(ax) + (np.abs(Pk - ((SV0 - c0) @ RD.T + c1 + dd)).max(),)))
     # the old TopInHand reproduces from the old hook: WELL + t0
     print('check: old TopInHand = WELL + t0 = %s (row %s)' % (np.round(well + t0, 3), np.round(row('TopInHand'), 3)))
+
+# ---- round 3 (owner 20:15): the CARRIED skull a little bigger (SKULL_SCALE, e.g. 1.4), normal once inserted.
+# Only the off hand's block (MODELDEF.rsr `RSQ_Hands` RQWP A, the HANDMAG layer) takes the bigger Scale; the gun's
+# well layer (RSR_GunParts) and the dropped skull keep 1. The bigger skull is turned the same and re-seated so it
+# still touches the fingers (same rule: nearest <= 0.6 cm, <= 40 hand verts inside), best worst-head view.
+# The insert check stays the normal-size skull's: TopInHand = the normal skull's top about the same centre.
+if os.environ.get('SKULL_SCALE'):
+    import itertools
+    K = float(os.environ['SKULL_SCALE'])
+    SCk = (SC[0] * K, SC[1] * K, SC[2] * K)
+    Vk = lambda hk=(0, 0, 0), yp=(0, 0, 0): np.vstack([to_flu(sh.U[s]['xyz'][0], SCk, OFF, hook=hk, ypr=yp) for s in (1, 2)])
+    c0k = Vk().mean(0)
+    def visk(hook, rot):
+        out = []
+        for eye, look in EYES:
+            items = [dict(path=SRC + 'models/rsq/ammo_hand.md3', frame=FR, scale=(-1, 1, 1), off=(0, -24, -10), color=(0, 0, 255)),
+                     dict(path=U, frame=0, scale=SCk, off=OFF, hook=hook, rot=rot, color=(255, 0, 0))]
+            hudrender.render(items, '/tmp/_sk1.png', eye=eye, look=look, W=160, H=120, fov=60)
+            hudrender.render(items[1:], '/tmp/_sk2.png', eye=eye, look=look, W=160, H=120, fov=60)
+            a = np.asarray(__import__('PIL.Image').Image.open('/tmp/_sk1.png')).astype(int)
+            b = np.asarray(__import__('PIL.Image').Image.open('/tmp/_sk2.png')).astype(int)
+            red = lambda im: ((im[:, :, 0] > 60) & (im[:, :, 2] < 40)).sum()
+            out.append(red(a) / max(1, red(b)))
+        return out
+    best = None
+    for d in itertools.product((-6, -4, -2), (2, 4, 6), (4, 6, 8)):
+        dd = np.array(d, float)
+        hk, yp = solve_hook(SCk, OFF, RD, c0k, c1 + dd)
+        P = Vk(hk, yp)
+        hin, bur, gap = scores(P)
+        if gap > 0.6 or hin > 40:
+            continue
+        v = visk(hk, tuple(yp))
+        print('x%.2f d %s hin %d buried %.1f%% gap %.2f seen %s' % (K, d, hin, 100 * bur, gap, ['%.0f%%' % (100 * x) for x in v]), flush=True)
+        if best is None or min(v) > best[0]:
+            best = (min(v), d, hk, yp, v, hin, bur, gap)
+    s, d, hk, yp, v, hin, bur, gap = best
+    dd = np.array(d, float)
+    top = RD @ (sh.WELL - c0) + c1 + dd
+    ext = np.ptp(Vk(), axis=0)
+    print('SCALED x%.2f: MODELDEF RSQ_Hands Scale %.4f %.4f %.4f; shift %s; HandHook (%.3f, %.3f, %.3f) HandRot (%.3f, %.3f, %.3f); '
+          'TopInHand (normal size) (%.3f, %.3f, %.3f); hand verts inside %d, buried %.1f%%, nearest %.2f cm, seen %s; skull extent %s cm (normal %s)'
+          % ((K,) + tuple(SCk) + (d,) + tuple(hk) + tuple(yp) + tuple(top) + (hin, 100 * bur, gap, ['%.0f%%' % (100 * x) for x in v],
+             np.round(ext, 2), np.round(np.ptp(SV0, axis=0), 2))))

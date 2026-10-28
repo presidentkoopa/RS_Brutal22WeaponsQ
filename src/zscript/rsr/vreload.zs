@@ -48,7 +48,9 @@ class RSR abstract
 	// _pitch 15, _roll 0; GZDoom angles, about the skull's centre) as the HANDMAG layer's hook rotation, and
 	// the skull re-seated -4 F +4 L +6 U cm on Ermac's pod hold so it touches the fingers and is seen from four
 	// head positions 100/100/100/93% (was 83/96/100/32%): tools/handfit/unmaker/skull_turn.py, which also gives
-	// rsr_guns row 13 HandHook / TopInHand. HandAxis: the skull's insertion axis in the off hand's frame
+	// rsr_guns row 13 HandHook / TopInHand. Round 3 (owner 20:15): the CARRIED skull is drawn 1.4x (MODELDEF.rsr
+	// RSQ_Hands Scale; re-seated -6 F +6 L +6 U so it still touches), the insert check stays the normal skull's
+	// (TopInHand = its top about the same centre). HandAxis: the skull's insertion axis in the off hand's frame
 	// (the turn applied to Axis(13)), so MagAtWell judges the skull as it is drawn. Every other row: unturned.
 	clearscope static Vector3 HandRot(int i)
 	{
