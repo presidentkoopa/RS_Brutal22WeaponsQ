@@ -115,10 +115,12 @@ Model RSQ_Hands
 Model RSQ_Hands
 {
 	Path "models/rsq/fbx"
-	Model 0 "fbx_r12_free_L.md3"
-	Skin 0 "fbx_hand.png"
+	// 2.0 int r2: the ring's Model 1 line comes FIRST. build.py moves the FBX hand to Model 7, and QZD sizes a block by its LAST
+	// Model line (models.cpp: modelsAmount = index + 1), so "Model 7 ... Model 1" was 2 slots: "Too many models in RSQ_Hands".
 	Model 1 "rsq_ring_fbx.md3"
 	Skin 1 "models/bd/Grenade/nade.png"
+	Model 0 "fbx_r12_free_L.md3"
+	Skin 0 "fbx_hand.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQHR A 0 2
