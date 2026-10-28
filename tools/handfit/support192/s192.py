@@ -117,3 +117,20 @@ def onto_vgrip(S, p, c, a):
     if u @ a < 0: Rk = Rot.from_rotvec(v / sn * (np.pi - np.arcsin(min(1.0, sn)))).as_matrix()
     tk = np.asarray(c, float) - Rk @ cc
     return apply_rigid(S, p, Rk, tk)
+
+def retarget(S, g, names=None):
+    """a gun with NO 1.92 hold (Sniper, Machinegun): the seed is another gun's 1.92 hold (S, built for that gun), moved by the
+    difference of the two guns' handtable SupportPoints (both guns keep the approved pistol aim after the port, so only a
+    translation). S is changed in place to hold gun g (mesh, gun hand) with that moved seed."""
+    T = Scene.__new__(Scene); T.g = g; G = T.G = PG.GUNS[g]; T.row = G['row']
+    P = jl(os.path.join(FITS, 'ported_%s.json' % g)); T.place = np.array(P['place'])
+    names = names or G['names'][:1]; d = os.path.dirname(os.path.join(PG.SRC, G['md3'])); VV = []; FF = []; n = 0
+    for nm in names:
+        X, F = md3_mesh(os.path.join(d, nm), G['ready']); VV.append(PG.chain(G['scale'], T.place[:3], T.place[3:])(X)); FF.append(F + n); n += len(X)
+    T.Vg = np.concatenate(VV); T.Fg = np.concatenate(FF); T.names = names
+    gh = gunhand_md3(g); T.gh_md3 = gh; T.Xh = draw(PG.md3_frames(gh)[0][0], ht_row('GunHook', T.row), ht_row('GunRot', T.row)); T.Fh = md3_mesh(gh, 0)[1]
+    dsp = 100 * (ht_row('SupportPoint', T.row) - ht_row('SupportPoint', S.row))
+    for k in ('HL', 'lm_e', 'L', 'Fl', 'Fe', 'Rseed', 'Rm', 'tm', 'move_res'): setattr(T, k, getattr(S, k))
+    T.p0 = S.p0.copy(); T.tseed = S.tseed + dsp; T.E = S.E + dsp; T.X0 = S.X0 + dsp
+    T.r192 = dict(S.r192, seed_from=S.g, support_point_shift_cm=list(np.round(dsp, 2)))
+    T.exg = exactpen.Exact(T.Vg, T.Fg); T.exh = exactpen.Exact(T.Xh, T.Fh); return T

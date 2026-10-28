@@ -34,16 +34,19 @@ def wrap(S, X, ex, kind, R, tol=0.3):
     u = np.cross(a, [0, 0, 1.0] if abs(a[2]) < 0.9 else [1.0, 0, 0]); u /= np.linalg.norm(u); v = np.cross(a, u)
     ang = np.sort(np.degrees(np.arctan2((P - c) @ v, (P - c) @ u)) % 360); gaps = np.diff(np.r_[ang, ang[0] + 360])
     return cont, n9, float(360 - gaps.max())
-def fit(g, out, names=None, W=None, kind='wrap', nfev=60, gun192=None, as_=None, vgrip=None):
-    t0 = time.time(); S = s192.Scene(g, names=names, gun192=gun192); R, L = regions(S); src = g; g = as_ or g	# as_: fit under another name (not for variants: they copy the Brutal gun's rows)
+def fit(g, out, names=None, W=None, kind='wrap', nfev=60, gun192=None, as_=None, vgrip=None, seed_from=None):
+    t0 = time.time(); src = g; g = as_ or g
+    if seed_from: S = s192.retarget(s192.Scene(seed_from), g, names)	# no 1.92 hold: another gun's 1.92 hold, moved by the SupportPoint difference
+    else: S = s192.Scene(g, names=names, gun192=gun192)
+    R, L = regions(S)	# as_: fit under another name (not for variants: they copy the Brutal gun's rows)
     S.p0, S.X0, seedfit = s192.seed_refit(S); print(g, 'seed refit to 1.92 Ermac', seedfit, flush=True)
     if vgrip is not None:	# a measured vertical foregrip: the 1.92 fist moved onto it first (s192.onto_vgrip)
         c, a = np.array(vgrip[:3]), np.array(vgrip[3:]); S.r192 = dict(S.r192, vgrip_axis=list(a / np.linalg.norm(a))); kind = 'vgrip'
         S.p0 = s192.onto_vgrip(S, S.p0, c, a); S.X0 = S.hand(S.p0); seedfit = dict(seedfit, onto_vgrip=dict(centre=list(c), axis=list(np.round(a / np.linalg.norm(a), 3))))
-    w = dict(pen=8.0, penh=6.0, con=1.0, thumb=0.7, cuff=0.5, palm=0.1, q=0.2, tol_pen=0.1, tol_penh=0.2, tol_con=0.15); w.update(W or {})
+    w = dict(pen=8.0, penh=6.0, con=1.0, palmc=1.0, across=0.0, across_cos=0.5, thumb=0.7, cuff=0.5, palm=0.1, q=0.2, tol_pen=0.1, tol_penh=0.2, tol_con=0.15); w.update(W or {})
     lo = S.X0.min(0) - 6; hi = S.X0.max(0) + 6
     G = SDFm.SDF(S.Vg, S.Fg, lo, hi); H = SDFm.SDF(S.Xh, S.Fh, lo, hi); print(g, 'sdf ready (%d / %d tris) %.0fs' % (G.ntri, H.ntri, time.time() - t0), flush=True)
-    p0 = S.p0.copy(); X0 = S.X0; cuff0 = X0[L['cuff']].mean(0); palm0 = X0[R['palm']].mean(0); sub = np.arange(0, len(X0), 2)
+    ax_ = axis_of(S, kind); p0 = S.p0.copy(); X0 = S.X0; cuff0 = X0[L['cuff']].mean(0); palm0 = X0[R['palm']].mean(0); sub = np.arange(0, len(X0), 2)
     def X_of(z): return S.hand(np.r_[z[:6], p0[6], z[6:]])
     allr = np.concatenate(list(R.values())); q = np.unique(np.r_[sub, allr]); pos = {v: i for i, v in enumerate(q)}
     rix = {k: np.array([pos[v] for v in ix]) for k, ix in R.items()}; sx = np.array([pos[v] for v in sub])
@@ -51,7 +54,9 @@ def fit(g, out, names=None, W=None, kind='wrap', nfev=60, gun192=None, as_=None,
         X = X_of(z); r = []; dg = G.signed(X[q])
         r.append(w['pen'] * np.maximum(0, -dg[sx] - w['tol_pen'])); r.append(w['penh'] * np.maximum(0, -H.signed(X[sub]) - w['tol_penh']))
         for k, ix in rix.items():
-            r.append([(w['thumb'] if k.endswith('T') else w['con']) * max(0.0, float(dg[ix].min()) - w['tol_con'])])
+            r.append([(w['thumb'] if k.endswith('T') else w['palmc'] if k == 'palm' else w['con']) * max(0.0, float(dg[ix].min()) - w['tol_con'])])
+        if w['across'] > 0:	# the hand ACROSS the part (fingers round it, not along it): knuckle direction (palm -> middle proximal) >= 60 deg off the axis
+            kd = X[L['prox_M']] - X[R['palm']].mean(0); kd = kd / np.linalg.norm(kd); r.append([w['across'] * max(0.0, abs(float(kd @ ax_)) - w['across_cos'])])
         r.append(w['cuff'] * (X[L['cuff']].mean(0) - cuff0)); r.append(w['palm'] * (X[R['palm']].mean(0) - palm0)); r.append(w['q'] * (z[6:] - p0[7:]))
         return np.concatenate([np.atleast_1d(np.asarray(a, float)).ravel() for a in r])
     z0 = np.r_[p0[:6], p0[7:]]; lob = np.r_[[-np.inf] * 6, handmodel.QLO]; hib = np.r_[[np.inf] * 6, handmodel.QHI]
@@ -63,7 +68,7 @@ def fit(g, out, names=None, W=None, kind='wrap', nfev=60, gun192=None, as_=None,
     m.update(cost=float(sol.cost), nfev=int(sol.nfev), secs=round(time.time() - t0), cuff_move_cm=round(float(np.linalg.norm(X[L['cuff']].mean(0) - cuff0)), 2), seed_refit=seedfit,
              palm_move_cm=round(float(np.linalg.norm(X[R['palm']].mean(0) - palm0)), 2), move192_res=S.move_res, sframe=S.r192['sframe'], seed_fit_rms_cm=S.lm_e['fit_rms_cm'])
     os.makedirs(out, exist_ok=True)
-    json.dump(dict(cls=g, fitted_on=src, kind=kind, names=S.names, p=p.tolist(), p_seed=p0.tolist(), Rseed=S.Rseed.tolist(), tseed=S.tseed.tolist(), m=m, seed=m0, w=w),
+    json.dump(dict(cls=g, fitted_on=src, seed_from=seed_from, kind=kind, names=S.names, p=p.tolist(), p_seed=p0.tolist(), Rseed=S.Rseed.tolist(), tseed=S.tseed.tolist(), m=m, seed=m0, w=w),
               open(os.path.join(out, 'fit192_%s.json' % g), 'w'), indent=1)
     np.save(os.path.join(out, 'fit192_%s_X.npy' % g), X)
     view.views(S, X, os.path.join(out, 'fit192_%s.png' % g), '%s: 1.92 Ermac (black), FBX fit (orange); pen %.2f / %.2f, touching %d of 9, wrap %.0f deg' % (g, m['pen_gun'], m['pen_gunhand'], m['touch9'], m['wrap_deg']))
@@ -73,5 +78,5 @@ def measure(S, X, kind, R, L):
     return dict(pen_gun=round(float(S.exg.depth(X).max()), 2), pen_gunhand=round(float(S.exh.depth(X).max()), 2), touch9=int(n9), wrap_deg=round(wd), contact_cm=cont)
 if __name__ == '__main__':
     ap = argparse.ArgumentParser(); ap.add_argument('cls'); ap.add_argument('--out', default='/home/claude/sup192run'); ap.add_argument('--names'); ap.add_argument('--w')
-    ap.add_argument('--kind', default='wrap'); ap.add_argument('--nfev', type=int, default=80); ap.add_argument('--gun192'); ap.add_argument('--as', dest='as_'); ap.add_argument('--vgrip', help='cx,cy,cz,ax,ay,az: the measured vertical foregrip (centre, axis up), cm drawn')
-    a = ap.parse_args(); fit(a.cls, a.out, a.names.split(',') if a.names else None, json.loads(a.w) if a.w else None, a.kind, a.nfev, a.gun192, a.as_, [float(v) for v in a.vgrip.split(',')] if a.vgrip else None)
+    ap.add_argument('--kind', default='wrap'); ap.add_argument('--nfev', type=int, default=80); ap.add_argument('--gun192'); ap.add_argument('--as', dest='as_'); ap.add_argument('--seed-from', dest='seed_from'); ap.add_argument('--vgrip', help='cx,cy,cz,ax,ay,az: the measured vertical foregrip (centre, axis up), cm drawn')
+    a = ap.parse_args(); fit(a.cls, a.out, a.names.split(',') if a.names else None, json.loads(a.w) if a.w else None, a.kind, a.nfev, a.gun192, a.as_, [float(v) for v in a.vgrip.split(',')] if a.vgrip else None, a.seed_from)
