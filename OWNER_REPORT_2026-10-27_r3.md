@@ -113,3 +113,9 @@ Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning mat
     - Rifle support (support fix batch 1).
     - Rocket_Launcher support (redone, batch 3) and RailGun support (palm under the box, batch 3). The RailGun barrel redo is cancelled.
     The Unmaker support (a flat palm) is still being redone.
+
+## For later (owner, 2026-10-28 06:27)
+30. **The Ruger scope looks bad; the RailGun scope is fine.**
+    - The RailGun's lens edge is smooth and round.
+    - The Ruger's (XM21.md3, glass surface 10) has a jagged, broken inner ring, and the live picture shows square-cut corners inside it (seen in scope_toggle.png).
+    - Fix later: rebuild or smooth the Ruger's lens ring and glass surface so the picture fills a clean circle, matching the RailGun. Not part of 2.0.
