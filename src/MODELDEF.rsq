@@ -72,7 +72,7 @@ Model RSQ_GunSide
 
 // 2026-10-16 (owner): the gun hand's own fist and grenade hold, Ermac's meshes at his own
 // placement (no hook): his fist (hand.md3 frame 1, the free hand's fist too), and his
-// ammo hand round a chaingun box (ammo_hand.md3 frame 3) round BD22's grenade (below)
+// the VR grenade's hand: the FBX hand (fbx/fbx_nade_R.md3, fit_nade.py), was Ermac's ammo hand (ammo_hand.md3 frame 3)
 Model RSQ_GunSide
 {
 	Path "models/rsq"
@@ -85,12 +85,12 @@ Model RSQ_GunSide
 
 Model RSQ_GunSide
 {
-	Path "models/rsq"
-	Model 0 "ammo_hand.md3"
-	Skin 0 "hand.png"
+	Path "models/rsq/fbx"
+	Model 0 "fbx_nade_R.md3"
+	Skin 0 "fbx_hand.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -24.0 -10.0
-	FrameIndex RQGN A 0 3
+	FrameIndex RQGN A 0 0	// grenade hand (lane B): the FBX hand, fit_nade.py (frame baked in place, hook 0)
 }
 
 // the free hand (off controller): open, or a fist
@@ -294,9 +294,12 @@ Model HandGrenades
    Model 0 "nade.md3"
    Skin 0 "nade.png"
    Scale -0.92 0.92 0.92
-   Offset -4.01 -2.04 -1.45
+   Offset -12.075 -8.898 0.0
    NoInterpolation
-   ZOffset -5
+   ZOffset 2.326
+   AngleOffset -18.317
+   PitchOffset -17.735
+   RollOffset 3.457	// grenade hand (lane B): gun to the FBX hand, fit_nade.py
    FrameIndex RQNP C 0 2
 }
 Model HandGrenades
@@ -309,9 +312,12 @@ Model HandGrenades
    SurfaceSkin 0 3 "nade.png"
    SurfaceSkin 0 4 "nade.png"
    Scale -0.92 0.92 0.92
-   Offset -4.01 -2.04 -1.45
+   Offset -12.075 -8.898 0.0
    NoInterpolation
-   ZOffset -5
+   ZOffset 2.326
+   AngleOffset -18.317
+   PitchOffset -17.735
+   RollOffset 3.457	// grenade hand (lane B): gun to the FBX hand, fit_nade.py
    FrameIndex RQNP A 0 2
 }
 Model HandGrenades
@@ -324,9 +330,12 @@ Model HandGrenades
    SurfaceSkin 0 3 "rsr_clear.png"
    SurfaceSkin 0 4 "rsr_clear.png"
    Scale -0.92 0.92 0.92
-   Offset -4.01 -2.04 -1.45
+   Offset -12.075 -8.898 0.0
    NoInterpolation
-   ZOffset -5
+   ZOffset 2.326
+   AngleOffset -18.317
+   PitchOffset -17.735
+   RollOffset 3.457	// grenade hand (lane B): gun to the FBX hand, fit_nade.py
    FrameIndex RQNP B 0 2
 }
 
@@ -840,7 +849,7 @@ Model RSQ_Hands
 }
 // support192 BEGIN
 
-// support192 (support192 batch 3): the FBX support hands fitted from the 1.92 holds (tools/handfit/support192), baked in place
+// support192 (support192 batch 4): the FBX support hands fitted from the 1.92 holds (tools/handfit/support192), baked in place
 Model RSQ_GunSide
 {
 	Path "models/rsq/fbx"
@@ -858,7 +867,9 @@ Model RSQ_GunSide
 	FrameIndex RQWS H 0 7	// Rocket_Launcher
 	FrameIndex RQWS I 0 8	// Plasma_Gun
 	FrameIndex RQWS J 0 9	// RailGun
-	FrameIndex RQWS M 0 10	// Machinegun
+	FrameIndex RQWS K 0 10	// Sniper
+	FrameIndex RQWS L 0 11	// MG42
+	FrameIndex RQWS M 0 12	// Machinegun
 }
 Model RSQ_Hands
 {
@@ -877,7 +888,9 @@ Model RSQ_Hands
 	FrameIndex RQWS H 0 7	// Rocket_Launcher
 	FrameIndex RQWS I 0 8	// Plasma_Gun
 	FrameIndex RQWS J 0 9	// RailGun
-	FrameIndex RQWS M 0 10	// Machinegun
+	FrameIndex RQWS K 0 10	// Sniper
+	FrameIndex RQWS L 0 11	// MG42
+	FrameIndex RQWS M 0 12	// Machinegun
 }
 // support192 END
 

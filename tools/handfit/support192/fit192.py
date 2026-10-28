@@ -34,15 +34,15 @@ def wrap(S, X, ex, kind, R, tol=0.3):
     u = np.cross(a, [0, 0, 1.0] if abs(a[2]) < 0.9 else [1.0, 0, 0]); u /= np.linalg.norm(u); v = np.cross(a, u)
     ang = np.sort(np.degrees(np.arctan2((P - c) @ v, (P - c) @ u)) % 360); gaps = np.diff(np.r_[ang, ang[0] + 360])
     return cont, n9, float(360 - gaps.max())
-def fit(g, out, names=None, W=None, kind='wrap', nfev=60, gun192=None, as_=None, vgrip=None, seed_from=None, seed_fit=None):
+def fit(g, out, names=None, W=None, kind='wrap', nfev=60, gun192=None, as_=None, vgrip=None, seed_from=None, seed_fit=None, at=None):
     t0 = time.time(); src = g; g = as_ or g
     if seed_fit:	# the 1.92 hold is too weak to copy (owner review): another gun's FINISHED fit (fit192_<src>.json), moved onto this gun's underside
         Ss = s192.Scene(seed_fit); F0 = json.load(open(os.path.join(out, 'fit192_%s.json' % seed_fit))); Ss.p0 = np.array(F0['p']); Ss.X0 = Ss.hand(Ss.p0)
-        S = s192.retarget(Ss, g, names); seed_from = 'fit:' + seed_fit
+        S = s192.retarget(Ss, g, names, at); seed_from = 'fit:' + seed_fit
     elif seed_from: S = s192.retarget(s192.Scene(seed_from), g, names)	# no 1.92 hold: another gun's 1.92 hold, moved by the SupportPoint difference
     else: S = s192.Scene(g, names=names, gun192=gun192)
     R, L = regions(S)	# as_: fit under another name (not for variants: they copy the Brutal gun's rows)
-    if seed_fit: seedfit = dict(seed='the finished fit of %s, moved onto this gun' % seed_fit)
+    if seed_fit: seedfit = dict(seed='the finished fit of %s, moved onto this gun' % seed_fit, at_cm=at)
     else: S.p0, S.X0, seedfit = s192.seed_refit(S); print(g, 'seed refit to 1.92 Ermac', seedfit, flush=True)
     if vgrip is not None:	# a measured vertical foregrip: the 1.92 fist moved onto it first (s192.onto_vgrip)
         c, a = np.array(vgrip[:3]), np.array(vgrip[3:]); S.r192 = dict(S.r192, vgrip_axis=list(a / np.linalg.norm(a))); kind = 'vgrip'
@@ -50,6 +50,11 @@ def fit(g, out, names=None, W=None, kind='wrap', nfev=60, gun192=None, as_=None,
     w = dict(pen=8.0, penh=6.0, con=1.0, palmc=1.0, across=0.0, across_cos=0.5, thumb=0.7, cuff=0.5, palm=0.1, q=0.2, tol_pen=0.1, tol_penh=0.2, tol_con=0.15); w.update(W or {})
     lo = S.X0.min(0) - 6; hi = S.X0.max(0) + 6
     G = SDFm.SDF(S.Vg, S.Fg, lo, hi); H = SDFm.SDF(S.Xh, S.Fh, lo, hi); print(g, 'sdf ready (%d / %d tris) %.0fs' % (G.ntri, H.ntri, time.time() - t0), flush=True)
+    if w.get('lower', 1) and kind != 'vgrip':	# a seed deep in the gun (big guns: 1.92's hold 2-3 cm into the body) traps the solve: lower it first,
+        X = S.hand(S.p0)	# 1 mm steps (support_gun.py's rule), until the hand is <= 0.3 cm into the gun (grid), at most 5 cm
+        for dz in np.arange(0.0, 5.01, 0.1):
+            if -G.signed(X[::2] - np.array([0, 0, dz])).min() <= 0.3: break
+        if dz > 0: S.p0 = s192.apply_rigid(S, S.p0, np.eye(3), np.array([0, 0, -dz])); S.X0 = S.hand(S.p0); seedfit = dict(seedfit, lowered_cm=round(float(dz), 1)); print(g, 'seed lowered %.1f cm out of the gun' % dz, flush=True)
     ax_ = axis_of(S, kind); p0 = S.p0.copy(); X0 = S.X0; cuff0 = X0[L['cuff']].mean(0); palm0 = X0[R['palm']].mean(0); sub = np.arange(len(X0))
     def X_of(z): return S.hand(np.r_[z[:6], p0[6], z[6:]])
     allr = np.concatenate(list(R.values())); q = np.unique(np.r_[sub, allr]); pos = {v: i for i, v in enumerate(q)}
@@ -83,4 +88,8 @@ def measure(S, X, kind, R, L):
 if __name__ == '__main__':
     ap = argparse.ArgumentParser(); ap.add_argument('cls'); ap.add_argument('--out', default='/home/claude/sup192run'); ap.add_argument('--names'); ap.add_argument('--w')
     ap.add_argument('--kind', default='wrap'); ap.add_argument('--nfev', type=int, default=80); ap.add_argument('--gun192'); ap.add_argument('--as', dest='as_'); ap.add_argument('--seed-from', dest='seed_from'); ap.add_argument('--seed-fit', dest='seed_fit'); ap.add_argument('--vgrip', help='cx,cy,cz,ax,ay,az: the measured vertical foregrip (centre, axis up), cm drawn')
-    a = ap.parse_args(); fit(a.cls, a.out, a.names.split(',') if a.names else None, json.loads(a.w) if a.w else None, a.kind, a.nfev, a.gun192, a.as_, [float(v) for v in a.vgrip.split(',')] if a.vgrip else None, a.seed_from, a.seed_fit)
+    ap.add_argument('--at', help='x,y: the measured support part (cm drawn, F / L) the seed is moved under, in place of the SupportPoint')
+    ap.add_argument('--staged', help='poses.json,gunhand.md3: a gun not ported in this branch (s192.register_staged)')
+    a = ap.parse_args()
+    if a.staged: s192.register_staged(a.cls, *a.staged.split(','))
+    fit(a.cls, a.out, a.names.split(',') if a.names else None, json.loads(a.w) if a.w else None, a.kind, a.nfev, a.gun192, a.as_, [float(v) for v in a.vgrip.split(',')] if a.vgrip else None, a.seed_from, a.seed_fit, [float(v) for v in a.at.split(',')] if a.at else None)
