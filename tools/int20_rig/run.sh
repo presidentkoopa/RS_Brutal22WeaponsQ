@@ -7,4 +7,4 @@ export B22_BUILD=$S/int20_rig B22_RIG=$S/int20_rig/bin B22_PK3=$P
 cd /home/claude/rsq_weapondepot/tools/rig
 # yield: a lane already blocked on the lock (support-hand fix has priority) is woken first while we pause
 sleep 4
-flock -o -x /home/claude/rig.lock bash -c "cp $S/int20_rig/ini.pristine $S/int20_rig/bin/config/qzdoom.ini; exec python3 -c 'import sys,rig; rc,t=rig.run(sys.argv[1],sys.argv[2],int(sys.argv[3]),tuple(sys.argv[4:])); print(\"rc\",rc)' \"\$@\"" _ "$N" "$C" "$T" "$@"
+flock -o -x /home/claude/rig.lock bash -c "cp ${INT20_INI:-$S/int20_rig/ini.pristine} $S/int20_rig/bin/config/qzdoom.ini; exec python3 -c 'import sys,rig; rc,t=rig.run(sys.argv[1],sys.argv[2],int(sys.argv[3]),tuple(sys.argv[4:])); print(\"rc\",rc)' \"\$@\"" _ "$N" "$C" "$T" "$@"

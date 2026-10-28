@@ -55,6 +55,16 @@ class RSQ_Voxels : EventHandler
 		return m;
 	}
 
+	// 2.0: spent casings follow the Spent casings option from the moment they are thrown and are
+	// left alone when it changes. Each was sized for what it got at spawn (a real-size mesh at
+	// 1.0, or BD22's sprite / voxel at BD22's scale), so swapping its model afterwards would draw
+	// one at the other's scale.
+	bool IsCasing(Actor a)
+	{
+		int c = CatOf(a);
+		return c >= 0 && RSQ_VoxTable.Holder(c) == 'RSV_Casings';
+	}
+
 	int CatOf(Actor a)
 	{
 		int s = a.sprite;
@@ -62,7 +72,15 @@ class RSQ_Voxels : EventHandler
 	}
 
 	// lend (or take back) the category's voxel; true once the actor's sprite has a category
-	bool Apply(Actor a, int mask)
+	//
+	// 2.0 (owner: "a GIGANTIC shell casing when the AssaultShotgun fires"): only an option CHANGE
+	// (retro) takes a model back. On a fresh actor (spawn, pending) A_ChangeModel('None') was never
+	// a no-op: RSA_Casings runs first and has already lent the real 12 ga hull / rifle case
+	// (casemodels.zs) and set the actor's scale to 1.0, because the mesh is real-size. Taking that
+	// back left BD22's own C4S2 / C4S3 casing sprite drawn at scale 1.0: 4x (hull, BD 0.25) to 6.7x
+	// (rifle brass, BD 0.15) its size, right at the port. Rig 2.0-int: ShotgunCasing scale 1.000
+	// with the hull stripped, a 21 x 10 unit red hull filling the eye and side frames.
+	bool Apply(Actor a, int mask, bool retro = false)
 	{
 		int c = CatOf(a);
 		if (c < 0)
@@ -76,7 +94,7 @@ class RSQ_Voxels : EventHandler
 			if (inv && lent.Find(inv) == lent.Size())
 				lent.Push(inv);
 		}
-		else
+		else if (retro)
 			a.A_ChangeModel('None');
 		return true;
 	}
@@ -130,8 +148,8 @@ class RSQ_Voxels : EventHandler
 		let it = ThinkerIterator.Create('Actor');
 		Actor a;
 		while (a = Actor(it.Next()))
-			if (!a.player && !a.bIsMonster)
-				Apply(a, m);
+			if (!a.player && !a.bIsMonster && !IsCasing(a))
+				Apply(a, m, true);
 	}
 }
 

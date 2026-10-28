@@ -32,6 +32,8 @@ class INT20Dump : EventHandler
 // per-run counters: what the player's shots made (rounds, Dakka FX, projectiles) and what they hurt
 class INT20Log : EventHandler
 {
+	ui int rf;
+	override void RenderOverlay(RenderEvent e) { rf++; if (level.maptime > 200) Console.Printf("B22 FRAME %d t %d", rf, level.maptime); }
 	int rounds, pierce, dots, puffs, sparks, proj, dmg, dmgsum, lines, lastLines;
 	Name lastMain, lastOff;
 	override void WorldThingSpawned(WorldEvent e)
@@ -44,8 +46,25 @@ class INT20Log : EventHandler
 		else if (t is 'RSQ_DakkaPuff') puffs++;
 		else if (t is 'RSQ_DakkaSpark') sparks++;
 		else if (t.bMISSILE && t.target && t.target.player) proj++;
+		Name cn2 = t.GetClassName();
+		if (level.maptime > 250 && players[consoleplayer].mo && t.Distance3D(players[consoleplayer].mo) < 200 && !(t is 'RSQ_DakkaDot') && !(t is 'RSQ_DakkaPuff') && !(t is 'RSQ_DakkaSpark')) Console.Printf("INT SPAWN t%d %s spr %s scale %.3f dist %.0f", level.maptime, cn2, t.CurState ? t.CurState.Sprite .. "" : "-", t.scale.x, t.Distance3D(players[consoleplayer].mo));
+		if (cn2 == 'ShotgunCasing' || cn2 == 'EmptyBrass' || cn2 == 'PistolCasing' || cn2 == 'MGLinks') { cases.Push(t); caseT.Push(level.maptime); }
 		if (t is 'Inventory' && !Inventory(t).Owner && level.maptime > 50 && players[consoleplayer].mo)
 			Console.Printf("INT ISPAWN t%d %s dist %.0f", level.maptime, n, t.Distance3D(players[consoleplayer].mo));
+	}
+	Array<Actor> cases; Array<int> caseT;
+	void CaseTick()
+	{
+		let mo = players[consoleplayer].mo;
+		for (int i = cases.Size() - 1; i >= 0; i--)
+		{
+			let c = cases[i];
+			int age = level.maptime - caseT[i];
+			if (!c || age > 60) { cases.Delete(i); caseT.Delete(i); continue; }
+			if (age <= 3 || age % 4 == 0)
+				Console.Printf("INT CASE t%d %s age %d scale %.3f %.3f spr %s:%c style %d alpha %.2f dist %.1f dz %.1f vel %.1f", level.maptime, c.GetClassName(), age, c.scale.x, c.scale.y,
+					c.CurState ? c.CurState.Sprite .. "" : "-", 65 + c.frame, c.GetRenderStyle(), c.alpha, mo ? c.Distance3D(mo) : -1, mo ? c.pos.z - mo.pos.z : 0, c.vel.Length());
+		}
 	}
 	override void WorldThingDestroyed(WorldEvent e)
 	{
@@ -70,6 +89,7 @@ class INT20Log : EventHandler
 				b && b.CurState ? b.CurState.Sprite .. "" : "-", b ? 65 + b.Frame : 32, b ? b.Tics : -1,
 				traceItem, ti ? mo.CountInv(ti) : -9, mo.player.cmd.buttons);
 		}
+		CaseTick();
 		let pw = mo.player.FindPSprite(PSP_WEAPON);
 		if (pw && pw.CurState != lastSt) { pspchg++; lastSt = pw.CurState; }
 		let rw = mo.player.ReadyWeapon, ow = mo.player.OffhandWeapon;
