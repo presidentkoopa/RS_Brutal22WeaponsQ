@@ -1436,3 +1436,21 @@ BD_VoxelPack's four voxeldef lines (`clean_load2.log`: no test pk3; Bullet + Dak
 - **Disk:** at about 20:25 an unthrottled frame dump of Dakka standalone (it renders at hundreds of fps) briefly filled the
   shared disk. It was deleted at once; other lanes may have seen a write failure around then. Dumps are now deleted as soon
   as the PNGs are made (owner's rule, 20:31).
+
+## lane-ballistics-skin round 3 (2026-10-27, owner 21:2x). RIG ONLY, NOT HEADSET-CONFIRMED
+### 1. Done (measured)
+- **Shot Tracers default = Dakka (1)** (CVARINFO.rsx). The owner judges the Quest cost in the headset.
+- **Skin tone on EVERY FBX hand** (dual-wield off-hand guns, the rsqdual and Purist weapon classes, RSQ_GunSide, RSQ_Hands).
+  - Measured approach: per model SLOT. `tools/handtone_build.py`, called by `build.py` on each MODELDEF lump, moves every
+    FBX-hand block (Skin 0 "fbx_hand.png", 79 blocks in 43 classes today) from model slot 0 to slot 7 in the BUILT pk3 only;
+    src/ is not rewritten, so r11's rows are re-derived on every build. No MODELDEF here uses an index above 1 (the build
+    refuses if 7 is taken). `handtone.zs` sets A_ChangeModel's skin override on slot 7 of every actor whose class has such a
+    block (read at startup from the loaded MODELDEF lumps), for the player's inventory and psprite callers.
+  - Guns (slot 0, and slot 1 for the M203) and Ermac's hands (slot 0) are never touched; the round-2 per-frame
+    FBX detection is gone. The renderer draws slot 7 only for frames whose block defines it (models.cpp
+    CalcModelOverrides: no MODELDEF mesh and no mesh override in a slot = nothing drawn).
+  - Frames: `hand_tone_dual_purist_support.png` (tones 0 / 5 / 9 / 13 / 14: dual-wield off hand RSQ_Off_BrutalPistol with
+    the main pistol, the PuristRifle gun hand, BrutalPistol gun hand + FBX support cup steadied). `hand_tone_ermac_never_tinted.png`
+    (SSG's Ermac hand as drawn at tone 14; Minigun steadied: FBX gun hand purple, Ermac grip as drawn).
+### 2. Not done
+- Fists and Ermac's hands are not toned (they are not FBX; by the owner's rule they are never tinted).

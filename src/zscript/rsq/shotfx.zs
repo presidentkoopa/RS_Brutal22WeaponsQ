@@ -25,7 +25,7 @@
 // QUEST BUDGET (not in Dakka, which is a PC mod): live dots and sparks are capped. Past the cap a dot
 // or spark is simply not spawned. Melee hitscans (LAF_ISMELEEATTACK, a melee weapon held) draw nothing.
 //
-// rsq_shot_tracers is a server cvar: the sparks are real (bouncing) actors and use playsim random
+// rsq_shot_tracers (default 1, Dakka: owner 21:2x) is a server cvar: the sparks are real (bouncing) actors and use playsim random
 // numbers (stream rsqdk), so every machine must make the same choice.
 
 class RSQ_DakkaDot : Actor
