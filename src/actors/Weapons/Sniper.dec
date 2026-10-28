@@ -158,7 +158,10 @@ ACTOR Sniper : BrutalWeapon
 		"####" A 0 A_JumpIfInventory("TossGrenade",1,"TossGrenade")
 	RSQ_SemiWait:	// posefix F11: semi-auto -- the trigger is still held from the last shot
 		"####" A 1 A_WeaponReady//(WRF_ALLOWRELOAD)
-		Loop
+		Goto Ready	// 2.0.2 (owner item 32, "it does not reload"): was Loop, which in DECORATE loops to the LAST label,
+				// RSQ_SemiWait itself, not Ready: after one pass Ready's checks (Reloading, Unload, AltFire, Kicking...)
+				// never ran again, so the reload key, the mag release and BD22's reload did nothing until a shot's own
+				// states (which test Reloading) ran. Each tic now runs Ready's checks again, as BD22's own Loop did.
 
 	Ready2:
 		TNT1 A 0 A_JumpIfInventory("ExecuteDownedEnemy", 1, "DoExecution")

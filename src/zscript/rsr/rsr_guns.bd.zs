@@ -720,7 +720,7 @@ class RSR_Guns abstract
 		case 10:	return "rsr/drumin";
 		case 11:	return "rsr/canin";
 		case 12:	return "rsr/canin";
-		case 13:	return "Unmaker/Start";
+		case 13:	return "Rifle/Reload2";	// 2.0.2 (owner item 35): the Rifle's magazine-seat click (BD22 SNDINFO RIFLER2), was "Unmaker/Start" (UNMSTA, the barrel spin-up)
 		case 14:	return "rsr/canin";
 		case 15:	return "rsr/canin";
 		case 16:	return "rsr/drumin";
