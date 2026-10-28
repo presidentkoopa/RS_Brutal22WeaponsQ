@@ -60,10 +60,12 @@ RSB_CLS = {1: 'SSG', 2: 'GrenadeLauncher', 3: 'Revolver', 7: 'Revolver (a round 
 def _rows_k(txt, fn):
     i0 = txt.index('static Vector3 %s(int i' % fn); i1 = txt.index('\n\t}', i0)
     return {int(a): np.array([float(x) for x in b.split(',')]) for a, b in re.findall(r'case (\d+):\s*return \(([^)]*)\)', txt[i0:i1])}
+RSB_HOLD = {1: 'RsbShell', 2: 'RsrHold', 3: 'RsbShell', 4: 'RsbShell', 5: 'RsbCell', 6: 'RsbCell', 7: 'RsbShell', 8: 'RsbShell', 9: 'RsbShell',
+            10: 'RsbCell', 11: 'RsbShell'}	# rsb_guns HoldState before the FBX holds (the Ermac hold each part was seated in)
 def rsb(i, pair=None):
     sys_path_port()
     import port_gun as PG
-    t = rd('zscript/rsr/rsb_guns.zs'); spr = str_rows(t, 'SprPart')[i]; hold = str_rows(t, 'HoldState', 'String')[i]
+    t = rd('zscript/rsr/rsb_guns.zs'); spr = str_rows(t, 'SprPart')[i]; hold = RSB_HOLD[i]
     G = np.array([_rows_k(t, 'Hand%d' % k)[i] for k in range(3)]); HT = _rows_k(t, 'HandT')[i]
     files = [f for f in os.listdir(O.SRC) if f.startswith('MODELDEF')]
     bl = [(f, b) for f in files for b in blocks(f, 'RSQ_Hands') if (spr, 'H') in b['frames']]

@@ -480,7 +480,7 @@ class RSB_Guns abstract
 		case 8:	return (-2.0938, 2.7285, -15.7199);	// batch 4: the hold of the round re-expressed for the moved gun (was -1.8711, 4.5497, -9.1817)
 		case 9:	return (-2.0938, 2.7285, -15.7199);	// batch 4: the hold of the round re-expressed for the moved gun (was -1.8711, 4.5497, -9.1817)
 		case 10:	return (4.0081, 3.3921, -8.1097);	// batch 4: the hold of the round re-expressed for the moved gun (was 0.4246, 5.5272, -0.3592)		// the loader's rear where VR_Revolver's sits in the hand
-		case 11:	return (-4.0115, 2.4845, -15.6403);	// batch 4: the hold of the round re-expressed for the moved gun (was -0.7608, 4.5324, -7.7214)		// the round's rim where BD22's sits
+		case 11:	return (-3.4063, 1.1416, -13.1545);	// off-hand FBX lane: the round moved 2.89 cm (0.61 -1.34 2.49 F L U) into the FBX pinch, where it shows (wire_holds.py) (was (-4.0115, 2.4845, -15.6403))
 		}
 		return (0, 0, 0);
 	}
@@ -500,7 +500,7 @@ class RSB_Guns abstract
 		case 8:	return (-0.1511, 4.4959, -6.0521);
 		case 9:	return (-0.1511, 4.4959, -6.0521);
 		case 10:	return (-0.6871, 5.3537, -2.9426);
-		case 11:	return (-0.1510, 4.4959, -6.0522);
+		case 11:	return (0.4542, 3.1530, -3.5664);	// off-hand FBX lane: the round moved 2.89 cm (0.61 -1.34 2.49 F L U) into the FBX pinch, where it shows (wire_holds.py) (was (-0.1510, 4.4959, -6.0522))
 		}
 		return (0, 0, 0);
 	}
@@ -519,7 +519,7 @@ class RSB_Guns abstract
 		case 8:	return (5.0009, 4.4025, 2.0445);
 		case 9:	return (5.0009, 4.4025, 2.0445);
 		case 10:	return (-3.4106, 5.3724, 6.9936);
-		case 11:	return (2.5767, 4.4501, -1.9769);
+		case 11:	return (3.1819, 3.1072, 0.5089);	// off-hand FBX lane: the round moved 2.89 cm (0.61 -1.34 2.49 F L U) into the FBX pinch, where it shows (wire_holds.py) (was (2.5767, 4.4501, -1.9769))
 		}
 		return (0, 0, 0);
 	}

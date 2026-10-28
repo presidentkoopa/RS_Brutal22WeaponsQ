@@ -18,7 +18,7 @@ for f in os.listdir(FD):
         J = json.load(open(os.path.join(FD, f))); fits[J['job']] = J
 missing = [j for j, _ in ORDER if j not in fits]; assert not missing, 'no fit for %s' % missing
 moved = {j: np.array(fits[j]['y']) for j, _ in ORDER if np.linalg.norm(fits[j]['y']) > 1e-9}
-assert all(j.startswith('rsr') for j in moved), 'only magazine rows can move their part here: %s' % list(moved)
+assert all(j.startswith('rsr') or j.startswith('rsb') for j in moved), 'only magazine / break-open rows can move their part here: %s' % list(moved)
 frames = []
 for k, (j, L) in enumerate(ORDER):
     J = fits[j]; frames.append(dict(name=J['name'][:15], z=J['z'], job=j, object=J['name'], letter=L, md3_frame=k, ermac='%s frame %d' % tuple(J['ermac']),
@@ -44,7 +44,8 @@ t = rd('MODELDEF.rsq')
 if 'fbx_oh_hold_R.md3' not in t: wr('MODELDEF.rsq', t.rstrip('\n') + '\n' + blk)
 # the Ermac blocks repointed
 def repoint(fname, old, new):
-    wr(fname, sub1(rd(fname), old, new))
+    t = rd(fname)
+    if old in t or new not in t: wr(fname, sub1(t, old, new))	# idempotent: a second run finds the block already repointed
 H = lambda: '\tPath "models/rsq/fbx"\n\tModel 0 "fbx_oh_hold_R.md3"\n\tSkin 0 "fbx_hand.png"\n'
 E = '\tPath "models/rsq"\n\tModel 0 "ammo_hand.md3"\n\tSkin 0 "hand.png"\n'
 ix = {f['letter']: f['md3_frame'] for f in frames}
@@ -57,9 +58,10 @@ repoint('MODELDEF.rsb', E + '\tScale -1.0 1.0 1.0\n\tOffset 0.0 -24.0 -10.0\n\tF
 repoint('MODELDEF.rsrpump', E + '\tScale -1.0 1.0 1.0\n\tOffset 0.0 -24.0 -10.0\n\tFrameIndex RQUN A 0 1\n',
         H() + '\tScale -1.0 1.0 1.0\n\tOffset 0.0 -24.0 -10.0\n\tFrameIndex RQUN A 0 %d\t// off-hand FBX lane: the FBX hand round the shell (RQHF X); was Ermac ammo_hand 1\n' % ix['X'])
 t = rd('MODELDEF.rsm')
-t = sub1(t, E + '\tModel 1 "m203_round_hand.md3"\n', '\tPath "models/rsq"\t// one Path for both models: the round stays in models/rsq\n\tModel 0 "fbx/fbx_oh_hold_R.md3"\n\tSkin 0 "fbx/fbx_hand.png"\n\tModel 1 "m203_round_hand.md3"\n')
-t = sub1(t, '\tFrameIndex RQ2H A 0 5\n', '\tFrameIndex RQ2H A 0 %d\t// off-hand FBX lane: the FBX hand round the 40 mm round (RQHF Y); was Ermac ammo_hand 5\n' % ix['Y'])
-t = sub1(t, E + '\tScale -1.0 1.0 1.0\n\tOffset 0.0 -24.0 -10.0\n\tFrameIndex RQ2H B 0 5\n', H() + '\tScale -1.0 1.0 1.0\n\tOffset 0.0 -24.0 -10.0\n\tFrameIndex RQ2H B 0 %d\t// the same FBX grip, the round on the gun\n' % ix['Y'])
+if 'fbx/fbx_oh_hold_R.md3' not in t:
+  t = sub1(t, E + '\tModel 1 "m203_round_hand.md3"\n', '\tPath "models/rsq"\t// one Path for both models: the round stays in models/rsq\n\tModel 0 "fbx/fbx_oh_hold_R.md3"\n\tSkin 0 "fbx/fbx_hand.png"\n\tModel 1 "m203_round_hand.md3"\n')
+  t = sub1(t, '\tFrameIndex RQ2H A 0 5\n', '\tFrameIndex RQ2H A 0 %d\t// off-hand FBX lane: the FBX hand round the 40 mm round (RQHF Y); was Ermac ammo_hand 5\n' % ix['Y'])
+  t = sub1(t, E + '\tScale -1.0 1.0 1.0\n\tOffset 0.0 -24.0 -10.0\n\tFrameIndex RQ2H B 0 5\n', H() + '\tScale -1.0 1.0 1.0\n\tOffset 0.0 -24.0 -10.0\n\tFrameIndex RQ2H B 0 %d\t// the same FBX grip, the round on the gun\n' % ix['Y'])
 wr('MODELDEF.rsm', t)
 # hands.zs labels
 t = rd('zscript/rsq/hands.zs')
@@ -80,17 +82,32 @@ if 'OhHoldA:' not in t:
 if moved:
     import objects as B
     t = rd('zscript/rsr/rsr_guns.bd.zs')
-    for j, y in moved.items():
+    for j, y in [(j, y) for j, y in moved.items() if j.startswith('rsr')]:
         i = int(j[3:]); o = B.rsr(i); spr = B.str_rows(t, 'SprPart')[i]; b = B.find('MODELDEF.rsr', 'RSQ_Hands', spr); hh = np.array(o['rows']['HandHook']); hr = B.handrot(i)
         f = lambda h: B.mesh(b, (spr, 'A'), h, hr)[0][0]; A = np.stack([f(hh + np.eye(3)[k]) - f(hh) for k in range(3)], 1); dh = np.linalg.solve(A, y)
         assert np.abs(f(hh + dh) - (f(hh) + y)).max() < 1e-6
         for fn, old, new in (('HandHook', hh, hh + dh), ('TopInHand', np.array(o['rows']['TopInHand']), np.array(o['rows']['TopInHand']) + y)):
             i0 = t.index('static Vector3 %s(int i)' % fn); i1 = t.index('\n\t}', i0); seg = t[i0:i1]
-            m = re.search(r'case %d:\s*return \([^)]*\);[^\n]*' % i, seg)
+            m = re.search(r'case %d:\s*return \([^)]*\);[^\n]*' % i, seg); w_ = re.search(r'off-hand FBX lane.*\(was \(([^)]*)\)\)', m.group(0))
+            if w_: old = np.array([float(x) for x in w_.group(1).split(',')]); new = old + (dh if fn == 'HandHook' else y)	# a second run: from the row before this lane
             line = 'case %d:\treturn (%.3f, %.3f, %.3f);\t// off-hand FBX lane: the part moved %.2f cm (%.2f %.2f %.2f F L U) so the FBX hand grips it (wire_holds.py) (was (%.3f, %.3f, %.3f))' % ((i,) + tuple(new) + (np.linalg.norm(y),) + tuple(y) + tuple(old))
             t = t[:i0] + seg[:m.start()] + line + seg[m.end():] + t[i1:]
         print('moved', j, np.round(y, 2), 'HandHook +', np.round(dh, 3))
     wr('zscript/rsr/rsr_guns.bd.zs', t)
+# a break-open round the fit moved by y (drawn cm = the off-hand frame): the round in the hand is G (K P + RestT) + HandT, so HandT += y,
+# and HandBase / HandTip (the round's base and tip in the hand, which the insert check reads) += y
+if any(j.startswith('rsb') for j in moved):
+    t = rd('zscript/rsr/rsb_guns.zs')
+    for j, y in [(j, y) for j, y in moved.items() if j.startswith('rsb')]:
+        i = int(j[3:])
+        for fn in ('HandT', 'HandBase', 'HandTip'):
+            i0 = t.index('static Vector3 %s(int i)' % fn); i1 = t.index('\n\t}', i0); seg = t[i0:i1]
+            m = re.search(r'case %d:\s*return \(([^)]*)\);[^\n]*' % i, seg); w_ = re.search(r'off-hand FBX lane.*\(was \(([^)]*)\)\)', m.group(0))
+            old = np.array([float(x) for x in (w_ or m).group(1).split(',')]); new = old + y
+            line = 'case %d:\treturn (%.4f, %.4f, %.4f);\t// off-hand FBX lane: the round moved %.2f cm (%.2f %.2f %.2f F L U) into the FBX pinch, where it shows (wire_holds.py) (was (%.4f, %.4f, %.4f))' % ((i,) + tuple(new) + (np.linalg.norm(y),) + tuple(y) + tuple(old))
+            t = t[:i0] + seg[:m.start()] + line + seg[m.end():] + t[i1:]
+        print('moved', j, np.round(y, 2))
+    wr('zscript/rsr/rsb_guns.zs', t)
 # vreload HoldState: each magazine gun its own frame
 t = rd('zscript/rsr/vreload.zs'); i0 = t.index('	clearscope static String HoldState(int i)'); i1 = t.index('\n\t}\n', i0) + 4
 new = ('\tclearscope static String HoldState(int i)\n\t{\n\t\t// off-hand FBX lane (owner 2026-10-28: the reload holds become FBX): each gun\'s own FBX frame round its own part\n'
@@ -98,7 +115,7 @@ new = ('\tclearscope static String HoldState(int i)\n\t{\n\t\t// off-hand FBX la
        '\t\tstatic const String h[] = { "RsrHold"' + ''.join(', "OhHold%s"' % chr(64 + i) for i in range(1, 19)) + ' };\n'
        '\t\treturn i >= 1 && i < h.Size() ? h[i] : "RsrHold";\n\t}\n')
 t = t[:i0] + new + t[i1:]
-t = sub1(t, '	// 1.99x item 10: which of Ermac\'s ammo_hand holds takes the part.', '	// 1.99x item 10 (history; the holds are FBX since 2026-10-28): which of Ermac\'s ammo_hand holds took the part.')
+if 'holds are FBX since' not in t: t = sub1(t, '	// 1.99x item 10: which of Ermac\'s ammo_hand holds takes the part.', '	// 1.99x item 10 (history; the holds are FBX since 2026-10-28): which of Ermac\'s ammo_hand holds took the part.')
 wr('zscript/rsr/vreload.zs', t)
 # rsb HoldState
 t = rd('zscript/rsr/rsb_guns.zs'); i0 = t.index('	clearscope static String HoldState(int i)'); i1 = t.index('\n\t}\n', i0) + 4

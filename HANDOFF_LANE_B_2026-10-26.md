@@ -1396,3 +1396,46 @@ hands.zs notes the owner's 2026-10-16 rule "fists are Ermac's, both hands": need
 - Gun-hand pen > 0.5: Chain_saw 0.77, BrutalAxe 0.71 (farm). HML index lies along the body (farm look). BrutalAxe support is still Ermac's glove (no FBX axe support fitted).
 - After-throw frame on the final pack: the scripted swing did not release the grenade (the grenade lane changed the throw); the sheet's after-throw cell is from the pre-merge r12b pack (same off-hand blocks), where it threw.
 - Butt-strike points (melee.zs RIFLEBUTT etc.) of guns moved in earlier ports were never moved with their guns (pre-existing; not in r12's scope).
+
+# Off-hand FBX lane (2026-10-28, branch `lane-oh-fbx` merged into `lane-b-1.99x`): fists FBX, every off-hand reload hold FBX. RIG ONLY, NOT HEADSET-CONFIRMED
+Owner decisions 2026-10-28: the fists become FBX (overrides 2026-10-16 "fists are Ermac's, both hands"); every off-hand reload hold becomes FBX for 2.0.
+FBX hand only (DXR hand_final.fbx through the lane_c fitter); never Ermac's glove, never the DXR IQM hands. Tools: `tools/handfit/offhand/`.
+
+## 1. Done (measured)
+- **Frame convention found:** in the drawn frame Ermac's free-hand mesh is a RIGHT hand on both controllers (the engine mirrors the off
+  controller). r12's `fbx_r12_free_L.md3` (the right hand mirrored to L) therefore drew as a RIGHT hand on the left controller (rig:
+  `lane_b_out/offhand_gate/shots/hand0_left.png` vs Ermac `hand0_left_r11.png`). Every off-hand frame is now the FBX RIGHT rig, baked side R.
+- **Free hand + fists** (`free_oh.py`, `mk_free.py`, `fbx_oh_free_R.md3`): FBX fitted IN PLACE of Ermac's frames (landmarks + chamfer):
+  open = hand.md3 0 (RQHN A), fist = hand.md3 1 pulled to the tight fist (RQHN H free fist / off punch, RQGF Fists weapon + BD22 punches on
+  RSQ_GunSide, dual DFist on Melee_Attacks): landmark rms 1.99 cm, chamfer median 0.57 cm, palm-to-knuckle (0.98, 0.03, -0.18) = knuckles
+  forward; ring pinch = ammo_hand 1 with the pads closed (0.002 cm), ring moved 2.05 cm (`rsq_ring_oh.md3`). Punch code untouched.
+- **Reload holds** (`objects.py`, `hold_fit.py`, `wire_holds.py`, `fbx_oh_hold_R.md3` RQHF A-Y, labels `OhHold<letter>`): each object as the
+  pack draws it (MODELDEF part block + vreload / rsb / rsp chains, parsed), the FBX hand from the Ermac hold closed round it.
+  rsr 1-18 (A-R), SSG pair (S), M79 (T), Revolver loader rows 3/7/8/9 (U), Moonlight loader (V), Moonlight round (W), pump shell (X), M203
+  round (Y). vreload / rsb HoldState name each gun's frame; all Ermac hold blocks left (RQHN I J L M, RQUN A, RQ2H A B) point at FBX frames.
+  Parts moved so the FBX hand can grip them, rows moved with them (rsr HandHook + TopInHand; rsb HandT + HandBase + HandTip):
+  Rocket_Launcher 7.61 cm, MG42 6.27, Incendiary 3.00, Unmaker 2.27 (1.4x skull + RS VR Reload turn kept; lane-rev rows brought in,
+  cad4023), Hellish 3.72, Minigun 7.52, Moonlight round 2.89 (a thumb-index pinch so the round shows: seen 0.31-0.47 vs Ermac 0.01-0.43).
+  Fit numbers per hold: `tools/handfit/poses/offhand/holds.json` (pen cm, pads touching, share of the part seen from three eye points).
+- M203 fix: its hold block keeps `Path "models/rsq"` (model 1, the round, did not load once the hand pointed at models/rsq/fbx).
+- `python3 tools/handfit/offhand/ohbake.py check`: free (3 frames) + holds (25 frames) rebake to 0 md3 units, bake check 0.008 cm.
+
+## 2. Rig evidence (QZD 17.3, doom2 > brutal22test6 > BD_VoxelPack > pack, rig.lock exclusive, ini restored, ppm deleted)
+- Packs `lane_b_out/BD22_VR-Reloaded_lb-oh5.pk3` (all runs) and `lb-oh6.pk3` (final; sha256 in the commit / report).
+- Fists: idle eye frame; main punches logged landing t263/293/324/354, off-hand punches (rsq_punch 1) t254/285/314/344 (test probe
+  `tools/handfit/offhand/dmgprobe`: OHT DMG on a PistolZombie with speed 0); frames at the hit tic.
+- Each hold mid-reload from the eye (the hand held still in front of the head), then completed: rsr EMPTY>CARRY>INSERT>SEATED>DONE for
+  16 magazine guns, rsb shut/loaded for SSG (2), M79 (1), Revolver (chamber loaded), Moonlight loader and round (6), pump (2 shells,
+  stroke done), M203 (shut: loaded). 0 pack script errors, 0 VM aborts in every run.
+- Sheet `lane_b_out/offhand_fbx.png`; logs `lane_b_out/offhand_gate/logs`; driver `rig_holds.py`, `rig_fists.py`.
+
+## 3. Flags (open)
+- NukeLauncher and Minigun: the rig driver reaches no hand reload (Nuke: known since r9/r10; Minigun: the rig drains magazine and pouch
+  together). Their FBX holds are fitted (offline renders on the sheet) but not shown in-engine.
+- Devastator part (a thin open plate) is held by a middle-finger + thumb pinch; Minigun part is an open plate (pen number unreliable).
+- One IncendiaryLauncher run aborted the engine at t215 before any input ("terminate called without an active exception"); the rerun on
+  the same pack completed (rig flake).
+- Merge note for lane-int-2.0: rsr row 13 TopInHand / HandHook now differ from lane-rev-unmaker's (the skull moved 2.27 cm into the FBX
+  grip): keep lane-b's lines.
+- Still Ermac anywhere: see the lane report (gun-hand RQGS/RQGT/RQGU in MODELDEF.rsq / .rsqdual / .rsqoff / .purist, support RQSP,
+  PuristHandGrenades RQGN).

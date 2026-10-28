@@ -22,7 +22,7 @@ def run(job, out, W=None, move=False, nfev=150):
         yi = (so['V'].min(0) + so['V'].max(0)) / 2 + np.array(S['y']) - (o['V'].min(0) + o['V'].max(0)) / 2; sm = dict(sm, seed_fit=S['name'])
     c = (o['V'].min(0) + o['V'].max(0)) / 2; eyes = [c + e for e in EYES_REL]
     m0 = O.measure(z0, Ob, cuff_ref=cref, eyes=eyes)
-    z, y, cost = O.grip(z0, Ob, cuff_ref=cref, W=W, move=move, nfev=nfev, y_init=yi)
+    z, y, cost = O.grip(z0, Ob, cuff_ref=cref, W=W, move=move, nfev=nfev, y_init=yi, fingers=os.environ.get('FINGERS', 'IMRPT'), palm=os.environ.get('PALM', '1') == '1')	# FINGERS=IT PALM=0: a pinch (a small round held out where it shows)
     m = O.measure(z, Ob, y, cuff_ref=cref, eyes=eyes)
     # Ermac's own hold, same measures (his mesh in place of the hand)
     ve = O.visible(E, Fe, o['V'], o['F'], eyes); de = Ob.ex.depth(E)
