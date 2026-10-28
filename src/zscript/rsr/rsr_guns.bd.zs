@@ -193,7 +193,7 @@ class RSR_Guns abstract
 		case 10:	return (-0.590, -5.238, -1.178);
 		case 11:	return (10.500, 3.518, -1.909);	// 1.99x item 10: Ermac ammo_hand 3 fitted to the canister (was under it)
 		case 12:	return (-0.700, 21.467, -2.274);
-		case 13:	return (3.464, 8.784, -11.859);
+		case 13:	return (-0.231, 12.300, -5.902);	// 2026-10-27: the skull turned as RS VR Reload holds it and re-seated (skull_turn.py; vreload RSR.HandRot) (was (3.464, 8.784, -11.859))
 		case 14:	return (-0.700, 10.899, -3.672);
 		case 15:	return (4.299, 15.519, 3.125);	// 1.99x item 10: Ermac ammo_hand 6 (BFG pod hold) fitted to the block (was 18 cm above the palm)
 		case 16:	return (3.989, 29.117, -10.283);	// 1.99x item 10: Ermac ammo_hand 6 fitted to the drum (was 28 cm off)
@@ -220,7 +220,7 @@ class RSR_Guns abstract
 		case 10:	return (-8.353, -7.771, 14.516);
 		case 11:	return (3.508, 2.631, 17.989);	// 1.99x item 10: Ermac ammo_hand 3 fitted to the canister (was under it)
 		case 12:	return (21.730, 3.133, 25.019);
-		case 13:	return (7.990, -18.326, 7.562);
+		case 13:	return (31.144, -13.249, 43.532);	// 2026-10-27: the hook of the turned skull (skull_turn.py; with RSR.HandRot (75, -15, 0)) (was (7.990, -18.326, 7.562))
 		case 14:	return (-0.351, -11.976, 18.579);
 		case 15:	return (14.203, -10.441, 29.189);	// 1.99x item 10: Ermac ammo_hand 6 (BFG pod hold) fitted to the block (was 18 cm above the palm)
 		case 16:	return (16.323, -15.197, -9.094);	// 1.99x item 10: Ermac ammo_hand 6 fitted to the drum (was 28 cm off)

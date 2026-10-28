@@ -73,6 +73,7 @@ OptionMenu "RSQ_Options"
 	Option "Shot/Revolver Reload", "rsb_revolver_feed", "RSB_RevFeed"
 	Option "Rifle Underbarrel Ammo", "rsm_ammo", "RSM_Ammo"
 	Option "Machinegun replaces MG42", "rsq_mg_replaces_mg42", "OnOff"
+	Option "Moonlight Revolver", "rsq_moonlight", "RSQ_Moonlight"
 	Option "Sniper Scope", "rsq_scope_sniper", "RSQ_ScopeMode"
 	Option "Railgun Scope", "rsq_scope_railgun", "RSQ_ScopeMode"
 	Option "Ballistics", "rsq_ballistics", "RSQ_Ballistics"
@@ -104,6 +105,14 @@ OptionMenu "RSR_Debug"
 	Title "RELOAD: TUNING AND DEBUG"
 	Option "Show the capture zones", "rsr_assist_debug", "OnOff"
 	Option "Print each reload step", "rsr_debug", "OnOff"
+}
+
+// owner 2026-10-27 19:40: the Moonlight on maps (rsq_moonlight, zscript/rsq/roster.zs)
+OptionValue "RSQ_Moonlight"
+{
+	0, "Off"
+	1, "50% Replaces Shotvolver"
+	2, "Replaces Shotvolver"
 }
 
 // 1.30 the rifle's M203: what a hand-loaded round costs

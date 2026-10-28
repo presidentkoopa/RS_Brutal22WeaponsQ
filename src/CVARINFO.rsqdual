@@ -11,3 +11,4 @@ user bool rsq_dual_shotgun = false;
 user bool rsq_dual_ssg = false;
 user bool rsq_dual_asg = false;
 user bool rsq_dual_railgun = false;
+user bool rsq_dual_moonlight = true;	// 2026-10-27 (owner): the Revolver (Moonlight), RSQ_Off_BrutalRevolver

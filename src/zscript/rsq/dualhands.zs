@@ -67,6 +67,8 @@ class RSQ_DualHands : EventHandler
 					label = firing ? "DFbxSqzAS" : "DFbxTrgAS";
 				if (i == 17 && !(w is 'BrutalRevolver'))	// batch 4: Revolver
 					label = firing ? "DFbxSqzRev" : "DFbxTrgRev";
+				if (i == 17 && w is 'BrutalRevolver')	// 2026-10-27: dual Moonlight (both hands; RSQ_Off_BrutalRevolver is a BrutalRevolver)
+					label = firing ? "DFbxSqzBru" : "DFbxTrgBru";
 				if (i == 21)	// shotguns: Shot_Gun
 					label = firing ? "DFbxSqzSG" : "DFbxTrgSG";
 				if (i == 8)	// r9 port: GrenadeLauncher
