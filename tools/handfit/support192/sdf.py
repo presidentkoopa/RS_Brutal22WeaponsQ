@@ -14,7 +14,7 @@ def samples(A, B, C, step=0.1):
         out.append(a + u[m][:, None] * (b - a) + v[m][:, None] * (c - a))
     return np.concatenate(out)
 class SDF:
-    def __init__(s, V, F, lo, hi, fine=0.25, margin=4.0, step=0.25):
+    def __init__(s, V, F, lo, hi, fine=0.15, margin=4.0, step=0.2):
         A, B, C = V[F[:, 0]], V[F[:, 1]], V[F[:, 2]]
         k = ((np.minimum(np.minimum(A, B), C) < hi + margin) & (np.maximum(np.maximum(A, B), C) > lo - margin)).all(1)
         s.A, s.B, s.C = A[k], B[k], C[k]; s.ntri = int(k.sum())

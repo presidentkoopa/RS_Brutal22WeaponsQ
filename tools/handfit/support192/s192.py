@@ -131,6 +131,12 @@ def retarget(S, g, names=None):
     gh = gunhand_md3(g); T.gh_md3 = gh; T.Xh = draw(PG.md3_frames(gh)[0][0], ht_row('GunHook', T.row), ht_row('GunRot', T.row)); T.Fh = md3_mesh(gh, 0)[1]
     dsp = 100 * (ht_row('SupportPoint', T.row) - ht_row('SupportPoint', S.row))
     for k in ('HL', 'lm_e', 'L', 'Fl', 'Fe', 'Rseed', 'Rm', 'tm', 'move_res'): setattr(T, k, getattr(S, k))
+    # then onto THIS gun's underside: the palm landmark 0.5 cm under the lowest surface point within 1.5 cm (F, L) of the
+    # target SupportPoint (the surface sampled every 2 mm: long polygons have no vertex there), as support_gun.py does
+    sp = 100 * ht_row('SupportPoint', T.row); Tr = T.Vg[T.Fg]; k = np.where((Tr.min(1)[:, 0] < sp[0] + 1.5) & (Tr.max(1)[:, 0] > sp[0] - 1.5) & (Tr.min(1)[:, 1] < sp[1] + 1.5) & (Tr.max(1)[:, 1] > sp[1] - 1.5))[0]
+    import sdf as _sdf
+    Ps = _sdf.samples(Tr[k][:, 0], Tr[k][:, 1], Tr[k][:, 2], 0.2); Ps = Ps[(np.abs(Ps[:, 0] - sp[0]) < 1.5) & (np.abs(Ps[:, 1] - sp[1]) < 1.5)]
+    under = Ps[np.argmin(Ps[:, 2])]; pal = (S.X0 + dsp)[S.L['palm']]; dsp = dsp + (under - np.array([0, 0, 0.5]) - pal)
     T.p0 = S.p0.copy(); T.tseed = S.tseed + dsp; T.E = S.E + dsp; T.X0 = S.X0 + dsp
-    T.r192 = dict(S.r192, seed_from=S.g, support_point_shift_cm=list(np.round(dsp, 2)))
+    T.r192 = dict(S.r192, seed_from=S.g, support_point_shift_cm=list(np.round(dsp, 2)), underside_cm=list(np.round(under, 2)))
     T.exg = exactpen.Exact(T.Vg, T.Fg); T.exh = exactpen.Exact(T.Xh, T.Fh); return T
