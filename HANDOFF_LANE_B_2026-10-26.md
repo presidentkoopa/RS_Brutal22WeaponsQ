@@ -1357,3 +1357,58 @@ Owner r3 item 20 (two revolvers only), the Revolver's own ammo (owner, 19:06 cap
   where the Revolver itself spawns on maps (nowhere today, so a second one only comes from give/summon or a future spawn);
   dual-wielding the Moonlight (README "Dual Revolvers, of course") is not built; spawn rate 1 in 4 is a first pick.
 - The Shotvolver's own map spawn is BD22's (RevolverSpawner via the commented-out shotgun replacer: effectively none).
+
+# Lane rev-unmaker, round 2 (owner's answers 19:40; branch `lane-rev-unmaker`). RIG ONLY, NOT HEADSET-CONFIRMED
+
+## 1. Done (measured)
+- **Backpack:** does not raise the Moonlight cap (kept as built; owner 1).
+- **Menu "Moonlight Revolver"** (BD22 VR WEAPONS menu; server int `rsq_moonlight`): Off / 50% Replaces Shotvolver / Replaces
+  Shotvolver. **Default: 50%** -- both revolvers stay findable wherever BD22 places a Shotvolver, and the Moonlight's rounds
+  are on (they need the option not Off). roster.zs CheckReplacement swaps BD22's `RevolverSpawner` (the Shotvolver's only
+  world pickup) for `BrutalRevolver` (the gun + its 6 rounds); the `Revolver` class is never replaced (give/idkfa, r4).
+  The Moonlight's floor pickup is now its own mesh (rev.md3 frame 0 on its side, MODELDEF.rsqmoonammo `RVMP A`; size from
+  BD22's REVPA0 34 px x 0.9; `RVMPA0.png` = REVPA0 for 2D).
+- **RevolverRounds map spawns only when the option is not Off** (owner 3).
+- **Dual Moonlight** (owner 5): `RSQ_Off_BrutalRevolver` (end of BrutalRevolver.dec, by hand on DECORATE.rsqdual's pattern;
+  gen_dual.py is not in this repo), cylinder `BrutalRevolverCylinderOff`, off-trigger one-shot lock `RSQ_SemiLockOff`
+  (roster.zs), flick reload = the mesh's own reload animation. dualtable.zs index 10 (`BrutalRevolver` pickup), dual.zs
+  MAXGUNS 11, dualhands.zs DFbxTrgBru/DFbxSqzBru, MODELDEF.rsqmoondual (gun block COPIED from MODELDEF.rsqmoon's first
+  BrutalRevolver block -- re-copy it if that placement is refitted -- and the existing FBX hand). Dual Options: "Revolver
+  (Moonlight)" (`rsq_dual_moonlight`, on) and "Revolver" renamed "Shotvolver". **Cap rule: 72 while the off-hand copy is
+  held, 36 otherwise** (RSQ_MoonPair removed; the copy is what "two held" means).
+- **Unmaker skull turned** (owner 4): RS VR Reload CVARINFO (parsed) `wm_ha_bfg_off_mag_yaw -75.0`, `_pitch 15.0`,
+  `_roll 0.0`, applied as GZDoom angles (yaw + left, pitch + nose down) in the off controller frame about the skull's centre,
+  then re-seated -4 F +4 L +6 U cm on Ermac's pod hold (`tools/handfit/unmaker/skull_turn.py`, search: touch <= 0.6 cm, <= 40
+  hand verts inside). Offline (hudrender, 4 head positions): before 83/96/100/32% of the skull seen, after 100/100/100/93%;
+  hand verts inside 2 -> 17, buried 0.0 -> 0.2%, nearest hand 0.08 cm. Code: vreload `RSR.HandRot` (75, -15, 0) and
+  `RSR.HandAxis` (-0.0670, 0.2500, -0.9659) for row 13 only; rsr row 13 HandHook (31.144, -13.249, 43.532), TopInHand
+  (-0.231, 12.300, -5.902). Offline sheet `/home/claude/lane_b_out/revunm_skull_turn_offline.png`.
+
+## 2. Rig evidence (pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-revunm2.pk3`, build.py at `0e0df42`,
+sha256 `4fbaedc4ba78a584ce9e8be8021333fbce2792033b047beb18eb60428710102b`; load order doom2 > brutal22test6 > BD_VoxelPack > pack,
+exclusive /home/claude/rig.lock, ini restored). Every run `script errors (not BD_VoxelPack voxeldef): none`; the only
+`Script error` lines are BD_VoxelPack's voxeldef.txt 66/72/77/892.
+- modes (20 RevolverSpawner summoned on MAP01 each): `rsq_moonlight 0: in the world Shotvolver 20, Moonlight 0`;
+  `rsq_moonlight 1: ... Shotvolver 9, Moonlight 11`; `rsq_moonlight 2: ... Shotvolver 0, Moonlight 20`.
+- spawn: Off -> `RevolverRounds put beside 0` on MAP01/03/07/11 (2/2/6/6 bullet pickups); 50% -> beside 2, 0, 0, 2.
+- roster: idkfa holds `BrutalRevolver` + `REVOLVER`; Revolver2 unknown to give and summon.
+- cap: `RevolverRounds (36/36)` with one; second walked onto -> `cap 36 -> 72 (two Moonlights)`, `RSQ_Off_BrutalRevolver`,
+  `(72/72)`; backpack + 100 -> `(72/72)`.
+- dual (`/home/claude/lane_b_out/revunm2_dual_moonlight.png`): both held; main fired (empty -> its reload, then 6 -> 5),
+  off fired twice (`BrutalRevolverCylinderOff (4/6)`); off flick -> off cylinder 6/6, reserve 6 -> 4; main flick -> main
+  cylinder 6/6, reserve 4 -> 3. The probe's `B22 SHOT 434` during the off flick is its own count, not a round spent (the
+  cylinders say so).
+- Unmaker reload on this pack, poses A and C: EMPTY>DROP>EMPTY>CARRY>INSERT>SEATED>DONE, `ERRORS: none`: the turned skull
+  still goes in. Before/after, same head poses: `/home/claude/lane_b_out/revunm2_unmaker_skull_before_after.png`.
+- Moonlight floor pickup: `/home/claude/lane_b_out/revunm2_moonlight_world_pickup.png`; rounds: `revunm2_pickup_frame.png`.
+
+## 3. Not done / open
+- In stock BD22 the Shotvolver hardly reaches a Doom 2 map: RevolverSpawner comes only from ShotgunSpawnerReplacer with a
+  map-set arg (its random branch is commented out, BD_ShotgunSpawner's menu line too) and from NewGunsSpawner (backpack
+  extras option). So the Moonlight option rarely puts a Moonlight on a stock map. Owner's call whether the Moonlight should
+  also take some other spawn (e.g. a share of the pistol's / shotgun's).
+- Head pose B (left hand crossed to the right of the face, the back of the hand toward the eyes) hides the skull before
+  and after; poses A and C (hand ahead / hand to the left) show it, bigger and turned after.
+- The off-hand Moonlight copies the gun block by hand (MODELDEF.rsqmoondual): a refit of MODELDEF.rsqmoon's first block needs
+  the copy updated. dualtable.zs and DECORATE copy are hand-made (no gen_dual.py here).
+- Dual Moonlight hands use the existing FBX hand (RQFL); not re-fitted for the off hand. Default 50% is my pick.
