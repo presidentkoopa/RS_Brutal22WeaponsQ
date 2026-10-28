@@ -110,6 +110,19 @@ class RSQ_Counters : EventHandler
 			b = max(b, a.BackpackMaxAmount);
 		if (a.GetClassName() == 'AmmoM202')
 			b = max(b, M202_CARRY);
+		// 2.0 (owner, 2026-10-28): a full magazine plus two more magazines' worth in reserve for the guns whose
+		// magazine was the whole reserve. Magazines from CAP[]: NukeLauncher 1, Minigun 200 (IncendiaryLauncher 6 is
+		// already covered by the 48 above). Reserve floor = 2 x magazine: Nuke 2 (BD22 gives Nuke no backpack bonus,
+		// 1/1, so the backpack still adds nothing: 2 either way); Clip2 400, and with a backpack 800 (BD22's x2,
+		// 200 -> 400, kept). Clip2 is shared, so the Rifle, Sniper, MG42 and Machinegun carry the same. The loaded
+		// magazine stays ON TOP of this (RealTick adds the lent rounds above CapBase). BackpackMaxAmount itself is
+		// not touched (see M202Carry: DetachFromOwner); the fields here never equal it, so a backpack leaving
+		// changes nothing.
+		Name an = a.GetClassName();
+		if (an == 'Nuke')
+			b = max(b, NUKE_CARRY);
+		else if (an == 'Clip2')
+			b = max(b, mo.FindInventory('BackpackItem', true) ? CLIP2_CARRY_BP : CLIP2_CARRY);
 		return b;
 	}
 	void CapPass(PlayerPawn mo)
@@ -325,6 +338,9 @@ class RSQ_Counters : EventHandler
 	// would lose 44 rockets whenever a backpack leaves the inventory. With 48/4 a backpack changes nothing,
 	// so the carry is 48 with or without one. The cylinder stays 6 (CAP[]).
 	const M202_CARRY = 48;
+	const NUKE_CARRY = 2;		// 2.0: 2 x NukeLauncher's magazine (1)
+	const CLIP2_CARRY = 400;	// 2.0: 2 x Minigun's magazine (200)
+	const CLIP2_CARRY_BP = 800;	// ... x2 with a backpack, as BD22's Clip2 (200 / 400)
 	static void M202Carry(PlayerPawn mo)
 	{
 		let am = Inventory(mo.FindInventory('AmmoM202'));
