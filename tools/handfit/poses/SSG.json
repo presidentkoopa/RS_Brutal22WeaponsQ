@@ -197,47 +197,145 @@
   "squeeze_travel": 0.5999851919647557
  },
  "support": {
-  "md3": "models/rsq/fbx/fbx_b1_L.md3",
-  "label": "FbxSupF (RQFS B)",
-  "pose": "B",
-  "frame": 1,
+  "form": "support192",
+  "md3": "models/rsq/fbx/fbx_s192_L.md3",
+  "sprite": "RQWS",
+  "frame": 0,
+  "letter": "A",
+  "label": "FbxWrapSSG",
   "handtable_row": 20,
   "sup_hook": [
-   -0.703,
-   3.903,
-   19.51
+   0.0,
+   0.0,
+   0.0
   ],
   "sup_rot": [
-   -7.927,
-   2.302,
-   10.732
+   0.0,
+   0.0,
+   -0.0
   ],
-  "sup_point_m": [
-   0.178,
-   0.069,
-   -0.057
+  "bake_check_max_cm": 0.007963672251790399,
+  "p": [
+   0.14122926470444558,
+   -0.23722747408957157,
+   -0.4228523941152213,
+   15.798455323884,
+   5.816931965554235,
+   1.6960434997555514,
+   2.7589485551815818,
+   -0.07088174889300194,
+   0.3213182568886805,
+   10.81181247578866,
+   0.40708193716946217,
+   0.23366548395597259,
+   -19.303361224007233,
+   0.9140271433689369,
+   0.30081444323786605,
+   -18.846760351837148,
+   1.0335711011368094,
+   0.00031435180780878984,
+   10.316931420243725,
+   0.7217245623315199,
+   -0.310653689448313,
+   -34.39867012461325,
+   -25.084573226146997,
+   -24.810798141723808,
+   14.204146738589191
   ],
-  "shipped_from": "the fit farm placement (fit_hv.py bake): sup_pen 0.44, sup_gap 1.30 cm",
-  "check_support_gun": {
-   "sup_hook": [
-    -0.702,
-    3.903,
-    19.51
+  "Rseed": [
+   [
+    0.9960203760072611,
+    -0.07712697355505209,
+    -0.04466363765517345
    ],
-   "sup_rot": [
-    -7.927,
-    2.302,
-    10.732
+   [
+    0.06709852807028767,
+    0.9787430001988593,
+    -0.1938038366300735
    ],
-   "sup_point_m": [
-    0.178,
-    0.069,
-    -0.057
-   ],
-   "pen_gun": 0.44,
-   "palm_gap_to_gun": 1.3,
-   "check": 0.0
+   [
+    0.05866172610105422,
+    0.1900357058870084,
+    0.980023077472603
+   ]
+  ],
+  "tseed": [
+   0.011505900271485459,
+   5.606615887954767,
+   -12.700296922973482
+  ],
+  "seed_1_92": {
+   "hand2_frame": 2,
+   "seed_refit": {
+    "landmark_rms_cm": 2.38,
+    "chamfer_med_cm": 0.73
+   },
+   "measured": {
+    "pen_gun": 1.11,
+    "pen_gunhand": 0.0,
+    "touch9": 0,
+    "wrap_deg": 29,
+    "contact_cm": {
+     "palm": 0.01,
+     "pad_I": 4.02,
+     "pad_M": 3.82,
+     "pad_R": 4.06,
+     "pad_P": 4.4,
+     "pad_T": 0.47,
+     "prox_I": 2.37,
+     "prox_M": 3.23,
+     "prox_R": 3.76,
+     "prox_P": 4.57,
+     "prox_T": 0.39
+    }
+   }
   },
-  "how": "heavies/port_hv.py (handtable SupportHook / SupportRot / SupportPoint row 20), hands.zs spl = \"FbxSupF\""
+  "measured": {
+   "pen_gun": 0.26,
+   "pen_gunhand": 0.0,
+   "touch9": 5,
+   "wrap_deg": 212,
+   "contact_cm": {
+    "palm": 0.03,
+    "pad_I": 0.03,
+    "pad_M": 0.48,
+    "pad_R": 0.03,
+    "pad_P": 0.03,
+    "pad_T": 0.04,
+    "prox_I": 0.04,
+    "prox_M": 0.51,
+    "prox_R": 0.73,
+    "prox_P": 1.33,
+    "prox_T": 0.7
+   },
+   "cost": 1.4828928649992752,
+   "nfev": 44,
+   "secs": 147,
+   "cuff_move_cm": 1.6,
+   "seed_refit": {
+    "landmark_rms_cm": 2.38,
+    "chamfer_med_cm": 0.73
+   },
+   "palm_move_cm": 1.99,
+   "move192_res": 2.540190280342358e-13,
+   "sframe": 2,
+   "seed_fit_rms_cm": 1.7033880590345205
+  },
+  "names": [
+   "SSG.md3"
+  ],
+  "weights": {
+   "pen": 4.0,
+   "penh": 4.0,
+   "con": 1.0,
+   "thumb": 0.7,
+   "cuff": 0.5,
+   "palm": 0.1,
+   "q": 0.2,
+   "tol_pen": 0.1,
+   "tol_penh": 0.2,
+   "tol_con": 0.15
+  },
+  "how": "tools/handfit/support192/fit192.py SSG (seed = 1.92 Ermac hand2 frame 2 on the gun, FBX left hand re-fitted to it, then closed onto the gun), port192.py port"
  }
 }

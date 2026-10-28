@@ -97,3 +97,10 @@ Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning mat
 25. **HUD ammo:** shows the magazine and the reserve by default, with a "Reserve only" option.
 26. **Ammo balance:** the loaded magazine counts on top of the max carry; the cap is the reserve only.
 27. **Recoil:** a design session with the owner after the 2.0 headset pass. Not part of 2.0.
+
+## Melee fits approved (owner, 2026-10-27 22:43)
+28. The owner saw the offline fit sheets for the chainsaw and the sword and is happy with them.
+    - **Chainsaw:** rear handle with the index finger on the trigger, plus the top-handle support.
+    - **Sword:** two hands on the hilt.
+    - Port both as fitted (branch lane-melee-hands, fitfarm_results/Chain_saw and DSweap).
+    - Still open: the axe (pen 0.71 cm) and the grenade (not ready, needs a re-solve).

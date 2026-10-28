@@ -123,6 +123,12 @@ class RSQ_GunSide : Inventory
 	FbxSqzF: RQFG D -1; Stop;
 	FbxSupP: RQFS A -1; Stop;
 	FbxSupF: RQFS B -1; Stop;
+	// support192 BEGIN: the FBX support hands fitted from the 1.92 holds (tools/handfit/support192)
+	FbxWrapSSG: RQWS A -1; Stop;	// SSG (row 20)
+	FbxWrapShotGun: RQWS B -1; Stop;	// Shot_Gun (row 21)
+	FbxWrapAS: RQWS C -1; Stop;	// AssaultShotgun (row 1)
+	FbxWrapRifle: RQWS D -1; Stop;	// Rifle (row 18)
+	// support192 END
 	// batch 2: BrutalSMG (row 5), the pistol's FBX hand with the index on the SMG trigger
 	FbxTrgS: RQFH A -1; Stop;
 	FbxSqzS: RQFH B -1; Stop;
@@ -615,13 +621,11 @@ class RSQ_Hands : Weapon
 		}
 		invoker.SetLayer(p, RSQ_Layers.GUNHAND, gs, own != "" ? own : i > 0 && g != "" ? gl : "Hidden");
 		String sp = RSQ_HandTable.Support(i);
-		if (i == 18 && p.ReadyWeapon is 'PuristRifle')
-			sp = "B";		// 1.30: purist's rifle has no launcher: its handguard grip as before
-		else if (i == 18 && RSK_M203Handler.TriggerGrip(mo))
+		if (i == 18 && RSK_M203Handler.TriggerGrip(mo))
 			sp = (p.cmd.buttons & BT_OFFHANDATTACK) ? "M2" : "M1";	// 1.31: finger on the M203's trigger (squeezed)
 		String spl = (i == 4 || i == 7) ? (i == 4 ? "FbxSupP" : "FbxSupF") : "Sup" .. sp;	// BD 2.0 b1: the FBX support hands
 		if (i == 20)
-			spl = "FbxSupF";	// r11 port: SSG, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 20)
+			spl = "FbxWrapSSG";	// support192 batch 1: SSG, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 20 = 0: baked in place)
 		if (i == 6)
 			spl = "FbxSupF";	// r11 port: Devastator, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 6)
 		if (i == 10)
@@ -647,13 +651,13 @@ class RSQ_Hands : Weapon
 		if (i == 8)
 			spl = "FbxSupF";	// r9 port: GrenadeLauncher, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 8)
 		if (i == 21)
-			spl = "FbxSupF";	// shotguns: Shot_Gun, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 21)
+			spl = "FbxWrapShotGun";	// support192 batch 1: Shot_Gun, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 21 = 0: baked in place)
 		if (i == 17)
 			spl = "FbxSupP";	// batch 5: Revolver, Revolver2 and BrutalRevolver (shared row), the FBX cup under the gun hand (handtable SupportHook / SupportRot row 17)
-		if (i == 18 && !(p.ReadyWeapon is 'PuristRifle'))
-			spl = "FbxSupF";	// batch 5: Rifle (the purist rifle keeps its Ermac handguard grip), the FBX open palm under its handguard / M203 (handtable SupportHook / SupportRot row 18)
+		if (i == 18)
+			spl = "FbxWrapRifle";	// support192 batch 1: Rifle, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 18 = 0: baked in place)
 		if (i == 1)
-			spl = "FbxSupF";	// shotguns: AssaultShotgun, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 1)
+			spl = "FbxWrapAS";	// support192 batch 1: AssaultShotgun, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 1 = 0: baked in place)
 		if (i == 12)
 			spl = "FbxSupF";	// batch 3: MP40, the FBX open palm under its barrel (handtable SupportHook / SupportRot row 12)
 		if (i == 5)
@@ -961,15 +965,10 @@ class RSQ_Hands : Weapon
 			: RSQ_HandTable.SupportHook(i);
 		Vector3 hookTurn = gunHand ? (two ? RSQ_HandTable.GunRotTwo(i) : RSQ_HandTable.GunRot(i))
 			: RSQ_HandTable.SupportRot(i);
-		if (!gunHand && i == 18 && !(o.ReadyWeapon is 'PuristRifle') && RSK_M203Handler.TriggerGrip(Owner))
+		if (!gunHand && i == 18 && RSK_M203Handler.TriggerGrip(Owner))
 		{
 			hook = (0, 0, 0);		// 1.31: the trigger grip is baked in place (MODELDEF.rsm RQ2S)
 			hookTurn = (0, 0, 0);
-		}
-		if (!gunHand && i == 18 && o.ReadyWeapon is 'PuristRifle')
-		{
-			hook = (2.520, 2.510, 4.940);	// batch 4: purist's rifle (no launcher): the handguard grip, moved with the gun (was -0.090, -1.390, 11.380 / 0 0 0)
-			hookTurn = (-3.854, 3.363, 10.974);
 		}
 
 		// The renderer turns every HUD model by its own layer's offset: yaw x / 4,
