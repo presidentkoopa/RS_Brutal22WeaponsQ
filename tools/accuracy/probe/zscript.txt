@@ -1,0 +1,204 @@
+version "4.10"
+// TEST ONLY (never ships): fix-accuracy probe. Logs where every player shot lands against the DRAWN BARREL's line.
+// Map RSQACC (tools/accuracy/accmap.py): one big room, the target wall is the east wall, x = WALLX.
+//   netevent acc_place <D>  move the player along x so the drawn bore line meets the wall D map units from the muzzle
+//   netevent acc_mark       print the reference (muzzle, bore, scope line) and put a marker dot where the bore meets the wall
+// Every hitscan / rail end / missile burst on the wall prints
+//   RSQACC HIT <gun> <kind> D <d> right <h> up <v> deg_right <..> deg_up <..> scope_right <..> scope_up <..> start_cm <..>
+// right/up: map units from the bore line in the wall's plane (right = the player's right); deg: seen from the muzzle;
+// scope_*: the same from the scope camera's centre line (Ruger, RailGun), for the table given by acc_scope (0 old, 1 new);
+// start_cm: how far from the drawn muzzle the shot started (hitscans fired by the player).
+// The REFERENCE is the mesh's, not the code's: the muzzle row (RSQ_Muzzle.Muzzle, measured off the mesh) and the bore
+// R @ (1,0,0) of the port records (0.99602 0.06710 0.05866 F L U), both as shipped in 2.0.1 and fix-accuracy alike.
+
+class RSQAcc_Dot : Actor
+{
+	Default { +NOINTERACTION; +NOBLOCKMAP; +NOGRAVITY; +FORCEXYBILLBOARD; RenderStyle "Add"; Scale 0.35; }
+	States { Spawn: BAL7 A -1 Bright; Stop; }
+}
+
+// the scope camera's centre line meets the wall here (red)
+class RSQAcc_ScopeDot : RSQAcc_Dot
+{
+	States { Spawn: BAL1 A -1 Bright; Stop; }
+}
+
+// every rendered frame since the engine started (a static handler: a map's own handlers restart with the map), for
+// matching the rig's frame dumps to tics
+// where a shot landed on the wall (blue), left there: the frames show it beside the two reference dots
+class RSQAcc_HitDot : RSQAcc_Dot
+{
+	Default { Scale 0.25; }
+	States { Spawn: PLSS A -1 Bright; Stop; }
+}
+
+class RSQAccFrames : StaticEventHandler
+{
+	ui int frames;
+	override void RenderOverlay(RenderEvent e) { frames++; Console.PrintfEx(PRINT_LOG, "RSQACC FRAME %d t %d", frames, level.maptime); }
+}
+
+class RSQAcc : EventHandler
+{
+	override void WorldTick() { Tick2(); }
+
+	const WALLX = 3072.0;
+	int D;
+	int scopeTable;	// 0: 2.0.1's Axis rows, 1: fix-accuracy's (the bore)
+	Array<Actor> mis;
+	Array<double> misX, misY, misZ;
+
+	static PlayerPawn P() { return players[consoleplayer].mo ? PlayerPawn(players[consoleplayer].mo) : null; }
+
+	static double VU() { let cv = CVar.FindCVar('vr_vunits_per_meter'); double v = cv ? cv.GetFloat() : 34; return v > 0 ? v : 34; }
+	static double PS(PlayerPawn mo) { double ps = mo.Level.pixelstretch; return ps > 0 ? ps : 1.2; }
+
+	// a controller-frame point (cm F L U) in the world, as muzzle.zs places it
+	static Vector3 World(PlayerPawn mo, Vector3 flu)
+	{
+		double ps = PS(mo);
+		Vector3 F = RSVR_VRHand.HandDir(mo, 0, 0, ps), L = RSVR_VRHand.HandDir(mo, 90, 0, ps), U = RSVR_VRHand.HandDir(mo, 0, 90, ps);
+		Vector3 w = (F * flu.x + L * flu.y + U * flu.z) * (VU() / 100.0);
+		w.z /= ps;
+		return RSVR_VRHand.HandPos(mo) + w;
+	}
+	static Vector3 WDir(PlayerPawn mo, Vector3 flu)
+	{
+		return (World(mo, flu * 100.0) - RSVR_VRHand.HandPos(mo)).Unit();
+	}
+
+	static Vector3 Bore() { return (0.99602, 0.06710, 0.05866); }
+
+	// the scope camera's line in the controller frame: lens, axis (index 1 RailGun, 2 Ruger)
+	Vector3, Vector3 ScopeLine(int i)
+	{
+		if (i == 1) return (2.756, 0.416, 16.469), scopeTable ? (0.99602, 0.06710, 0.05866) : (0.9940, 0.0787, 0.0764);
+		if (i == 2) return (5.843, 1.237, 10.244), scopeTable ? (0.99602, 0.06710, 0.05866) : (0.9962, 0.0624, 0.0616);
+		return (0, 0, 0), (1, 0, 0);
+	}
+	static int ScopeIx(Weapon w) { if (!w) return 0; Name n = w.GetClassName(); return n == 'RailGun' ? 1 : n == 'Sniper' ? 2 : 0; }
+
+	// where a line from m along b meets the wall plane x = WALLX
+	static Vector3 OnWall(Vector3 m, Vector3 b)
+	{
+		if (abs(b.x) < 1e-6) return m;
+		return m + b * ((WALLX - m.x) / b.x);
+	}
+
+	override void NetworkProcess(ConsoleEvent e)
+	{
+		let mo = P();
+		if (!mo || !mo.player) return;
+		let w = mo.player.ReadyWeapon;
+		if (e.Name == 'acc_scope') { scopeTable = e.Args[0]; return; }
+		if (e.Name == 'acc_place')
+		{
+			D = e.Args[0];
+			Vector3 m = World(mo, RSQ_Muzzle.Muzzle(w));
+			Vector3 b = WDir(mo, Bore());
+			double dx = (WALLX - b.x * D) - m.x;
+			mo.SetOrigin(mo.pos + (dx, 0, 0), false);
+			Console.PrintfEx(PRINT_LOG, "RSQACC PLACE %s D %d moved %.1f", w ? w.GetClassName() : 'none', D, dx);
+			return;
+		}
+		if (e.Name == 'acc_mark')
+		{
+			Vector3 m = World(mo, RSQ_Muzzle.Muzzle(w));
+			Vector3 b = WDir(mo, Bore());
+			Vector3 f = WDir(mo, (1, 0, 0));
+			Vector3 hit = OnWall(m, b), fhit = OnWall(m, f);
+			Actor.Spawn('RSQAcc_Dot', hit - (1, 0, 0));
+			Console.PrintfEx(PRINT_LOG, "RSQACC REF %s D %.1f muzzle %.2f %.2f %.2f bore %.5f %.5f %.5f wallpoint %.2f %.2f %.2f controller-forward meets the wall %.2f right %.2f up of it",
+				w ? w.GetClassName() : 'none', (hit - m).Length(), m.x, m.y, m.z, b.x, b.y, b.z, hit.x, hit.y, hit.z, hit.y - fhit.y, fhit.z - hit.z);
+			int si = ScopeIx(w);
+			if (si)
+			{
+				Vector3 lp, la; [lp, la] = ScopeLine(si);
+				Vector3 lw = World(mo, lp);
+				Vector3 sh = OnWall(lw, WDir(mo, la));
+				Actor.Spawn('RSQAcc_ScopeDot', sh - (1, 0, 0));
+				Console.PrintfEx(PRINT_LOG, "RSQACC SCOPE %s table %d lens %.2f %.2f %.2f centre-line meets the wall %.2f right %.2f up of the bore point",
+					w.GetClassName(), scopeTable, lw.x, lw.y, lw.z, hit.y - sh.y, sh.z - hit.z);
+			}
+			return;
+		}
+	}
+
+	void Report(PlayerPawn mo, Name kind, Vector3 from, Vector3 at, bool started)
+	{
+		let w = mo.player.ReadyWeapon;
+		if (!w || at.x < WALLX - 4) { Console.PrintfEx(PRINT_LOG, "RSQACC SHORT %s %s at %.1f %.1f %.1f", w ? w.GetClassName() : 'none', kind, at.x, at.y, at.z); return; }
+		Vector3 m = World(mo, RSQ_Muzzle.Muzzle(w));
+		Vector3 b = WDir(mo, Bore());
+		Vector3 p = OnWall(m, b);
+		Vector3 rt = (b.y, -b.x, 0).Unit();
+		Vector3 up = rt cross b;
+		Vector3 o = at - p;
+		double h = o dot rt, v = o dot up, dist = (p - m).Length();
+		double sh = 0, sv = 0;
+		int si = ScopeIx(w);
+		if (si)
+		{
+			Vector3 lp, la; [lp, la] = ScopeLine(si);
+			Vector3 q = OnWall(World(mo, lp), WDir(mo, la));
+			sh = (at - q) dot rt; sv = (at - q) dot up;
+		}
+		double st = started ? (from - m).Length() * 100.0 / VU() : -1;
+		if (CVar.FindCVar('acc_hitdots') && CVar.FindCVar('acc_hitdots').GetInt())
+			Actor.Spawn('RSQAcc_HitDot', at - (2, 0, 0));
+		Console.PrintfEx(PRINT_LOG, "RSQACC HIT %s %s D %d right %.2f up %.2f deg_right %.3f deg_up %.3f scope_right %.2f scope_up %.2f start_cm %.1f",
+			w.GetClassName(), kind, D, h, v, atan2(h, dist), atan2(v, dist), sh, sv, st);
+	}
+
+	override void WorldHitscanFired(WorldEvent e)
+	{
+		Console.PrintfEx(PRINT_LOG, "RSQACC SHOT t %d", level.maptime);
+		let mo = P();
+		if (!mo || !e.Thing) return;
+		bool rnd = e.Thing != mo;
+		if (rnd && e.Thing.target != mo) return;
+		Name pn = e.Inflictor ? e.Inflictor.GetClassName() : 'none';
+		Report(mo, rnd ? Name('round:' .. pn) : Name('hitscan:' .. pn), e.AttackPos, e.DamagePosition, !rnd);
+	}
+
+	override void WorldRailgunFired(WorldEvent e)
+	{
+		Console.PrintfEx(PRINT_LOG, "RSQACC SHOT t %d", level.maptime);
+		let mo = P();
+		if (!mo || e.Thing != mo) return;
+		Report(mo, 'rail', e.AttackPos, e.DamagePosition, true);
+	}
+
+	// missiles fired from the hand (born within 200 units of the controller: not the debris of a burst); each tic the
+	// last flying position and velocity are kept, and where that line meets the wall is its impact (a ball bursts with
+	// its centre short of the wall)
+	Array<double> misVX, misVY, misVZ;
+	Array<Name> misN;
+	override void WorldThingSpawned(WorldEvent e)
+	{
+		let mo = P();
+		let c = e.Thing;
+		if (!mo || !c || !c.bMISSILE || c.target != mo || (c.pos - mo.AttackPos).Length() > 200) return;
+		mis.Push(c); misX.Push(c.pos.x); misY.Push(c.pos.y); misZ.Push(c.pos.z);
+		misVX.Push(c.vel.x); misVY.Push(c.vel.y); misVZ.Push(c.vel.z); misN.Push(c.GetClassName());
+	}
+
+	void Tick2()
+	{
+		let mo = P();
+		for (int i = mis.Size() - 1; i >= 0; i--)
+		{
+			let c = mis[i];
+			if (c && c.bMISSILE && c.vel != (0, 0, 0))
+			{
+				misX[i] = c.pos.x; misY[i] = c.pos.y; misZ[i] = c.pos.z;
+				misVX[i] = c.vel.x; misVY[i] = c.vel.y; misVZ[i] = c.vel.z;
+				continue;
+			}
+			Vector3 lp = (misX[i], misY[i], misZ[i]), lv = (misVX[i], misVY[i], misVZ[i]);
+			if (mo && lv.x > 0 && lp.x > WALLX - 256)
+				Report(mo, Name('missile:' .. misN[i]), lp, OnWall(lp, lv.Unit()), false);
+			mis.Delete(i); misX.Delete(i); misY.Delete(i); misZ.Delete(i); misVX.Delete(i); misVY.Delete(i); misVZ.Delete(i); misN.Delete(i);
+		}
+	}
+}
