@@ -1412,3 +1412,39 @@ exclusive /home/claude/rig.lock, ini restored). Every run `script errors (not BD
 - The off-hand Moonlight copies the gun block by hand (MODELDEF.rsqmoondual): a refit of MODELDEF.rsqmoon's first block needs
   the copy updated. dualtable.zs and DECORATE copy are hand-made (no gen_dual.py here).
 - Dual Moonlight hands use the existing FBX hand (RQFL); not re-fitted for the off hand. Default 50% is my pick.
+
+# Lane rev-unmaker, round 3 (owner 20:15; branch `lane-rev-unmaker`). RIG ONLY, NOT HEADSET-CONFIRMED
+
+## 1. Done
+- **Default stays 50%** (`rsq_moonlight = 1`).
+- **"Can it not 50% drop from enemies that carry revolvers?": no BD22 enemy carries or drops a revolver.** Checked in
+  brutal22test6.pk3 (read only, `python3 -I`), all 172 `actors/` files, 47 of them enemies (actors/Enemies/*):
+  - no `DropItem` names Revolver / RevolverSpawner (every DropItem in actors/ was listed: health/armor bonuses, runes, CLIP1Drop,
+    RifleDrop, Clip, Shells, ShotgunDrop, ChaingunDrop, SMGDrop, PistolDrop, GrenadeAmmo, spawners for SSG/ASG/RL/plasma/
+    rifle/railgun, ...);
+  - no A_SpawnItem / A_SpawnItemEx / A_DropItem of a revolver in any enemy file, and no "Revolver"/"Revolver/" sound or REVP
+    sprite outside actors/Weapons/REVOLVER.dec and WeaponSpawners.dec.
+  - The only revolver drops in BD22 are not enemies: `src/Options.acs:796-815` script "DropItems" (DEATH, i.e. the PLAYER's
+    death, option bd_dropitems) drops the player's own guns from the list `src/ACSFunc.acs:353-384` ("Revolver" at :359);
+    and `src/EviEnh.acs:163` spawns a RevolverSpawner on Eviternity MAP30 -- that one is a RevolverSpawner, so the Moonlight
+    option already applies to it. Item stopped, nothing invented.
+- **Unmaker skull 1.4x while carried, normal when inserted** (owner 3): MODELDEF.rsr `RSQ_Hands` (the off hand's HANDMAG
+  layer only) Scale -1.4 1.4 1.4; RSR_GunParts (in the gun) and RSR_DroppedMag stay 1. The bigger skull keeps the RS VR
+  Reload turn and is re-seated -6 F +6 L +6 U cm (skull_turn.py `SKULL_SCALE=1.4`): nearest hand 0.28 cm, 22 hand verts
+  inside, 0.0% buried, seen 100/100/100/93% from the four heads; extent 17.4 x 11.5 x 8.4 cm (normal 12.4 x 8.2 x 6.0).
+  rsr row 13 HandHook (21.277, -12.586, 44.350); TopInHand (-2.231, 14.300, -5.902) = the NORMAL skull's top about the same
+  centre, so the insert check uses the normal size.
+
+## 2. Rig evidence (pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-revunm3.pk3`, build.py at `9e1d4f0`,
+sha256 `08d2ed3414e88f5812938dcbd7c331a5939e52b46ee4aed3689242df416ebb8b`; doom2 > brutal22test6 > BD_VoxelPack > pack, lock, ini restored)
+- Every run `script errors (not BD_VoxelPack voxeldef): none` / `ERRORS: none`; only BD_VoxelPack's voxeldef 66/72/77/892.
+- Unmaker poses A, C and the seated run: EMPTY>DROP>EMPTY>CARRY>INSERT>SEATED>DONE, `RELOAD magazine 0 -> 200, 200 from the
+  pouch, pouch 250 -> 50`. Sheets: `revunm3_unmaker_skull_carried_vs_seated.png` (r2 1.0x vs r3 1.4x carried, same poses),
+  `revunm3_unmaker_carried_then_seated_same_run.png` (one run, one head pose: carried 1.4x, then seated 1.0x with the off hand
+  moved away).
+- Moonlight modes re-run on this pack: 0 -> Shotvolver 20 / Moonlight 0; 1 -> 8 / 12; 2 -> 0 / 20.
+- All PNGs: `/home/claude/lane_b_out/` (sheets) and `/home/claude/lane_b_out/revunm_work/` (scans); raw .ppm dumps deleted.
+
+## 3. Open
+- With no enemy carrying a revolver, the Moonlight reaches stock Doom 2 maps only where BD22 spawns a RevolverSpawner
+  (mapper-set ShotgunSpawnerReplacer arg 2, backpack extras, Eviternity MAP30). Owner's call if he wants another source.
