@@ -43,6 +43,24 @@ class RSR abstract
 
 	const WEAPONTOP = 32;	// a layer drawn at y = 0 is tilted (hw_weapon.cpp: (my - WEAPONTOP) / -4)
 
+	// 2026-10-27 (owner 19:40: the Unmaker skull "clearly visible while carried, like RS VR Reload"). Only
+	// row 13 turns its part in the hand. RS VR Reload's Unmaker hand set (CVARINFO wm_ha_bfg_off_mag_yaw -75,
+	// _pitch 15, _roll 0; GZDoom angles, about the skull's centre) as the HANDMAG layer's hook rotation, and
+	// the skull re-seated -4 F +4 L +6 U cm on Ermac's pod hold so it touches the fingers and is seen from four
+	// head positions 100/100/100/93% (was 83/96/100/32%): tools/handfit/unmaker/skull_turn.py, which also gives
+	// rsr_guns row 13 HandHook / TopInHand. Round 3 (owner 20:15): the CARRIED skull is drawn 1.4x (MODELDEF.rsr
+	// RSQ_Hands Scale; re-seated -6 F +6 L +6 U so it still touches), the insert check stays the normal skull's
+	// (TopInHand = its top about the same centre). HandAxis: the skull's insertion axis in the off hand's frame
+	// (the turn applied to Axis(13)), so MagAtWell judges the skull as it is drawn. Every other row: unturned.
+	clearscope static Vector3 HandRot(int i)
+	{
+		return i == 13 ? (75.0, -15.0, 0.0) : (0, 0, 0);
+	}
+	clearscope static Vector3 HandAxis(int i)
+	{
+		return i == 13 ? (-0.0670, 0.2500, -0.9659) : RSR_Guns.Axis(i);
+	}
+
 	// cm, degrees
 	const POUCH_MIN = 20.0;		// a magazine is taken at least this far from the well
 	const POUCH_LOW = 40.0;		// rsr_pouch 1: this far below the eyes
@@ -310,7 +328,7 @@ class RSR_State play
 		Vector3 rel = top - RSR_Guns.Well(i);
 		double along = rel dot axis;
 		double side = (rel - axis * along).Length();
-		double c = clamp(OffDirInGun(axis) dot axis, -1, 1);
+		double c = clamp(OffDirInGun(RSR.HandAxis(i)) dot axis, -1, 1);	// 2026-10-27: the part as turned in the hand (RSR.HandAxis)
 		return -along, side, acos(c);
 	}
 
@@ -1132,7 +1150,7 @@ class RSR_ReloadHandler : EventHandler
 				return t + RSR_Guns.HandleHook(s.fcGun) * (RSR_Guns.BoltRatio(s.fcGun) * (s.fcPullPrev + (s.fcPull - s.fcPullPrev) * ticfrac)), r;
 			return t + RSR_Guns.HandleHook(i) * (RSR_Guns.BoltRatio(i) * (s.pullPrev + (s.pull - s.pullPrev) * ticfrac)), r;
 		case RSR.HANDMAG:
-			return t + RSR_Guns.HandHook(i) + DeskShift(owner, s, RSR_Guns.Scale(i)), r;
+			return t + RSR_Guns.HandHook(i) + DeskShift(owner, s, RSR_Guns.Scale(i)), r + RSR.HandRot(i);	// 2026-10-27: row 13 turned (RSR.HandRot)
 		case RSR.FREEHAND:
 			return t + DeskShift(owner, s, (-1, 1, 1)), r;
 		}
