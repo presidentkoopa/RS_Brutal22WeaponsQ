@@ -1787,3 +1787,62 @@ sup_pen / gap, support_gun.py's check). r10's four pose JSONs still lack `suppor
   except MiniGun (Ermac's handle grip) and PuristRifle (Ermac's handguard grip).
 - **No FBX hand:** FlameCannon (owner item 21: no gun hand, arm-worn), Unmaker, HellishMissileLauncher; melee/thrown: BrutalAxe,
   Chain_saw, DSweap, HandGrenades.
+
+# 2.0 integration (2026-10-27, branch `lane-int-2.0` cut from origin/lane-b-1.99x 9238187). RIG ONLY, NOT HEADSET-CONFIRMED
+
+Merged, in order: lane-rev-unmaker db5156f, lane-ballistics-skin 8c1c268 then its final head f41b04c (off-hand muzzle
+shots), lane-b-1.99x after r11 + rebake, then support192 batches 1 and 2 (931aedf). Final-pk3 rerun: boot, Devastator / IncendiaryLauncher / GrenadeLauncher / Rocket_Launcher / SSG / Shot_Gun / AssaultShotgun / Rifle fire + held, Purist held: all as below. Conflicts were only this HANDOFF (both sides
+kept) and the src/README.txt credits (the slug revolver line dropped per owner item 20; the Dakka credit kept).
+build.py's skin-tone step catches every lane's FBX hand blocks (100 blocks to slot 7, including rev-unmaker's dual Moonlight).
+
+## 1. Done (measured on the rig: QZD 17.3 9afc750, doom2 > brutal22test6 > BD_VoxelPack > pack, rig.lock -x, pristine ini)
+- **Script errors:** none from the pack. The only lines are BD_VoxelPack's own four:
+  `Script error, "BD_VoxelPack.pk3:voxeldef.txt" line 66:` (and 72, 77, 892).
+- **Weapon list (measured in-engine, not typed):** idkfa gives 22 guns, now including REVOLVER (Shotvolver) and
+  BrutalRevolver (Moonlight) (owner item 5). Revolver2 is gone. rsq_extra_weapons adds MP40, MG42, Devastator,
+  HellishMissileLauncher, FlameCannon.
+- **Select / fire / alt fire, every gun, Hitscan mode, Dakka tracers on by default (31 guns):** every gun selects and fires
+  (ammo drop, projectiles, Dakka dots/lines or a melee swing). Alt fire is shown on all guns that have one, except as listed in 2.
+  HandGrenades was worked in real VR play: the off hand pulled the ring, then the trigger released mid-swing; GrenadeAmmo 1>0, the blast hit 7 targets for 53 damage.
+- **Player Ballistics = Bullet** (BrutalPistol, Moonlight, Shotvolver, SMG, Shot_Gun, Sniper, Rifle, Minigun, Machinegun):
+  real RSQ_PlayerRounds fly from every gun (1 / 1 / 9 / 3 / 9 / 2 / 3 / 3 / 4 per window). The Sniper also fires 1
+  RSQ_PiercingRound. In Hitscan mode no round is ever spawned.
+- **Hand reloads (Depot drivers, geometry from the probe's live tables):** magazine guns: Rifle, BrutalPistol, BrutalSMG, MP40,
+  AssaultShotgun, RailGun, Plasma_Gun, Sniper, Rocket_Launcher, MG42 (92>100), Flamethrower2 (88>100), Unmaker (184>200),
+  Devastator, HellishMissileLauncher, Machinegun (96>100) and Minigun (197>200, needs a backpack, see 2) all go
+  EMPTY>DROP>CARRY>INSERT>SEATED>DONE with the magazine refilled. Break/cylinder guns: SSG 0>2, GrenadeLauncher 0>1,
+  Shotvolver 4>6, Moonlight 0>6. Pump: Shot_Gun takes 2 shells through the port ("shell home") and finishes a full pump stroke.
+- **Dual wield, real play (all 11 dual guns):** own the gun, touch its map pickup (spawner), press the Dual key (+user3),
+  pull the off trigger, 40 tics hands-off, then the main trigger. Every gun gets its RSQ_Off_ copy into the off hand. The off hand fires once
+  per pull, with no self-refire, and the main gun still fires afterwards.
+  - The lane's earlier "dual SMG/Shotvolver fail" was mostly the script: BD22 spawners are THRUACTORS for their first 10 tics, a
+    standing player never touches anything, and +forward does nothing in VR mode (use qz_lstick).
+  - **A real bug in the Shotvolver copy, now fixed (eca5bac):** RSQ_Off_Revolver (DECORATE.rsqdual) still had the 1.85 layout. Its numeric
+    +2 jump after the kick landed in the slug block, so every off-hand shot re-fired forever with the trigger up and
+    NeedToHammer was never taken. The main Shotvolver then sat at its hammer frame and never fired again. Hammering now
+    follows the jump, as in Revolver.dec since 1.92. Rig: off 6>5>4, main 6>5>4, NeedToHammer 0 after each shot.
+- **Variants:** there are no Tactical weapon classes; Tactical is a player class that uses the Brutal guns. Every Purist gun with a
+  per-class block carries exactly its Brutal gun's rows (tools/int20_rig/variants.py). Helper-drawn hands (RSQ_Hands /
+  RSQ_GunSide) follow RSQ_HandTable.Index, which uses `is`, so the Purist subclasses inherit them. All 24 Purist guns were held on the rig.
+  - **Fixed (8e461be): PuristSniper had no MODELDEF blocks at all** ("Sniper stays out" from 2026-10-16), so it showed an
+    empty FBX hand. Sniper's 7 blocks are now copied to it. Rig frame: the XM21 is in the hand.
+
+## 2. Not done / flagged
+- **Shotvolver slug alt fire is OFF by default** (`rsa_rev_magnum`, server, default false), while owner item 24 says the
+  Shotvolver keeps its slug alt. With it on, the rig shows the slug (470 Dakka dots, 2 hits for 88 damage). Owner call: default on?
+- **M203 alt fire (Rifle, Machinegun) not shown.** It needs a hand-loaded tube (RFGLoaded). The Depot's m203.py opens the tube
+  and takes a round, but the round never seats (stale driver geometry, not refit here). An empty-tube alt is a dry click, as designed.
+- **IncendiaryLauncher, NukeLauncher hand reload never starts.** The counters show the whole reserve sitting in the magazine
+  (pouch 4>0, 1>0), even with a backpack. This is the cap issue the r6 reloads lane already noted; owner call on caps.
+- **Minigun reload needs a backpack** (magazine 200 = Clip2 cap 200), as the r6 lane says.
+- **MP40 dual:** the MP40 is cheat-only (maps spawn the SMG instead), so no in-play pickup gives its copy. Tested with BD22's own
+  HasDualMP40 token: works.
+- **Moonlight:** a picked-up or given Moonlight arrives with an empty cylinder (BrutalRevolverCylinder 0); the first trigger opens it for the hand reload.
+- **Pump driver:** tools/rig/pump.py's constants are stale (the port is now at L 7.33 cm). The sweep used the probe's live table instead.
+- **The ballistics lane's $S/rig/ini.pristine and probe.pk3** in the shared session scratchpad were overwritten by this lane by
+  mistake (my rig now lives in its own dir). If that lane runs again, re-make its pristine ini.
+
+## 3. Files
+pk3: /home/claude/lane_b_out/int20/BD22_VR-Reloaded_2.0-int.pk3 sha256 6225ca2125d30dc3727ee5a3e99b6389f9890c786bc4362872cc3c183cb741b5 (src/ as at the branch head; `python build.py 2.0-int`; the VERSION file still says 1.99).
+Sheets: /home/claude/lane_b_out/int20_sweep.png (every gun held), /home/claude/lane_b_out/int20_purist.png (24 Purist guns);
+per-gun frames in /home/claude/lane_b_out/int20/ (hs_*, pu_*). No .ppm left. Test-only tools: tools/int20_rig/ (never in src/).
