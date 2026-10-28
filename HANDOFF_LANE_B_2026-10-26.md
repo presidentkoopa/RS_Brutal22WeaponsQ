@@ -1561,3 +1561,161 @@ the HUD / on-top / sweep / MG42 runs used; doom2 > brutal22test6 > BD_VoxelPack 
   `/home/claude/lane_b_out/revunm6_machinegun_hud_icon_before_after.png` (rocket icon by 100 before, none after).
 - Pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-revunm6.pk3`, sha256
   `7b08db6af3d2f854d7b305552316c3242cf746b8eb234097d90bdd930c58385b`; runs: no script error of ours (BD_VoxelPack voxeldef only).
+
+## lane-ballistics-skin (2026-10-27, branch `lane-ballistics-skin` off `lane-b-1.99x` a4b0eb7). RIG ONLY, NOT HEADSET-CONFIRMED
+Owner items 19 (Player Ballistics) and 18 (hand skin tone) from OWNER_REPORT_2026-10-27_r3.md.
+Evidence: `/home/claude/lane_ballskin_out/`. Rig: QuestZDoom 17.3 (Depot `tools/rig`, build/rig), exclusive `rig.lock`,
+private ini copy; load order doom2 -> brutal22test6 -> BD_VoxelPack -> `BD22_VR-Reloaded_2.0-ballskin.pk3`
+(+ the TEST-ONLY logger `rsqt.pk3` for the damage runs; source in `rsqt_src/`, never ships).
+
+### 1. Done (measured)
+- **"Player Ballistics: Hitscan / Bullet"** (`src/zscript/rsq/playerrounds.zs`, server cvar `sv_rsq_player_ballistics`, default 0 = Hitscan).
+  The source is the owner's RS_Ballistics `zscript/rsb/enemyfire.zs` (github presidentkoopa/rs_ballistics, cloned read-only): it uses
+  WorldHitscanPreFired to cancel a monster's hitscan and fly a round at `sv_rsb_enemy_round_speed` (80 a tic). It is ported to the player's
+  hitscans, speed 80. RSB_Bullet itself is not ported: its looks (PARTICLEDEFS bursts, SpawnEffectLight, heat) are REMA renderer features.
+  - **How the numbers stay BD22's:** one event per pellet, with BD22's spread already in its angles. The round flies the engine's own
+    line (AttackDir / OffhandDir). When its per-tic trace finds something, it fires **the original hitscan** (the event's damage, damage
+    type and puff, LAF_TARGETISSOURCE) from 2 units short of the hit, for the rest of the range. So the puff damage type, BLOODLESSIMPACT,
+    MTHRUSPECIES, decals, blood and kill credit all come from the engine's own P_LineAttack.
+  - **Start:** RSQ_Muzzle (its re-fire with LAF_ABSPOSITION is the event taken, or `RSQ_Muzzle.Where`). `SetOrder(1000)` puts it after
+    recoil, the flash and the muzzle.
+  - **Left as hitscan on purpose:** anything under MISSILERANGE (melee; the SSG's 300-unit 40-damage point-blank blast, SSG.dec
+    `A_FireBullets(0,0,1,40,"shotpuff",FBF_NORANDOM,300)`), rails (the Ruger's damaging rail, the Railgun) and non-player shots.
+  - **Look:** superseded at 20:09: rounds now look like Dakka's shotgun tracer (round 2 below).
+  - **Damage, logged** (`damage_table.txt`, logs `fin_{A,B}_{0,1}.log`). 12 guns, two hand poses, both modes. Per pellet the damage,
+    damage type and inflictor are identical in both modes, and match the BD22 code (parsed from this pack's `src/actors/Weapons`):
+    | gun | damage | puff (type) | source |
+    |---|---|---|---|
+    | BrutalPistol | 14 | WeakPuff (Minor) | Pistol.dec:341 |
+    | BrutalSMG | 12 | WeakPuff (Minor) | SubMachinegun.dec:379 |
+    | Rifle | 20 | HitPuff (Bullet) | Rifle.dec:344 |
+    | Shot_Gun | 4 x 13 + 5 x 13 | ShotgunPuff / ShotgunPuff2 (Shotgun) | Shotgun.dec, the A_FireBullets(5,1,4,13) and (2.5,2.5,5,13) lines |
+    | SSG | 18 x 13 | ShotgunPuff (Shotgun) | SSG.dec:217-218 |
+    | AssaultShotgun | 9 x 11 | MachineGunBulletPuff (Minigun) | AssaultShotgun.dec:272 |
+    | Revolver (Shotvolver) | 7 x 22 + 2 x 22 | ShotgunPuff (Shotgun) | Revolver.dec:268-269 |
+    | BrutalRevolver | 100 | ShotgunPuff2 (Shotgun) | BrutalRevolver.dec:131 |
+    | Minigun | 20 | MachineGunBulletPuff (Minigun) | Minigun.dec:292 |
+    | MG42 | 24 | ExtremeBulletPuff (Saw) | MG42.dec:119 |
+    | Machinegun | 20 | HitPuff (Bullet) | Machinegun.dec:218 |
+    | MP40 | 18 | WeakPuff (Minor) | Mp40.dec:366 |
+    The pellet and shot counts are equal in both modes. The number of pellets that land differs between runs only where the spread is
+    wide (Revolver 7 pellets at 20 deg against a 48-radius dummy). MG42 shot counts follow the trigger timing. The one 26 in `fin_A_1` is
+    a pellet that hit a RifleZombie (its Shotgun damage factor), credited to the player.
+  - **Frames:** `bullet_rounds_6guns.png` shows the rounds in flight from BrutalPistol, Rifle, Shot_Gun, AssaultShotgun, Minigun and MG42,
+    four frames each. Those runs used the TEST-ONLY slow-motion (`netevent rsqt_slow 4` in the logger) so the camera catches them; play
+    speed is 80. `menu_player_ballistics.png` shows the row reading Hitscan (cvar 0) and Bullet (cvar 1).
+  - **Bug found and fixed on the rig:** with the hand 35-45 cm to the right, the pistol's drawn muzzle sits inside the player's own box,
+    so the round's first trace hit its owner. The round now traces as the shooter, as P_LineAttack does.
+  - **Load:** `clean_load.log` (no test pk3, Bullet mode, shotgun fired): the only script errors are BD_VoxelPack's own four
+    (`Script error, "BD_VoxelPack.pk3:voxeldef.txt" line 66` / 72 / 77 / 892). There are 0 lines naming the pack and 0 VM aborts.
+- **Diff:** one line in `MENUDEF.rsq` (the row under "Ballistics"). Everything else is new lumps, `*.rsx`, sorting after the `.rsvr`
+  ones: ZSCRIPT, MAPINFO (AddEventHandlers), CVARINFO, MENUDEF (OptionValue), MODELDEF. Plus `zscript/rsq/playerrounds.zs`.
+
+### 2. Not done (round 1; the skin tone is DONE in round 2 below)
+- **Hand skin-tone slider (round 1 smooth attempt): blocked on the rig.** I tried a smooth slider with no engine change and pulled it from the
+  branch (the attempt is in `handtone_experiment/`).
+  - **The idea:** an ANIMDEFS `canvastexture` named with the full skin path `models/rsq/fbx/fbx_hand.png`. MODELDEF's LoadSkin then
+    resolves every FBX hand to the canvas (verified: `TexMan` lookup == canvas, `GetCanvas` non-null). A UI handler paints a copy of the
+    texture into the canvas with DTA_Color.
+  - **What the rig shows:**
+    - With the first paint at tone 0, the hand stays exactly as drawn: (174,120,96) at tones 0 / 0.33 / 0.66 / 1. Later paints never
+      show (`handtone_canvas_no_change_tone0_to_1.png`).
+    - With the first paint at tone 1, or with any paint every tic (Clear, DrawTexture plain or tinted, Dim), the hand renders black,
+      (8,7,5) (`handtone_canvas_black_tone1.png`).
+  - **Diagnosis:** the 2D canvas render (Draw2D into the FBO, hw_entrypoint.cpp) is unusable on this 17.3 build. Camera textures, which
+    the scope uses, do work.
+  - Not tried: a GLDEFS material shader (it has no runtime uniform from ZScript), and psprite translations (they palette-quantise a
+    truecolor skin).
+  - **The feasible route (the owner's "discrete steps"):** pre-tinted copies of fbx_hand.png, one per step, and per-step copies of every
+    MODELDEF block that names fbx_hand.png, swapped with `A_ChangeModel(modeldef)`. Those blocks are in RSQ_GunSide, RSQ_Hands,
+    RSQ_Off_*, the rsqdual weapon classes and Purist*. A per-actor skin override cannot do it: the same actor also draws Ermac's
+    hand.png meshes, and in rsqdual the gun itself. The copies would have to be generated at build time, because the hand rows they copy
+    are being edited by other lanes right now. That is a design change for the coordinator and owner, so it was not built.
+- Off-hand (dual) guns in Bullet mode: the code path exists (OffhandPos/OffhandDir), but no dual gun was fired on the rig. Not shown.
+- The non-VR (flat) start point: not exercised; the rig is always VR.
+
+### 3. Open (owner)
+- Round speed: fixed at 80 (RS_Ballistics' enemy default). Does he want a speed slider, as sv_rsb_enemy_round_speed has?
+- Should the Ruger's damaging rail (and the Railgun) also fly as a round in Bullet mode? Today they stay instant: a rail pierces, a round
+  does not.
+- The shotgun pellets are the small "pellet" calibre (10 x 1.2 units) and are hard to see. Should they draw bigger?
+- Skin tone: OK to go the discrete way (generated per-step MODELDEF copies + A_ChangeModel), and how many steps? Gloves as one step?
+
+## lane-ballistics-skin round 2 (2026-10-27 20:02-21:00, owner requests 20:02 / 20:05 / 20:09). RIG ONLY, NOT HEADSET-CONFIRMED
+Evidence `/home/claude/lane_ballskin_out/`. Every pack run: 0 lines naming the pack, 0 VM aborts; the only script errors are
+BD_VoxelPack's four voxeldef lines (`clean_load2.log`: no test pk3; Bullet + Dakka + Enhanced + tone 13; Shot_Gun and Ruger fired).
+
+### 1. Done (measured)
+- **"Shot Tracers: Off / Dakka"** (`zscript/rsq/shotfx.zs`, server cvar `rsq_shot_tracers`, **default Off**: it adds up to 600
+  live sprites and 96 bouncing sparks, which is unmeasured on Quest, and Off keeps BD22 as it ships; one click turns it on).
+  - Port of Dakka (ijon, WTFPL; read from the clone): `acs/dakka_tracers.h` Dakka_Tracer_Client (dot every 12 units, 256
+    units a tic, alpha by the tic's fraction); `decorate/main/puffs.dec` DakkaTracer (scale/alpha 0.4+a*0.1, then -0.1 a tic),
+    DakkaPuff (Floor/Ceiling/Wall by 8 units; 1 DakkaBulletSpark + 3 Spark2 at its velocity ranges; DPUF AB 4 CD 2 puff),
+    DakkaBulletSpark (gravity 0.5, Doom bounce 0.1, 105 tics, Add). Sprites DPUF A-E shipped as RSDP A-E. No ACS.
+  - Starts at the drawn muzzle (the hitscan's own start: RSQ_Muzzle re-fires from there). BD22's puffs, blood, decals stay.
+  - **Bullet mode:** the round IS Dakka's shotgun tracer (owner 20:09): a DPUF A head laying Dakka dots at its own 80 a tic,
+    always (it is the round's look); the btracer.obj streak and MODELDEF.rsx are gone.
+  - Frames: `dakka_tracers_5guns_normal_speed.png` (BrutalPistol, Rifle, Shot_Gun, Minigun, Sniper; Hitscan and Bullet; normal
+    speed), `dakka_tracer_ruger_hitscan.png`, `dakka_vs_ours_shotgun.png` (Dakka itself on the rig, doom2 + dakka.pk3 built from
+    the clone, next to ours), `dakka_standalone_shotgun.png`.
+- **Ruger (Sniper) as a rifle** (owner 20:05). BD22 code, `actors/Weapons/Sniper.dec:261-266`: 50 point-blank (ShotgunPuff,
+  range 500), 2 x 50 SniperPuff (range 15000), a damage-0 Gray "trail effect only" rail (14000), and the piercing rail
+  `A_RailAttack(30, ..., "None", RGF_SILENT, 0, "sniperpuff", 0, 0, 500, 15, 1)`: 30 to everything on the line within 500,
+  damage type SniperDamage (puff), colour None = invisible.
+  - The trail-only rail is commented out (lines 265, 348): no beam. One Dakka tracer per shot, always, whatever the option.
+  - Hitscan mode keeps the 30 rail as is (it IS the instant piercing shot). Bullet mode: `RSQ_PiercingRound` flies it at 80,
+    deals 30 once to every shootable thing its trace reaches (hitscan from 2 units short, sniperpuff, credited to the player),
+    stops at walls, range 500.
+  - **Parity log** (`ruger/ruger_{old,new0,new1}.log`, 3 dummies in a line at 150/270/390): old pack (a4b0eb7) = new Hitscan =
+    new Bullet: front dummy 50 Shotgun + 50 + 50 SniperDamage + 30 SniperDamage; second and third 30 SniperDamage each.
+    Bullet's piercing hits land 2 and 4 tics later (flight).
+- **"Pump Shotgun Spread: Stock / Enhanced"** (server cvar `rsq_pump_spread`, default Stock). Stock = BD22
+  `actors/Weapons/Shotgun.dec:472-475` (and the DM/zoom copies 521-524, 604-607, 644-647): (5, 1) x 4 + (2.5, 2.5) x 5
+  [+ (6, 3) x 5 tactical only]. Enhanced = Dakka `decorate/weapons/30_shotgun.dec:53` spread (3, 2.5) on every volley;
+  pellets 4 + 5 (+5) and 13 damage unchanged (`spread_{0,1}.log`: 9 per shot, 13 each, both modes).
+  Image `pump_spread_stock_vs_enhanced.png`: wall decals from the same spot (122 units: they merge into one blob) and the
+  27-pellet pattern from the log (Stock: the ShotgunPuff 4 on a flat 1-deg line; Enhanced: all 9 in a 3 x 2.5 box).
+- **"Hand Skin Tone", 18 steps** (`zscript/rsq/handtone.zs`, user cvar `rsq_hand_tone`, option list).
+  - Tones: `tools/handtones.py` (committed) writes `src/models/rsq/fbx/tones/fbx_hand_t01..17.png` from fbx_hand.png in CIE
+    Lab (L scaled by Lt/Lm, a/b moved to the tone keeping 0.6 of the texture's own variation). 10 human tones Porcelain ..
+    Ebony, Undead grey, Green, Blue, Purple, Demon red, Gold, Black glove; 0 = as drawn. Swatches `handtone_texture_swatches.png`.
+  - **Measured first:** A_ChangeModel's skin args (skinindex 0, skinpath, skin) on RSQ_GunSide DO re-skin the HUD hand on 17.3
+    (rig frame), so **no MODELDEF block is copied**. The override is per actor, and RSQ_GunSide / RSQ_Hands also draw Ermac's
+    hands, so it is switched on only while every layer that actor draws is an FBX frame. The FBX frames are read at startup
+    from the loaded MODELDEF lumps (Skin 0 "fbx_hand.png" blocks of RSQ_GunSide / RSQ_Hands; 80 frames now), so r11's hand-row
+    edits are picked up with no regeneration.
+  - Frames: `hand_tones_14_rig.png` (Rifle, 14 tones incl. Blue and Purple, changed live), `hand_tone_ermac_untouched.png`
+    (SSG's Ermac hand stays as drawn at tone 13), `menu_bd20_options.png`.
+- **Damage regression, final build** (`damage_table_final.txt`, `fin2_A_{0,1}.log`, Dakka on): 13 guns incl. the Ruger,
+  identical per-pellet damage/type/inflictor in both modes.
+
+### 2. Not done / limits
+- Hand tone is not applied to the dual-wield and Purist weapon classes (their MODELDEFs hang hands and gun on one actor) or to
+  Ermac's hands and the fists. A frame pairing an FBX gun hand with an Ermac support (MiniGun handle grip) shows as drawn.
+- Dakka cost on Quest unmeasured (caps: 600 dots, 96 sparks). The rig cannot measure Quest frame time.
+- Off-hand (dual) shots still not fired on the rig in either mode.
+- One rig run (Enhanced, 480 res) fired 3 of 6 trigger pulls; a re-run fired 6 of 6 in both modes (`sp2` logs). Not reproduced.
+
+### 3. Open
+- Default for Shot Tracers (Off chosen above): owner's call after the headset.
+- **Disk:** at about 20:25 an unthrottled frame dump of Dakka standalone (it renders at hundreds of fps) briefly filled the
+  shared disk. It was deleted at once; other lanes may have seen a write failure around then. Dumps are now deleted as soon
+  as the PNGs are made (owner's rule, 20:31).
+
+## lane-ballistics-skin round 3 (2026-10-27, owner 21:2x). RIG ONLY, NOT HEADSET-CONFIRMED
+### 1. Done (measured)
+- **Shot Tracers default = Dakka (1)** (CVARINFO.rsx). The owner judges the Quest cost in the headset.
+- **Skin tone on EVERY FBX hand** (dual-wield off-hand guns, the rsqdual and Purist weapon classes, RSQ_GunSide, RSQ_Hands).
+  - Measured approach: per model SLOT. `tools/handtone_build.py`, called by `build.py` on each MODELDEF lump, moves every
+    FBX-hand block (Skin 0 "fbx_hand.png", 79 blocks in 43 classes today) from model slot 0 to slot 7 in the BUILT pk3 only;
+    src/ is not rewritten, so r11's rows are re-derived on every build. No MODELDEF here uses an index above 1 (the build
+    refuses if 7 is taken). `handtone.zs` sets A_ChangeModel's skin override on slot 7 of every actor whose class has such a
+    block (read at startup from the loaded MODELDEF lumps), for the player's inventory and psprite callers.
+  - Guns (slot 0, and slot 1 for the M203) and Ermac's hands (slot 0) are never touched; the round-2 per-frame
+    FBX detection is gone. The renderer draws slot 7 only for frames whose block defines it (models.cpp
+    CalcModelOverrides: no MODELDEF mesh and no mesh override in a slot = nothing drawn).
+  - Frames: `hand_tone_dual_purist_support.png` (tones 0 / 5 / 9 / 13 / 14: dual-wield off hand RSQ_Off_BrutalPistol with
+    the main pistol, the PuristRifle gun hand, BrutalPistol gun hand + FBX support cup steadied). `hand_tone_ermac_never_tinted.png`
+    (SSG's Ermac hand as drawn at tone 14; Minigun steadied: FBX gun hand purple, Ermac grip as drawn).
+### 2. Not done
+- Fists and Ermac's hands are not toned (they are not FBX; by the owner's rule they are never tinted).

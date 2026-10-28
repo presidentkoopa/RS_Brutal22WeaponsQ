@@ -169,6 +169,9 @@ Weapon models: **br_vr** by ajantaju (Brutal Doom VR Weapons, BD v21), made from
 - VR hands: Ermac (Force Unleashed / Rusted Legacy, MIT)
 - Brutal Doom: Sergeant Mark IV
 - QuestZDoom: Team Beef
+- Shot tracers, impact sparks and their sprites (DPUF, shipped as RSDP): **Dakka** by ijon
+  (https://github.com/0dot0repeating/dakka, WTFPL), ported to ZScript
+- Player Ballistics (Bullet mode): ported from PresidentKoopa's RS_Ballistics `enemyfire.zs`
 
 ## Screenshots
 

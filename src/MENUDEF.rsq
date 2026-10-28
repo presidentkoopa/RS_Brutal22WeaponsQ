@@ -60,6 +60,7 @@ OptionMenu "RSQ_Options"
 {
 	Title "BD22 VR WEAPONS"
 	Option "VR Hands", "rsq_hands", "OnOff"
+	Option "Hand Skin Tone", "rsq_hand_tone", "RSQ_HandTone"	// BD 2.0: zscript/rsq/handtone.zs
 	Option "Reloading", "rsr_reload", "RSR_ReloadMode"
 	Option "Reload Non-Standard Guns", "rsq_reload_nonstd", "OnOff"
 	Option "Grab ammo with", "rsr_grab_with", "RSR_GrabWith"
@@ -79,6 +80,9 @@ OptionMenu "RSQ_Options"
 	Option "Sniper Scope", "rsq_scope_sniper", "RSQ_ScopeMode"
 	Option "Railgun Scope", "rsq_scope_railgun", "RSQ_ScopeMode"
 	Option "Ballistics", "rsq_ballistics", "RSQ_Ballistics"
+	Option "Player Ballistics", "sv_rsq_player_ballistics", "RSQ_PlayerBallistics"	// BD 2.0: zscript/rsq/playerrounds.zs
+	Option "Shot Tracers", "rsq_shot_tracers", "RSQ_ShotTracers"	// BD 2.0: zscript/rsq/shotfx.zs (Dakka by ijon)
+	Option "Pump Shotgun Spread", "rsq_pump_spread", "RSQ_PumpSpread"	// BD 2.0: actors/Weapons/Shotgun.dec
 	StaticText " "
 	Submenu "Voxel Options", "RSQ_VoxelOptions"
 	StaticText " "

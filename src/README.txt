@@ -137,6 +137,9 @@ exists without that.
 TeamBeef built Doom VR and the community around it.
 Emawind's QuestZDoom is the engine.
 The BD21 Machinegun is Brutal Doom 21's, brought forward.
+The shot tracers, impact sparks and their sprites (DPUF, here RSDP) are from Dakka by ijon
+(github.com/0dot0repeating/dakka, WTFPL), ported to ZScript; the pump shotgun's Enhanced spread
+is Dakka's shotgun pattern.
 Reload foley, impact and tail sounds the mod itself has none of come from RS_Ballistics and
 RS_VR_Weapons.
 
