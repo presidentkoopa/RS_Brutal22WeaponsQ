@@ -12,3 +12,4 @@ user bool rsq_dual_ssg = false;
 user bool rsq_dual_asg = false;
 user bool rsq_dual_railgun = false;
 user bool rsq_dual_moonlight = true;	// 2026-10-27 (owner): the Revolver (Moonlight), RSQ_Off_BrutalRevolver
+user bool rsq_dual_axe = true;		// 2.0.2 (owner r3 item 37): two axes, one in each hand (RSQ_Off_BrutalAxe); the second comes with the first

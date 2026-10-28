@@ -3313,20 +3313,7 @@ Model ThrowedAxeStrong
 // the blade comes back toward the player. Keyed on frame B because MODELDEF blocks are
 // picked by (sprite, frame), and AXEG A..U are every one already taken by the block above.
 // Solved in kit team/melee_hands/work/axe_shift.py: head grip 0.00 cm from the controller.
-Model BrutalAxe
-{
-   Path "models/bd/BrutalAxe"
-   Model 0 "BrutalAxe.md3"
-   Skin 0 "BrutalAxe.png"
-   Scale -1.0 1.0 1.0
-   Offset -0.4368 -4.9611 0.0
-   ZOffset -19.6389
-   AngleOffset 3.8540
-   PitchOffset 3.3630
-   RollOffset 10.9740	// r12 port (lane B): the two-handed placement moved with the weapon to the FBX hand (was Offset 0.0 8.9584, ZOffset -22.2631)
-   NoInterpolation
-   FrameIndex	AXE2	A	0	5
-}
+// 2.0.2 (owner r3 item 37): the two-handed axe placement (sprite AXE2) is gone: the axe is never two-handed.
 
 Model BrutalAxeOnWall
 {

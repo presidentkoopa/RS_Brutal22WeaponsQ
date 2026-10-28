@@ -43,7 +43,7 @@
 // and would never see a cancelled one) and after RSQ_Muzzle (whose re-fire from the muzzle,
 // LAF_ABSPOSITION, is the event taken here). SetOrder puts this handler last.
 //
-// NETPLAY. sv_rsq_player_ballistics is a server cvar (it decides where shots go). The round is
+// NETPLAY. sv_rsq_true_bullets is a server cvar (it decides where shots go). The round is
 // playsim: spawned from the event, moved by traces, no random numbers.
 
 class RSQ_PlayerRound : Actor
@@ -123,7 +123,7 @@ class RSQ_PlayerRound : Actor
 		rangeLeft -= step;
 		Vector3 was = pos;
 		SetOrigin(pos + dir * step, true);
-		RSQ_ShotFX.RoundStep(was, pos, flySpeed, dotCarry);	// "Shot Tracers: Dakka": the tracer follows the round
+		RSQ_ShotFX.RoundStep(was, pos, flySpeed, dotCarry);	// "True Bullets: On": the Dakka tracer follows the round
 	}
 
 	// Something is within this tic's step, `dist` ahead: deliver the hitscan from just short of
@@ -173,8 +173,8 @@ class RSQ_PlayerRounds : EventHandler
 
 	static bool On()
 	{
-		let cv = CVar.FindCVar('sv_rsq_player_ballistics');
-		return cv && cv.GetInt() == 1;
+		let cv = CVar.FindCVar('sv_rsq_true_bullets');	// "True Bullets: On / Off" (CVARINFO.rsx)
+		return cv && cv.GetBool();
 	}
 
 	// THE OFF-HAND MUZZLE (round 4). muzzle.zs moves only the main hand's shots; a dual-wield copy's hitscan

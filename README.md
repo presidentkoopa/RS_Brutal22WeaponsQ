@@ -55,13 +55,14 @@ the pack. It has not yet been confirmed in a headset.
   on and off, to save performance. On the Ruger this replaces Brutal Doom's zoom.
 
 ### Shooting
-- **Player Ballistics: Hitscan / Bullet.** Bullet fires real rounds from the muzzle at 80 units a
-  tic, with the same damage as Brutal Doom's hitscan.
-- **Shot Tracers: Off / Dakka** (default Dakka): bright tracers and impact sparks for every shot.
+- **True Bullets: On / Off** (default On). On fires real rounds from the muzzle at 80 units a tic,
+  with the same damage as Brutal Doom's hitscan, drawn with Dakka's bright tracers and impact sparks.
+  Off is stock Brutal Doom: hitscan, its own tracers and puffs (and the Ruger's rail trail), no
+  Dakka effects. (This one switch replaces "Player Ballistics" and "Shot Tracers".)
 - **Pump Shotgun Spread: Stock / Enhanced:** Enhanced spreads up and down too. Same pellets and
   damage.
-- **Ruger** fires a sniper round that pierces like Brutal Doom's rail, with the same damage. The
-  beam is gone.
+- **Ruger** (True Bullets On) fires a sniper round that pierces like Brutal Doom's rail, with the
+  same damage. The beam is gone.
 - **Dual wield:** off-hand shots now leave the off-hand gun's muzzle.
 
 ### Revolvers and ammo
@@ -84,6 +85,24 @@ the pack. It has not yet been confirmed in a headset.
   alt fire does nothing.
 - Butt-strike and pistol-whip hits now land at the gun you see.
 - The grenade was drawn 1.45 cm off. Fixed, and the throw now leaves from the grenade in your hand.
+
+### Options and melee (2.0.2, rig only, not headset-confirmed)
+- **Pistol Whip** (on by default): swing a pistol or revolver (Shotvolver or Moonlight) into something. It has its own
+  option row. The kick-key "Gun Bash" is gone; the kick key is Brutal Doom's boot again.
+- **Melee hit flash** is a small spark where the blow lands (about 38 cm across; it was 2.3 to
+  2.8 m).
+- **Two axes, never two hands.** The axe no longer goes two-handed. Get the axe and a second one
+  comes with it; press the Dual key to hold one in each hand. Each axe swings, cuts and throws from
+  its own hand (VR throwing: hold that hand's trigger, swing, let go). A thrown off-hand axe comes
+  back when you pick an axe up. Dual Options > Axe turns it off.
+- **Sword:** a blow needs a deliberate swing: the blade's point must travel about a metre at
+  speed, and after a swing there is a third of a second before the next one, so one swing is one
+  attack. In VR the sword's trigger does nothing (no Brutal Doom combo, lunge or view turn); flat
+  screen keeps the combo. On the rig: hand jitter, sliding and wrist turns gave 0 attacks; one swing gave exactly 1.
+- **"Check the Chamber by Hand" is removed** (it was off by default and only let the off hand pull
+  a loaded gun's handle back to look).
+- **Two-Hand Grip (engine)** (was "Two-Handed Steadying"): QuestZDoom's own two-hand setting,
+  unchanged. On: grip with your off hand near the gun to steady it with both hands.
 
 ## What was new in 1.99
 
@@ -118,8 +137,7 @@ damage you do are still exactly Brutal Doom's.
   "Machinegun replaces MG42".
 
 ### Melee
-- **Gun bash**: your kick key bashes with the gun you're holding. It uses Brutal Doom's own kick
-  damage.
+- **Gun bash** (removed in 2.0.2): your kick key bashed with the gun you were holding.
 - **Pistol whip**: swing a pistol or revolver into something.
 - **Butt strike**: drive the stock forward with both hands. Works on all eight guns with a stock.
   Off by default.
@@ -168,7 +186,7 @@ These are behind the **Ballistics** switch. Stock is Brutal Doom's own.
 - **Machinegun:** the 40 mm round, its latch and the hands sat 5 cm high. Fixed.
 - **MG42, Flamethrower, Unmaker:** the gun no longer jumps 5 cm when a reload starts.
 - **Axe and sword** cut only on a down or side swing, never an upswing, and need a harder swing.
-  Turn off "Two-Handed Steadying" to hold them with one controller: grip with your off hand near
+  Turn off "Two-Hand Grip (engine)" (then called "Two-Handed Steadying") to hold them with one controller: grip with your off hand near
   the blade and you get the two-handed pose. Guns lose steadying too while it is off.
 - **Spent casings with the voxel pack** are normal size again (a shell was drawn at four times
   Brutal Doom's size).

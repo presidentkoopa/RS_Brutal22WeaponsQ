@@ -1,0 +1,353 @@
+version "4.10"
+// TEST ONLY (2.0.2 options/melee lane, owner r3 items 36-39): scripted controllers on the QZD 17.3 rig, from lane B's
+// melee r6b driver (MT_Driver). Set qzt_test to a comma list of tests; each prints "OM ..." lines and a summary
+// "OM SUM <test> ...". Never ships. tools/optmelee/run.py builds it into a pk3 and runs it.
+class OM_Driver : EventHandler
+{
+	int step; int stepT; bool started; Actor mon; Vector3 monAt; int waitT;
+	Array<String> sName; Array<String> sA; Array<String> sB; Array<String> sLA; Array<String> sLB; Array<int> sT;
+	Array<double> sRT; Array<double> sLT; Array<double> sLG; Array<String> sAct;
+	String test;
+	Array<String> tests; int ti;
+	// counters for this test
+	int swings0; double ang0; Vector3 pos0;
+	int nDS, nDS2, nAxe, nAxeMain, nAxeOff, nWhip, nFX, nHit, nThrow, nRounds, nDots, nTracers, nPuffs, nRail;
+	Array<String> fxLines;
+
+	void Add(String n, String a, String b, int tics, String la = "", String lb = "", double rt = 0, double lt = 0, double lg = 0, String act = "")
+	{
+		sName.Push(n); sA.Push(a); sB.Push(b); sT.Push(tics);
+		sLA.Push(la == "" ? "-0.25 1.30 -0.30 30 0 0" : la); sLB.Push(lb == "" ? (la == "" ? "-0.25 1.30 -0.30 30 0 0" : la) : lb);
+		sRT.Push(rt); sLT.Push(lt); sLG.Push(lg); sAct.Push(act);
+	}
+
+	static void SetS(Name n, String v) { let c = CVar.FindCVar(n); if (c) c.SetString(v); }
+	static void SetF(Name n, double v) { let c = CVar.FindCVar(n); if (c) c.SetFloat(v); }
+
+	static String Lerp(String a, String b, double f)
+	{
+		Array<String> x; Array<String> y; a.Split(x, " "); b.Split(y, " ");
+		String o = "";
+		for (int i = 0; i < 6; i++) o.AppendFormat("%.4f ", x[i].ToDouble() + (y[i].ToDouble() - x[i].ToDouble()) * f);
+		return o;
+	}
+
+	Name WeaponFor(String t)
+	{
+		if (t.Left(2) == "sw") return 'DSweap';
+		if (t.Left(3) == "axe") return 'BrutalAxe';
+		if (t == "whip" || t == "fxprobe" || t == "whip_off") return 'BrutalPistol';
+		if (t == "tb_rifle") return 'Rifle';
+		if (t == "tb_ruger") return 'Sniper';
+		return 'BrutalPistol';
+	}
+
+	void Build()
+	{
+		// stage metres: x right, y up, z back; pitch 30 = level
+		String mid = "0.25 1.30 -0.35 30 0 0", hi = "0.25 1.62 -0.35 30 0 0", lo = "0.25 0.98 -0.35 30 0 0";
+		String lmid = "-0.25 1.30 -0.35 30 0 0", lhi = "-0.25 1.62 -0.35 30 0 0", llo = "-0.25 0.98 -0.35 30 0 0";
+		if (test == "sw_idle")
+		{
+			// what a player does between swings: hold it (tracking jitter), move it about, turn the wrist, look along it
+			Add("place", mid, mid, 40, "", "", 0, 0, 0, "mon");
+			Add("JITTER", mid, mid, 70, "", "", 0, 0, 0, "jitter");
+			Add("SLIDE_L", mid, "0.00 1.30 -0.35 30 0 0", 25);
+			Add("SLIDE_R", "0.00 1.30 -0.35 30 0 0", "0.45 1.40 -0.35 30 0 0", 25);
+			Add("RAISE", "0.45 1.40 -0.35 30 0 0", "0.25 1.55 -0.30 50 0 0", 20);
+			Add("WRIST_L", "0.25 1.55 -0.30 50 0 0", "0.25 1.55 -0.30 50 25 0", 10);
+			Add("WRIST_R", "0.25 1.55 -0.30 50 25 0", "0.25 1.55 -0.30 50 -25 0", 12);
+			Add("WRIST_ROLL", "0.25 1.55 -0.30 50 -25 0", "0.25 1.55 -0.30 50 -25 40", 10);
+			Add("LOWER", "0.25 1.55 -0.30 50 -25 40", mid, 25);
+			Add("hold", mid, mid, 20, "", "", 0, 0, 0, "sum");
+		}
+		else if (test == "sw_swing" || test == "sw_two" || test == "sw_wobble")
+		{
+			Add("place", mid, mid, 40, "", "", 0, 0, 0, "mon");
+			int n = test == "sw_two" ? 2 : 1;
+			for (int i = 0; i < n; i++)
+			{
+				// a sword blow: the arm comes down and the wrist turns the blade from raised (pitch 100: 70 degrees up)
+				// to 50 degrees down, in 5 tics (1/7 s)
+				String up = "0.25 1.62 -0.30 100 0 0", dn = "0.25 1.00 -0.45 -20 0 0", md = "0.25 1.31 -0.38 40 0 0";
+				Add("to_hi", mid, up, 15);
+				Add("rest_hi", up, up, 20);
+				if (test == "sw_wobble")
+				{
+					// one blow that slows for two tics in the middle (a real arm is not a constant speed)
+					Add("DOWN_a", up, md, 3);
+					Add("DOWN_slow", md, md, 2);
+					Add("DOWN_b", md, dn, 3);
+				}
+				else
+					Add("DOWN", up, dn, 5);
+				Add("rest_lo", dn, dn, 25);
+				Add("back", dn, mid, 15);
+				Add("hold", mid, mid, 20);
+			}
+			Add("end", mid, mid, 5, "", "", 0, 0, 0, "sum");
+		}
+		else if (test == "sw_trig" || test == "sw_trigtap")
+		{
+			// the TRIGGER with the sword held still: what BD22's own Fire does in VR (no swing at all)
+			Add("place", mid, mid, 40, "", "", 0, 0, 0, "mon");
+			if (test == "sw_trig")
+				Add("TRIGGER_HELD", mid, mid, 105, "", "", 1);
+			else
+				for (int i = 0; i < 5; i++) { Add("TRIGGER_TAP", mid, mid, 4, "", "", 1); Add("release", mid, mid, 17); }
+			Add("after", mid, mid, 40, "", "", 0, 0, 0, "angle");
+			Add("end", mid, mid, 5, "", "", 0, 0, 0, "sum");
+		}
+		else if (test == "whip")
+		{
+			Add("place", mid, mid, 40, "", "", 0, 0, 0, "mon");
+			Add("up", mid, hi, 8);
+			Add("rest_hi", hi, hi, 20);
+			Add("DOWN", hi, lo, 3);
+			Add("rest_lo", lo, lo, 25);
+			Add("back", lo, mid, 8);
+			Add("end", mid, mid, 5, "", "", 0, 0, 0, "sum");
+		}
+		else if (test == "fxprobe")
+		{
+			Add("place", mid, mid, 40);
+			Add("probe", mid, mid, 40, "", "", 0, 0, 0, "fx");
+			Add("end", mid, mid, 5, "", "", 0, 0, 0, "sum");
+		}
+		else if (test == "axe_steady")
+		{
+			// the one-handed axe with the off grip held right beside it: it must stay one-handed (AXEG, never AXE2)
+			Add("place", mid, mid, 40);
+			Add("near", mid, mid, 10, "0.15 1.25 -0.40 30 0 0", "0.15 1.25 -0.40 30 0 0", 0, 0, 0);
+			Add("GRIP_NEAR", mid, mid, 40, "0.15 1.25 -0.40 30 0 0", "0.15 1.25 -0.40 30 0 0", 0, 0, 1);
+			Add("end", mid, mid, 5, "", "", 0, 0, 0, "sum");
+		}
+		else if (test == "axe_dual")
+		{
+			Add("place", mid, mid, 40, lmid, lmid, 0, 0, 0, "dual");
+			Add("wait_dual", mid, mid, 60, lmid, lmid);
+			Add("place2", mid, mid, 30, lmid, lmid, 0, 0, 0, "mon");
+			Add("OFF_up", mid, mid, 10, lmid, lhi);
+			Add("OFF_rest", mid, mid, 20, lhi, lhi);
+			Add("OFF_DOWN", mid, mid, 3, lhi, llo);
+			Add("OFF_rest_lo", mid, mid, 25, llo, llo);
+			Add("OFF_back", mid, mid, 10, llo, lmid);
+			Add("MAIN_up", mid, hi, 10, lmid, lmid);
+			Add("MAIN_rest", hi, hi, 20, lmid, lmid);
+			Add("MAIN_DOWN", hi, lo, 3, lmid, lmid);
+			Add("MAIN_rest_lo", lo, lo, 25, lmid, lmid);
+			Add("MAIN_back", lo, mid, 10, lmid, lmid);
+			Add("hold", mid, mid, 20, lmid, lmid, 0, 0, 0, "sum");
+		}
+		else if (test == "axe_throw_off")
+		{
+			// hold the OFF trigger, swing the off hand forward and up, let go: the off axe flies; then walk onto it
+			Add("place", mid, mid, 40, lmid, lmid, 0, 0, 0, "dual");
+			Add("wait_dual", mid, mid, 60, lmid, lmid);
+			Add("HOLD", mid, mid, 15, lmid, "-0.25 1.45 0.05 60 0 0", 0, 1);
+			Add("SWING", mid, mid, 3, "-0.25 1.45 0.05 60 0 0", "-0.25 1.55 -0.75 10 0 0", 0, 1);
+			Add("RELEASE", mid, mid, 1, "-0.25 1.55 -0.75 10 0 0", "-0.25 1.55 -0.75 10 0 0", 0, 0);
+			Add("after", mid, mid, 90, lmid, lmid);
+			Add("pickup", mid, mid, 40, lmid, lmid, 0, 0, 0, "pickup");
+			Add("redual", mid, mid, 5, lmid, lmid, 0, 0, 0, "dual");
+			Add("wait", mid, mid, 50, lmid, lmid, 0, 0, 0, "");
+			Add("end", mid, mid, 5, lmid, lmid, 0, 0, 0, "sum");
+		}
+		else if (test == "tb_rifle" || test == "tb_ruger")
+		{
+			Add("place", mid, mid, 60);
+			Add("FIRE", mid, mid, 4, "", "", 1);
+			Add("after", mid, mid, 40, "", "", 0, 0, 0, "sum");
+		}
+	}
+
+	void Reset()
+	{
+		nDS = nDS2 = nAxe = nAxeMain = nAxeOff = nWhip = nFX = nHit = nThrow = nRounds = nDots = nTracers = nPuffs = nRail = 0;
+	}
+
+	String Spr(PSprite psp)
+	{
+		if (!psp || !psp.CurState) return "none";
+		return String.Format("%s:%c", psp.CurState.Sprite .. "", 65 + psp.Frame);
+	}
+
+	override void WorldTick()
+	{
+		let mo = PlayerPawn(players[consoleplayer].mo);
+		if (!mo) return;
+		if (!started)
+		{
+			String all = CVar.FindCVar('qzt_test').GetString();
+			if (all == "" || Level.maptime < 60) return;
+			all.Split(tests, ",");
+			started = true;
+			ti = -1;
+			step = 1;
+		}
+		let h = RSVR_MeleeHandler.HandOf(mo);
+		RSVR_Hand ho = RSVR_MeleeHandler.HandOf(mo, true);
+		int k = RSVR_Hand.KindOf(mo);
+		if (step >= sName.Size())
+		{
+			ti++;
+			if (ti >= tests.Size()) { if (ti == tests.Size()) Console.Printf("OM done"); ti = tests.Size() + 1; return; }
+			test = tests[ti];
+			sName.Clear(); sA.Clear(); sB.Clear(); sT.Clear(); sLA.Clear(); sLB.Clear(); sRT.Clear(); sLT.Clear(); sLG.Clear(); sAct.Clear();
+			Build(); step = 0; stepT = 0; waitT = 0; Reset();
+			swings0 = h ? h.swings : 0;
+			ang0 = mo.angle; pos0 = mo.pos;
+			if (mon) mon.Destroy();
+			mon = null;
+			Name wn = WeaponFor(test);
+			mo.GiveInventory(wn, 1);
+			class<Inventory> wc = wn;
+			let w = Weapon(mo.FindInventory(wc));
+			if (w && mo.player.ReadyWeapon != w) mo.player.PendingWeapon = w;
+			SetS('qzt_rhand', "0.25 1.30 -0.35 30 0 0"); SetF('qzt_rtrigger', 0);
+			Console.Printf("OM test %s steps %d weapon %s", test, sName.Size(), wn);
+			return;
+		}
+		// wait at "place" until the weapon is up and in its held pose
+		if (sName[step] == "place" && stepT == 0)
+		{
+			Name wn = WeaponFor(test);
+			bool up = mo.player.ReadyWeapon && mo.player.ReadyWeapon.GetClassName() == wn && mo.player.PendingWeapon == WP_NOCHANGE;
+			if ((!up || ++waitT < 60) && waitT < 400) { if (!up) waitT++; return; }
+		}
+		double f = sT[step] > 0 ? double(stepT + 1) / sT[step] : 1;
+		String rh = Lerp(sA[step], sB[step], f);
+		if (sAct[step] == "jitter")
+		{
+			// tracking noise and an unsteady hand: up to 1.5 cm and 3 degrees, changing every tic
+			Array<String> q; rh.Split(q, " ");
+			double ph = Level.maptime;
+			rh = String.Format("%.4f %.4f %.4f %.2f %.2f %.2f", q[0].ToDouble() + 0.015 * sin(ph * 47), q[1].ToDouble() + 0.015 * sin(ph * 31 + 20),
+				q[2].ToDouble() + 0.015 * sin(ph * 59 + 40), q[3].ToDouble() + 3 * sin(ph * 37), q[4].ToDouble() + 3 * sin(ph * 53 + 10), q[5].ToDouble() + 3 * sin(ph * 41 + 70));
+		}
+		SetS('qzt_rhand', rh);
+		SetS('qzt_lhand', Lerp(sLA[step], sLB[step], f));
+		SetF('qzt_rtrigger', sRT[step]);
+		SetF('qzt_ltrigger', sLT[step]);
+		SetF('qzt_lgrip', sLG[step]);
+		if (stepT == 0)
+		{
+			String act = sAct[step];
+			if (act == "dual")
+			{
+				mo.GiveInventory('StartDualWield', 1);	// what BD22's Inputs.acs gives on the Dual key (+user3)
+				Console.Printf("OM t%d dual key: off %s, copy owned %d", Level.maptime, mo.player.OffhandWeapon ? mo.player.OffhandWeapon.GetClassName() : 'none',
+					mo.CountInv(RSVR_MeleeHandler.Inv('RSQ_Off_BrutalAxe')));
+			}
+			if (act == "angle")
+				Console.Printf("OM BODY t%d the player turned %.1f degrees and moved %.1f map units during the test", Level.maptime, Actor.DeltaAngle(ang0, mo.angle), (mo.pos.xy - pos0.xy).Length());
+			if (act == "fx")
+			{
+				Vector3 at = mo.pos + (cos(mo.angle) * 40, sin(mo.angle) * 40, mo.player.viewheight - 6);
+				let fx = Actor.Spawn('RSQ_BashFX', at, ALLOW_REPLACE);
+				if (fx) fx.target = mo;
+				Console.Printf("OM PROBE t%d flash spawned 40 units ahead of the eye", Level.maptime);
+			}
+			if (act == "pickup")
+			{
+				let it = ThinkerIterator.Create('Inventory');
+				Inventory a; Actor best;
+				while (a = Inventory(it.Next()))
+					if (!a.Owner && a.GetClassName() == 'BrutalAxe') best = a;
+				Console.Printf("OM t%d pickup: axe on the floor %s; copy owned %d, off %s", Level.maptime, best ? String.Format("at %.0f %.0f", best.pos.x, best.pos.y) : "none",
+					mo.CountInv(RSVR_MeleeHandler.Inv('RSQ_Off_BrutalAxe')), mo.player.OffhandWeapon ? mo.player.OffhandWeapon.GetClassName() : 'none');
+				if (best) mo.SetOrigin((best.pos.x, best.pos.y, mo.pos.z), false);
+			}
+		}
+		if (sName[step] == "place2" || sName[step] == "place")
+		{
+			if (stepT == sT[step] - 1 && sAct[step] == "mon")
+			{
+				Vector3 fw = (cos(mo.angle), sin(mo.angle), 0);
+				Vector3 tip;
+				if (test == "axe_dual" && ho)
+				{
+					int ko = RSVR_Hand.KindOfOff(mo);
+					h.ReadyPose(mo, k); h.Frame(mo);
+					ho.ReadyPose(mo, ko); ho.Frame(mo);
+					Vector3 t1 = h.Place(RSVR_Hand.BladeOut(RSVR_Hand.AXE)), t2 = ho.Place(RSVR_Hand.BladeOut(RSVR_Hand.AXE));
+					tip = (t1 + t2) / 2;
+					Console.Printf("OM GEO main axe edge %.1f %.1f %.1f | off axe edge %.1f %.1f %.1f | main hand %.1f %.1f %.1f off hand %.1f %.1f %.1f",
+						t1.x, t1.y, t1.z, t2.x, t2.y, t2.z, mo.AttackPos.x, mo.AttackPos.y, mo.AttackPos.z, mo.OffhandPos.x, mo.OffhandPos.y, mo.OffhandPos.z);
+				}
+				else if (h && k)
+				{
+					h.ReadyPose(mo, k); h.Frame(mo);
+					tip = h.Place(RSVR_Hand.BladeOut(k));
+				}
+				double push = 14;
+				monAt = (tip.x + fw.x * push, tip.y + fw.y * push, mo.pos.z);
+				mon = Actor.Spawn('PistolZombie', monAt, NO_REPLACE);
+				if (mon) { mon.health = 5000; mon.Mass = 100000; mon.Speed = 0; mon.bNoPain = true; }
+				Console.Printf("OM monster at %.1f %.1f %.1f (blade tip %.1f %.1f %.1f)", monAt.x, monAt.y, monAt.z, tip.x, tip.y, tip.z);
+			}
+		}
+		if (mon && mon.health > 0) { mon.vel = (0, 0, 0); mon.SetOrigin(monAt, true); }
+		let psp = mo.player.FindPSprite(PSP_WEAPON), pso = mo.player.FindPSprite(PSP_OFFHANDWEAPON);
+		Console.Printf("OM t%d %-12s main %s %s off %s %s | swings %d armed %d arc %.0f | axeTwo %d steady %d mhp %d",
+			Level.maptime, sName[step], mo.player.ReadyWeapon ? mo.player.ReadyWeapon.GetClassName() : 'none', Spr(psp),
+			mo.player.OffhandWeapon ? mo.player.OffhandWeapon.GetClassName() : 'none', Spr(pso),
+			h ? h.swings : -1, h ? h.armed : 0, h ? h.arc : 0, mo.CountInv('RSVR_AxeTwo'), RSVR_VRHand.Steadied(mo), mon ? mon.health : -1);
+		if (sAct[step] == "sum" && stepT == sT[step] - 1)
+		{
+			Console.Printf("OM SUM %s | DSAttack %d DSAttack2 %d sword swings %d | AxeAttack %d (main hand %d, off hand %d) | whip strikes %d | hits %d | flashes %d | thrown axes %d | rounds %d dakka dots %d dakka puffs %d BD22 tracers %d rails %d | copy owned %d off %s",
+				test, nDS, nDS2, h ? h.swings - swings0 : -1, nAxe, nAxeMain, nAxeOff, nWhip, nHit, nFX, nThrow, nRounds, nDots, nPuffs, nTracers, nRail,
+				mo.CountInv(RSVR_MeleeHandler.Inv('RSQ_Off_BrutalAxe')), mo.player.OffhandWeapon ? mo.player.OffhandWeapon.GetClassName() : 'none');
+			for (int i = 0; i < fxLines.Size(); i++) Console.Printf("%s", fxLines[i]);
+			fxLines.Clear();
+		}
+		if (++stepT >= sT[step]) { stepT = 0; step++; }
+	}
+
+	override void WorldThingDamaged(WorldEvent e)
+	{
+		if (!e.Thing || e.Thing.player) return;
+		nHit++;
+		Console.Printf("OM HIT t%d %s took %d from %s at %.1f %.1f %.1f", Level.maptime, e.Thing.GetClassName(), e.Damage,
+			e.Inflictor ? e.Inflictor.GetClassName() : 'none', e.Inflictor ? e.Inflictor.pos.x : 0, e.Inflictor ? e.Inflictor.pos.y : 0, e.Inflictor ? e.Inflictor.pos.z : 0);
+	}
+
+	override void WorldRailgunFired(WorldEvent e) { nRail++; }
+
+	override void WorldThingSpawned(WorldEvent e)
+	{
+		let t = e.Thing;
+		if (!t) return;
+		Name n = t.GetClassName();
+		String sn = n;
+		let mo = players[consoleplayer].mo;
+		if (n == 'DSAttack') nDS++;
+		else if (n == 'DSAttack2') nDS2++;
+		else if (n == 'AxeAttack' && t.target && t.target.player)
+		{
+			nAxe++;
+			double dm = (t.pos - mo.AttackPos).Length(), dof = (t.pos - mo.OffhandPos).Length();
+			if (dm <= dof) nAxeMain++; else nAxeOff++;
+			Console.Printf("OM AXE t%d at %.1f %.1f %.1f: %.0f from the main hand, %.0f from the off hand", Level.maptime, t.pos.x, t.pos.y, t.pos.z, dm, dof);
+		}
+		else if ((n == 'MeleeStrikeNormal' || n == 'MeleeStrike1Berserked') && t.target && t.target.player) nWhip++;
+		else if (n == 'ThrowedAxe' || n == 'ThrowedAxeStrong')
+		{
+			nThrow++;
+			Console.Printf("OM THROW t%d %s from %.1f %.1f %.1f vel %.1f %.1f %.1f | off hand %.1f %.1f %.1f main hand %.1f %.1f %.1f", Level.maptime, n,
+				t.pos.x, t.pos.y, t.pos.z, t.vel.x, t.vel.y, t.vel.z, mo.OffhandPos.x, mo.OffhandPos.y, mo.OffhandPos.z, mo.AttackPos.x, mo.AttackPos.y, mo.AttackPos.z);
+		}
+		else if (t is 'RSQ_PlayerRound') nRounds++;
+		else if (t is 'RSQ_DakkaDot') nDots++;
+		else if (t is 'RSQ_DakkaPuff') nPuffs++;
+		else if (n == 'DecorativeTracer' || sn.IndexOf("Tracer") >= 0) nTracers++;
+		if (n == 'RSQ_BashFX' || sn.Left(7) == "RSQ_FX_")
+		{
+			if (sn.Left(7) == "RSQ_FX_") nFX++;
+			TextureID tx = t.CurState ? t.CurState.GetSpriteTexture(0) : TexMan.CheckForTexture("", 0);
+			Vector2 sz = tx.IsValid() ? TexMan.GetScaledSize(tx) : (0, 0);
+			fxLines.Push(String.Format("OM FX t%d %s scale %.4f frame-art %.0fx%.0f px -> %.1f x %.1f map units, at %.1f %.1f %.1f", Level.maptime, n, t.scale.x,
+				sz.x, sz.y, sz.x * t.scale.x, sz.y * t.scale.y, t.pos.x, t.pos.y, t.pos.z));
+		}
+	}
+}

@@ -1,0 +1,9 @@
+// TEST ONLY (2.0.2 options/melee lane): the rig glue's test-driver hook (tools/rig/engine/glue/qz_linux_glue.cpp
+// PoseOr / AxisOr) reads these when a pack defines them. Never ships.
+user string qzt_rhand = "";
+user string qzt_lhand = "";
+user float qzt_rtrigger = -1;
+user float qzt_ltrigger = -1;
+user float qzt_rgrip = -1;
+user float qzt_lgrip = -1;
+user string qzt_test = "";
