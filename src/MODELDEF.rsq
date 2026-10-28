@@ -72,7 +72,7 @@ Model RSQ_GunSide
 
 // 2026-10-16 (owner): the gun hand's own fist and grenade hold, Ermac's meshes at his own
 // placement (no hook): his fist (hand.md3 frame 1, the free hand's fist too), and his
-// ammo hand round a chaingun box (ammo_hand.md3 frame 3) round BD22's grenade (below)
+// the VR grenade's hand: the FBX hand (fbx/fbx_nade_R.md3, fit_nade.py), was Ermac's ammo hand (ammo_hand.md3 frame 3)
 Model RSQ_GunSide
 {
 	Path "models/rsq"
@@ -85,12 +85,12 @@ Model RSQ_GunSide
 
 Model RSQ_GunSide
 {
-	Path "models/rsq"
-	Model 0 "ammo_hand.md3"
-	Skin 0 "hand.png"
+	Path "models/rsq/fbx"
+	Model 0 "fbx_nade_R.md3"
+	Skin 0 "fbx_hand.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -24.0 -10.0
-	FrameIndex RQGN A 0 3
+	FrameIndex RQGN A 0 0	// grenade hand (lane B): the FBX hand, fit_nade.py (frame baked in place, hook 0)
 }
 
 // the free hand (off controller): open, or a fist
@@ -290,9 +290,12 @@ Model HandGrenades
    Model 0 "nade.md3"
    Skin 0 "nade.png"
    Scale -0.92 0.92 0.92
-   Offset -4.01 -2.04 -1.45
+   Offset -12.075 -8.898 0.0
    NoInterpolation
-   ZOffset -5
+   ZOffset 2.326
+   AngleOffset -18.317
+   PitchOffset -17.735
+   RollOffset 3.457	// grenade hand (lane B): gun to the FBX hand, fit_nade.py
    FrameIndex RQNP C 0 2
 }
 Model HandGrenades
@@ -305,9 +308,12 @@ Model HandGrenades
    SurfaceSkin 0 3 "nade.png"
    SurfaceSkin 0 4 "nade.png"
    Scale -0.92 0.92 0.92
-   Offset -4.01 -2.04 -1.45
+   Offset -12.075 -8.898 0.0
    NoInterpolation
-   ZOffset -5
+   ZOffset 2.326
+   AngleOffset -18.317
+   PitchOffset -17.735
+   RollOffset 3.457	// grenade hand (lane B): gun to the FBX hand, fit_nade.py
    FrameIndex RQNP A 0 2
 }
 Model HandGrenades
@@ -320,9 +326,12 @@ Model HandGrenades
    SurfaceSkin 0 3 "rsr_clear.png"
    SurfaceSkin 0 4 "rsr_clear.png"
    Scale -0.92 0.92 0.92
-   Offset -4.01 -2.04 -1.45
+   Offset -12.075 -8.898 0.0
    NoInterpolation
-   ZOffset -5
+   ZOffset 2.326
+   AngleOffset -18.317
+   PitchOffset -17.735
+   RollOffset 3.457	// grenade hand (lane B): gun to the FBX hand, fit_nade.py
    FrameIndex RQNP B 0 2
 }
 

@@ -132,7 +132,7 @@ def rebake(path, out):
 def _port():
     sys.path.insert(0, HERE); import port_gun as pg
     pg.SRC = os.environ.get('RSQ_SRC', os.path.join(REPO, 'src'))
-    for d, m in (('shotguns', 'port_sg'), ('heavies', 'port_hv')):	# hv last: its SSG entry is the one the r11 port used
+    for d, m in (('shotguns', 'port_sg'), ('heavies', 'port_hv'), ('grenade', 'port_nade')):	# hv last of the guns: its SSG entry is the one the r11 port used; port_nade: HandGrenades only
         sys.path.insert(0, os.path.join(HERE, '..', d)); __import__(m)
     return pg
 def place_of(J):

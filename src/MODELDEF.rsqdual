@@ -259,12 +259,12 @@ Model Melee_Attacks
 
 Model HandGrenades
 {
-	Path "models/rsq"
-	Model 0 "ammo_hand.md3"
-	Skin 0 "hand.png"
+	Path "models/rsq/fbx"
+	Model 0 "fbx_nade_R.md3"
+	Skin 0 "fbx_hand.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -24.0 -10.0
-	FrameIndex RQGN A 0 3
+	FrameIndex RQGN A 0 0	// grenade hand (lane B): the FBX hand, fit_nade.py (frame baked in place, hook 0)
 }
 
 // BD 2.0 b1: dual wield, the FBX hand (the layer is called by the gun, so the block is the gun's class)

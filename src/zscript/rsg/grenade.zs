@@ -58,9 +58,12 @@ class RSG_State play
 	const RING_GRAB = 12.0;			// cm round the ring the off hand can take it
 	const PULL = 8.0;				// cm past that: the pin is out
 	const HIST = 6;
-	const RING_F = -3.04;		// the ring: nade.md3 in Ermac's hand (MODELDEF.rsq RQNP), gun hand cm (F, L, U)
-	const RING_L = 5.45;
-	const RING_U = 4.18;
+	const RING_F = 3.45;		// the ring's centre: nade.md3 as drawn in the FBX hand (MODELDEF.rsq RQNP, fit_nade.py), gun hand cm (F, L, U)
+	const RING_L = 5.12;
+	const RING_U = 5.06;
+	const NADE_F = 2.77;		// the grenade body's centre as drawn (moved 4.0 cm by the FBX hand fit): the throw and the in-hand blast start here
+	const NADE_L = 4.23;
+	const NADE_U = -1.97;
 
 	RSR_State geo;
 	bool wantGrab;		// 2026-10-23: a grenade is in hand and wants the off-hand grab (read from
@@ -272,7 +275,7 @@ class RSG_State play
 		// unreachable at any human arm speed. Matched to the axe throw in rsvr/melee.zs, which
 		// works: a floor you can feel, and a reachable top end.
 		double spd = clamp(best * 3.0, 14, 42);
-		let g = Actor.Spawn(gc, RSVR_VRHand.HandPos(mo), ALLOW_REPLACE);
+		let g = Actor.Spawn(gc, DrawnNade(mo), ALLOW_REPLACE);
 		if (!g)
 			return false;
 		g.target = mo;
@@ -289,12 +292,21 @@ class RSG_State play
 		return true;
 	}
 
+	// the drawn grenade (its body centre) in the world: the controller plus the gun-hand offset (geo: this tic's frames)
+	Vector3 DrawnNade(PlayerPawn mo)
+	{
+		Vector3 h = RSVR_VRHand.HandPos(mo);
+		if (!geo)
+			return h;
+		return h + geo.FromGun((NADE_F, NADE_L, NADE_U));
+	}
+
 	void Boom(PlayerPawn mo)
 	{
 		class<Actor> ec = Cls('FragGrenadeExplosion');
 		if (ec)
 		{
-			let e = Actor.Spawn(ec, RSVR_VRHand.HandPos(mo));
+			let e = Actor.Spawn(ec, DrawnNade(mo));
 			if (e)
 				e.target = mo;
 		}
