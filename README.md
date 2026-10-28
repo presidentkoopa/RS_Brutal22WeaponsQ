@@ -97,7 +97,8 @@ the pack. It has not yet been confirmed in a headset.
   back when you pick an axe up. Dual Options > Axe turns it off.
 - **Sword:** a blow needs a deliberate swing: the blade's point must travel about a metre at
   speed, and after a swing there is a third of a second before the next one, so one swing is one
-  attack. On the rig: hand jitter, sliding and wrist turns gave 0 attacks; one swing gave exactly 1.
+  attack. In VR the sword's trigger does nothing (no Brutal Doom combo, lunge or view turn); flat
+  screen keeps the combo. On the rig: hand jitter, sliding and wrist turns gave 0 attacks; one swing gave exactly 1.
 - **Pull a Loaded Gun's Bolt (look only)** (was "Check the Chamber by Hand", off by default): with
   no reload running, your off hand can pull back the charging handle or slide of a loaded gun and
   let it go, to look. Nothing is loaded, ejected or chambered.

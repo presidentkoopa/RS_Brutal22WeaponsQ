@@ -53,6 +53,10 @@ ACTOR DSweap : BrutalWeapon
 		"####" "#" 0 A_JumpIfInventory("RSVR_SwordTwo", 1, "TwoHand")
 		Goto Ready
 
+	RSVR_SwordNoCombo:		// 2.0.2: the VR trigger: the sword stays as it is held (DSLA or DSL2), nothing fires
+		"####" "#" 1 A_WeaponReady(WRF_NOFIRE)
+		Goto Ready
+
 	Select:
 		TNT1 A 0 A_Giveinventory("GoSpecial",1)
 		TNT1 A 0 A_Takeinventory("FistsSelected",1)
@@ -81,6 +85,10 @@ ACTOR DSweap : BrutalWeapon
 		Loop
 
 	Fire:
+		// 2.0.2 (owner 2026-10-28): in VR the trigger does nothing on the sword -- no BD22 combo, no lunge
+		// (A_Recoil), no view turn (A_SetAngle). Only a real swing attacks (zscript/rsvr/melee.zs). RSVR_SwordVR
+		// is held while the sword is in hand in VR (melee.zs WorldTick); flat-screen play keeps BD22's combo below.
+		"####" "#" 0 A_JumpIfInventory("RSVR_SwordVR", 1, "RSVR_SwordNoCombo")
 		TNT1 A 0
 		DSLC ABCD 1
 	Hold:

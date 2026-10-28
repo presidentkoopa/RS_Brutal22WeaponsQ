@@ -176,6 +176,8 @@ class RSVR_MeleeHandler : EventHandler
 			// r6 (item 7): in VR the chainsaw's trigger runs the chain without BD22's swing animation
 			// (Saw.dec RSVR_SawRun); the cutting is RSVR_Hand.Tick's, by contact
 			mo.SetInventory('RSVR_SawVR', RSVR_VRHand.InVR(mo) && mk == RSVR_Hand.SAW ? 1 : 0);
+			// 2.0.2 (owner 2026-10-28): in VR the sword's trigger runs no BD22 combo (Dragonslayer.dec Fire); swings attack
+			mo.SetInventory('RSVR_SwordVR', RSVR_VRHand.InVR(mo) && mk == RSVR_Hand.SWORD ? 1 : 0);
 		}
 	}
 
@@ -1524,6 +1526,7 @@ class RSVR_OffAxeVRThrow : RSVR_Token {}
 class RSVR_OffAxeGone : RSVR_Token {}		// thrown: melee.zs WorldTick puts the copy away
 class RSVR_SwordTwo : RSVR_Token {}	// r6b: the engine steadies the sword: the DSL2 placement, 2.0x		// both hands on the haft: the shifted placement
 class RSVR_NotVR : RSVR_Token {}
+class RSVR_SwordVR : RSVR_Token {}		// 2.0.2: VR with the sword in hand: Dragonslayer.dec Fire runs no BD22 combo
 class RSVR_SawVR : RSVR_Token {}		// r6: VR with the chainsaw in hand: Saw.dec Fire runs RSVR_SawRun
 
 // a projectile the engine counts as a shot: spawning it buzzes the weapon hand
