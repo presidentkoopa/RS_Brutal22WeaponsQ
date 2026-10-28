@@ -746,3 +746,91 @@ Model RSQ_Hands
 	FrameIndex RQVA A 0 0	// BFG10k, finger on the trigger
 	FrameIndex RQVA B 0 1	// BFG10k, squeezed
 }
+
+// r11 port (lane B): BIG_FUCKING_GUN (row 3) holds the FBX gun hand fitted from 1.92's BIG_FUCKING_GUN hold (frames baked in place, hook 0)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_BIG_FUCKING_GUN_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVB A 0 0	// BIG_FUCKING_GUN, finger on the trigger
+	FrameIndex RQVB B 0 1	// BIG_FUCKING_GUN, squeezed
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_BIG_FUCKING_GUN_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVB A 0 0	// BIG_FUCKING_GUN, finger on the trigger
+	FrameIndex RQVB B 0 1	// BIG_FUCKING_GUN, squeezed
+}
+
+// r11 port (lane B): IncendiaryLauncher (row 10) holds the FBX gun hand fitted from 1.92's IncendiaryLauncher hold (frames baked in place, hook 0)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_IncendiaryLauncher_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV8 A 0 0	// IncendiaryLauncher, finger on the trigger
+	FrameIndex RQV8 B 0 1	// IncendiaryLauncher, squeezed
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_IncendiaryLauncher_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQV8 A 0 0	// IncendiaryLauncher, finger on the trigger
+	FrameIndex RQV8 B 0 1	// IncendiaryLauncher, squeezed
+}
+
+// r11 port (lane B): Devastator (row 6) holds the FBX gun hand fitted from 1.92's Devastator hold (frames baked in place, hook 0)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_Devastator_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVC A 0 0	// Devastator, finger on the trigger
+	FrameIndex RQVC B 0 1	// Devastator, squeezed
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_Devastator_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVC A 0 0	// Devastator, finger on the trigger
+	FrameIndex RQVC B 0 1	// Devastator, squeezed
+}
+
+// r11 port (lane B): SSG (row 20) holds the FBX gun hand fitted from 1.92's SSG hold (frames baked in place, hook 0)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_SSG_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVD A 0 0	// SSG, finger on the trigger
+	FrameIndex RQVD B 0 1	// SSG, squeezed
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_SSG_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVD A 0 0	// SSG, finger on the trigger
+	FrameIndex RQVD B 0 1	// SSG, squeezed
+}

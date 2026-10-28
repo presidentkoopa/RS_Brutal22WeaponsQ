@@ -1246,8 +1246,11 @@ Model RSQ_Off_SSG
    Model 0 "SSG.md3"
    Skin 0 "ssg.png"
    Scale -1.0 1.0 1.0
-   Offset 0.0 0.0 0.0
-   ZOffset -5
+   Offset -3.813 -3.959 0.0
+   ZOffset -12.773
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r11 port (lane B): gun to the FBX hand fitted from 1.92
    Nointerpolation
 // Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
@@ -4943,8 +4946,11 @@ Model RSQ_Off_SSG
 	SurfaceSkin 0 5 "ssg.png"
 	SurfaceSkin 0 6 "ssg.png"
 	Scale -1.0000 1.0000 1.0000
-	Offset 0.0000 0.0000 0.0
-	ZOffset -5.0000
+	Offset -3.813 -3.959 0.0
+	ZOffset -12.773
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r11 port (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RBSG A 0 1
 }
@@ -6025,4 +6031,16 @@ Model RSQ_Off_Plasma_Gun
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQV4 A 0 0	// Plasma_Gun, finger on the trigger
 	FrameIndex RQV4 B 0 1	// Plasma_Gun, squeezed
+}
+
+// r11 port (lane B): SSG (row 20), dual wield holds the FBX gun hand fitted from 1.92's SSG hold (frames baked in place, hook 0)
+Model RSQ_Off_SSG
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_SSG_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVD A 0 0	// SSG, finger on the trigger
+	FrameIndex RQVD B 0 1	// SSG, squeezed
 }

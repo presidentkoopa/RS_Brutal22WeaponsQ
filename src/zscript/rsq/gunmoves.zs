@@ -9,7 +9,7 @@ class RSQ_GunMoves abstract play
 	// from where the hand models turn
 	clearscope static Vector3 Pivot(int i)
 	{
-		static const double v[] = { 0.000, 0.000, 0.000, 4.701, -2.031, 19.195, 0.344, 9.270, 21.507, 0.000, 5.000, 24.000, -0.820, 8.592, 15.667, -0.908, 6.587, 19.440, 0.000, 10.000, 11.000, 4.371, 4.331, 15.687, 4.954, -4.013, 19.376, 0.000, 5.000, 24.000, 0.000, 2.000, -6.000, 0.730, 9.558, 21.141, 0.982, 7.787, 19.530, 1.156, 8.077, 18.894, -0.463, 14.577, 21.630, 0.978, 9.735, 19.631, 0.895, 8.253, 18.901, -0.466, 7.199, 18.584, -0.348, 8.188, 18.088, -0.259, 10.657, 19.392, 0.000, 5.000, 24.000, 3.502, 1.027, 19.743, 4.310, 5.776, -27.099, 0.000, 5.000, 24.000, 0.000, 5.000, 24.000, 0.000, 5.000, 34.000, 0.000, 5.000, 24.000 };
+		static const double v[] = { 0.000, 0.000, 0.000, 4.701, -2.031, 19.195, 0.344, 9.270, 21.507, 0.338, 9.218, 21.036, -0.820, 8.592, 15.667, -0.908, 6.587, 19.440, 0.518, 13.456, 8.527, 4.371, 4.331, 15.687, 4.954, -4.013, 19.376, 0.000, 5.000, 24.000, 8.579, -2.450, -11.927, 0.730, 9.558, 21.141, 0.982, 7.787, 19.530, 1.156, 8.077, 18.894, -0.463, 14.577, 21.630, 0.978, 9.735, 19.631, 0.895, 8.253, 18.901, -0.466, 7.199, 18.584, -0.348, 8.188, 18.088, -0.259, 10.657, 19.392, 3.813, -2.773, 20.041, 3.502, 1.027, 19.743, 4.310, 5.776, -27.099, 0.000, 5.000, 24.000, 0.000, 5.000, 24.000, 0.000, 5.000, 34.000, 0.000, 5.000, 24.000 };
 		if (i <= 0 || 3 * i + 2 >= v.Size())
 			return (0, 0, 0);
 		return (v[3 * i], v[3 * i + 1], v[3 * i + 2]);
@@ -64,23 +64,23 @@ class RSQ_GunMoves abstract play
 			1.99, 9.77, 0.94, -2.62, 5.87, 18.76,	// r10 port: row 8 BFG10k, refitted for the moved gun
 			1.48, 7.39, 0.68, -1.48, 3.51, 10.16,	// r10 port: row 9 BFG10k, refitted for the moved gun
 			0.31, 1.57, 0.13, -0.24, 0.52, 1.73,	// r10 port: row 10 BFG10k, refitted for the moved gun
-			0.00, 0.00, 0.00, 0.00, 0.00, 13.77,
-			0.00, 0.00, 0.00, 0.00, 0.00, 27.54,
-			0.00, 10.00, 0.00, 0.00, 7.72, 19.34,
-			0.00, 5.00, 0.00, 0.00, 2.77, 7.38,
+			0.00, 0.00, 0.00, -0.92, -0.81, 13.72,	// r11 port: row 11 BIG_FUCKING_GUN, refitted for the moved gun
+			0.00, 0.00, 0.00, -1.85, -1.62, 27.43,	// r11 port: row 12 BIG_FUCKING_GUN, refitted for the moved gun
+			1.99, 9.77, 0.94, -2.60, 5.79, 18.78,	// r11 port: row 13 BIG_FUCKING_GUN, refitted for the moved gun
+			0.97, 4.89, 0.43, -0.94, 1.97, 7.05,	// r11 port: row 14 BIG_FUCKING_GUN, refitted for the moved gun
 			0.97, 4.89, 0.43, 0.15, -0.94, 0.47,	// BD 2.0 b1 (lane_c r5): rows 15-17 BrutalPistol, refitted for the moved gun
 			0.73, 3.70, 0.32, 0.11, -0.73, 0.35,
 			0.23, 1.18, 0.10, 0.04, -0.24, 0.11,
 			-0.00, 0.00, -0.00, -0.03, -0.03, 0.51,	// batch 2: rows 18-20 BrutalSMG, refitted for the moved gun (follow_b2.py)
 			0.22, 1.14, 0.09, -0.04, -0.19, 0.94,
 			0.11, 0.57, 0.05, -0.02, -0.10, 0.47,
-			0.00, 0.20, 0.00, 0.00, -0.03, 0.66,
-			0.00, 1.32, 0.00, 0.00, -0.09, 4.48,
-			0.00, 2.45, 0.00, 0.00, 0.01, 8.32,
-			0.00, 2.64, 0.00, 0.00, 0.05, 8.99,
-			0.00, 2.12, 0.00, 0.00, -0.03, 7.20,
-			0.00, 1.04, 0.00, 0.00, -0.09, 3.52,
-			0.00, 0.15, 0.00, 0.00, -0.02, 0.49,
+			0.04, 0.19, 0.01, -0.04, -0.08, 0.65,	// r11 port: row 21 Devastator, refitted for the moved gun
+			0.25, 1.29, 0.11, -0.26, -0.42, 4.38,	// r11 port: row 22 Devastator, refitted for the moved gun
+			0.47, 2.39, 0.20, -0.52, -0.61, 8.14,	// r11 port: row 23 Devastator, refitted for the moved gun
+			0.51, 2.58, 0.22, -0.57, -0.63, 8.79,	// r11 port: row 24 Devastator, refitted for the moved gun
+			0.41, 2.07, 0.17, -0.44, -0.57, 7.04,	// r11 port: row 25 Devastator, refitted for the moved gun
+			0.20, 1.02, 0.08, -0.20, -0.35, 3.44,	// r11 port: row 26 Devastator, refitted for the moved gun
+			0.03, 0.14, 0.01, -0.03, -0.06, 0.48,	// r11 port: row 27 Devastator, refitted for the moved gun
 			-0.00, 0.00, -0.00, 0.07, -0.03, 1.02,	// BD 2.0 b1 (lane_c r5): rows 28-29 Flamethrower2, refitted for the moved gun
 			-0.00, 0.00, -0.00, 0.07, -0.03, 1.02,
 			0.00, 0.00, 0.00, -0.07, -0.06, 1.02,	// r9 port: row 30 GrenadeLauncher, refitted for the moved gun
@@ -92,7 +92,7 @@ class RSQ_GunMoves abstract play
 			-0.20, 3.03, -1.82, -0.07, 2.61, 25.17,
 			-0.44, 4.98, -5.02, -0.44, 4.72, 29.96,
 			-0.15, 3.26, -1.36, -0.07, 2.23, 14.95,
-			0.00, 7.48, 0.00, 0.00, 0.49, 7.01,
+			1.47, 7.32, 0.67, -0.48, -0.73, 7.88,	// r11 port: row 39 IncendiaryLauncher, refitted for the moved gun
 			0.09, 0.44, 0.04, -0.13, 0.08, 1.45,	// r10 port: row 40 MG42, refitted for the moved gun
 			0.17, 0.88, 0.07, -0.27, 0.19, 2.90,	// r10 port: row 41 MG42, refitted for the moved gun
 			0.16, 0.83, 0.07, -0.04, -0.18, 0.95,	// batch 3: row 42 MP40, refitted for the moved gun
@@ -160,14 +160,14 @@ class RSQ_GunMoves abstract play
 			0.33, 0.72, -5.90, -1.92, 0.33, -0.21,	// r9 port: row 104 Rocket_Launcher, refitted for the moved gun
 			-0.18, -0.29, 2.50, 0.86, -0.17, 0.09,	// r9 port: row 105 Rocket_Launcher, refitted for the moved gun
 			10.52, -3.22, 11.65, -13.20, -0.25, -4.85,	// r9 port: row 106 Rocket_Launcher, refitted for the moved gun
-			0.00, 0.62, 0.00, 0.00, -0.06, 0.96,
-			0.00, 2.41, 0.00, 0.00, -0.11, 3.68,
-			0.00, 7.58, 0.00, 0.00, 0.48, 9.77,
-			0.00, 9.38, 0.00, 0.00, 0.75, 10.64,
-			0.00, 10.00, 0.00, 0.00, 0.63, 9.61,
-			0.00, 8.62, 0.00, 0.00, 0.12, 6.92,
-			0.00, 5.00, 0.00, 0.00, -0.23, 3.54,
-			0.00, 1.38, 0.00, 0.00, -0.13, 0.92,
+			0.12, 0.61, 0.05, -0.05, -0.16, 1.04,	// r11 port: row 107 SSG, refitted for the moved gun
+			0.46, 2.36, 0.20, -0.21, -0.51, 3.97,	// r11 port: row 108 SSG, refitted for the moved gun
+			1.49, 7.41, 0.68, -0.73, -0.63, 10.76,	// r11 port: row 109 SSG, refitted for the moved gun
+			1.86, 9.17, 0.87, -0.83, -0.52, 11.88,	// r11 port: row 110 SSG, refitted for the moved gun
+			1.99, 9.77, 0.94, -0.74, -0.62, 10.94,	// r11 port: row 111 SSG, refitted for the moved gun
+			1.70, 8.42, 0.79, -0.46, -0.88, 8.05,	// r11 port: row 112 SSG, refitted for the moved gun
+			0.97, 4.89, 0.43, -0.17, -0.80, 4.17,	// r11 port: row 113 SSG, refitted for the moved gun
+			0.26, 1.35, 0.11, -0.03, -0.29, 1.09,	// r11 port: row 114 SSG, refitted for the moved gun
 			0.00, 0.00, 0.00, -0.17, -0.15, 2.54,	// shotguns: row 115 Shot_Gun, refitted for the moved gun
 			0.00, 0.00, 0.00, -0.34, -0.30, 5.08,	// shotguns: row 116 Shot_Gun, refitted for the moved gun
 			1.09, 5.50, 0.49, -0.16, -0.76, 3.92,	// shotguns: row 117 Shot_Gun, refitted for the moved gun

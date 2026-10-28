@@ -25,12 +25,14 @@ def run(g):
     poses = {}
     for name, key in (('trigger', 'Xt'), ('squeeze', 'Xs')):
         T = np.array(J[key]); best = None
-        for mask in (fm('IMRP'), fm('MRP') if name == 'trigger' else fm('IMRP')):
+        for fs in ('IMRP', 'MRP' if name == 'trigger' else 'IMRP'):
+            mask = fm(fs)
             s = least_squares(lambda q: (X_of(q, mask) - T)[::7].ravel(), np.clip(x[sl], lo + 1e-6, hi - 1e-6), bounds=(lo, hi), max_nfev=60)
             res = np.abs(X_of(s.x, mask) - T).max()
-            if best is None or res < best[1]: best = (s.x, res)
+            if best is None or res < best[1]: best = (s.x, res, fs)
         y = x.copy(); y[sl] = best[0]; res = best[1]
-        poses[name] = dict(pose_vector=y.tolist(), solved_params='x[6:18] (index, middle, ring, pinky; 3 each)', fk_fit_max_cm=float(res))
+        # r11: solved_fingers = the fingers drawn from the pose (no per-vertex delta): rebake.py needs it to rebuild the frames
+        poses[name] = dict(pose_vector=y.tolist(), solved_params='x[6:18] (index, middle, ring, pinky; 3 each)', solved_fingers=best[2], fk_fit_max_cm=float(res))
     F = json.load(open(os.path.join(FITS, '%s_hv.json' % g))); P = json.load(open(os.path.join(FITS, 'ported_%s.json' % g)))
     S = F['hand']['support']
     if S == 'move':	# r9: no FBX pose fits (MiniGun side handle): Ermac's support pose moved with the gun, read from the ported handtable row
@@ -44,7 +46,7 @@ def run(g):
              pose_params='handmodel.FbxHand pose vector (revindex.setup x layout: 0-5 wrist/gun, 6-17 I/M/R/P, 18-21 thumb); bounds handmodel.QLO/QHI',
              poses=poses, wrist=dict(R=R.tolist(), t=t.tolist(), shift_cm=d.tolist(), note='hand placed X = X_pistol R^T + t in the pistol gun frame; the wrist stays pinned, the gun moves by shift'),
              gun_move=dict(modeldef_place=P['place'], R=P['R'], t=P['t'], note='controller-frame point -> drawn point after the move'),
-             baked=F['hand']['md3_name'], metrics=F.get('metrics', {}).get('curl'))
+             baked=F['hand']['md3_name'], bake_md3='fits/' + F['hand']['md3'], metrics=F.get('metrics', {}).get('curl'))	# r11: bake_md3 (port/-relative) for rebake.py
     os.makedirs(OUT, exist_ok=True); json.dump(o, open(os.path.join(OUT, '%s.json' % g), 'w'), indent=1)
     print(g, {k: v.get('fk_fit_max_cm') for k, v in poses.items()})
 if __name__ == '__main__':
