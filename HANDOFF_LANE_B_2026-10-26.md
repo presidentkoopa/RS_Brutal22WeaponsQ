@@ -1448,3 +1448,45 @@ sha256 `08d2ed3414e88f5812938dcbd7c331a5939e52b46ee4aed3689242df416ebb8b`; doom2
 ## 3. Open
 - With no enemy carrying a revolver, the Moonlight reaches stock Doom 2 maps only where BD22 spawns a RevolverSpawner
   (mapper-set ShotgunSpawnerReplacer arg 2, backpack extras, Eviternity MAP30). Owner's call if he wants another source.
+
+# Lane rev-unmaker, round 4 (owner 20:45; branch `lane-rev-unmaker`). RIG ONLY, NOT HEADSET-CONFIRMED
+Owner: "Shotvolver and our Slug secondary shot are back. No slugvolver replaces shotvolver. New option to have revolver
+replace brutal pistol, option to start with two."
+
+## 1. Done
+- **Shotvolver + slug alt fire:** round 1 removed nothing it needs (Revolver.dec AltFire / RSA_MagnumShot, alts.zs
+  RSA_Opt_Rev, menu "Shotvolver Slugshot Alt Fire" `rsa_rev_magnum` all untouched). Shown below.
+- **Nothing replaces the Shotvolver:** the rsq_moonlight option, its OptionValue and the RevolverSpawner replacement are
+  removed. Revolver2 stays gone.
+- **"Moonlight Replaces Pistol"** (server `rsq_moonlight_pistol`, default **Off**) and **"Start With Two Moonlights"**
+  (server `rsq_moonlight_two`, default **Off**, needs the first). Defaults Off because On changes BD22's own start and its
+  pistol pickups. How (roster.zs): BD22's map pistols (WeaponSpawners.dec PistolSpawnerReplacer -> PistolSpawner) and the
+  pistol zombie's drop (ZombiemenVariations.dec:3 `DropItem "PistolDrop"` -> Dropables.dec DropedPistol Death
+  `A_SpawnItem("PistolSpawner")`) both arrive as PistolSpawner, which is replaced by BrutalRevolver. A Brutal Pistol the
+  player gets anyway (the class start item, give, idkfa) is swapped for the Moonlight the tic it arrives (selected if it was
+  in hand; the pistol's off-hand copy goes too). In the map's first second (a new game / pistol start) the Moonlight's
+  cylinder is full, and with Start With Two the off-hand Moonlight comes too (full) and the Dual key is pressed once.
+  Slot: the Moonlight is already in slot 2, the pistol's (KEYCONF.rsqmoon; BD22 KEYCONF setslot 2 has the pistols).
+  RevolverRounds map spawns only while Moonlight Replaces Pistol is On.
+
+## 2. Rig evidence (pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-revunm4.pk3`, build.py at `8147745`,
+sha256 `b129b363c07a662885676c40e596cecf3e2439613d639ebaee31ee76f6153d5b`; doom2 > brutal22test6 > BD_VoxelPack > pack, lock, ini restored)
+- 8 jobs + a frames run, every one `script errors (not BD_VoxelPack voxeldef): none`; only BD_VoxelPack voxeldef 66/72/77/892.
+- slug (test-only `tools/moonammo/slugprobe`, puffs per tic): alt fire `RSA_Magnum 0 -> 1`, `1 -> 0`, then `REVOLVER: 1 bullet
+  puffs` (the slug: one bullet); fire `7` + `2` puffs (the shell's pellets); alt fire again: 1 puff.
+- combos (BD22 Pistol class, `map map01` = new game): Off/Off -> `BrutalPistol`, `RSQ_Off_BrutalPistol`; Off/two On -> the
+  same (needs the first); On/Off -> `Brutal Pistol -> Moonlight`, `BrutalRevolver`, `BrutalRevolverCylinder (6/6)`,
+  `RevolverRounds (6/36)`; On/On -> `Brutal Pistol -> Moonlight, start with two`, `cap 36 -> 72`, `RSQ_Off_BrutalRevolver`,
+  both cylinders 6/6, `RevolverRounds (6/72)`, probe `main BrutalRevolver off RSQ_Off_BrutalRevolver`.
+- drops (10 PistolSpawner summoned + 5 PistolZombie summoned, `kill monsters`, 24 killed incl. the map's): Off -> in the
+  world `Pistol 22, Moonlight 0`; On -> `Pistol 0, Moonlight 21`.
+- spawn: rounds beside bullet pickups 0 with the option Off on MAP01/03/07/11; On -> they spawn (e.g. MAP11 3 in the world).
+- cap / dual: unchanged (36 -> 72 with the second; dual fire / flick reloads as round 2).
+- Frames: `revunm4_menu.png` (the menu, both options Off), `revunm4_moonlight_pistol_options.png` (start Off/Off pistol,
+  On/Off one Moonlight, On/On two; MAP07 a pistol pickup as the Moonlight; a pistol zombie killed). Work PNGs in
+  `/home/claude/lane_b_out/revunm_work/`; .ppm dumps deleted.
+
+## 3. Open
+- With the option On the player keeps BD22's pistol start ammo (Clip1 45) unused; the Moonlight starts with 6 rounds + a full
+  cylinder (two: 6 + both full). Owner's call if the start should give more rounds.
+- Purist class pistols (PuristPistol) are not swapped (purist has no reloading; BD22's own gun).
