@@ -457,6 +457,7 @@ class RSVR_Hand play
 	transient SpriteID s2IST;
 	transient SpriteID sREVO;
 	transient SpriteID s2EVO;
+	transient SpriteID sRVMA;		// 2.0.2: the Moonlight (BrutalRevolver) held, RVMA A
 	transient SpriteID sAXE2;
 	transient SpriteID s1XEG;
 	transient SpriteID s2XEG;
@@ -564,6 +565,7 @@ class RSVR_Hand play
 		s2IST = Actor.GetSpriteIndex('2IST');
 		sREVO = Actor.GetSpriteIndex('REVO');
 		s2EVO = Actor.GetSpriteIndex('2EVO');
+		sRVMA = Actor.GetSpriteIndex('RVMA');
 		sAXE2 = Actor.GetSpriteIndex('AXE2');	// the two-handed placement
 		s1XEG = Actor.GetSpriteIndex('1XEG');
 		s2XEG = Actor.GetSpriteIndex('2XEG');
@@ -616,6 +618,10 @@ class RSVR_Hand play
 		if (n == 'BrutalPistol')
 			return PISTOL;
 		if (n == 'Revolver')
+			return REVOLVER;
+		// 2.0.2 (owner 2026-10-28 19:05): the Moonlight whips with the Shotvolver's (Revolver) whip points and
+		// move, copied as-is ("the handle is in the same enough place"): not measured on rev.md3
+		if (n == 'BrutalRevolver')
 			return REVOLVER;
 		return 0;
 	}
@@ -689,7 +695,7 @@ class RSVR_Hand play
 		if (k == PISTOL)
 			return s == sPIST || s == s2IST;
 		if (k == REVOLVER)
-			return s == sREVO || s == s2EVO;
+			return s == sREVO || s == s2EVO || s == sRVMA;	// RVMA: the Moonlight (2.0.2)
 		// 2.0.2: AXE2 (the two-handed placement) is gone (owner r3 item 37); the axe is always one-handed
 		return s == sAXEG || s == s1XEG || s == s2XEG || s == s3XEG || s == s4XEG || s == s5XEG;
 	}

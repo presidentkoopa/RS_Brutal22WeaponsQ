@@ -65,7 +65,6 @@ OptionMenu "RSQ_Options"
 	Option "Reload Non-Standard Guns", "rsq_reload_nonstd", "OnOff"
 	Option "Grab ammo with", "rsr_grab_with", "RSR_GrabWith"
 	Option "New magazine from", "rsr_pouch", "RSR_Pouch"
-	Option "Pull a Loaded Gun's Bolt (look only)", "rsr_freecharge", "OnOff"	// 2.0.2 (owner r3 item 39): was "Check the Chamber by Hand"; vreload.zs FreeCharge: nothing loads or ejects
 	Option "Shotgun Shells Per Insert", "rsr_shell_credit", "RSR_ShellCredit"
 	Slider "Reload assist", "rsr_assist", 0.5, 3.0, 0.1
 	Option "Pistol Semi Auto", "rsa_pistol_semi", "OnOff"

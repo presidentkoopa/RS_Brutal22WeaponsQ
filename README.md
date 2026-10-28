@@ -87,7 +87,7 @@ the pack. It has not yet been confirmed in a headset.
 - The grenade was drawn 1.45 cm off. Fixed, and the throw now leaves from the grenade in your hand.
 
 ### Options and melee (2.0.2, rig only, not headset-confirmed)
-- **Pistol Whip** (on by default): swing a pistol or revolver into something. It has its own
+- **Pistol Whip** (on by default): swing a pistol or revolver (Shotvolver or Moonlight) into something. It has its own
   option row. The kick-key "Gun Bash" is gone; the kick key is Brutal Doom's boot again.
 - **Melee hit flash** is a small spark where the blow lands (about 38 cm across; it was 2.3 to
   2.8 m).
@@ -99,9 +99,8 @@ the pack. It has not yet been confirmed in a headset.
   speed, and after a swing there is a third of a second before the next one, so one swing is one
   attack. In VR the sword's trigger does nothing (no Brutal Doom combo, lunge or view turn); flat
   screen keeps the combo. On the rig: hand jitter, sliding and wrist turns gave 0 attacks; one swing gave exactly 1.
-- **Pull a Loaded Gun's Bolt (look only)** (was "Check the Chamber by Hand", off by default): with
-  no reload running, your off hand can pull back the charging handle or slide of a loaded gun and
-  let it go, to look. Nothing is loaded, ejected or chambered.
+- **"Check the Chamber by Hand" is removed** (it was off by default and only let the off hand pull
+  a loaded gun's handle back to look).
 - **Two-Hand Grip (engine)** (was "Two-Handed Steadying"): QuestZDoom's own two-hand setting,
   unchanged. On: grip with your off hand near the gun to steady it with both hands.
 
