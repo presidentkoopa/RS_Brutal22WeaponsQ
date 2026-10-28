@@ -1,6 +1,6 @@
 ![BD22 VR Weapons](renders/hero.gif)
 
-# BD22 VR Weapons 1.99
+# BD22 VR Weapons 2.0
 
 Brutal Doom v22 in VR, with your hands.
 
@@ -16,14 +16,65 @@ and does its own damage, and with the options off it plays exactly as Brutal Doo
 Download the pk3 from the Releases page and load, in this order:
 
 ```
-doom2.wad  ->  brutal22test6.pk3  ->  BD_VoxelPack.pk3  ->  BD22_VR-Reloaded_1.99.pk3
+doom2.wad  ->  brutal22test6.pk3  ->  BD_VoxelPack.pk3  ->  BD22_VR-Reloaded_2.0.pk3
 ```
 
 Use Doom 2, not Freedoom: the voxel pack names Doom 2's own sprites.
 
 To build it yourself: `python build.py` zips `src/` into `BD22_VR-Reloaded_<VERSION>.pk3`.
 
-## What's new in 1.99
+## What's new in 2.0
+Everything here was checked on the test rig on the load order above, with no script errors from
+the pack. It has not yet been confirmed in a headset.
+
+### Hands on every gun
+- **New hands on every weapon**, both hands: the hand that holds the gun, with the finger on the
+  trigger, and a support hand that wraps the gun's forend, pump, handguard or foregrip. The gun is
+  moved to fit your hand, and everything on it (muzzle, ejection port, reload points, scope) moves
+  with it. Each grip started from the 1.92 hold on that gun.
+- **Melee:** chainsaw (index on the real trigger, other hand on the top handle), sword (two hands
+  on the hilt), axe (on the haft). Their hit points moved with them.
+- **The FlameCannon** is worn: your hand goes in through the slit at the back, and the flame now
+  starts at the nozzle (it used to start 27 cm away). Open palm under the barrel.
+- **Fists, the free off hand, the grenade hand and all 25 reload holds** (every magazine, shell,
+  rocket, the Unmaker skull, the Moonlight round) use the same hands.
+- **Hand Skin Tone:** 18 steps, from porcelain to ebony, plus grey, green, blue, purple, red, gold
+  and a black glove.
+
+### Scopes
+- **Ruger and Railgun: a live 3x view through the lens**, on by default. Alt fire turns the scope
+  on and off, to save performance. On the Ruger this replaces Brutal Doom's zoom.
+
+### Shooting
+- **Player Ballistics: Hitscan / Bullet.** Bullet fires real rounds from the muzzle at 80 units a
+  tic, with the same damage as Brutal Doom's hitscan.
+- **Shot Tracers: Off / Dakka** (default Dakka): bright tracers and impact sparks for every shot.
+- **Pump Shotgun Spread: Stock / Enhanced:** Enhanced spreads up and down too. Same pellets and
+  damage.
+- **Ruger** fires a sniper round that pierces like Brutal Doom's rail, with the same damage. The
+  beam is gone.
+- **Dual wield:** off-hand shots now leave the off-hand gun's muzzle.
+
+### Revolvers and ammo
+- Two revolvers: the **Shotvolver** (its slug alt fire is now on by default) and the **Moonlight**.
+  The Moonlight has its own rounds: 36, or 72 with a second Moonlight.
+- Options: **Moonlight Replaces Pistol** (start, pickups, drops) and **Start With Two Moonlights**.
+  Both are off by default.
+- **HUD Ammo:** the magazine and the reserve (e.g. 24 | 120), or Reserve Only.
+- **Ammo on top:** a loaded magazine never counts against what you can carry.
+- **The Minigun has its own ammo:** 400 in reserve (800 with a backpack), plus its 200-round
+  magazine.
+
+### Fixes
+- Giant shell casings when firing shotguns. Fixed.
+- The dual Shotvolver stopped the main gun firing after one off-hand shot. Fixed.
+- The Shotvolver's slug alt fire also fired a free pellet blast. Fixed.
+- The Purist Sniper showed an empty hand. Fixed. The Purist Rifle shows its grenade tube, and its
+  alt fire does nothing.
+- Butt-strike and pistol-whip hits now land at the gun you see.
+- The grenade was drawn 1.45 cm off. Fixed, and the throw now leaves from the grenade in your hand.
+
+## What was new in 1.99
 
 ### Every gun reloads by hand
 Every gun that isn't a melee weapon reloads with your hands: **23 guns**. The BFG and BFG10k stay
@@ -136,8 +187,11 @@ and reloading themselves. Set Reloading to "Stock (BD22)" and every gun reloads 
 did.
 
 ## Known gaps
-- Still open from the headset pass: a bang when a map loads, the BFG's sounds, and the
-  magazine-in-hand poses on the guns that gained reloads in 1.99.
+- Still open from the 1.99 headset pass: a bang when a map loads and the BFG's sounds.
+- The off-hand dual Railgun has no live scope of its own yet: its alt fire is still Brutal Doom's
+  zoom.
+- On the Nuker, both BFGs and the Hellish launcher, the support hand cradles the body rather than
+  wrapping it: their models have nothing narrower to hold.
 - The Minigun's ammo box in your hand is the small box off the gun. A bigger one is planned.
 - The Minigun throws its brass from the body: its model has no ejection port.
 - QuestZDoom 17.3 can't do recoil roll or the backward shove. Those need engine support this pack
@@ -168,7 +222,8 @@ Weapon models: **br_vr** by ajantaju (Brutal Doom VR Weapons, BD v21), made from
 
 (All from Sketchfab; textures edited.)
 
-- VR hands: Ermac (Force Unleashed / Rusted Legacy, MIT)
+- VR hands: Ermac (Force Unleashed / Rusted Legacy, MIT). The 2.0 hands were fitted starting
+  from his 1.92 holds.
 - Brutal Doom: Sergeant Mark IV
 - QuestZDoom: Team Beef
 - Shot tracers, impact sparks and their sprites (DPUF, shipped as RSDP): **Dakka** by ijon
