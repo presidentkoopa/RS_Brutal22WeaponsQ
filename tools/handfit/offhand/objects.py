@@ -39,9 +39,8 @@ def mesh(b, letter_spr, hook=(0, 0, 0), rot=(0, 0, 0)):
 RSR_CLS = {1: 'Rifle', 2: 'BrutalPistol', 3: 'BrutalSMG', 4: 'MP40', 5: 'AssaultShotgun', 6: 'RailGun', 7: 'Plasma_Gun', 8: 'Sniper', 9: 'Rocket_Launcher',
            10: 'MG42', 11: 'Flamethrower2', 12: 'IncendiaryLauncher', 13: 'Unmaker', 14: 'Devastator', 15: 'NukeLauncher', 16: 'HellishMissileLauncher',
            17: 'Minigun', 18: 'Machinegun'}
-def hold_rsr(i):
-    t = rd('zscript/rsr/vreload.zs'); m = re.search(r'static String HoldState\(int i\)(.*?)\n\t}', t, re.S).group(1)
-    pod = [int(x) for x in re.findall(r'case (\d+):', m)]; return ('ammo_hand.md3', 6) if i in pod else ('ammo_hand.md3', 3)
+POD = (13, 15, 16)	# vreload HoldState before the FBX holds (lb-r8 / 1.99x item 10): RsrHoldPod = ammo_hand 6 for these, RsrHold = ammo_hand 3 for the rest
+def hold_rsr(i): return ('ammo_hand.md3', 6) if i in POD else ('ammo_hand.md3', 3)
 def handrot(i):
     t = rd('zscript/rsr/vreload.zs'); m = re.search(r'static Vector3 HandRot\(int i\)\s*\{\s*return i == (\d+) \? \(([^)]*)\)', t)
     return np.array([float(x) for x in m.group(2).split(',')]) if m and int(m.group(1)) == i else np.zeros(3)

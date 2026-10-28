@@ -527,19 +527,21 @@ class RSB_Guns abstract
 	// the free hand's pose holding it (RSQ_Hands state)
 	clearscope static String HoldState(int i)
 	{
+		// off-hand FBX lane (2026-10-28): the FBX hand round each gun's own round / loader (RQHF, tools/handfit/offhand).
+		// Rows 3, 7, 8, 9 draw the same part (RBRP H): one frame. Rows 4-6 have no class in the pack (Ermac-era names kept, now FBX frames).
 		switch (i)
 		{
-		case 1:	return "RsbShell";
-		case 2:	return "RsrHold";
-		case 3:	return "RsbShell";
+		case 1:	return "OhHoldS";
+		case 2:	return "OhHoldT";
+		case 3:	return "OhHoldU";
 		case 4:	return "RsbShell";
 		case 5:	return "RsbCell";
 		case 6:	return "RsbCell";
-		case 7:	return "RsbShell";
-		case 8:	return "RsbShell";
-		case 9:	return "RsbShell";
-		case 10:	return "RsbCell";
-		case 11:	return "RsbShell";
+		case 7:	return "OhHoldU";
+		case 8:	return "OhHoldU";
+		case 9:	return "OhHoldU";
+		case 10:	return "OhHoldV";
+		case 11:	return "OhHoldW";
 		}
 		return "";
 	}

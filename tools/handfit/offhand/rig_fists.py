@@ -9,11 +9,11 @@ DMG = os.path.join(R.G.OUT, 'oht_dmg.pk3')
 HMD = '0.10 1.50 0.10 -15 0 0'; LH = '-0.10 1.32 -0.40 30 0 0'; RH = '0.28 1.30 -0.35 30 0 0'
 base = ('wait 100; ' + R.G.SET + 'rsq_punch 1; screenblocks 12; crosshair 0; give Melee_Attacks; wait 2; use Melee_Attacks; wait 120; '
         'qz_hmd "%s"; qz_lhand "%s"; qz_rhand "%s"; ' % (HMD, LH, RH))
-END = 'netevent oht_mark; wait 1; quit'
+END = 'netevent oht_mark; wait 5; quit'
 def at_hit(png, k=0, lead=0):
     def f(text):
         h = [int(x) for x in re.findall(r'OHT DMG t (\d+)', text)]; q = re.findall(r'OHT MARK t (\d+)', text)
-        return {png: int(q[-1]) - h[k] + lead} if h and q else {}
+        hk = [x for x in h if x > 230]; return {png: int(q[-1]) + 5 - hk[k] + lead} if hk and q else {}
     return f
 def hits(t): return [l for l in t.splitlines() if l.startswith('OHT ')]
 if __name__ == '__main__':

@@ -989,13 +989,13 @@ Model RSR_DroppedMag
 // magazine: the gun's own magazine is drawn in it on layer 2201 (RSR, MODELDEF above)
 Model RSQ_Hands
 {
-	Path "models/rsq"
-	Model 0 "ammo_hand.md3"
-	Skin 0 "hand.png"
+	Path "models/rsq/fbx"
+	Model 0 "fbx_oh_hold_R.md3"
+	Skin 0 "fbx_hand.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -24.0 -10.0
-	FrameIndex RQHN I 0 3
-	FrameIndex RQHN M 0 6	// 1.99x: the pod hold (Nuker, Hellish)
+	FrameIndex RQHN I 0 0	// off-hand FBX lane: was Ermac ammo_hand 3; = the FBX Rifle magazine hold (RQHF A). No shipped gun reaches it now (HoldState: OhHold<letter>)
+	FrameIndex RQHN M 0 14	// was Ermac ammo_hand 6 (pod hold); = the FBX Nuker block hold (RQHF O)
 }
 
 // 1.13: the gun without its magazine AND its handle / bolt (locked back on its own layer)

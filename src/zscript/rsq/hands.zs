@@ -1147,13 +1147,39 @@ class RSQ_Hands : Weapon
 	// the free hand (MODELDEF.rsq): open, or a fist
 	FreeHand: RQHN A -1; Stop;
 	AmmoH: RQHN H -1; Stop;		// a closed hand
-	RspShell: RQUN A -1; Stop;	// RSR-PUMP: Ermac's one-shell hold (ammo_hand frame 1), round the gun's own shell
-	RsrHold: RQHN I -1; Stop;	// real reload: Ermac's hold, round the gun's own magazine (rsr)
-	RsrHoldPod: RQHN M -1; Stop;	// 1.99x: Ermac's BFG pod hold (ammo_hand 6), round the Nuker block / Hellish drum
-	RsbShell: RQHN J -1; Stop;	// RSR-BREAK: Ermac's hold of one shell (ammo_hand 1), round the gun's own round
-	RsbCell: RQHN L -1; Stop;	// RSR-BREAK: Ermac's hold of a cell (ammo_hand 5), round the gun's own speedloader
+	RspShell: RQUN A -1; Stop;	// RSR-PUMP: the FBX hand round the gun's own shell (RQUN A = RQHF X; was Ermac's ammo_hand 1)
+	RsrHold: RQHN I -1; Stop;	// real reload: was Ermac's hold (ammo_hand 3); now RQHF A, no shipped gun uses it (vreload HoldState: OhHold<letter>)
+	RsrHoldPod: RQHN M -1; Stop;	// was Ermac's BFG pod hold (ammo_hand 6); now RQHF O, unused (OhHold<letter>)
+	RsbShell: RQHN J -1; Stop;	// RSR-BREAK: was Ermac's one-shell hold; now RQHF S, unused (rsb HoldState: OhHold<letter>)
+	RsbCell: RQHN L -1; Stop;	// RSR-BREAK: was Ermac's cell hold; now RQHF V, unused (OhHold<letter>)
 	RsgRing: RQHR A -1; Stop;
-	RsmRound: RQ2H A -1; Stop;	// 1.30 RSR-M203: Ermac's open grip (ammo_hand 3) round a 40 mm round
+	// off-hand FBX lane (2026-10-28): each reload hold's own FBX frame (MODELDEF.rsq RQHF; vreload / rsb HoldState)
+	OhHoldA: RQHF A -1; Stop;	// rsr01_Rifle
+	OhHoldB: RQHF B -1; Stop;	// rsr02_BrutalPistol
+	OhHoldC: RQHF C -1; Stop;	// rsr03_BrutalSMG
+	OhHoldD: RQHF D -1; Stop;	// rsr04_MP40
+	OhHoldE: RQHF E -1; Stop;	// rsr05_AssaultShotgun
+	OhHoldF: RQHF F -1; Stop;	// rsr06_RailGun
+	OhHoldG: RQHF G -1; Stop;	// rsr07_Plasma_Gun
+	OhHoldH: RQHF H -1; Stop;	// rsr08_Sniper
+	OhHoldI: RQHF I -1; Stop;	// rsr09_Rocket_Launcher
+	OhHoldJ: RQHF J -1; Stop;	// rsr10_MG42
+	OhHoldK: RQHF K -1; Stop;	// rsr11_Flamethrower2
+	OhHoldL: RQHF L -1; Stop;	// rsr12_IncendiaryLauncher
+	OhHoldM: RQHF M -1; Stop;	// rsr13_Unmaker
+	OhHoldN: RQHF N -1; Stop;	// rsr14_Devastator
+	OhHoldO: RQHF O -1; Stop;	// rsr15_NukeLauncher
+	OhHoldP: RQHF P -1; Stop;	// rsr16_HellishMissileLauncher
+	OhHoldQ: RQHF Q -1; Stop;	// rsr17_Minigun
+	OhHoldR: RQHF R -1; Stop;	// rsr18_Machinegun
+	OhHoldS: RQHF S -1; Stop;	// rsb01_SSG
+	OhHoldT: RQHF T -1; Stop;	// rsb02_GrenadeLauncher
+	OhHoldU: RQHF U -1; Stop;	// rsb03_Revolver
+	OhHoldV: RQHF V -1; Stop;	// rsb10_BrutalRevolver
+	OhHoldW: RQHF W -1; Stop;	// rsb11_BrutalRevolver_round
+	OhHoldX: RQHF X -1; Stop;	// rsp01_Shot_Gun
+	OhHoldY: RQHF Y -1; Stop;	// rsm_M203_round
+	RsmRound: RQ2H A -1; Stop;	// 1.30 RSR-M203: the FBX hand round a 40 mm round (RQ2H A = RQHF Y + the round; was Ermac's ammo_hand 5)
 	RsmGrip: RQ2H B -1; Stop;	// ...the same grip, the round on the gun
 	// dual wield (rsq/dualhands.zs): the gun hand as a layer CALLED BY A GUN must use weapon
 	// states (an inventory item's states are refused for a weapon caller), so they live here

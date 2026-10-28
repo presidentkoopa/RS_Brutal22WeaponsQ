@@ -17,7 +17,8 @@ for f in os.listdir(FD):
     if f.endswith('.json'):
         J = json.load(open(os.path.join(FD, f))); fits[J['job']] = J
 missing = [j for j, _ in ORDER if j not in fits]; assert not missing, 'no fit for %s' % missing
-for j, _ in ORDER: assert np.linalg.norm(fits[j]['y']) < 1e-9, '%s moved its object: rows would have to move with it' % j
+moved = {j: np.array(fits[j]['y']) for j, _ in ORDER if np.linalg.norm(fits[j]['y']) > 1e-9}
+assert all(j.startswith('rsr') for j in moved), 'only magazine rows can move their part here: %s' % list(moved)
 frames = []
 for k, (j, L) in enumerate(ORDER):
     J = fits[j]; frames.append(dict(name=J['name'][:15], z=J['z'], job=j, object=J['name'], letter=L, md3_frame=k, ermac='%s frame %d' % tuple(J['ermac']),
@@ -74,6 +75,22 @@ if 'OhHoldA:' not in t:
                  ('1.30 RSR-M203: Ermac\'s open grip (ammo_hand 3) round a 40 mm round', '1.30 RSR-M203: the FBX hand round a 40 mm round (RQ2H A = RQHF Y + the round; was Ermac\'s ammo_hand 5)')):
         t = sub1(t, a, b)
     wr('zscript/rsq/hands.zs', t)
+# a magazine part the fit moved (translation y, drawn cm): HandHook(i) by the hook change that moves the drawn part by y (the
+# RenderHUDModel chain is affine in the hook: solved from the part's own block, objects.mesh), TopInHand(i) by y (both in the off-hand frame)
+if moved:
+    import objects as B
+    t = rd('zscript/rsr/rsr_guns.bd.zs')
+    for j, y in moved.items():
+        i = int(j[3:]); o = B.rsr(i); spr = B.str_rows(t, 'SprPart')[i]; b = B.find('MODELDEF.rsr', 'RSQ_Hands', spr); hh = np.array(o['rows']['HandHook']); hr = B.handrot(i)
+        f = lambda h: B.mesh(b, (spr, 'A'), h, hr)[0][0]; A = np.stack([f(hh + np.eye(3)[k]) - f(hh) for k in range(3)], 1); dh = np.linalg.solve(A, y)
+        assert np.abs(f(hh + dh) - (f(hh) + y)).max() < 1e-6
+        for fn, old, new in (('HandHook', hh, hh + dh), ('TopInHand', np.array(o['rows']['TopInHand']), np.array(o['rows']['TopInHand']) + y)):
+            i0 = t.index('static Vector3 %s(int i)' % fn); i1 = t.index('\n\t}', i0); seg = t[i0:i1]
+            m = re.search(r'case %d:\s*return \([^)]*\);[^\n]*' % i, seg)
+            line = 'case %d:\treturn (%.3f, %.3f, %.3f);\t// off-hand FBX lane: the part moved %.2f cm (%.2f %.2f %.2f F L U) so the FBX hand grips it (wire_holds.py) (was (%.3f, %.3f, %.3f))' % ((i,) + tuple(new) + (np.linalg.norm(y),) + tuple(y) + tuple(old))
+            t = t[:i0] + seg[:m.start()] + line + seg[m.end():] + t[i1:]
+        print('moved', j, np.round(y, 2), 'HandHook +', np.round(dh, 3))
+    wr('zscript/rsr/rsr_guns.bd.zs', t)
 # vreload HoldState: each magazine gun its own frame
 t = rd('zscript/rsr/vreload.zs'); i0 = t.index('	clearscope static String HoldState(int i)'); i1 = t.index('\n\t}\n', i0) + 4
 new = ('\tclearscope static String HoldState(int i)\n\t{\n\t\t// off-hand FBX lane (owner 2026-10-28: the reload holds become FBX): each gun\'s own FBX frame round its own part\n'

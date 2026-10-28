@@ -15,11 +15,11 @@ HMD = '0.10 1.58 0.08 -25 0 0'
 SHOW = '-0.05 1.40 -0.33 30 0 0'
 def show():
     return 'qz_lhand "%s"; wait 6; netevent oht_mark; wait 40; ' % SHOW
-END = 'netevent oht_mark; wait 1; quit'
+END = 'netevent oht_mark; wait 5; quit'
 def pick(png):
     def f(text):
         q = [int(x) for x in re.findall(r'OHT MARK t (\d+)', text)]
-        return {png: q[-1] - (q[0] + 20)} if len(q) >= 2 else {}
+        return {png: q[-1] + 5 - (q[0] + 20)} if len(q) >= 2 else {}
     return f
 SET = G.SET + 'screenblocks 12; crosshair 0; rsr_grab_with 0; rsr_debug 1; rsq_reload_nonstd 1; qz_hmd "%s"; ' % HMD
 BOOT = {}
