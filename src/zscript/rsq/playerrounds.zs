@@ -184,34 +184,9 @@ class RSQ_PlayerRounds : EventHandler
 	// in). Same wall guard as muzzle.zs.
 	static Vector3, bool OffWhere(PlayerPawn mo)
 	{
-		if (!mo || !mo.player || !RSVR_VRHand.InVR(mo))
-			return mo ? mo.OffhandPos : (0, 0, 0), false;
-		Vector3 hp = mo.OffhandPos;
-		Vector3 m = RSQ_Muzzle.Muzzle(mo.player.OffhandWeapon);
-		if (m == (0, 0, 0))
-			return hp, false;
-		double ps = mo.Level.pixelstretch;
-		if (ps <= 0)
-			ps = 1.2;
-		let cv = CVar.FindCVar('vr_vunits_per_meter');
-		double vu = cv ? cv.GetFloat() : 34;
-		if (vu <= 0)
-			vu = 34;
-		Vector3 F = RSVR_VRHand.OffDir(mo, 0, 0, ps);
-		Vector3 L = RSVR_VRHand.OffDir(mo, 90, 0, ps);
-		Vector3 U = RSVR_VRHand.OffDir(mo, 0, 90, ps);
-		Vector3 w3 = (F * m.x + L * m.y + U * m.z) * (vu / 100.0);
-		w3.z /= ps;
-		double len = w3.Length();
-		if (len > 0)
-		{
-			FLineTraceData tr;
-			mo.LineTrace(VectorAngle(w3.x, w3.y), len, -asin(clamp(w3.z / len, -1, 1)),
-				TRF_ABSPOSITION | TRF_THRUACTORS, hp.z, hp.x, hp.y, tr);
-			if (tr.HitType != TRACE_HitNone)
-				return hp, false;
-		}
-		return hp + w3, true;
+		Vector3 at; bool ok;
+		[at, ok] = RSQ_Muzzle.OffWhere(mo);	// fix-accuracy: moved to muzzle.zs (its missiles need it; ZSCRIPT.rsvr compiles before this file)
+		return at, ok;
 	}
 
 	bool offBusy;
@@ -226,14 +201,21 @@ class RSQ_PlayerRounds : EventHandler
 		bool off = (e.AttackLineFlags & LAF_ISOFFHAND) != 0;
 		if (!On())
 		{	// Hitscan mode: an off-hand shot is re-fired from the off-hand muzzle, as muzzle.zs does for the main hand
-			if (!off || (e.AttackLineFlags & LAF_ABSPOSITION) || e.AttackDistance < MISSILERANGE)
+			if (!off || (e.AttackLineFlags & LAF_ABSPOSITION) || (e.AttackLineFlags & LAF_ISMELEEATTACK))
 				return false;
 			Vector3 oat; bool ook;
 			[oat, ook] = OffWhere(mo);
-			if (!ook)
+			// fix-accuracy: down the off gun's drawn barrel (RSQ_Muzzle.Bore, the same row in the mirrored off frame),
+			// from its muzzle or, guard saying no, its controller
+			let ow = mo.player.OffhandWeapon;
+			bool obore = RSVR_VRHand.InVR(mo) && RSQ_Muzzle.HasBore(ow);
+			if ((!ook || e.AttackDistance < MISSILERANGE) && !obore)
 				return false;
+			double oda = 0, odp = 0;
+			if (obore)
+				[oda, odp] = RSQ_Muzzle.AimOffset(ow, RSQ_Muzzle.FromFLU(ow, ook));
 			offBusy = true;
-			mo.LineAttack(e.AttackAngle, e.AttackDistance, e.AttackPitch, e.Damage, e.DamageType, e.AttackPuffType,
+			mo.LineAttack(e.AttackAngle + oda, e.AttackDistance, e.AttackPitch + odp, e.Damage, e.DamageType, e.AttackPuffType,
 				e.AttackLineFlags | LAF_ABSPOSITION, null, oat.z, oat.x, oat.y);
 			offBusy = false;
 			return true;
@@ -244,11 +226,11 @@ class RSQ_PlayerRounds : EventHandler
 		// THE START: muzzle.zs's re-fire hands it to us as absolute coordinates; otherwise the
 		// muzzle is worked out here the same way, so the order of the handlers cannot change it.
 		Vector3 at;
+		bool ok = false;
 		if (e.AttackLineFlags & LAF_ABSPOSITION)
 			at = (e.AttackOffsetForward, e.AttackOffsetSide, e.AttackZ);
 		else
 		{
-			bool ok = false;
 			if (!off)
 				[at, ok] = RSQ_Muzzle.Where(mo);
 			else
@@ -266,10 +248,19 @@ class RSQ_PlayerRounds : EventHandler
 		}
 
 		// THE LINE: the engine's own mapping of the event's angles through the controller
+		// fix-accuracy: an off-hand shot that was not re-fired above is turned onto the off gun's drawn barrel here (a main-hand
+		// one arrives from muzzle.zs already turned: its angles carry the bore)
 		double ang = e.AttackAngle, pit = e.AttackPitch;
+		if (off && !(e.AttackLineFlags & LAF_ABSPOSITION) && RSVR_VRHand.InVR(mo) && RSQ_Muzzle.HasBore(mo.player.OffhandWeapon))
+		{
+			double oda, odp;
+			[oda, odp] = RSQ_Muzzle.AimOffset(mo.player.OffhandWeapon, RSQ_Muzzle.FromFLU(mo.player.OffhandWeapon, ok));
+			ang += oda;
+			pit += odp;
+		}
 		if (mo.OverrideAttackPosDir)
 		{
-			Vector3 ap = off ? mo.OffhandDir(mo, e.AttackAngle, e.AttackPitch) : mo.AttackDir(mo, e.AttackAngle, e.AttackPitch);
+			Vector3 ap = off ? mo.OffhandDir(mo, ang, pit) : mo.AttackDir(mo, ang, pit);
 			ang = ap.x;
 			pit = ap.y;
 		}

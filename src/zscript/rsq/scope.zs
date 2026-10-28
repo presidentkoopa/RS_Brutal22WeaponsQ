@@ -61,7 +61,7 @@ class RSQ_ScopeTable abstract
 	// Measured at each gun's READY frame through the model chain (rgeo.py), centimetres in
 	// the weapon controller's frame: F forward, L left, U up.
 	//   lens    the centre of the glass
-	//   axis    down the bore, unit
+	//   axis    down the bore, unit (the scope camera's centre line)
 	//   radius  the glass, so the dot can be clipped to it instead of floating off the tube
 	//   mag     magnification for REAL mode; the DOT never magnifies
 	clearscope static int Index(Weapon w)
@@ -86,9 +86,14 @@ class RSQ_ScopeTable abstract
 
 	clearscope static Vector3 Axis(int i)
 	{
-		static const double f[] = { 0, 0.9940, 0.9962 };
-		static const double l[] = { 0, 0.0787, 0.0624 };
-		static const double u[] = { 0, 0.0764, 0.0616 };
+		// fix-accuracy (owner 2026-10-28: "the scope and the bullet need to be talking to each other"): the camera now
+		// looks down the BORE (RSQ_Muzzle.Bore: the 1.92 bore, which runs along the controller's forward, turned with the
+		// gun by the port's R), and the shot is zeroed onto this line at RSQ_Muzzle.ZERO_M. The r9 rows were the glass's
+		// own axis turned with the gun (RailGun 0.9940 0.0787 0.0764, 0.9 deg off the bore; Ruger 0.9962 0.0624 0.0616,
+		// 0.3 deg off): the picture's centre was not where the barrel points even with the shot on the bore.
+		static const double f[] = { 0, 0.99602, 0.99602 };
+		static const double l[] = { 0, 0.06710, 0.06710 };
+		static const double u[] = { 0, 0.05866, 0.05866 };
 				// r9 port: Axis 1 moved with the gun to the FBX hand (was 0.9998 0.0149 0.0152)
 				// r9 port: Axis 2 moved with the gun to the FBX hand (was 1.0000 -0.0040 0.0038)
 		return i > 0 && i < f.Size() ? (f[i], l[i], u[i]) : (1, 0, 0);

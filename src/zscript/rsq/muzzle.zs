@@ -25,6 +25,12 @@
 // line from the controller to the muzzle is traced; if it hits a wall, floor or ceiling the shot
 // is left exactly as the engine fired it. You never shoot from the far side of a wall.
 //
+// THE DIRECTION (fix-accuracy, 2026-10-28). Moving the start was not enough: the hand ports had also TURNED every gun
+// in the hand, and the shot still went down the controller's forward, 3.85 deg right and 3.36 deg low of the drawn
+// barrel. Every shot of a gun with a bore (Bore below) is now turned onto the drawn barrel -- hitscans and pellets (their
+// angles), rails (their angle / pitch offsets), the player's missiles (their velocity, WorldThingSpawned) -- and the
+// two scoped guns are zeroed on the scope camera's centre line, which looks down the bore (scope.zs Axis).
+//
 // Per gun: the muzzle, cm in the weapon controller's frame (F forward, L left, U up), measured
 // off the held mesh through its MODELDEF chain (Depot tools/kit/rgeo.py to_flu).
 
@@ -42,6 +48,107 @@ class RSQ_MuzzleRail : Actor
 class RSQ_Muzzle : EventHandler
 {
 	bool busy;
+
+	// fix-accuracy: the player's PROJECTILES (plasma, the RailGun's beam missiles, BD22's DecorativeTracers, rockets...).
+	// P_SpawnPlayerMissile starts them AT the controller down its forward (p_mobj.cpp, OverrideAttackPosDir; the side and
+	// height offsets are zeroed unless use_action_spawn_yzoffset) and P_CheckMissileSpawn steps them along their velocity.
+	// WorldThingSpawned comes on the missile's first think (CallPostBeginPlay), the same tic, with target and velocity set:
+	// a missile of ours still on that first step is turned from the controller's forward onto the drawn barrel and
+	// started at the muzzle, the step kept. Speed, spread, damage: BD22's. A muzzle inside a wall leaves it as it was.
+	override void WorldThingSpawned(WorldEvent e)
+	{
+		let c = e.Thing;
+		if (!c || !c.bMISSILE)
+			return;
+		let mo = PlayerPawn(c.target);
+		if (!mo || !mo.player || !RSVR_VRHand.InVR(mo))
+			return;
+		if (RSQ_Ballistics.IsMelee(c) || RSQ_Ballistics.MeleeHeld(mo))
+			return;
+		Name n = c.GetClassName();
+		if (n == 'FlamethrowerProjectileNew' || n == 'FlamethrowerProjectileNew2' || n == 'FlamethrowerProjectileNew3'
+			|| n == 'BigFireBallWithGravity' || n == 'Shotgunparticles2')
+			return;	// flamespout.zs
+		if (NotAShot(n))
+			return;
+		// born at which controller: the spawn step from it runs (within the spread) along the velocity, no longer than it
+		double vl = c.vel.Length();
+		bool off;
+		if (Born(c.pos - mo.AttackPos, c.vel, vl))
+			off = false;
+		else if (Born(c.pos - mo.OffhandPos, c.vel, vl))
+			off = true;
+		else
+			return;
+		let w = off ? mo.player.OffhandWeapon : mo.player.ReadyWeapon;
+		if (!HasBore(w))
+			return;
+		Vector3 at; bool ok;
+		if (off)
+			[at, ok] = OffWhere(mo);
+		else
+			[at, ok] = Where(mo);
+		double da, dp;
+		[da, dp] = AimOffset(w, FromFLU(w, ok));
+		Vector3 fw = Dir(off ? mo.OffhandDir(mo, mo.angle, mo.pitch) : mo.AttackDir(mo, mo.angle, mo.pitch));
+		Vector3 bw = Dir(off ? mo.OffhandDir(mo, mo.angle + da, mo.pitch + dp) : mo.AttackDir(mo, mo.angle + da, mo.pitch + dp));
+		Vector3 hp = off ? mo.OffhandPos : mo.AttackPos;
+		Vector3 was = c.pos, wasVel = c.vel;
+		Vector3 step = Turn(c.pos - hp, fw, bw);
+		c.vel = Turn(c.vel, fw, bw);
+		if (vl > 0)
+		{
+			c.angle = VectorAngle(c.vel.x, c.vel.y);
+			c.pitch = -atan2(c.vel.z, c.vel.xy.Length());
+		}
+		c.SetOrigin(at + step, false);
+		if (!c.TestMobjLocation())
+		{
+			c.SetOrigin(was, false);
+			c.vel = wasVel;
+		}
+	}
+
+	// BD22 fires its helpers as player missiles too (Actors/Weapons/*.dec A_FireCustomMissile): casing and magazine
+	// spawners (casings.zs puts their brass at the port), flashlight and noise probes, and melee strikes (kick, bash,
+	// slide, execution, use). They are not shots and keep BD22's start and line.
+	static bool NotAShot(Name n)
+	{
+		String s = n;
+		s = s.MakeLower();
+		static const String words[] = { "case", "casing", "clip", "ammospawn", "flashlight", "alerter", "taunter", "shakeyourass", "distantfiresound", "attack", "links" };
+		for (int i = 0; i < words.Size(); i++)
+			if (s.IndexOf(words[i]) >= 0)
+				return true;
+		return false;
+	}
+
+	static bool Born(Vector3 d, Vector3 v, double vl)
+	{
+		double dl = d.Length();
+		if (dl < 1)
+			return true;
+		// A_FireProjectile turns a spread shot's velocity AFTER the spawn step (its angle / pitch arguments), so the step
+		// and the velocity differ by the spread: BD22's widest is the shotgun tracers' random(-5, 5) in angle and pitch
+		return vl > 0 && dl <= vl + 1 && (d dot v) / (dl * vl) > cos(15);
+	}
+
+	static Vector3 Dir(Vector3 ap)
+	{
+		double cp = cos(ap.y);
+		return (cp * cos(ap.x), cp * sin(ap.x), -sin(ap.y));
+	}
+
+	// v turned by the rotation that takes unit a onto unit b (Rodrigues)
+	static Vector3 Turn(Vector3 v, Vector3 a, Vector3 b)
+	{
+		Vector3 k = a cross b;
+		double s = k.Length(), c = a dot b;
+		if (s < 1e-9)
+			return v;
+		k /= s;
+		return v * c + (k cross v) * s + k * ((k dot v) * (1 - c));
+	}
 
 	// (0, 0, 0): not moved.
 	//   Sniper  XM21.md3 frame 0 (the only frame; X21G/X21F/P21F all show it), surface 9
@@ -102,7 +209,105 @@ class RSQ_Muzzle : EventHandler
 		if (w is 'HellishMissileLauncher')	return (77.12, 1.68, 22.32);
 		// r12 port: FlameCannon's drawn NOZZLE TIP (bore axis at the nozzle ring's front lip, 49.90 -0.31 -2.67 before the move; bore-face centre +8.06 cm along the housing axis), moved with the gun (fc_place)
 		if (w is 'FlameCannon')	return (61.92, -5.02, -14.53);
+		// fix-accuracy: MP40's drawn muzzle (front-most face centre of the ready frame, 62.41 -0.01 3.25 at 1.92), moved with the
+		// gun by batch 3's place (MP40_b3.json; tools/accuracy/bore.py muzzle_row, which gives the Rifle's row to 0.01 cm). It had none.
+		if (w is 'MP40')	return (66.36, 6.54, 11.39);
 		return (0, 0, 0);
+	}
+
+	// THE BORE (fix-accuracy, owner 2026-10-28 18:24, report item 31: "all the guns pull to the right").
+	// A shot in VR goes down the engine's AttackDir, the CONTROLLER's forward (hw_vrmodes.cpp MapWeaponDir). The 2.0
+	// hand ports turned every gun in the hand to the approved pistol's aim (MODELDEF AngleOffset 3.854 / PitchOffset
+	// 3.363 / RollOffset 10.974) and moved every table that hangs off the gun -- muzzle, scope, casings, reloads -- but
+	// not the shot. So the drawn barrel points 3.85 deg LEFT and 3.36 deg UP of where every shot went: the shots
+	// landed right and low of the barrel (69 units right at 1024), and right and low of the scope's centre.
+	// The bore, unit, F L U in the controller's frame: the port record's rotation R (Depot sets/bd22q/handfit/fits
+	// ported_<gun>.json, the pistol's r5 move for the pistol, SMG and MP40) applied to the 1.92 bore. The 1.92 bores
+	// run along the controller's forward (measured off the meshes, tools/accuracy/bore.py: Rifle, RailGun, Plasma,
+	// Machinegun, MG42, Ruger within 0.35 deg). Every ported gun shares the one R, so the one bore:
+	//   R @ (1, 0, 0) = (0.99602, 0.06710, 0.05866): yaw 3.854 deg left, pitch 3.363 deg up.
+	// The FlameCannon (its own place, fc_place.json) is the one exception; its flames are aimed in flamespout.zs.
+	static bool HasBore(Weapon w)
+	{
+		return w && !(w is 'FlameCannon') && Muzzle(w) != (0, 0, 0);
+	}
+
+	static Vector3 Bore(Weapon w)
+	{
+		if (!HasBore(w))
+			return (1, 0, 0);
+		return (0.99602, 0.06710, 0.05866);
+	}
+
+	// The scoped guns are ZEROED: their shot is aimed from where it starts to the point on the scope camera's
+	// centre line ZERO_M metres out, so it crosses the reticle's centre there and stays within the scope's height
+	// over the bore (4-6 cm) of it everywhere else. The camera looks down the bore (RSQ_ScopeTable.Axis), so the
+	// zeroed shot is within 0.1 deg of the drawn barrel.
+	const ZERO_M = 30.0;
+
+	// The direction a main- or off-hand shot leaving `from` (cm, F L U, the controller's frame) takes, F L U, unit.
+	static Vector3 AimFLU(Weapon w, Vector3 from)
+	{
+		Vector3 b = Bore(w);
+		int i = RSQ_ScopeTable.Index(w);
+		if (i > 0)
+		{
+			Vector3 t = RSQ_ScopeTable.Lens(i) + RSQ_ScopeTable.Axis(i) * (ZERO_M * 100.0) - from;
+			if (t.Length() > 0)
+				b = t.Unit();
+		}
+		return b;
+	}
+
+	// The same as the yaw and pitch to add to an attack's own angles: the engine maps an attack's angle and pitch
+	// through the controller (AttackDir / OffhandDir: relative yaw + is left, relative pitch + is up), so adding
+	// these turns the shot, spread and all, onto the drawn barrel.
+	static double, double AimOffset(Weapon w, Vector3 from)
+	{
+		if (!HasBore(w))
+			return 0, 0;
+		Vector3 b = AimFLU(w, from);
+		return atan2(b.y, b.x), asin(clamp(b.z, -1, 1));
+	}
+
+	// the muzzle in the controller's frame, or the controller itself when the guard said no
+	static Vector3 FromFLU(Weapon w, bool atMuzzle)
+	{
+		return atMuzzle ? Muzzle(w) : (0, 0, 0);
+	}
+
+	// THE OFF-HAND MUZZLE (playerrounds.zs round 4, moved here by fix-accuracy): the dual-wield copy's muzzle in the off
+	// controller's frame (OffhandPos, OffhandDir: the mirrored left-hand frame the off layers are drawn in), same guard.
+	static Vector3, bool OffWhere(PlayerPawn mo)
+	{
+		if (!mo || !mo.player || !RSVR_VRHand.InVR(mo))
+			return mo ? mo.OffhandPos : (0, 0, 0), false;
+		Vector3 hp = mo.OffhandPos;
+		Vector3 m = Muzzle(mo.player.OffhandWeapon);
+		if (m == (0, 0, 0))
+			return hp, false;
+		double ps = mo.Level.pixelstretch;
+		if (ps <= 0)
+			ps = 1.2;
+		let cv = CVar.FindCVar('vr_vunits_per_meter');
+		double vu = cv ? cv.GetFloat() : 34;
+		if (vu <= 0)
+			vu = 34;
+		Vector3 F = RSVR_VRHand.OffDir(mo, 0, 0, ps);
+		Vector3 L = RSVR_VRHand.OffDir(mo, 90, 0, ps);
+		Vector3 U = RSVR_VRHand.OffDir(mo, 0, 90, ps);
+		Vector3 w3 = (F * m.x + L * m.y + U * m.z) * (vu / 100.0);
+		w3.z /= ps;
+		double len = w3.Length();
+		if (len > 0)
+		{
+			FLineTraceData tr;
+			mo.LineTrace(VectorAngle(w3.x, w3.y), len, -asin(clamp(w3.z / len, -1, 1)),
+				TRF_ABSPOSITION | TRF_THRUACTORS, hp.z, hp.x, hp.y, tr);
+			if (tr.HitType != TRACE_HitNone)
+				return hp, false;
+		}
+		return hp + w3, true;
 	}
 
 	// the muzzle in the world, or the controller itself when the guard says no
@@ -148,10 +353,17 @@ class RSQ_Muzzle : EventHandler
 			return false;
 		Vector3 at; bool ok;
 		[at, ok] = Where(mo);
-		if (!ok)
+		// fix-accuracy: a gun with a bore is ALWAYS re-fired, from the muzzle or (guard said no) from the controller,
+		// down the drawn barrel; melee traces are left as they are
+		let w = mo.player ? mo.player.ReadyWeapon : null;
+		bool bore = RSVR_VRHand.InVR(mo) && HasBore(w) && !(e.AttackLineFlags & LAF_ISMELEEATTACK);
+		if (!ok && !bore)
 			return false;
+		double da = 0, dp = 0;
+		if (bore)
+			[da, dp] = AimOffset(w, FromFLU(w, ok));
 		busy = true;
-		mo.LineAttack(e.AttackAngle, e.AttackDistance, e.AttackPitch, e.Damage, e.DamageType, e.AttackPuffType,
+		mo.LineAttack(e.AttackAngle + da, e.AttackDistance, e.AttackPitch + dp, e.Damage, e.DamageType, e.AttackPuffType,
 			e.AttackLineFlags | LAF_ABSPOSITION, null, at.z, at.x, at.y);
 		busy = false;
 		return true;	// the engine's own trace, from the controller, is not run
@@ -160,18 +372,55 @@ class RSQ_Muzzle : EventHandler
 	override bool WorldRailgunPreFired(WorldEvent e)
 	{
 		let mo = PlayerPawn(e.Thing);
-		if (busy || !mo || e.RailParams.damage != 0 || (e.RailParams.flags & RGF_ISOFFHAND))
-			return false;	// only the trail-only rail: a damaging one stays the player's own
-		Vector3 at; bool ok;
-		[at, ok] = Where(mo);
-		if (!ok)
+		if (busy || !mo || !mo.player)
 			return false;
+		bool off = (e.RailParams.flags & RGF_ISOFFHAND) != 0;
+		let w = off ? mo.player.OffhandWeapon : mo.player.ReadyWeapon;
+		bool bore = RSVR_VRHand.InVR(mo) && HasBore(w);
+		Vector3 at; bool ok = false;
+		if (!off)
+			[at, ok] = Where(mo);
+		if (e.RailParams.damage != 0 || off || !ok)
+		{	// fix-accuracy: a damaging rail stays the player's own (its damage is credited to him), so it is fired
+			// again by the player, turned onto the drawn barrel by its angle and pitch offsets (P_RailAttack adds them
+			// before AttackDir): from the controller, zeroed like every other shot of that gun
+			if (!bore)
+				return false;
+			double da, dp;
+			[da, dp] = AimOffset(w, (0, 0, 0));
+			FRailParams q;
+			q.damage = e.RailParams.damage;
+			q.offset_xy = e.RailParams.offset_xy;
+			q.offset_z = e.RailParams.offset_z;
+			q.color1 = e.RailParams.color1;
+			q.color2 = e.RailParams.color2;
+			q.maxdiff = e.RailParams.maxdiff;
+			q.flags = e.RailParams.flags;
+			q.puff = e.RailParams.puff;
+			q.angleoffset = e.RailParams.angleoffset + da;
+			q.pitchoffset = e.RailParams.pitchoffset + dp;
+			q.distance = e.RailParams.distance;
+			q.duration = e.RailParams.duration;
+			q.sparsity = e.RailParams.sparsity;
+			q.drift = e.RailParams.drift;
+			q.spawnclass = e.RailParams.spawnclass;
+			q.SpiralOffset = e.RailParams.SpiralOffset;
+			q.limit = e.RailParams.limit;
+			busy = true;
+			mo.RailAttack(q);
+			busy = false;
+			return true;
+		}
+		// the trail-only rail: drawn again from the muzzle, down the drawn barrel
 		let r = Actor.Spawn('RSQ_MuzzleRail', at);
 		if (!r)
 			return false;
 		// the engine's own direction for this rail (p_map.cpp P_RailAttack, VR branch)
 		// 2026-10-27: AttackDir only while live (see rsvr/vrhand.zs); else the event's own angles
-		Vector3 ap = mo.OverrideAttackPosDir ? mo.AttackDir(mo, e.AttackAngle, e.AttackPitch)
+		double ta = 0, tp = 0;
+		if (bore)
+			[ta, tp] = AimOffset(w, FromFLU(w, true));
+		Vector3 ap = mo.OverrideAttackPosDir ? mo.AttackDir(mo, e.AttackAngle + ta, e.AttackPitch + tp)
 			: (e.AttackAngle, e.AttackPitch, 0);
 		r.angle = ap.x;
 		r.pitch = ap.y;

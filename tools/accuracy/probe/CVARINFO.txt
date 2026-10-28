@@ -1,0 +1,2 @@
+// TEST ONLY: leave a blue dot where each shot lands (scopeshot.py)
+user int acc_hitdots = 0;
