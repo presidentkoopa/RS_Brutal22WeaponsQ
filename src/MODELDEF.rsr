@@ -1656,7 +1656,7 @@ Model RSQ_Hands
 	SurfaceSkin 0 0 "rsr_clear.png"
 	SurfaceSkin 0 1 "Unmaker.png"
 	SurfaceSkin 0 2 "Unmaker.png"	// r4: the skull is surfaces 1 AND 2
-	Scale -1.0000 1.0000 1.0000
+	Scale -1.4000 1.4000 1.4000	// 2026-10-27 r3 (owner 20:15): the CARRIED skull 1.4x, normal once inserted (RSR_GunParts / RSR_DroppedMag keep 1); hook in rsr row 13 HandHook (skull_turn.py)
 	Offset 0.0000 0.0000 0.0
 	ZOffset -5.0000
 	NoInterpolation

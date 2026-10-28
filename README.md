@@ -36,7 +36,7 @@ as Brutal Doom made them.
 | Cylinder | Incendiary Launcher (six shots) |
 | Bay or block | Devastator loading bay, Nuker warhead block |
 | Pump | Shotgun |
-| Break-open | Super Shotgun, Grenade Launcher, Shotvolver, slug revolver, and the 40 mm under the Rifle and the Machinegun |
+| Break-open | Super Shotgun, Grenade Launcher, Shotvolver, Revolver (Moonlight), and the 40 mm under the Rifle and the Machinegun |
 
 Pull the part out with your off hand, reach to your belt for a fresh one, and push it home.
 
@@ -54,7 +54,6 @@ damage you do are still exactly Brutal Doom's.
 ### New guns from Brutal Doom 21
 - **BD21 Machinegun** (M249 with an underbarrel 40 mm). Off by default:
   "Machinegun replaces MG42".
-- **Slug revolver**. Off by default: "Shotvolver Swap for Revolver".
 
 ### Melee
 - **Gun bash**: your kick key bashes with the gun you're holding. It uses Brutal Doom's own kick

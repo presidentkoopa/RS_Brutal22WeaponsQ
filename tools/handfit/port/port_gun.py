@@ -102,8 +102,8 @@ GUNS = {
     blocks={('MODELDEF.bd.txt', 'Rifle'): 1, ('MODELDEF.purist', 'PuristRifle'): 3, ('MODELDEF.rsm', 'Rifle'): 5, ('MODELDEF.rsm', 'RSR_GunParts'): 2,
             ('MODELDEF.rsqoff', 'RSQ_Off_Rifle'): 9, ('MODELDEF.rsr', 'Rifle'): 3, ('MODELDEF.rsr', 'RSR_GunParts'): 3},
     m203=True, dual=[('MODELDEF.rsqdual', 'Rifle'), ('MODELDEF.rsqoff', 'RSQ_Off_Rifle'), ('MODELDEF.purist', 'PuristRifle')]),
- 'Revolver': dict(md3='models/bd/Revolver/Revolver.md3', names=['Revolver.md3'], ready=0, scale=[-1, 1, 1], off=[0, 0, -5], row=17, rsb=[3, 7, 8, 9],
-    casing='Revolver', casing2='Revolver2', skip=['RBRW'], skipcls=['RSB_Round'],	# RSQ_Hands RBRP (the round in the off hand) moves too: RSB.Hook places it with Offset(i)
+ 'Revolver': dict(md3='models/bd/Revolver/Revolver.md3', names=['Revolver.md3'], ready=0, scale=[-1, 1, 1], off=[0, 0, -5], row=17, rsb=[3, 7],
+    casing='Revolver', skip=['RBRW'], skipcls=['RSB_Round'],	# RSQ_Hands RBRP (the round in the off hand) moves too: RSB.Hook places it with Offset(i)
     blocks={('MODELDEF.bd.txt', 'Revolver'): 1, ('MODELDEF.purist', 'PuristRevolver'): 2, ('MODELDEF.rsb', 'RSB_GunParts'): 7, ('MODELDEF.rsb', 'Revolver'): 1,
             ('MODELDEF.rsb', 'RSQ_Hands'): 1, ('MODELDEF.rsqoff', 'RSQ_Off_Revolver'): 2}, bdblock=('MODELDEF.bd.txt', 'Revolver'),
     dual=[('MODELDEF.rsqdual', 'Revolver'), ('MODELDEF.rsqoff', 'RSQ_Off_Revolver'), ('MODELDEF.purist', 'PuristRevolver')]),

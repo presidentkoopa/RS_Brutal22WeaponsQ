@@ -10,7 +10,7 @@
 // (1.16) and so is reloading (1.17 flick).
 class RSQ_Dual : EventHandler
 {
-	const MAXGUNS = 10;		// RSQ_DualTable.COUNT
+	const MAXGUNS = 11;		// RSQ_DualTable.COUNT
 	bool had[MAXPLAYERS][MAXGUNS];	// owned the gun last tic (a pickup now is a second one)
 	bool forcedNoAuto[MAXPLAYERS];	// 1.21: NoAutoReload is ours while two guns are out
 

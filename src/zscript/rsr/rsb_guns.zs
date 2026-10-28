@@ -7,6 +7,9 @@
 // but unused. Re-apply after any gen_rsb.py run.
 // PATCHED BY HAND 2026-10-27 (lane B moon-reload): BrutalRevolver rows 10 (speedloader) and 11 (a round
 // at a time), numbers from reference/moonlight/bake_reload.py (bake_reload.txt). Re-apply after gen_rsb.py.
+// PATCHED BY HAND 2026-10-27 (lane rev-unmaker, owner r3 item 20): BD21's Revolver2 is gone from the pack.
+// Rows 8 / 9 (its speedloader / per-round rows) are RETIRED: Index() never returns them and Cls() is 'None'.
+// Their numbers stay so rows 10 / 11 keep their index. Re-apply after gen_rsb.py.
 // Real VR reload, break-open guns and revolvers: per gun. Positions cm in the weapon
 // controller's frame (F, L, U); turns right-handed about the axis, opening positive.
 
@@ -28,7 +31,6 @@ class RSB_Guns abstract
 		if (n == 'SSG')	return 1;
 		if (n == 'GrenadeLauncher')	return 2;
 		if (n == 'Revolver')	return PerRound() ? 7 : 3;
-		if (n == 'Revolver2')	return PerRound() ? 9 : 8;	// 1.97: the slug revolver
 		if (n == 'BrutalRevolver')	return PerRound() ? 11 : 10;	// the Moonlight six-shooter (moon-reload)
 		if (n == 'VR_SuperShotgun')	return 4;
 		if (n == 'VR_Revolver')	return 5;
@@ -786,8 +788,8 @@ class RSB_Guns abstract
 		case 5:	return "Clip";
 		case 6:	return "Clip";
 		case 7:	return "AmmoShell";
-		case 8:	return "Clip2";		// BD21 Revolver2's own Weapon.AmmoType1
-		case 9:	return "Clip2";		// BD21 Revolver2's own Weapon.AmmoType1
+		case 8:	return "Clip2";		// retired row (BD21's Revolver2, removed 2026-10-27)
+		case 9:	return "Clip2";		// retired row, as 8
 		case 10:	return "RevolverRounds";
 		case 11:	return "RevolverRounds";
 		}
@@ -902,8 +904,8 @@ class RSB_Guns abstract
 		case 5:	return 'VR_Revolver';
 		case 6:	return 'VR_Revolver2';
 		case 7:	return 'Revolver';
-		case 8:	return 'Revolver2';
-		case 9:	return 'Revolver2';
+		case 8:	return 'None';		// retired 2026-10-27 (was BD21's Revolver2, removed: owner r3 item 20)
+		case 9:	return 'None';		// retired, as 8
 		case 10:	return 'BrutalRevolver';
 		case 11:	return 'BrutalRevolver';
 		}

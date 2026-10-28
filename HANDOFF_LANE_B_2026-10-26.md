@@ -1296,3 +1296,268 @@ on the unmoved gun (r9: loaded) and fails on the moved one (round never enters).
   FBX support on all except MiniGun (Ermac's handle grip) and PuristRifle (Ermac's handguard grip).
 - **No FBX hand:** SSG, IncendiaryLauncher, FlameCannon, Unmaker, Devastator, HellishMissileLauncher, BIG_FUCKING_GUN; melee/thrown:
   BrutalAxe, Chain_saw, DSweap, HandGrenades.
+
+# Lane rev-unmaker (2026-10-27, branch `lane-rev-unmaker` off `lane-b-1.99x` a4b0eb7). RIG ONLY, NOT HEADSET-CONFIRMED
+
+Owner r3 item 20 (two revolvers only), the Revolver's own ammo (owner, 19:06 cap correction), the Unmaker reload
+"like RS VR Vanilla+". No hand placement rows touched (one class-mapping line removed from handtable.zs: `Revolver2 -> 17`).
+
+## 1. Done (measured)
+- **Revolver2 is gone.** Removed: `actors/Weapons/Revolver2.dec`, `DECORATE.rsqrev` (its include + `RSQ_ShotvolverSpawner`),
+  KEYCONF slot-2 line, the menu option "Shotvolver Swap for Revolver", cvar `rsq_slug_replaces_shotvolver`, the
+  RevolverSpawner swap in `roster.zs`; class lookups in handtable / casings / casemodels / melee / rsb_guns Index().
+  rsb rows 8/9 retired (Cls 'None', numbers kept so BrutalRevolver keeps 10/11). README, README.txt, port_gun.py,
+  gate_gun.py lists. The Shotvolver keeps its own slug alt fire (`rsa_rev_magnum`).
+- **RevolverRounds (the Moonlight's reserve):** 6 a pickup. Cap **36 with one Revolver, 72 once a second Revolver is
+  picked up** (owner 19:06). How: BrutalRevolver is `+INVENTORY.ALWAYSPICKUP`; a BrutalRevolver world pickup destroyed
+  within reach of a player who already owned one (the dual.zs rule) gives `RSQ_MoonPair`; `RSQ_Roster.WorldTick` sets the
+  player's RevolverRounds MaxAmount to 36 or 72 every tic. The backpack does not raise it (BackpackMaxAmount 36). There is
+  NO off-hand Moonlight copy (RSQ_DualTable has none), so "two" means two picked up, not dual-wielded.
+- **Pickup art:** `tools/moonammo/make_pickup.py` (numbers it prints): the pack's `shell_12ga.md3`, its mouth (`inner`, 36 tris)
+  deleted with the Depot's `md3_carve_disc.py --delete`, hull cut to 62% so case + nose = the Moonlight round (rev.md3 f20,
+  surfaces 4-9 PCA: 3.542 x r 0.599 mesh units = 4.88 x r 0.82 cm), a round nose (12 segments = the hull's, 6 rings,
+  length = case radius), uniform scale 0.05929, six in a ring at the chamber radius (1.9 cm = 1.380 u). Colours from
+  WPN-REV.png: brass (179,129,5) = the Moonlight round's own texels; nose blue (23,103,169) = the sheet's commonest
+  saturated hue. World size: ring diameter = BD22's SHELA0 (16 px x 0.9 = 14.4 map units) -> MODELDEF Scale 3.5348.
+  2D sprite RVRDA0.png = a render of the mesh. Files: `models/rsq/moonammo/*`, `MODELDEF.rsqmoonammo`, `sprites/RVRDA0.png`.
+- **Map spawns (rule):** one RevolverRounds beside 1 in 4 of the map's own bullet pickups (the Clip2 family: Doom's Clip and
+  ClipBox, which BD22 spawns as Clip2 / ClipBox2 / EasyClip2) present at tic 0, not dropped, not owned; 14 units away
+  (on the same spot if that is blocked). It replaces nothing. Chosen because the Revolver is a slot-2 pistol-class gun and
+  bullets are the commonest small ammo; the Shotvolver's shells were left alone.
+- **Unmaker reload:** no code change. lane-b already carries r8's port, which is the same source and method as ModelSwapper
+  round 5 (`port_plus_rows.py`): MS row 84 (brt_Unmaker, the same bd/Unmaker mesh) Well (11.025, 0.794, 6.466), Axis
+  (0,0,-1), Mouth 5.47, MagLen 5.41, MagCentre (10.481,-0.144,9.345) = our rsr row 13. Re-shown below on this pack.
+
+## 2. Rig evidence (QZD 17.3, doom2 > brutal22test6 > BD_VoxelPack > pack, exclusive /home/claude/rig.lock, ini restored)
+- Pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-revunm.pk3` (build.py at `7ab88d0`; src unchanged after),
+  sha256 `1f6d7d9d0b96cbd662432348e16b91aa6505561a2825fc17cc97a6c68f37315d`. Every run: `script errors (not BD_VoxelPack voxeldef): none`;
+  the only `Script error` lines are BD_VoxelPack's own `voxeldef.txt` lines 66/72/77/892.
+- `tools/moonammo/rig_rev.py` (logs in scratchpad `out/final/build/logs`):
+  - roster: after `idkfa` the player holds `BrutalRevolver` and `REVOLVER` (the Shotvolver); `give Revolver2` ->
+    `Unknown item "Revolver2"`; `summon Revolver2` -> `Unknown actor or visual thinker 'Revolver2'`; the old cvar is unset.
+  - cap: one Revolver `RevolverRounds #51 (36/36)` after giving 100; second Revolver walked onto (left stick) ->
+    `RSQ moon t115: second Revolver picked up`, `RSQ moon t116: RevolverRounds cap 36 -> 72 (two Revolvers), holding 36`;
+    100 more -> `(72/72)`; backpack + 100 more -> still `(72/72)`.
+  - spawn: `MAP07: 6 map-placed bullet pickups (Clip2 family), RevolverRounds put beside 2` (also MAP01 1-2 of 2,
+    MAP03 1 of 2, MAP11 1 of 6 in that run; random per run).
+  - frame: `/home/claude/lane_b_out/revunm_pickup.png` (the six-round pickup on MAP07 next to a bullet box, and RVRDA0).
+- gate_gun.py smoke Revolver / BrutalRevolver: 0 errors, 0 VM aborts, 2 shots each (Revolver "held false" = same on r10).
+  hands: Shotvolver break-open (rsb 3) and Moonlight (rsb 10) open > carry > insert 0.0 cm off the bore > loaded;
+  Moonlight flick shut 457 deg/s.
+- Unmaker (`tools/handfit/unmaker/rig_reload.py`, CARRYP 20 25 -5, head 0 1.6 0 -35 15 0): IDLE>EMPTY>DROP>EMPTY>CARRY>
+  INSERT>SEATED>DONE>IDLE, `RELOAD magazine 0 -> 200, 200 from the pouch, pouch 250 -> 50`, fires again, `ERRORS: none`.
+  Frames `/home/claude/lane_b_out/revunm_unmaker_reload.png` and `revunm_unmaker_skull_zoom.png`: the skull is seen at the
+  fingers while carried from this head pose.
+
+## 3. Not done / open
+- From a head pose that sees the BACK of the off hand (run 2: CARRYP 0 20 15, head yaw 25) the skull is hidden behind the
+  hand. RS VR Reload turns the skull in the hand (yaw -75, pitch 15); ours cannot turn the HANDMAG layer without a code
+  change in vreload.zs Place() (r8's open item). Not built: owner's call.
+- Owner questions: backpack rule for RevolverRounds (doubles like BD22's ammo, i.e. 72 / 144, or none as built);
+  where the Revolver itself spawns on maps (nowhere today, so a second one only comes from give/summon or a future spawn);
+  dual-wielding the Moonlight (README "Dual Revolvers, of course") is not built; spawn rate 1 in 4 is a first pick.
+- The Shotvolver's own map spawn is BD22's (RevolverSpawner via the commented-out shotgun replacer: effectively none).
+
+# Lane rev-unmaker, round 2 (owner's answers 19:40; branch `lane-rev-unmaker`). RIG ONLY, NOT HEADSET-CONFIRMED
+
+## 1. Done (measured)
+- **Backpack:** does not raise the Moonlight cap (kept as built; owner 1).
+- **Menu "Moonlight Revolver"** (BD22 VR WEAPONS menu; server int `rsq_moonlight`): Off / 50% Replaces Shotvolver / Replaces
+  Shotvolver. **Default: 50%** -- both revolvers stay findable wherever BD22 places a Shotvolver, and the Moonlight's rounds
+  are on (they need the option not Off). roster.zs CheckReplacement swaps BD22's `RevolverSpawner` (the Shotvolver's only
+  world pickup) for `BrutalRevolver` (the gun + its 6 rounds); the `Revolver` class is never replaced (give/idkfa, r4).
+  The Moonlight's floor pickup is now its own mesh (rev.md3 frame 0 on its side, MODELDEF.rsqmoonammo `RVMP A`; size from
+  BD22's REVPA0 34 px x 0.9; `RVMPA0.png` = REVPA0 for 2D).
+- **RevolverRounds map spawns only when the option is not Off** (owner 3).
+- **Dual Moonlight** (owner 5): `RSQ_Off_BrutalRevolver` (end of BrutalRevolver.dec, by hand on DECORATE.rsqdual's pattern;
+  gen_dual.py is not in this repo), cylinder `BrutalRevolverCylinderOff`, off-trigger one-shot lock `RSQ_SemiLockOff`
+  (roster.zs), flick reload = the mesh's own reload animation. dualtable.zs index 10 (`BrutalRevolver` pickup), dual.zs
+  MAXGUNS 11, dualhands.zs DFbxTrgBru/DFbxSqzBru, MODELDEF.rsqmoondual (gun block COPIED from MODELDEF.rsqmoon's first
+  BrutalRevolver block -- re-copy it if that placement is refitted -- and the existing FBX hand). Dual Options: "Revolver
+  (Moonlight)" (`rsq_dual_moonlight`, on) and "Revolver" renamed "Shotvolver". **Cap rule: 72 while the off-hand copy is
+  held, 36 otherwise** (RSQ_MoonPair removed; the copy is what "two held" means).
+- **Unmaker skull turned** (owner 4): RS VR Reload CVARINFO (parsed) `wm_ha_bfg_off_mag_yaw -75.0`, `_pitch 15.0`,
+  `_roll 0.0`, applied as GZDoom angles (yaw + left, pitch + nose down) in the off controller frame about the skull's centre,
+  then re-seated -4 F +4 L +6 U cm on Ermac's pod hold (`tools/handfit/unmaker/skull_turn.py`, search: touch <= 0.6 cm, <= 40
+  hand verts inside). Offline (hudrender, 4 head positions): before 83/96/100/32% of the skull seen, after 100/100/100/93%;
+  hand verts inside 2 -> 17, buried 0.0 -> 0.2%, nearest hand 0.08 cm. Code: vreload `RSR.HandRot` (75, -15, 0) and
+  `RSR.HandAxis` (-0.0670, 0.2500, -0.9659) for row 13 only; rsr row 13 HandHook (31.144, -13.249, 43.532), TopInHand
+  (-0.231, 12.300, -5.902). Offline sheet `/home/claude/lane_b_out/revunm_skull_turn_offline.png`.
+
+## 2. Rig evidence (pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-revunm2.pk3`, build.py at `0e0df42`,
+sha256 `4fbaedc4ba78a584ce9e8be8021333fbce2792033b047beb18eb60428710102b`; load order doom2 > brutal22test6 > BD_VoxelPack > pack,
+exclusive /home/claude/rig.lock, ini restored). Every run `script errors (not BD_VoxelPack voxeldef): none`; the only
+`Script error` lines are BD_VoxelPack's voxeldef.txt 66/72/77/892.
+- modes (20 RevolverSpawner summoned on MAP01 each): `rsq_moonlight 0: in the world Shotvolver 20, Moonlight 0`;
+  `rsq_moonlight 1: ... Shotvolver 9, Moonlight 11`; `rsq_moonlight 2: ... Shotvolver 0, Moonlight 20`.
+- spawn: Off -> `RevolverRounds put beside 0` on MAP01/03/07/11 (2/2/6/6 bullet pickups); 50% -> beside 2, 0, 0, 2.
+- roster: idkfa holds `BrutalRevolver` + `REVOLVER`; Revolver2 unknown to give and summon.
+- cap: `RevolverRounds (36/36)` with one; second walked onto -> `cap 36 -> 72 (two Moonlights)`, `RSQ_Off_BrutalRevolver`,
+  `(72/72)`; backpack + 100 -> `(72/72)`.
+- dual (`/home/claude/lane_b_out/revunm2_dual_moonlight.png`): both held; main fired (empty -> its reload, then 6 -> 5),
+  off fired twice (`BrutalRevolverCylinderOff (4/6)`); off flick -> off cylinder 6/6, reserve 6 -> 4; main flick -> main
+  cylinder 6/6, reserve 4 -> 3. The probe's `B22 SHOT 434` during the off flick is its own count, not a round spent (the
+  cylinders say so).
+- Unmaker reload on this pack, poses A and C: EMPTY>DROP>EMPTY>CARRY>INSERT>SEATED>DONE, `ERRORS: none`: the turned skull
+  still goes in. Before/after, same head poses: `/home/claude/lane_b_out/revunm2_unmaker_skull_before_after.png`.
+- Moonlight floor pickup: `/home/claude/lane_b_out/revunm2_moonlight_world_pickup.png`; rounds: `revunm2_pickup_frame.png`.
+
+## 3. Not done / open
+- In stock BD22 the Shotvolver hardly reaches a Doom 2 map: RevolverSpawner comes only from ShotgunSpawnerReplacer with a
+  map-set arg (its random branch is commented out, BD_ShotgunSpawner's menu line too) and from NewGunsSpawner (backpack
+  extras option). So the Moonlight option rarely puts a Moonlight on a stock map. Owner's call whether the Moonlight should
+  also take some other spawn (e.g. a share of the pistol's / shotgun's).
+- Head pose B (left hand crossed to the right of the face, the back of the hand toward the eyes) hides the skull before
+  and after; poses A and C (hand ahead / hand to the left) show it, bigger and turned after.
+- The off-hand Moonlight copies the gun block by hand (MODELDEF.rsqmoondual): a refit of MODELDEF.rsqmoon's first block needs
+  the copy updated. dualtable.zs and DECORATE copy are hand-made (no gen_dual.py here).
+- Dual Moonlight hands use the existing FBX hand (RQFL); not re-fitted for the off hand. Default 50% is my pick.
+
+# Lane rev-unmaker, round 3 (owner 20:15; branch `lane-rev-unmaker`). RIG ONLY, NOT HEADSET-CONFIRMED
+
+## 1. Done
+- **Default stays 50%** (`rsq_moonlight = 1`).
+- **"Can it not 50% drop from enemies that carry revolvers?": no BD22 enemy carries or drops a revolver.** Checked in
+  brutal22test6.pk3 (read only, `python3 -I`), all 172 `actors/` files, 47 of them enemies (actors/Enemies/*):
+  - no `DropItem` names Revolver / RevolverSpawner (every DropItem in actors/ was listed: health/armor bonuses, runes, CLIP1Drop,
+    RifleDrop, Clip, Shells, ShotgunDrop, ChaingunDrop, SMGDrop, PistolDrop, GrenadeAmmo, spawners for SSG/ASG/RL/plasma/
+    rifle/railgun, ...);
+  - no A_SpawnItem / A_SpawnItemEx / A_DropItem of a revolver in any enemy file, and no "Revolver"/"Revolver/" sound or REVP
+    sprite outside actors/Weapons/REVOLVER.dec and WeaponSpawners.dec.
+  - The only revolver drops in BD22 are not enemies: `src/Options.acs:796-815` script "DropItems" (DEATH, i.e. the PLAYER's
+    death, option bd_dropitems) drops the player's own guns from the list `src/ACSFunc.acs:353-384` ("Revolver" at :359);
+    and `src/EviEnh.acs:163` spawns a RevolverSpawner on Eviternity MAP30 -- that one is a RevolverSpawner, so the Moonlight
+    option already applies to it. Item stopped, nothing invented.
+- **Unmaker skull 1.4x while carried, normal when inserted** (owner 3): MODELDEF.rsr `RSQ_Hands` (the off hand's HANDMAG
+  layer only) Scale -1.4 1.4 1.4; RSR_GunParts (in the gun) and RSR_DroppedMag stay 1. The bigger skull keeps the RS VR
+  Reload turn and is re-seated -6 F +6 L +6 U cm (skull_turn.py `SKULL_SCALE=1.4`): nearest hand 0.28 cm, 22 hand verts
+  inside, 0.0% buried, seen 100/100/100/93% from the four heads; extent 17.4 x 11.5 x 8.4 cm (normal 12.4 x 8.2 x 6.0).
+  rsr row 13 HandHook (21.277, -12.586, 44.350); TopInHand (-2.231, 14.300, -5.902) = the NORMAL skull's top about the same
+  centre, so the insert check uses the normal size.
+
+## 2. Rig evidence (pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-revunm3.pk3`, build.py at `9e1d4f0`,
+sha256 `08d2ed3414e88f5812938dcbd7c331a5939e52b46ee4aed3689242df416ebb8b`; doom2 > brutal22test6 > BD_VoxelPack > pack, lock, ini restored)
+- Every run `script errors (not BD_VoxelPack voxeldef): none` / `ERRORS: none`; only BD_VoxelPack's voxeldef 66/72/77/892.
+- Unmaker poses A, C and the seated run: EMPTY>DROP>EMPTY>CARRY>INSERT>SEATED>DONE, `RELOAD magazine 0 -> 200, 200 from the
+  pouch, pouch 250 -> 50`. Sheets: `revunm3_unmaker_skull_carried_vs_seated.png` (r2 1.0x vs r3 1.4x carried, same poses),
+  `revunm3_unmaker_carried_then_seated_same_run.png` (one run, one head pose: carried 1.4x, then seated 1.0x with the off hand
+  moved away).
+- Moonlight modes re-run on this pack: 0 -> Shotvolver 20 / Moonlight 0; 1 -> 8 / 12; 2 -> 0 / 20.
+- All PNGs: `/home/claude/lane_b_out/` (sheets) and `/home/claude/lane_b_out/revunm_work/` (scans); raw .ppm dumps deleted.
+
+## 3. Open
+- With no enemy carrying a revolver, the Moonlight reaches stock Doom 2 maps only where BD22 spawns a RevolverSpawner
+  (mapper-set ShotgunSpawnerReplacer arg 2, backpack extras, Eviternity MAP30). Owner's call if he wants another source.
+
+# Lane rev-unmaker, round 4 (owner 20:45; branch `lane-rev-unmaker`). RIG ONLY, NOT HEADSET-CONFIRMED
+Owner: "Shotvolver and our Slug secondary shot are back. No slugvolver replaces shotvolver. New option to have revolver
+replace brutal pistol, option to start with two."
+
+## 1. Done
+- **Shotvolver + slug alt fire:** round 1 removed nothing it needs (Revolver.dec AltFire / RSA_MagnumShot, alts.zs
+  RSA_Opt_Rev, menu "Shotvolver Slugshot Alt Fire" `rsa_rev_magnum` all untouched). Shown below.
+- **Nothing replaces the Shotvolver:** the rsq_moonlight option, its OptionValue and the RevolverSpawner replacement are
+  removed. Revolver2 stays gone.
+- **"Moonlight Replaces Pistol"** (server `rsq_moonlight_pistol`, default **Off**) and **"Start With Two Moonlights"**
+  (server `rsq_moonlight_two`, default **Off**, needs the first). Defaults Off because On changes BD22's own start and its
+  pistol pickups. How (roster.zs): BD22's map pistols (WeaponSpawners.dec PistolSpawnerReplacer -> PistolSpawner) and the
+  pistol zombie's drop (ZombiemenVariations.dec:3 `DropItem "PistolDrop"` -> Dropables.dec DropedPistol Death
+  `A_SpawnItem("PistolSpawner")`) both arrive as PistolSpawner, which is replaced by BrutalRevolver. A Brutal Pistol the
+  player gets anyway (the class start item, give, idkfa) is swapped for the Moonlight the tic it arrives (selected if it was
+  in hand; the pistol's off-hand copy goes too). In the map's first second (a new game / pistol start) the Moonlight's
+  cylinder is full, and with Start With Two the off-hand Moonlight comes too (full) and the Dual key is pressed once.
+  Slot: the Moonlight is already in slot 2, the pistol's (KEYCONF.rsqmoon; BD22 KEYCONF setslot 2 has the pistols).
+  RevolverRounds map spawns only while Moonlight Replaces Pistol is On.
+
+## 2. Rig evidence (pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-revunm4.pk3`, build.py at `8147745`,
+sha256 `b129b363c07a662885676c40e596cecf3e2439613d639ebaee31ee76f6153d5b`; doom2 > brutal22test6 > BD_VoxelPack > pack, lock, ini restored)
+- 8 jobs + a frames run, every one `script errors (not BD_VoxelPack voxeldef): none`; only BD_VoxelPack voxeldef 66/72/77/892.
+- slug (test-only `tools/moonammo/slugprobe`, puffs per tic): alt fire `RSA_Magnum 0 -> 1`, `1 -> 0`, then `REVOLVER: 1 bullet
+  puffs` (the slug: one bullet); fire `7` + `2` puffs (the shell's pellets); alt fire again: 1 puff.
+- combos (BD22 Pistol class, `map map01` = new game): Off/Off -> `BrutalPistol`, `RSQ_Off_BrutalPistol`; Off/two On -> the
+  same (needs the first); On/Off -> `Brutal Pistol -> Moonlight`, `BrutalRevolver`, `BrutalRevolverCylinder (6/6)`,
+  `RevolverRounds (6/36)`; On/On -> `Brutal Pistol -> Moonlight, start with two`, `cap 36 -> 72`, `RSQ_Off_BrutalRevolver`,
+  both cylinders 6/6, `RevolverRounds (6/72)`, probe `main BrutalRevolver off RSQ_Off_BrutalRevolver`.
+- drops (10 PistolSpawner summoned + 5 PistolZombie summoned, `kill monsters`, 24 killed incl. the map's): Off -> in the
+  world `Pistol 22, Moonlight 0`; On -> `Pistol 0, Moonlight 21`.
+- spawn: rounds beside bullet pickups 0 with the option Off on MAP01/03/07/11; On -> they spawn (e.g. MAP11 3 in the world).
+- cap / dual: unchanged (36 -> 72 with the second; dual fire / flick reloads as round 2).
+- Frames: `revunm4_menu.png` (the menu, both options Off), `revunm4_moonlight_pistol_options.png` (start Off/Off pistol,
+  On/Off one Moonlight, On/On two; MAP07 a pistol pickup as the Moonlight; a pistol zombie killed). Work PNGs in
+  `/home/claude/lane_b_out/revunm_work/`; .ppm dumps deleted.
+
+## 3. Open
+- With the option On the player keeps BD22's pistol start ammo (Clip1 45) unused; the Moonlight starts with 6 rounds + a full
+  cylinder (two: 6 + both full). Owner's call if the start should give more rounds.
+- Purist class pistols (PuristPistol) are not swapped (purist has no reloading; BD22's own gun).
+
+# Lane rev-unmaker, round 5 (owner 20:47 + 20:5x; branch `lane-rev-unmaker`). RIG ONLY, NOT HEADSET-CONFIRMED
+
+## 1. How ammo was drawn and carried (found)
+- HUD: BD22's `SBARINFO.BD` (brutal22test6.pk3) draws, in every style (classic bar 8-57, fullscreen sbartype1 184+,
+  sbartype2 460+, sbartype3 749+, sbartype4 958+), `ammo2` as the magazine and `ammo1` as the reserve when the gun
+  `UsesSecondaryAmmo` and reloading is on (e.g. SBARINFO.BD:21-28). The pack had no SBARINFO. That is right for the guns whose
+  magazine is AmmoType2 (Pistol BDPistolAmmo, Rifle RifleAmmo, SMG, MP40, Shot_Gun ShotgunAmmo, ASG, Plasma, Railgun,
+  Rocket_Launcher RocketRounds, Sniper xm21Ammo, Revolver RevolverAmmo, Moonlight cylinder, SSG), wrong for this pack's
+  magazines (counters.zs: Unmaker, Minigun, Flamethrower2, Machinegun -- whose AmmoType2 is its 40 mm --, MG42,
+  IncendiaryLauncher, Devastator, NukeLauncher, HellishMissileLauncher: RSQ_Mag_<gun>), and it could not be switched off.
+- Carry: AmmoType2 magazines are separate items, so their loaded rounds were already on top of the reserve's cap. The five
+  COUNTER guns (MG42, Incendiary, Devastator, Nuke, Hellish) counted their magazine inside the reserve: loaded rounds ate the
+  cap. The four REAL guns lent up to 10 magazine rounds into the reserve item: those ate up to 10 of the cap.
+
+## 2. Done
+- **HUD Ammo** (user `rsq_hud_ammo`, menu "HUD Ammo": Magazine + Reserve (default) / Reserve Only). `src/SBARINFO.rsq` is
+  generated (`tools/hud/make_sbarinfo.py`) from BD22's SBARINFO.BD, every style: `ammo2` -> `RSQ_HudMag`, `ammo1` ->
+  `RSQ_HudRes`, `UsesSecondaryAmmo` -> `InInventory RSQ_HudHasMag, 1` (22 / 23 / 6 places). counters.zs `RSQ_Counters.Hud`
+  sets them every tic: magazine = the REAL gun's RSQ_Mag_<gun> (while its magazine is live) else AmmoType2; reserve =
+  AmmoType1 minus the lent rounds; HasMag only in Magazine + Reserve mode and when the gun has a magazine (guns with none:
+  reserve only). **Dual: both hands** -- the off-hand copy's own magazine (`RSQ_HudMagOff`) is drawn above the main one on the
+  classic bar and left of it on the ZDoom-style fullscreen (BD22's default sbartype1); the other three fullscreen styles
+  show the main hand only.
+- **On top:** the five counter guns are REAL magazines now (counters.zs REAL[] all 1; their .dec Reload / RSR_Out as the
+  Minigun's: the magazine's rounds stay with it). A REAL gun's reserve item cap is BD22's cap + exactly the rounds it lends
+  (CapBase: MaxAmount, BackpackMaxAmount with a backpack, AmmoM202 48), so a pickup fills the pouch to BD22's cap; every
+  other reserve is put back to its base the same tic. Bug found and fixed on the rig: a gun handing its lent rounds back
+  read as another gun on the same Clip2 firing (MG42 100 -> 90): reserve-last-tic is now read after all nine ran.
+- **Moonlight start** (owner): with Moonlight Replaces Pistol a new game gives a full cylinder + 18 spare RevolverRounds
+  (two: both cylinders full + 18). Purist keeps BD22's pistol (unchanged).
+
+## 3. Rig evidence (pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-revunm5.pk3`, build.py at `05b82ed`,
+sha256 `9e549f3460e66af3814879653c1221353b77d560295ebb8c8fe2aa061fe5ab9f`; its members are byte-identical to the test build
+the HUD / on-top / sweep / MG42 runs used; doom2 > brutal22test6 > BD_VoxelPack > pack, lock, ini restored)
+- Every run `script errors (not BD_VoxelPack voxeldef): none` / `ERRORS: none`; only BD_VoxelPack voxeldef 66/72/77/892.
+- On top (`netevent rsq_ontop`, rig job ontop; reserve at cap, magazine full, a pickup walked onto, then 30 taken and a
+  second pickup walked onto): Rifle `Clip2 200 / cap 200; magazine 31` -> pickup stays (1 within 256), below cap `170 -> 180`
+  (taken); Minigun `Clip2 210 / cap 210, lent 10; magazine 200; pouch 200` -> stays, below cap pouch `170 -> 180`; MG42
+  `lent 10; magazine 100; pouch 200` -> stays, below cap `170 -> 180`. Shot_Gun `AmmoShell 50 / cap 50; magazine 9` at cap,
+  but its summoned shell pickup was not taken below the cap either (the walk never picked it up): not shown for it.
+- HUD (`revunm5_hud_ammo_modes.png`, classic bar, both modes; log `HUD: mag N (shown 1|0), reserve N`): Rifle 31|200 ->
+  200; Minigun 200|120 -> 120; MG42 100|200 -> 200; Shot_Gun 9|30 -> 30; Moonlight 0|36 -> 36; dual BrutalPistol 16|60 with
+  the off hand's 16 above -> 60. `revunm5_hud_full_frames.png` (full frames), `revunm5_menu.png` (the option).
+- Sweep of the converted + REAL guns (give/select/fire/alt/reload): no script error; first fills e.g. `Devastator: RELOAD
+  magazine 0 -> 50, 50 from the pouch, pouch 99 -> 49`, Nuke 0 -> 1, Hellish 0 -> 6, Incendiary 0 -> 4. MG42 hand reload:
+  IDLE>EMPTY>DROP>EMPTY>CARRY>INSERT>SEATED>DONE, `MG42: RELOAD magazine 0 -> 100, 100 from the pouch`, fires again.
+  Unmaker hand reload unchanged (0 -> 200, pouch 250 -> 50).
+- Moonlight start: `Brutal Pistol -> Moonlight; cylinder 6, spare RevolverRounds 18` (`RevolverRounds (18/36)`); two:
+  `start with two; cylinder 6, spare RevolverRounds 18`, both cylinders 6/6, `(18/72)`.
+- Slug, drops, dual, cap: as round 4 (re-run, no errors).
+
+## 4. Open
+- Machinegun's ammoicon2 on the fullscreen styles is BD22's rocket icon next to its magazine count (the number is right).
+- The Shot_Gun pickup test (above). Any old save: the five converted guns start their magazine fresh from the pouch.
+
+# Lane rev-unmaker, round 6 (30-min box; branch `lane-rev-unmaker`). RIG ONLY, NOT HEADSET-CONFIRMED
+- **The shell pickup: a test artifact, not a bug.** Test-only `tools/moonammo/pickprobe` (positions, counts) on MAP01's
+  start: the player stands on a ledge (z 56); `summon` puts the pickup 56 units ahead, past the ledge's edge, and it drops to
+  the floor below (z 8). After the walk the player is at y 841 still at z 56 (its box still over the ledge) with the shell at
+  z 8 under it: no touch. Stock BD22 (no pack) does exactly the same, Clip2 too. On MAP07's flat yard (-1010 -1138) both are
+  taken, with the pack and in stock BD22 (`Picked up 4 Shotgun Shells`, AmmoShell 20 -> 24; Clip2 130 -> 140).
+  So round 5's at-cap "refused" lines for Rifle / Minigun / MG42 were artifacts too: the ontop job now runs on MAP07's yard.
+- **On top, re-shown (MAP07, same walk at and below cap):** Rifle `Clip2 200 / cap 200; magazine 31` -> the pickup stays;
+  below cap 170 -> 200 (both taken). Minigun `Clip2 210 / cap 210, lent 10; magazine 200; pouch 200` -> stays; below cap pouch
+  170 -> 190. MG42 `lent 10; magazine 100; pouch 200` -> stays; below 170 -> 190. Shot_Gun `AmmoShell 50 / cap 50; magazine 9`
+  -> stays; below 20 -> 28 (`Picked up 4 Shotgun Shells` x2).
+- **Machinegun HUD icon:** make_sbarinfo.py keeps `drawimage ammoicon2` off the Machinegun (8 places); frame
+  `/home/claude/lane_b_out/revunm6_machinegun_hud_icon_before_after.png` (rocket icon by 100 before, none after).
+- Pack `/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-revunm6.pk3`, sha256
+  `7b08db6af3d2f854d7b305552316c3242cf746b8eb234097d90bdd930c58385b`; runs: no script error of ours (BD_VoxelPack voxeldef only).

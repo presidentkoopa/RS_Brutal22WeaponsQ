@@ -21,7 +21,6 @@ class RSA_Casings : EventHandler
 		if (w is 'Shot_Gun')			return (17.0, 4.9, -1.7);	// shotguns: moved with the gun to the FBX hand (was 12.8, -1.5, 0.0)	// 1.97: the port the model-maker named `eject`
 		if (w is 'SSG')					return (4.4, 0.0, 1.9);	// 1.97: the break-open breech, surface `Open`
 		if (w is 'Revolver')			return (13.2, 2.0, 4.6);	// batch 4: moved with the gun to the FBX hand (was 7.9, 0.0, 0.2)	// 1.97: the cylinder: the mean of its five `shells`
-		if (w is 'Revolver2')			return (13.2, 2.0, 4.6);	// batch 4: moved with the gun to the FBX hand (was 7.9, 0.0, 0.2)	// 1.97: the Shotvolver, on the Revolver's own mesh
 		if (w is 'MG42')				return (18.0, 3.9, 6.6);	// r10 port: moved with the gun to the FBX hand (was 15.3, 0.0, -0.6)	// 1.97: the chute in the receiver floor, the hole itself
 		if (w is 'Machinegun')			return (18.3, 4.1, 1.3);	// r10 port: moved with the gun to the FBX hand (was 14.3, -0.3, -4.3)	// 1.97: the chute under the breech, the hole itself
 		if (w is 'MP40')				return (38.9, 2.5, 9.4);	// batch 3: moved with the gun to the FBX hand (was 34.7, -2.2, 3.3)	// 1.97: CONSTRUCTED: the bolt face at the right wall, on the bore line -- no port is modelled
@@ -76,8 +75,6 @@ class RSA_Casings : EventHandler
 		if (w is 'SSG')
 			return TIP;
 		if (w is 'Revolver')
-			return TIP;
-		if (w is 'Revolver2')
 			return TIP;
 		if (w is 'MG42')
 			return DOWN;

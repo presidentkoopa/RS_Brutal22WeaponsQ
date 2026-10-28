@@ -14,7 +14,9 @@ class RSQ_Counters : EventHandler
 	// r6 (owner item 13, 2026-10-27): Flamethrower 100, Machinegun 100, Unmaker 200, chaingun (Minigun) 200, and
 	// those four are REAL magazines (RealTick), not counters: a counter is a share of the reserve, so a
 	// 200 box over Clip2's 200 could never run dry before the reserve did and never asked for a reload.
-	static const int REAL[] = { 0, 1, 0, 1, 1, 0, 0, 0, 1 };
+	// r5 lane rev-unmaker (owner 2026-10-27 20:47, "on top": the loaded rounds do not count toward the max carry):
+	// all nine are REAL magazines now. A counter was a share of the reserve, so its loaded rounds ate the carry.
+	static const int REAL[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 	// rounds of the magazine lent into the reserve item, so BD22's own fire code (A_JumpIfNoAmmo, DepleteAmmo)
 	// finds ammo to spend. At most LEND; the reserve the HUD shows is the pouch plus these.
 	const LEND = 10;
@@ -29,6 +31,7 @@ class RSQ_Counters : EventHandler
 			PlayerPawn mo = players[pn].mo;
 			if (!mo) continue;
 			M202Carry(mo);
+			heldRes = null; heldBonus = 0;
 			let w = players[pn].ReadyWeapon;
 			for (int g = 0; g < GUN.Size(); g++)
 			{
@@ -76,7 +79,122 @@ class RSQ_Counters : EventHandler
 				if (e) mo.GiveInventory(empty, 1); else mo.TakeInventory(empty, 1);
 				lastRes[pn][g] = r;
 			}
+			// r5 lane rev-unmaker: every gun's "reserve last tic" is read AFTER all nine ran. Guns share a reserve (Clip2:
+			// MG42, Machinegun, Minigun), and one gun handing its lent rounds back must not read as another one firing
+			// (seen on the rig: MG42 drawn 100 -> 90 the tic after the Minigun was put away).
+			for (int g = 0; g < GUN.Size(); g++)
+			{
+				class<Inventory> rc = RES[g];
+				if (rc)
+					lastRes[pn][g] = mo.CountInv(rc);
+			}
+			CapPass(mo);
+			Hud(mo);
 		}
+	}
+
+	// r5 lane rev-unmaker (owner 20:47, "on top"): the max carry is the reserve's alone. A REAL gun lends up to LEND
+	// rounds of its magazine into the reserve item (BD22's fire code needs to find them there), so while it is held
+	// that item's cap is raised by exactly the lent rounds: a pickup still fills the pouch to its cap, never less.
+	// Base cap: BD22's MaxAmount, or its BackpackMaxAmount with a backpack, AmmoM202 48 (M202Carry). Every other
+	// reserve of the nine guns is put back to its base the same tic.
+	class<Inventory> heldRes;
+	int heldBonus;
+	static int CapBase(PlayerPawn mo, Inventory am)
+	{
+		let a = Ammo(am);
+		if (!a)
+			return am.MaxAmount;
+		int b = a.Default.MaxAmount;
+		if (mo.FindInventory('BackpackItem', true))
+			b = max(b, a.BackpackMaxAmount);
+		if (a.GetClassName() == 'AmmoM202')
+			b = max(b, M202_CARRY);
+		return b;
+	}
+	void CapPass(PlayerPawn mo)
+	{
+		for (int g = 0; g < RES.Size(); g++)
+		{
+			class<Inventory> rc = RES[g];
+			let am = rc ? mo.FindInventory(rc) : null;
+			if (!am || (heldRes && rc == heldRes))
+				continue;
+			int b = CapBase(mo, am);
+			if (am.MaxAmount != b)
+				am.MaxAmount = b;
+		}
+	}
+
+	// r5 lane rev-unmaker (owner 20:47): the HUD's ammo (SBARINFO.rsq). Magazine + Reserve (rsq_hud_ammo 0, default) or
+	// Reserve Only (1). The magazine: a REAL gun's RSQ_Mag_<gun> while its magazine is live, else the gun's AmmoType2
+	// when it has one; the reserve: the gun's AmmoType1 minus the rounds lent from the magazine. A dual gun in the off
+	// hand (RSQ_Dual copy) shows its own magazine too (its AmmoType2; the reserve is shared).
+	int, int GunAmmo(PlayerPawn mo, Weapon w)
+	{
+		if (!w)
+			return -1, 0;
+		int resv = w.Ammo1 ? w.Ammo1.Amount : 0;
+		Name n = w.GetClassName();	// (ZScript names are case-insensitive: a local "res" would hide RES[])
+		for (int g = 0; g < GUN.Size(); g++)
+		{
+			if (n != GUN[g])
+				continue;
+			class<Inventory> mag = MAG[g]; class<Inventory> lent = "RSQ_Lent_" .. GUN[g]; class<Inventory> rc = RES[g];
+			if (!mag || !lent || !rc || !RSR_ReloadHandler.WantsHands(mo) || !NonStdOn(mo))
+				return -1, resv;
+			return mo.CountInv(mag), max(0, mo.CountInv(rc) - mo.CountInv(lent));
+		}
+		if (w.Ammo2 && w.Ammo2 != w.Ammo1)
+			return w.Ammo2.Amount, resv;
+		return -1, resv;
+	}
+	// `netevent rsq_ontop` (test and debug): the held gun's reserve item against its cap, its magazine, the lent rounds
+	// and the HUD's items
+	override void NetworkProcess(ConsoleEvent e)
+	{
+		if (e.Name != "rsq_ontop" || e.Player < 0 || !players[e.Player].mo)
+			return;
+		let mo = players[e.Player].mo;
+		let w = mo.player.ReadyWeapon;
+		if (!w)
+			return;
+		let a1 = w.Ammo1;
+		int m, r;
+		[m, r] = GunAmmo(mo, w);
+		String lentS = "";
+		class<Inventory> lc = "RSQ_Lent_" .. w.GetClassName();
+		if (lc)
+			lentS = String.Format(", lent %d", mo.CountInv(lc));
+		int world = 0;		// that reserve's pickups lying within 256 units (a refused pickup stays)
+		if (a1)
+		{
+			let it = BlockThingsIterator.Create(mo, 256);
+			while (it.Next())
+				if (it.thing && it.thing.GetClass() == a1.GetClass() && !Inventory(it.thing).Owner)
+					world++;
+		}
+		Console.Printf("RSQ ontop t%d %s: reserve item %s %d / cap %d%s; magazine %d; pouch %d; %d %s pickups within 256; HUD: mag %d (shown %d), reserve %d; off-hand mag %d (shown %d); rsq_hud_ammo %d",
+			Level.maptime, w.GetClassName(), a1 ? a1.GetClassName() : 'None', a1 ? a1.Amount : 0, a1 ? a1.MaxAmount : 0, lentS, m, r,
+			world, a1 ? a1.GetClassName() : 'None',
+			mo.CountInv('RSQ_HudMag'), mo.CountInv('RSQ_HudHasMag'), mo.CountInv('RSQ_HudRes'), mo.CountInv('RSQ_HudMagOff'),
+			mo.CountInv('RSQ_HudHasMagOff'), RSQ.PlayerInt(mo, 'rsq_hud_ammo', 0));
+	}
+
+	void Hud(PlayerPawn mo)
+	{
+		let p = mo.player;
+		bool magMode = RSQ.PlayerInt(mo, 'rsq_hud_ammo', 0) == 0;
+		int m, r;
+		[m, r] = GunAmmo(mo, p.ReadyWeapon);
+		SetCount(mo, 'RSQ_HudRes', r);
+		SetCount(mo, 'RSQ_HudMag', max(m, 0));
+		SetCount(mo, 'RSQ_HudHasMag', magMode && m >= 0 ? 1 : 0);
+		int mo2 = -1, r2;
+		if (RSQ_Dual.IsCopy(p.OffhandWeapon))
+			[mo2, r2] = GunAmmo(mo, p.OffhandWeapon);
+		SetCount(mo, 'RSQ_HudMagOff', max(mo2, 0));
+		SetCount(mo, 'RSQ_HudHasMagOff', magMode && mo2 >= 0 ? 1 : 0);
 	}
 
 	// r6: a REAL magazine. M = RSQ_Mag_<gun> (rounds in the gun), P = the pouch (BD22's reserve item minus the
@@ -149,6 +267,13 @@ class RSQ_Counters : EventHandler
 		}
 		bool magOut = mo.CountInv(nomag) > 0;
 		int want = magOut ? 0 : min(M, LEND);
+		let resItem = mo.FindInventory(res);
+		if (resItem)
+		{
+			// r5 "on top": the cap is the pouch's; room for the lent rounds on top of it (CapPass leaves this one alone)
+			resItem.MaxAmount = CapBase(mo, resItem) + max(want, L);
+			heldRes = res;
+		}
 		if (L > want)
 		{
 			mo.TakeInventory(res, min(L - want, mo.CountInv(res)));
@@ -162,6 +287,8 @@ class RSQ_Counters : EventHandler
 		}
 		SetCount(mo, mag, M);
 		SetCount(mo, lent, L);
+		if (resItem)
+			resItem.MaxAmount = CapBase(mo, resItem) + L;
 		int pouch = mo.CountInv(res) - L;
 		bool e = magOut || (M <= 0 && pouch > 0);
 		if (e) mo.GiveInventory(empty, 1); else mo.TakeInventory(empty, 1);
@@ -262,3 +389,20 @@ class RSQ_Pouch_Flamethrower2 : Inventory { Default { Inventory.MaxAmount 1; +IN
 class RSQ_Pouch_Machinegun : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_Pouch_Unmaker : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
 class RSQ_Pouch_Minigun : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Lent_MG42 : Inventory { Default { Inventory.MaxAmount 999; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Pouch_MG42 : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Lent_IncendiaryLauncher : Inventory { Default { Inventory.MaxAmount 999; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Pouch_IncendiaryLauncher : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Lent_Devastator : Inventory { Default { Inventory.MaxAmount 999; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Pouch_Devastator : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Lent_NukeLauncher : Inventory { Default { Inventory.MaxAmount 999; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Pouch_NukeLauncher : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Lent_HellishMissileLauncher : Inventory { Default { Inventory.MaxAmount 999; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_Pouch_HellishMissileLauncher : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+
+// r5 lane rev-unmaker (owner 20:47): what the HUD shows (SBARINFO.rsq, tools/hud/make_sbarinfo.py), set by RSQ_Counters.Hud
+class RSQ_HudMag : Inventory { Default { Inventory.MaxAmount 0x7fffffff; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_HudRes : Inventory { Default { Inventory.MaxAmount 0x7fffffff; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_HudHasMag : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_HudMagOff : Inventory { Default { Inventory.MaxAmount 0x7fffffff; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
+class RSQ_HudHasMagOff : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }

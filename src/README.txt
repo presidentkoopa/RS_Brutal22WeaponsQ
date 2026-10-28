@@ -55,7 +55,7 @@ stay as Brutal Doom made them.)
   cylinder    the Incendiary Launcher's six-shot cylinder
   bay / block the Devastator's loading bay, the Nuker's warhead block
   pump        the Shotgun
-  break-open  the SSG, the Grenade Launcher, the Shotvolver, and the slug revolver,
+  break-open  the SSG, the Grenade Launcher, the Shotvolver, and the Revolver (Moonlight),
               plus the Rifle's and the Machinegun's underbarrel 40 mm
 
 Take the part out with your off hand, reach to your belt for a fresh one, push it home. Break
@@ -136,7 +136,7 @@ hands in this pack are his work end to end -- modelled by him, and posed by him,
 exists without that.
 TeamBeef built Doom VR and the community around it.
 Emawind's QuestZDoom is the engine.
-The BD21 Machinegun and slug revolver are Brutal Doom 21's, brought forward.
+The BD21 Machinegun is Brutal Doom 21's, brought forward.
 Reload foley, impact and tail sounds the mod itself has none of come from RS_Ballistics and
 RS_VR_Weapons.
 
