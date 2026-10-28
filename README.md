@@ -153,6 +153,8 @@ parsed out of Brutal Doom's own code, and `src/README.txt` (shipped inside the p
 version.
 
 ## Credits
+**BD22 VR Weapons Q**: project conceptualized, directed and coordinated by **PresidentKoopa** (Radiant Silvergun). All coding done by agentic **Claude** (Anthropic), working under his direction.
+
 Weapon models: **br_vr** by ajantaju (Brutal Doom VR Weapons, BD v21), made from:
 - Grenade by Gomuz; MP40 by Krystian; Shotgun by serg-654; Beretta M9 by damkung13
 - Axe by martn00; M4A1 by seandxyz; Minigun by overlordchaos; DBS-2 by ironcladmax501
