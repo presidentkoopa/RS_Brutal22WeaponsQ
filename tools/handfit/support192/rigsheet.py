@@ -22,6 +22,7 @@ if not os.path.exists(rig.PROBE):
         for f in ('MAPINFO.txt', 'zscript.txt'): z.write(os.path.join(RIGD, 'probe', f), f)
 VIEWS = {'eye': '0.25 1.45 0.15 -25 0 0', 'side': '0.85 1.30 -0.50 0 90 0', 'near': '0.20 1.58 -0.02 -45 0 0'}	# near: the player's eye looking down at the off hand (closer than 'eye')
 AWAY = '0.25 1.45 0.15 0 180 0'
+VIEWFOR = {('Rocket_Launcher', 'side'): '1.15 1.50 -0.45 -15 90 0'}	# the steadied RPG leaves the standard side camera's frame: further out, higher, tilted down
 # the rig renders about one frame per 3-4 tics: segments are 40 tics; the kick = the 3rd frame of the firing segment
 SET = 'god; notarget; rsq_hands 1; rsq_extra_weapons 1; rsq_ballistics 2; rsr_reload 1; rsq_scope_sniper 1; rsq_scope_railgun 1; screenblocks 12; crosshair 0; '
 def support_cm(g):
@@ -36,7 +37,7 @@ def script(g, view, reload):
     def w(n, mark=None):
         if mark: T.append((mark, t[0]))
         t[0] += n; return 'wait %d; ' % n
-    V = 'qz_hmd "%s"; ' % VIEWS[view]; A = 'qz_hmd "%s"; ' % AWAY
+    V = 'qz_hmd "%s"; ' % VIEWFOR.get((g, view), VIEWS[view]); A = 'qz_hmd "%s"; ' % AWAY
     s += V + w(40) + w(0, 'rest') + A + w(24) + 'qz_lhand "%s"; ' % rig.lpose(*support_cm(g)) + w(10) + 'qz_lgrip 1; ' + V + w(40) + w(0, 'steady') + A + w(24)
     s += V + w(8) + '+attack; ' + w(0, 'attack') + w(40) + w(0, 'fire') + A + '-attack; ' + w(34)
     if reload: s += V + '+reload; ' + w(4) + '-reload; ' + w(40) + w(0, 'reload') + A + w(24)
