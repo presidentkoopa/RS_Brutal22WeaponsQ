@@ -27,6 +27,7 @@ VIEWFOR = {('Rocket_Launcher', 'side'): '1.15 1.50 -0.45 -15 90 0'}	# the steadi
 SET = 'god; notarget; rsq_hands 1; rsq_extra_weapons 1; rsq_ballistics 2; rsr_reload 1; rsq_scope_sniper 1; rsq_scope_railgun 1; screenblocks 12; crosshair 0; '
 def support_cm(g):
     import s192
+    sys.path.insert(0, os.path.join(HERE, '..', 'port')); import melee_r12	# BrutalAxe (row 24)
     return tuple(100 * s192.ht_row('SupportPoint', s192.PG.GUNS[g]['row']))
 def script(g, view, reload):
     """the console script + its timeline (tic marks counted back from the end: the run is real time, 35 tics/s, and the frame dumps'
