@@ -23,7 +23,7 @@ if not os.path.exists(rig.PROBE):	# the Depot's probe (B22 S / SHOT / T log line
         for f in ('MAPINFO.txt', 'zscript.txt'): z.write(os.path.join(RIGD, 'probe', f), f)
 def setpk3(pk3): rig.PK3 = pk3; os.environ['B22_PK3'] = pk3
 CUP = ('BrutalPistol', 'Revolver', 'BrutalRevolver')	# one-hand guns steady by closeness (hands.zs: off hand within 13 cm)
-SET = 'god; notarget; rsq_hands 1; rsq_extra_weapons 1; rsq_ballistics 2; rsr_reload 1; rsq_scope_sniper 1; rsq_scope_railgun 1; rsb_revolver_feed 0; '
+SET = 'god; notarget; rsq_hands 1; rsq_extra_weapons 1; rsq_ballistics 2; rsr_reload 1; rsq_scope2_sniper 1; rsq_scope2_railgun 1; rsb_revolver_feed 0; '
 def locked(fn, *a, **k):
     with open(LOCK, 'a') as lf:
         fcntl.flock(lf, fcntl.LOCK_EX)

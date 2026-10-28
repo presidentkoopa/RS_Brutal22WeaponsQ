@@ -14,8 +14,12 @@ user bool rsq_flick = true;		// 1.17 Flick to reload: a gun in each hand, snap a
 // the gun's own glass, no magnification) or 1 REAL (the view down the bore rendered into it).
 // RSQ_ScopeTable.ModeCVar() maps the table index to these names, so a new scoped gun needs a
 // row in that table and a cvar here and nothing else.
-user int rsq_scope_sniper = 1;	// 1.99x (owner): the Ruger's scope defaults to Real
-user int rsq_scope_railgun = 0;
+// 2.0 (owner 2026-10-28, "the real-time scope renders 3x at all times"): both default to Real 3x.
+// Renamed from rsq_scope_sniper / rsq_scope_railgun: those are archived, so a 0 saved by an older
+// build (the rig's ini held railgun 0; the owner's menu showed Dot on both) would have kept the
+// scope at 1x on top of the new default. New names start at the new default on every ini.
+user int rsq_scope2_sniper = 1;
+user int rsq_scope2_railgun = 1;
 
 // 1.97: roster
 server bool rsq_mg_replaces_mg42 = false;	// every MG42 spawn is the BD21 Machinegun

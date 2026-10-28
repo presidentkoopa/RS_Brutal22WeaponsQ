@@ -420,7 +420,7 @@ Actor RailGun : BrutalWeapon
 	// 2026-10-23: ALT FIRE ON THE RAILGUN IS DELIBERATELY FREE.
 	//
 	// Secondary fire used to be the scope zoom. The scope is now the RSQ scope component
-	// (zscript/rsq/scope.zs; rsq_scope_railgun chooses Dot or Real, MENUDEF.rsq "Railgun
+	// (zscript/rsq/scope.zs; rsq_scope2_railgun chooses Dot or Real, MENUDEF.rsq "Railgun
 	// Scope"), so alt fire no longer zooms -- and NOTHING has replaced it. The owner has not
 	// chosen what secondary fire should do on this weapon, so do not invent one here: this
 	// state exists to swallow the press and hand the weapon back to Ready.

@@ -1,9 +1,9 @@
 // RS VR scopes: a sight that can be put on any gun that has one in its mesh.
 //
-// Two modes per gun (MENUDEF.rsq -> rsq_scope_<gun>):
+// Two modes per gun (MENUDEF.rsq -> rsq_scope2_<gun>, default REAL):
 //   DOT   a collimated red dot over the view down the bore at 1x (1.99x r6: see-through).
 //   REAL  the view down the bore at 3x, rendered into the scope's own glass surface.
-// Both cost one extra scene render, and only while an eye is at the eyepiece (scope_real.zs).
+// Both cost one extra scene render, every frame the gun is held (2.0: always on; scope_real.zs).
 //
 // THE DOT IS COLLIMATED, and that is the whole point of it. A reticle painted on the glass
 // has full parallax: move your head and the dot slides off what the gun is pointing at, which
@@ -24,6 +24,24 @@
 // surface by the kit so it has one too.
 //
 // Everything here is inert until a gun is in the table, and out of VR nothing runs at all.
+//
+// WHAT THE SCOPE IS MADE OF (2.0 scope-3x; the list for lifting it out as its own mod)
+//   zscript/rsq/scope.zs       RSQ_ScopeTable (ALL per-gun data: class, Lens, Axis, Up, Radius,
+//                              GlassSurface, Mag, ModeCVar), RSQ_Scope (eye, hand basis, dot),
+//                              RSQ_ScopeLayers (reticle psprite id)
+//   zscript/rsq/scope_real.zs  RSQ_ScopeReal (EventHandler: camera + glass skin swap, always on
+//                              while a scoped gun is held), RSQ_ScopeCam (the camera actor)
+//   ANIMDEFS.rsq               cameratexture RSQSCOPE 256 256 fit 240 200
+//   CVARINFO.rsq               rsq_scope2_sniper, rsq_scope2_railgun (0 dot 1x, 1 real 3x)
+//   MENUDEF.rsq                OptionValue RSQ_ScopeMode + the two "... Scope" options
+//   MAPINFO.rsvr               AddEventHandlers "RSQ_ScopeReal"; ZSCRIPT.rsvr includes both files
+//   MODELDEF.rsq               the dot quad (RQRT A/B, models/rsq/rsq_dot.md3, RQRTA0/RQRTB0.png)
+//   MODELDEF.bd.txt/.rsr       per gun: SurfaceSkin on the glass ("scope_glass.png"), no whole Skin
+//   meshes                     RailGun.md3 surface 1, XM21.md3 surface 10 (glass, UV 0..1 disc)
+// Borrowed from the rest of the pack (a lifted copy must bring or replace these):
+//   RSVR_VRHand.InVR / HandPos / HandDir (rsvr/vrhand.zs): the hand transform scope_real.zs places
+//     the camera with;
+//   rsq/hands.zs RSQ_GunSide: shows the dot layer (RETICLE) via RSQ_Scope.DotAt; RSQ_Layers.Taken.
 
 class RSQ_ScopeLayers abstract
 {
@@ -73,10 +91,43 @@ class RSQ_ScopeTable abstract
 		return i > 0 && i < f.Size() ? (f[i], l[i], u[i]) : (1, 0, 0);
 	}
 
+	// The lens picture's UP, unit, same frame: the direction the glass UVs call "up" (before the
+	// camera's 180 roll, scope_real.zs). Before the r9 port the guns sat level in the hand and
+	// this was (0, 0, 1). The r9 port turned both guns by AngleOffset 3.854 / PitchOffset 3.363 /
+	// RollOffset 10.974 and moved Lens and Axis with them, but the picture's roll was not in the
+	// table, so the lens showed the world tilted by about 11 degrees (rig frame, HANDOFF scope-3x).
+	// Measured (2.0 scope-3x): port_gun.rigid_move(gun, MODELDEF.bd.txt / MODELDEF.rsr numbers) @ (0, 0, 1);
+	// the same rotation gives the table's Axis and Lens from their pre-port values to 4 decimals.
+	clearscope static Vector3 Up(int i)
+	{
+		static const double f[] = { 0, -0.0447, -0.0447 };
+		static const double l[] = { 0, -0.1938, -0.1938 };
+		static const double u[] = { 0, 0.9800, 0.9800 };
+		return i > 0 && i < f.Size() ? (f[i], l[i], u[i]) : (0, 0, 1);
+	}
+
+	// 2.0 scope-3x: the glass's UV half-extent, which is what the camera picture spans
+	// (scope_real.zs FovFor), measured from the mesh: |d xyz / d uv| of the glass surface
+	// (least-squares fit over its vertices) x MODELDEF Scale x vr_weaponScale 1.02 / 2.
+	//   RailGun.md3 surface 1, frame 3: 3.063 / 2.991 md3 units per UV, Scale 1      -> 1.544
+	//   XM21.md3 surface 10:            0.234 / 0.234,                Scale 10.485 -> 1.251
+	// Was 1.78 / 1.35 (the disc's outer bound): the picture came out about 2.8x, not 3x (rig).
 	clearscope static double Radius(int i)
 	{
-		static const double v[] = { 0, 1.78, 1.35 };
+		static const double v[] = { 0, 1.544, 1.251 };
 		return i > 0 && i < v.Size() ? v[i] : 0;
+	}
+
+	// The glass's own MD3 surface index, which scope_real.zs skins with the camera texture.
+	//   1 RailGun  surface 1 "ScopeGlass", authored that way in RailGun.md3
+	//   2 Sniper   surface 10 "ScopeGlass", carved out of surface 3 (leupold_scope) by
+	//              kit/tool/md3_carve_surface.py; MODELDEF.rsr must list SurfaceSkin 0 10
+	// Every MODELDEF block that draws the gun must give the glass a SurfaceSkin and must NOT have a
+	// whole-model Skin (a whole-model Skin beats the swap, models_md3.cpp:359-369).
+	clearscope static int GlassSurface(int i)
+	{
+		static const int v[] = { -1, 1, 10 };
+		return i > 0 && i < v.Size() ? v[i] : -1;
 	}
 
 	clearscope static double Mag(int i)
@@ -88,7 +139,7 @@ class RSQ_ScopeTable abstract
 	// the cvar that chooses this gun's mode: 0 dot, 1 real
 	clearscope static Name ModeCVar(int i)
 	{
-		static const Name v[] = { 'none', 'rsq_scope_railgun', 'rsq_scope_sniper' };
+		static const Name v[] = { 'none', 'rsq_scope2_railgun', 'rsq_scope2_sniper' };
 		return i > 0 && i < v.Size() ? v[i] : 'none';
 	}
 }

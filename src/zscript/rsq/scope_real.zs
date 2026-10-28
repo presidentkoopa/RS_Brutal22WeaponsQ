@@ -12,15 +12,15 @@
 //   mesh already carried one, the Ruger's ocular disc was carved into one by the kit
 //   (kit/tool/md3_carve_surface.py).
 //
-// WHY THE GATE IS THE WHOLE DESIGN
-//   A camera texture is a SECOND FULL SCENE RENDER of the level, every frame it is on screen
-//   (hw_entrypoint.cpp, "prepare all camera textures that have been used in the last frame").
-//   This ships on a standalone Quest, where that is not affordable as a background cost. The
-//   engine's own trigger is the texture being DRAWN -- binding it for a draw calls
-//   FCanvasTexture::NeedUpdate (gl_renderstate.cpp / gles_renderstate.cpp), and the entrypoint
-//   only re-renders textures whose bNeedsUpdate is set. So the skin swap IS the switch: while
-//   the glass wears its ordinary skin, the scope costs exactly nothing. The swap only happens
-//   when the player's eye is actually behind the eyepiece.
+// ALWAYS ON WHILE HELD (2.0, owner 2026-10-28: "the real-time scope renders 3x at all times")
+//   A camera texture is a SECOND SCENE RENDER of the level (256x256, mono), every frame it is
+//   drawn (hw_entrypoint.cpp, "prepare all camera textures that have been used in the last
+//   frame"; binding it for a draw calls FCanvasTexture::NeedUpdate). Until 2.0 the skin swap was
+//   gated on an eye being within 12 cm behind the eyepiece, to spend that render only while
+//   sighting. The owner asked for the picture at all times, so the swap is now on for as long
+//   as a scoped gun is the ready weapon in VR, and off (zero cost) the moment it is not. The
+//   magnification still follows the eye nearer the bore line (FovFor), so it is 3x from
+//   wherever the lens is seen. Cost on the rig: HANDOFF "scope-3x".
 //
 // ONE EYE, ON PURPOSE
 //   RenderViewpoint is called from the camera-texture loop with mainview and toscreen both
@@ -43,16 +43,11 @@
 
 class RSQ_ScopeReal : EventHandler
 {
-	// WHICH SURFACE THE GLASS IS. This belongs in RSQ_ScopeTable beside Lens/Axis/Radius/Mag
-	// and should move there the next time that file is opened -- it is kept here only because
-	// scope.zs is owned elsewhere and this lane may not edit it. Indices match the table's:
-	//   1 RailGun  surface 1 "ScopeGlass", authored that way in RailGun.md3
-	//   2 Sniper   surface 10 "ScopeGlass", carved out of surface 3 (leupold_scope) by
-	//              kit/tool/md3_carve_surface.py; MODELDEF.rsr must list SurfaceSkin 0 10
+	// WHICH SURFACE THE GLASS IS: RSQ_ScopeTable.GlassSurface (2.0: moved into the table, so one
+	// table holds every per-gun number). Kept here as a forwarder for older callers.
 	static int GlassSurface(int i)
 	{
-		static const int v[] = { -1, 1, 10 };
-		return i > 0 && i < v.Size() ? v[i] : -1;
+		return RSQ_ScopeTable.GlassSurface(i);
 	}
 
 	// The camera texture, declared in ANIMDEFS.rsq. Eight characters, because
@@ -66,29 +61,20 @@ class RSQ_ScopeReal : EventHandler
 	// never drift apart.
 	const TEXNAME = "RSQSCOPE";
 
-	// THE SIGHT PICTURE, in centimetres in the weapon controller's frame.
-	//   RELIEF   how far behind the glass the eye may be and still be looking through it. A
-	//            Leupold VX-1's real eye relief is about 10.7 cm; 12 gives a little slack for
-	//            tracking jitter and for the fact that the eye point below is the pawn's XY
-	//            with the player's view height rather than a true head position.
-	//   RELIEF_OFF / SIDE_OFF  the same two limits, loosened, for staying on once on. Without
-	//            hysteresis a head sitting on the threshold turns a whole extra scene render on
-	//            and off on alternate frames, which is both the worst case for cost and a
-	//            visible strobe. The gap is deliberate and wide.
-	//   HOLD     tics the picture stays up after the gate fails, so a flinch or one bad
-	//            tracking sample does not blank the scope.
-	const RELIEF = 12.0;
-	const RELIEF_OFF = 15.0;
-	const SIDE_ON = 1.00;		// of the glass radius
-	const SIDE_OFF = 1.35;
-	const HOLD = 6;
+	// The eye distance FovFor uses when neither eye is behind the glass (the lens seen from in
+	// front or edge-on): about where an eye sits at the eyepiece (rig: 8 cm). ALONG_MAX caps it
+	// for an eye far off the gun, where the lens is a few pixels wide anyway.
+	const ALONG_NOMINAL = 8.0;
+	const ALONG_MAX = 40.0;
+	// Which way a positive camera roll turns the picture against the up vector's lean to the
+	// camera's right. Set from the rig (HANDOFF scope-3x: level picture with the hand rolled 30).
+	const ROLL_SIGN = 1.0;
 
 	RSQ_ScopeCam cam;
 	int lastIndex;			// the gun the swap is currently applied to, 0 = none
 	int lastSurface;
 	Weapon lastWeapon;
 	bool skinOn;
-	int holdTics;
 
 	// ---------------------------------------------------------------- the hand this tic
 	// Identical chain to rsvr/melee.zs Frame(): the gun is a psprite and has no world
@@ -165,39 +151,33 @@ class RSQ_ScopeReal : EventHandler
 		return ((d dot fF) * k, -(d dot fR) * k, (d dot fU) * k);
 	}
 
-	// Is the player looking THROUGH the sight with either eye? Same geometry the collimated dot
-	// uses (RSQ_Scope.DotAt): drop the eye onto the bore axis, and ask how far back it is and
-	// how far off to the side. `wide` loosens both limits for a picture that is already up.
-	// Sets eyeAlong to the sighting eye's distance behind the glass, for the magnification.
+	// How far behind the glass the sighting eye is, cm, for the magnification. The sighting eye is
+	// the one nearer the bore line (smaller angle off the axis), the same choice the collimated
+	// dot makes (RSQ_Scope.DotAt). Both eyes are tested (each is vr_ipd/2 off the head centre).
 	double eyeAlong;
-	private bool Through(PlayerPawn mo, int i, bool wide)
-	{
-		return ThroughEye(mo, i, wide, -1) || ThroughEye(mo, i, wide, 1);
-	}
-
-	private bool ThroughEye(PlayerPawn mo, int i, bool wide, int side)
+	private double SightAlong(PlayerPawn mo, int i)
 	{
 		Vector3 P = RSQ_ScopeTable.Lens(i);
 		Vector3 A = RSQ_ScopeTable.Axis(i);
 		double al = A.Length();
 		if (al <= 0)
-			return false;
+			return ALONG_NOMINAL;
 		A = A / al;
-		Vector3 E = EyeFLU(mo, side);
-		Vector3 toLens = P - E;
-		double along = toLens dot A;		// > 0: the glass is in front of the eye
-		if (along <= 0)
-			return false;
-		if (along > (wide ? RELIEF_OFF : RELIEF))
-			return false;
-		double s = (toLens - A * along).Length();
-		double rr = RSQ_ScopeTable.Radius(i);
-		if (rr <= 0)
-			return false;
-		if (s > rr * (wide ? SIDE_OFF : SIDE_ON))
-			return false;
-		eyeAlong = along;
-		return true;
+		double best = -1, bestRatio = 1e9;
+		for (int side = -1; side <= 1; side += 2)
+		{
+			Vector3 toLens = P - EyeFLU(mo, side);
+			double along = toLens dot A;		// > 0: the glass is in front of the eye
+			if (along <= 0)
+				continue;
+			double ratio = (toLens - A * along).Length() / along;
+			if (ratio < bestRatio)
+			{
+				bestRatio = ratio;
+				best = along;
+			}
+		}
+		return best > 0 ? best : ALONG_NOMINAL;
 	}
 
 	// THE MAGNIFICATION. A camera texture is rendered mono (RenderViewpoint with mainview
@@ -208,7 +188,7 @@ class RSQ_ScopeReal : EventHandler
 	// a mag-times sight shows 1/mag of that angle of the world across it.
 	static double FovFor(double r, double along, double mag)
 	{
-		along = clamp(along, 3.0, RELIEF_OFF);
+		along = clamp(along, 3.0, ALONG_MAX);
 		return 2.0 * atan((r / along) / max(mag, 1.0));
 	}
 
@@ -252,7 +232,6 @@ class RSQ_ScopeReal : EventHandler
 		lastWeapon = null;
 		lastIndex = 0;
 		lastSurface = -1;
-		holdTics = 0;
 	}
 
 	// ---------------------------------------------------------------- the tic
@@ -264,7 +243,6 @@ class RSQ_ScopeReal : EventHandler
 		lastWeapon = null;
 		lastIndex = 0;
 		lastSurface = -1;
-		holdTics = 0;
 	}
 
 	override void WorldTick()
@@ -297,12 +275,12 @@ class RSQ_ScopeReal : EventHandler
 		// 0 = dot, 1 = real. Read per player, never FindCVar, so a netgame cannot disagree
 		// about which mode a gun is in. A cvar that does not exist yet reads as dot.
 		// 1.99x r6: BOTH modes render the view down the bore; they differ in magnification.
+		// 2.0: REAL is the default (CVARINFO.rsq rsq_scope2_*), and either mode is always on.
 		//   1 REAL  the scope's own magnification (RSQ_ScopeTable.Mag, 3x).
 		//   0 DOT   1x, with the collimated red dot over it (rsq/hands.zs). The glass cannot
 		//           simply be made clear for this: behind the ocular is the inside of the tube
 		//           and the objective's own cap, never the world. A 1x picture through the
-		//           glass IS the see-through lens, at the same one-extra-render cost, and only
-		//           while an eye is at the eyepiece.
+		//           glass IS the see-through lens, at the same one-extra-render cost.
 		let cv = CVar.GetCVar(RSQ_ScopeTable.ModeCVar(i), mo.player);
 		double mag = (cv && cv.GetInt() == 1) ? RSQ_ScopeTable.Mag(i) : 1.0;
 
@@ -313,24 +291,10 @@ class RSQ_ScopeReal : EventHandler
 			lastWeapon = w;
 			lastIndex = i;
 			lastSurface = surface;
-			holdTics = 0;
 		}
 
-		bool through = Through(mo, i, skinOn);
-		if (through)
-			holdTics = HOLD;
-		else if (holdTics > 0)
-			holdTics--;
-		bool want = through || holdTics > 0;
-
-		if (!want)
-		{
-			// Off: the glass gets its own skin back and the camera texture is drawn nowhere,
-			// so the engine stops rendering it. The camera actor is left parked rather than
-			// destroyed -- it costs one thinker and saves spawning on every shoulder.
-			ClearSkin();
-			return;
-		}
+		// 2.0: no eye gate. The picture is up for as long as the gun is held (see the header).
+		eyeAlong = SightAlong(mo, i);
 
 		Vector3 lens = Place(RSQ_ScopeTable.Lens(i));
 		// Down the bore, as the difference of two placed points rather than a rotated vector:
@@ -359,7 +323,23 @@ class RSQ_ScopeReal : EventHandler
 		// 1.99x r6: 180, not 0. The glass UVs (kit md3_carve_surface.py --project-uv) put the
 		// texture's origin in the opposite corner, so a roll-0 picture showed in the lens
 		// upside down AND mirrored (rig frames, HANDOFF r6-scope): a 180 degree rotation.
-		cam.roll = 180;
+		// 2.0 scope-3x: PLUS the glass's own roll. The picture is glued to the glass, so the
+		// camera must roll exactly as the glass does or the world shows tilted in the lens:
+		// the gun's roll in the hand (RSQ_ScopeTable.Up, about 11 degrees since the r9 port) and
+		// the hand's own roll (AttackRoll, carried by Place). Up is placed like the bore.
+		// Measured in RENDER space, not map space: the view matrix scales map z by pixelstretch
+		// BEFORE it applies roll (hw_drawinfo.cpp SetViewMatrix), while angle and pitch are
+		// converted by the engine (r_utility.cpp:1229). Map space overshot by about 2 degrees
+		// at the guns' 11 degree tilt (rig, HANDOFF scope-3x).
+		Vector3 up = Place(RSQ_ScopeTable.Lens(i) + RSQ_ScopeTable.Up(i) * 10.0) - lens;
+		up.z *= ps;
+		Vector3 dr = (d.x, d.y, d.z * ps);
+		dr = dr / dr.Length();
+		up = up - dr * (up dot dr);
+		Vector3 r0 = (sin(cam.angle), -cos(cam.angle), 0);	// the camera's right at roll 0
+		Vector3 u0 = r0 cross dr;								// and its up
+		double glassRoll = (up.Length() > 0) ? atan2(up dot r0, up dot u0) : 0;
+		cam.roll = 180 + ROLL_SIGN * glassRoll;
 
 		double fov = FovFor(RSQ_ScopeTable.Radius(i), eyeAlong, mag);
 		TexMan.SetCameraToTexture(cam, TEXNAME, fov);

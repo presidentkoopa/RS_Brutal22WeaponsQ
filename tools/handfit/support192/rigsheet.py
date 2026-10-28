@@ -24,7 +24,7 @@ VIEWS = {'eye': '0.25 1.45 0.15 -25 0 0', 'side': '0.85 1.30 -0.50 0 90 0', 'nea
 AWAY = '0.25 1.45 0.15 0 180 0'
 VIEWFOR = {('Rocket_Launcher', 'side'): '1.15 1.50 -0.45 -15 90 0'}	# the steadied RPG leaves the standard side camera's frame: further out, higher, tilted down
 # the rig renders about one frame per 3-4 tics: segments are 40 tics; the kick = the 3rd frame of the firing segment
-SET = 'god; notarget; rsq_hands 1; rsq_extra_weapons 1; rsq_ballistics 2; rsr_reload 1; rsq_scope_sniper 1; rsq_scope_railgun 1; screenblocks 12; crosshair 0; '
+SET = 'god; notarget; rsq_hands 1; rsq_extra_weapons 1; rsq_ballistics 2; rsr_reload 1; rsq_scope2_sniper 1; rsq_scope2_railgun 1; screenblocks 12; crosshair 0; '
 def support_cm(g):
     import s192
     return tuple(100 * s192.ht_row('SupportPoint', s192.PG.GUNS[g]['row']))
