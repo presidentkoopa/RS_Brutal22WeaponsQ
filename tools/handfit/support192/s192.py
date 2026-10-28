@@ -1,0 +1,119 @@
+"""support192/s192.py: the scene for a support-hand fit that STARTS FROM THE 1.92 HOLD (owner rule).
+
+For a ported gun <Class>:
+  - the gun as drawn now (fits/ported_<Class>.json place, the gun's ready frame, port_gun.chain), cm FLU;
+  - the shipped FBX gun hand (its trigger frame, handtable GunHook / GunRot row), an obstacle;
+  - 1.92's support: Ermac's hand2.md3 frame (lane_c rows192.json sframe / shook / srot) drawn the 1.92 way, then carried
+    onto the moved gun by the rigid that takes the 1.92 gun (rows192 gun: path / frame / scale / off) onto the gun as drawn now
+    (Kabsch over the same mesh's vertices; the residual is reported);
+  - the FBX LEFT hand fitted to that very Ermac frame (lane_c landmarks_ermac_frames.json 'hand2:<k>': rigid + 18 pose
+    parameters, scale fixed at the controller calibration), carried the same way = the SEED of the support fit.
+Paths: RSQ_HANDS_TOOL (the lane_c fitter, default /home/claude/lane_c/hands_tool), LANE data one level up."""
+import os, sys, json, numpy as np
+HERE = os.path.dirname(os.path.abspath(__file__)); REPO = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
+TOOL = os.environ.get('RSQ_HANDS_TOOL', '/home/claude/lane_c/hands_tool'); LANE = os.path.dirname(TOOL.rstrip('/'))
+for p in (os.path.join(HERE, '..', 'shotguns'), os.path.join(HERE, '..', 'heavies'), os.path.join(HERE, '..', 'port'), TOOL):
+    sys.path.insert(0, p)
+import scene, calib, handmodel, hook, hudrender, md3write, exactpen	# the lane_c fitter first (its scene.P192 = the 1.92 pack)
+import port_gun as PG
+import port_sg, port_hv	# registries (hv last: its SSG entry is the one r11 used)
+sys.path.insert(0, TOOL)	# port_gun puts the repo's fbx_fitter snapshot first: the lane_c fitter (with its LANE data) wins
+from scipy.spatial.transform import Rotation as Rot
+FITS = os.path.join(HERE, '..', 'port', 'fits')
+HT = lambda: os.path.join(PG.SRC, 'zscript/rsq/handtable.zs')
+def jl(p): return json.load(open(p))
+def md3_mesh(path, frame):
+    import struct
+    d = open(path, 'rb').read(); nsurf = struct.unpack_from('<i', d, 84)[0]; off = struct.unpack_from('<i', d, 100)[0]; V = []; F = []; n = 0
+    for s in range(nsurf):
+        flags, snfr, nsh, nv, nt, otri, osh, ost, oxyz, oend = struct.unpack_from('<10i', d, off + 68)
+        xyz = np.frombuffer(d, '<i2', snfr * nv * 4, off + oxyz).reshape(snfr, nv, 4)[:, :, :3].astype(float) / 64.0
+        tri = np.frombuffer(d, '<i4', nt * 3, off + otri).reshape(nt, 3)
+        V.append(xyz[min(frame, snfr - 1)]); F.append(tri + n); n += nv; off += oend
+    return np.concatenate(V), np.concatenate(F)
+def draw(xyz, h, r): return 100 * (hudrender.to_local(xyz, dict(hook=list(h), rot=list(r), **hook.PL)) @ hook.P.T)
+def ht_row(fn, row): return PG.getrow(open(HT()).read(), fn, row)
+def gunhand_md3(g):
+    for f in ('%s_hv.json' % g, '%s_sg.json' % g, '%s.json' % g):
+        p = os.path.join(FITS, f)
+        if os.path.exists(p):
+            h = jl(p).get('hand') or {}
+            if h.get('md3_name') or h.get('md3'): return os.path.join(PG.SRC, 'models/rsq/fbx', h.get('md3_name') or h.get('md3'))
+    raise SystemExit('no gun-hand md3 for %s' % g)
+class Scene:
+    def __init__(s, g, names=None, gun192=None):
+        s.g = g; G = s.G = PG.GUNS[g]; s.row = G['row']
+        P = jl(os.path.join(FITS, 'ported_%s.json' % g)); s.place = np.array(P['place'])
+        names = names or G['names'][:1]; d = os.path.dirname(os.path.join(PG.SRC, G['md3'])); VV = []; FF = []; n = 0
+        for nm in names:
+            X, F = md3_mesh(os.path.join(d, nm), G['ready']); VV.append(PG.chain(G['scale'], s.place[:3], s.place[3:])(X)); FF.append(F + n); n += len(X)
+        s.Vg = np.concatenate(VV); s.Fg = np.concatenate(FF); s.names = names
+        # the gun hand (trigger frame) where it is drawn
+        gh = gunhand_md3(g); s.gh_md3 = gh
+        Xh, Fh = md3_mesh(gh, 0); s.Xh = draw(PG.md3_frames(gh)[0][0], ht_row('GunHook', s.row), ht_row('GunRot', s.row)); s.Fh = Fh
+        # 1.92: the gun and Ermac's support
+        R192 = jl(os.path.join(LANE, 'rows192.json'))[gun192 or g]; s.r192 = R192
+        _, V192 = scene.merged(R192['gun']); V1, _ = md3_mesh(os.path.join(d, names[0]), G['ready'])
+        V1 = PG.chain(G['scale'], s.place[:3], s.place[3:])(V1)
+        assert len(V192) == len(V1), '1.92 gun mesh != 1.99 gun mesh (%d vs %d vertices)' % (len(V192), len(V1))
+        s.Rm, s.tm = PG.kabsch(V192, V1); s.move_res = float(np.abs(V192 @ s.Rm.T + s.tm - V1).max())
+        mv = lambda X: np.asarray(X) @ s.Rm.T + s.tm
+        it = dict(path=scene.HAND2_192, frame=R192['sframe'], **scene.ERMAC_PL)
+        Fe, E0 = scene.merged(dict(it, hook=(0, 0, 0), rot=(0, 0, 0))); _, E1 = scene.merged(dict(it, hook=R192['shook'], rot=R192['srot']))
+        Rh, th = PG.kabsch(E0, E1); s.E = mv(E1); s.Fe = Fe
+        # the FBX left hand fitted to that Ermac frame (controller frame, hook 0), carried the same way
+        s.HL = handmodel.FbxHand('L'); s.lm_e = jl(os.path.join(LANE, 'landmarks_ermac_frames.json'))['hand2:%d' % R192['sframe']]
+        s.p0 = np.array(s.lm_e['p']); X0 = calib.place(s.HL, s.p0); s.X0 = mv(X0 @ Rh.T + th)
+        s.Rseed = s.Rm @ Rh; s.tseed = s.Rm @ th + s.tm	# hand frame (calib.place output) -> drawn
+        s.L = jl(os.path.join(LANE, 'landmarks_fbx.json'))['L']; s.Fl = s.HL.F
+        s.exg = exactpen.Exact(s.Vg, s.Fg); s.exh = exactpen.Exact(s.Xh, s.Fh)
+    def hand(s, p):
+        """p = [rotvec(3), t(3), logscale, q(18)] in the calib frame, then the seed carry -> drawn cm"""
+        return calib.place(s.HL, p) @ s.Rseed.T + s.tseed
+
+LMK = ['web', 'palm', 'pad_I', 'prox_I', 'pad_M', 'prox_M', 'pad_R', 'prox_R', 'pad_P', 'prox_P', 'pad_T', 'prox_T']
+def seed_refit(S, w_lm=1.0, w_ch=0.3, nfev=80):
+    """The lane_c FBX-to-Ermac frame fit (landmarks_ermac_frames) is a trimmed chamfer and can land in a fist where Ermac's
+    fingers are straight (SSG: rms 1.7 cm, curled). Re-fit the FBX left hand to the SAME 1.92 Ermac frame (as drawn on the gun)
+    with landmark correspondences: Ermac's landmark REGIONS (lane_c landmarks_ermac.json, hand2 has hand.md3's topology) <->
+    the FBX landmark vertices (landmarks_fbx.json L), plus a trimmed two-way chamfer. Starts: lane_c's fit and the open hand
+    (q = 0) placed by the landmark Kabsch; the lower cost wins. Scale stays at the controller calibration (p[6])."""
+    from scipy.optimize import least_squares
+    from scipy.spatial import cKDTree
+    e = jl(os.path.join(LANE, 'landmarks_ermac.json')); R = e['_reg']
+    T = np.array([S.E[R[k]].mean(0) for k in LMK]); Lv = np.array([S.L[k] for k in LMK]); tE = cKDTree(S.E); subE = S.E[::2]
+    nolf = np.setdiff1d(np.arange(len(S.HL.Vh)), S.L['cuff'])	# the FBX forearm/cuff band has no Ermac counterpart: out of the chamfer
+    nolf = nolf[::3]
+    def res(z, p6):
+        X = S.hand(np.r_[z[:6], p6, z[6:]]); r = [w_lm * (X[Lv] - T).ravel()]
+        d1, _ = tE.query(X[nolf]); d1 = np.minimum(d1, np.quantile(d1, 0.9)); r.append(w_ch * d1)
+        d2, _ = cKDTree(X).query(subE); d2 = np.minimum(d2, np.quantile(d2, 0.9)); r.append(w_ch * d2)
+        return np.concatenate(r)
+    lob = np.r_[[-np.inf] * 6, handmodel.QLO]; hib = np.r_[[np.inf] * 6, handmodel.QHI]; best = None
+    for q in (S.p0[7:], np.zeros(18), np.r_[[0.3, 0.3, 0] * 4, [0.2, 0.2, 0, 0], [0, 0]]):
+        p = np.r_[S.p0[:7], q]; X = S.hand(p); Rk, tk = PG.kabsch(X[Lv], T)	# rigid start: landmarks onto Ermac's
+        Rp = Rot.from_rotvec(p[:3]).as_matrix(); Rs = S.Rseed
+        # X = (s V Rp^T + t) Rs^T + ts ; apply Rk: new Rp' = Rs^T Rk Rs Rp, t' = Rs^T (Rk (Rs t + ts) + tk - ts)
+        Rp2 = Rs.T @ Rk @ Rs @ Rp; t2 = Rs.T @ (Rk @ (Rs @ p[3:6] + S.tseed) + tk - S.tseed)
+        z0 = np.clip(np.r_[Rot.from_matrix(Rp2).as_rotvec(), t2, q], lob + 1e-9, hib - 1e-9)
+        sol = least_squares(lambda z: res(z, S.p0[6]), z0, bounds=(lob, hib), max_nfev=nfev, x_scale=np.r_[[0.02] * 3, [0.5] * 3, [0.1, 0.1, 5] * 4 + [0.1, 0.1, 5, 5] + [5, 5]])
+        X = S.hand(np.r_[sol.x[:6], S.p0[6], sol.x[6:]]); lm = float(np.sqrt(((X[Lv] - T) ** 2).sum(1).mean()))
+        if best is None or sol.cost < best[0]: best = (sol.cost, sol.x, lm)
+    z = best[1]; p = np.r_[z[:6], S.p0[6], z[6:]]; X = S.hand(p)
+    d1, _ = tE.query(X[nolf]); return p, X, dict(landmark_rms_cm=round(best[2], 2), chamfer_med_cm=round(float(np.median(d1)), 2))
+
+def apply_rigid(S, p, Rk, tk):
+    """p (calib frame) such that its drawn hand = Rk @ (drawn hand of p) + tk"""
+    Rp = Rot.from_rotvec(p[:3]).as_matrix(); Rs = S.Rseed
+    Rp2 = Rs.T @ Rk @ Rs @ Rp; t2 = Rs.T @ (Rk @ (Rs @ p[3:6] + S.tseed) + tk - S.tseed)
+    return np.r_[Rot.from_matrix(Rp2).as_rotvec(), t2, p[6:]]
+def onto_vgrip(S, p, c, a):
+    """a vertical foregrip (centre c, axis a pointing up, measured on the mesh): the 1.92 fist moved so the grip runs THROUGH it:
+    the fist's curl centre (mean of palm + the 4 proximal + the 4 pad landmarks) onto the grip axis at c, and its knuckle line
+    (pinky -> index proximal) turned onto the axis (index on top), the smallest turn about the curl centre."""
+    X = S.hand(p); L = S.L; k = [L['palm']] + [L['prox_' + f] for f in 'IMRP'] + [L['pad_' + f] for f in 'IMRP']
+    cc = X[k].mean(0); u = X[L['prox_I']] - X[L['prox_P']]; u /= np.linalg.norm(u); a = np.asarray(a, float) / np.linalg.norm(a)
+    v = np.cross(u, a); sn = np.linalg.norm(v); Rk = Rot.from_rotvec(v / sn * np.arcsin(min(1.0, sn))).as_matrix() if sn > 1e-9 else np.eye(3)
+    if u @ a < 0: Rk = Rot.from_rotvec(v / sn * (np.pi - np.arcsin(min(1.0, sn)))).as_matrix()
+    tk = np.asarray(c, float) - Rk @ cc
+    return apply_rigid(S, p, Rk, tk)

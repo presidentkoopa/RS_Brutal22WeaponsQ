@@ -834,3 +834,31 @@ Model RSQ_Hands
 	FrameIndex RQVD A 0 0	// SSG, finger on the trigger
 	FrameIndex RQVD B 0 1	// SSG, squeezed
 }
+// support192 BEGIN
+
+// support192 (support192 batch 1): the FBX support hands fitted from the 1.92 holds (tools/handfit/support192), baked in place
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_s192_L.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQWS A 0 0	// SSG
+	FrameIndex RQWS B 0 1	// Shot_Gun
+	FrameIndex RQWS C 0 2	// AssaultShotgun
+	FrameIndex RQWS D 0 3	// Rifle
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_s192_L.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQWS A 0 0	// SSG
+	FrameIndex RQWS B 0 1	// Shot_Gun
+	FrameIndex RQWS C 0 2	// AssaultShotgun
+	FrameIndex RQWS D 0 3	// Rifle
+}
+// support192 END
