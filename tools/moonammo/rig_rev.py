@@ -11,7 +11,7 @@ Load order doom2 -> brutal22test6 -> BD_VoxelPack -> pack (+ the rig's probe). R
            and the RevolverRounds cap (printinv), the counts
   drops  : with Moonlight Replaces Pistol 0 and 1: 10 PistolSpawner summoned (a map pistol), 5 PistolZombie summoned
            and killed (their PistolDrop flies and lands as a PistolSpawner), then what is in the world
-  slug   : the Shotvolver (BD22 Revolver) with rsa_rev_magnum 1: alt fire, then fire; the test-only slugprobe.pk3
+  slug   : the Shotvolver (BD22 Revolver) with rsa_rev_slug 1: alt fire, then fire; the test-only slugprobe.pk3
            (tools/moonammo/slugprobe) counts the bullets' puffs per tic: the slug is one bullet, the shell 35
   menu   : the BD22 VR WEAPONS menu opened, frames dumped
   dual   : one Moonlight, a second picked up, the Dual key: both held; fire main, off, both; flick the off hand,
@@ -106,12 +106,12 @@ if 'drops' in JOBS:
 
 if 'slug' in JOBS:
     probe = os.environ.get('SLUGPROBE', os.path.join(OUT, '..', 'slugprobe.pk3'))
-    s = PRE + ('rsa_rev_magnum 1; give Revolver; give AmmoShell 50; use Revolver; wait 150; echo REV ALTFIRE; +altattack; wait 40; '
+    s = PRE + ('rsa_rev_slug 1; give Revolver; give AmmoShell 50; use Revolver; wait 150; echo REV ALTFIRE; +altattack; wait 40; '
                '-altattack; wait 60; echo REV FIRE; +attack; wait 4; -attack; wait 60; echo REV ALTFIRE2; +altattack; wait 40; -altattack; '
                'wait 60; echo REV END; quit')
     rc, t = rig.run('rev_slug', s, 240, [os.path.abspath(probe)]); restore_ini()
     log = OUT + '/build/logs/rev_slug.log'
-    show('slug rc %d (from %s)' % (rc, log), open(log, errors='replace').read(), r'REV |SLUGPROBE|rsa_rev_magnum')
+    show('slug rc %d (from %s)' % (rc, log), open(log, errors='replace').read(), r'REV |SLUGPROBE|rsa_rev_slug')
 
 if 'menu' in JOBS:
     fr = OUT + '/frames_menu'

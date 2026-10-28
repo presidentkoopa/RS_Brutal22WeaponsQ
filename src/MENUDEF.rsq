@@ -70,7 +70,7 @@ OptionMenu "RSQ_Options"
 	Slider "Reload assist", "rsr_assist", 0.5, 3.0, 0.1
 	Option "Pistol Semi Auto", "rsa_pistol_semi", "OnOff"
 	Option "Shotgun Slugshot Alt Fire", "rsa_sg_slug", "OnOff"
-	Option "Shotvolver Slugshot Alt Fire", "rsa_rev_magnum", "OnOff"
+	Option "Shotvolver Slugshot Alt Fire", "rsa_rev_slug", "OnOff"
 	Option "Shot/Revolver Reload", "rsb_revolver_feed", "RSB_RevFeed"
 	Option "Rifle Underbarrel Ammo", "rsm_ammo", "RSM_Ammo"
 	Option "Machinegun replaces MG42", "rsq_mg_replaces_mg42", "OnOff"

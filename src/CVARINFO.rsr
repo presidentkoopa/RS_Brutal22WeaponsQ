@@ -32,5 +32,5 @@ server int rsm_ammo = 0;
 
 // 1.37 secondary fire on the zoom buttons (zscript/rsq/alts.zs): off = BD22 as it was
 server bool rsa_pistol_semi = false;	// pistol: one shot per trigger pull
-server bool rsa_rev_magnum = false;	// revolver: secondary fires a slug
+server bool rsa_rev_slug = true;	// Shotvolver: secondary fires a slug. 2.0 (owner 2026-10-28): on by default (r3 item 24). Renamed from rsa_rev_magnum: an ini saved by an older build holds rsa_rev_magnum=false, which would keep the new default from ever reaching it
 server bool rsa_sg_slug = false;		// pump shotgun: secondary fires a slug
