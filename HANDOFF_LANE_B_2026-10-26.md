@@ -1296,3 +1296,54 @@ on the unmoved gun (r9: loaded) and fails on the moved one (round never enters).
   FBX support on all except MiniGun (Ermac's handle grip) and PuristRifle (Ermac's handguard grip).
 - **No FBX hand:** SSG, IncendiaryLauncher, FlameCannon, Unmaker, Devastator, HellishMissileLauncher, BIG_FUCKING_GUN; melee/thrown:
   BrutalAxe, Chain_saw, DSweap, HandGrenades.
+
+# r11 port lane (2026-10-27, branch `r11-port` merged into `lane-b-1.99x`): BIG_FUCKING_GUN, IncendiaryLauncher, Devastator, SSG. RIG ONLY, NOT HEADSET-CONFIRMED
+
+Same one method as r10 (wrist pinned, the GUN moves to the hand; every dependent table moves with it) via `heavies/port_hv.py`.
+Inputs: `/home/claude/fitfarm_results` (PICKS_r3.md), copied unchanged to `tools/handfit/port/fits/farm_r3/<Gun>/`.
+Commits: BIG_FUCKING_GUN / IncendiaryLauncher / Devastator, then SSG (both from the stopped lane, rebased onto the owner-report
+commits), then poses (support as data). Port logs and support checks: `port/fits/r11/`.
+
+## 1. Done (measured; rig only, not headset-confirmed)
+| gun (row) | farm fit | gun hand (trigger pose, cm) | support (FBX RQFS B palm-under, farm placement) | moved |
+|---|---|---|---|---|
+| BIG_FUCKING_GUN (3) | _fromMinigun (r2b) | pad 0.00, pen 0.60, palm 0.69 | pen 0.44, gap 1.45 (support_gun.py 0.49 / 1.11) | bd + purist blocks, Pivot + 4 rows, muzzle added; no rsr/rsb case |
+| IncendiaryLauncher (10) | _fromGrenadeLauncher (r3) | pad 0.44, **pen 0.95** | pen 0.43, gap 1.10 (support_gun.py identical) | bd + purist + m32_rsr.md3 blocks, Pivot + 1 row, rsr case 12, muzzle added |
+| Devastator (6) | _fromRocket_Launcher (r3) | **pad 1.32**, pen 0.58, palm 0.02 | pen 0.49, gap 1.69 (support_gun.py 0.46 / 1.89) | bd + purist + sidewinder_rsr.md3 blocks, Pivot + 7 rows, rsr case 14, muzzle added |
+| SSG (20) | own 1.92 hold (r2) | pad 0.00, pen 0.45, palm 0.34 | pen 0.44, gap 1.30 (support_gun.py identical) | 10 MODELDEF blocks (bd, purist, rsb, rsqoff RSQ_Off_SSG), Pivot + 8 rows, rsb case 1 (Hinge / Axis / Offset / PushRef / Bores; off-hand shell block moved, Hand0-2 / HandT re-expressed), casing port, muzzle added |
+Hand sprites RQVB BFG, RQV8 Incendiary, RQVC Devastator, RQVD SSG. Shipped md3s are byte-identical to the farm bakes.
+**Variants (owner rule 23):** PuristBIG_FUCKING_GUN / PuristIncendiaryLauncher / PuristDevastator / PuristSSG subclass the Brutal guns
+(`is` lookups in handtable / gunmoves / muzzle / rsr / rsb inherit the rows); their MODELDEF.purist gun blocks carry the same move and
+their dual hand blocks the same FBX md3. No variant was fitted. No Tactical class exists in the pack or brutal22test6.
+**Poses as data:** `poses/<Gun>.json` for all four; `rebake.py bake` reproduces the shipped bakes: 0.0000 / 0.0156 / 0.0000 / 0.0000 md3
+units (Incendiary 1 md3 quantum). The JSONs now also hold `support` (the shipped handtable SupportHook / Rot / Point row, the farm's
+sup_pen / gap, support_gun.py's check). r10's four pose JSONs still lack `support` (their numbers are in `port/fits/r10/sup_*.json`).
+
+## 2. Rig evidence (QZD 17.3 "QZDoom version 4.14.3", doom2 > brutal22test6 > BD_VoxelPack > pack, rig.lock, ini restored, ppm dumps deleted)
+- Pack **`/home/claude/lane_b_out/BD22_VR-Reloaded_1.99x-lb-r11.pk3`** (`python3 build.py 1.99x-lb-r11` at f8fefcf; `src/` byte-identical at the pushed head (git diff f8fefcf HEAD -- src: empty)),
+  sha256 `69c01a94cac563eb745273d4eaa4cb7723e9842ced08c5e43baaa5909b4ddba8`.
+- Script errors: the only `Script error` lines in every log are BD_VoxelPack's own four (`Script error, "BD_VoxelPack.pk3:voxeldef.txt" line 66:`
+  / 72 / 77 / 892); 0 from the pack, 0 VM aborts (smoke x4, hand reloads, 16 + 2 sheet runs, sweep).
+- Smoke (give, select, steady, fire, alt, reload, fire): all four held; shots BFG 4, Incendiary 2, Devastator 24, SSG 2.
+- Hand reloads on the moved guns: IncendiaryLauncher and Devastator magazines IDLE>EMPTY>DROP>EMPTY>CARRY>INSERT>SEATED>DONE>IDLE;
+  SSG break-open: open, ejected 2, round into chamber 0 (0.0 cm off the bore), flick 457 deg/s, "shut (flick), loaded 2 this reload".
+  (The first SSG run loaded but missed the scripted flick by 3 tics of timing; the rerun shut. Same tables, same chamber geometry.)
+- Sheet **`/home/claude/lane_b_out/r11_hands.png`** (side steady / side fire / eye fire per gun; all frames incl. eye steady in
+  `/home/claude/lane_b_out/r11_frames/`): FBX gun hand on the grip and the FBX palm under the gun on all four in the steady frames.
+  SSG fire frames are a `kill monsters` retake (the first had gore / a monster sprite in front of the camera: kept as `*_withgore.png`).
+- 37-class sweep on the r11 pack: 0 pack script errors, 0 VM aborts; held weapons and reload phases identical to r10's sweep on all 37;
+  shots identical except BrutalSMG 10 (r10 9) and MG42 18 (r10 16), the same run-to-run timing DIFFs r10 recorded. Table:
+  `/home/claude/lane_b_out/r11_frames/sweep_r11.txt` (r10's run dir has since been removed from the box; compared against its recorded table).
+
+## 3. Not done / flagged (open)
+- **Devastator: index pad 1.32 cm off the trigger** (over the fitter's 1 cm threshold; best of three farm starts).
+- **IncendiaryLauncher: gun-hand pen 0.95 cm** (> 0.5); the round-1 alternative had pen 1.53.
+- Look for the owner: Incendiary's support palm sits about 1 cm under the tube (gap 1.10); SSG's support palm is hidden in the fire
+  frames (the gun pitched mid-kick), shown in the steady frame.
+- Nothing here is headset-confirmed.
+
+## 4. BD22 guns with / without FBX hands after r11
+- **FBX gun hand:** r10's list + **SSG, IncendiaryLauncher, Devastator, BIG_FUCKING_GUN** (and their Purist variants). FBX support on all
+  except MiniGun (Ermac's handle grip) and PuristRifle (Ermac's handguard grip).
+- **No FBX hand:** FlameCannon (owner item 21: no gun hand, arm-worn), Unmaker, HellishMissileLauncher; melee/thrown: BrutalAxe,
+  Chain_saw, DSweap, HandGrenades.
