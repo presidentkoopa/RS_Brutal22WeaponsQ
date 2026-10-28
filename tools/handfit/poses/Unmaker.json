@@ -74,6 +74,24 @@
    "solved_params": "hold (no trigger: wrap)"
   },
   "support": {
+   "source": "r12 port (lane B, 2026-10-28): the OLD support kept (owner 2026-10-28: a support lane is redoing it): Ermac hand2.md3 pose D (frame 3) moved with the gun (port_gun support 'move')",
+   "hook": [
+    3.736,
+    -3.803,
+    -8.585
+   ],
+   "rot": [
+    -3.854,
+    3.363,
+    10.974
+   ],
+   "point_m": [
+    0.366,
+    0.043,
+    0.004
+   ]
+  },
+  "support_farm_not_shipped": {
    "source": "fbx_b1_L.md3 frame 1 (RQFS B, FBX open palm-under; shipped), placed by fit_hv bake",
    "hook": [
     -5.388605371374978,
@@ -210,5 +228,16 @@
   "note": "r4/bake_r4.py (cloud; farm curl)",
   "minutes": 94.61,
   "batch_dir": "Unmaker"
+ },
+ "port": {
+  "tag": "r12 port (lane B, 2026-10-28)",
+  "ported": [
+   1.3084757242727458,
+   -6.491677992615126,
+   0.0832717447842554,
+   3.85399999999998,
+   3.3629999999999995,
+   10.974000000000004
+  ]
  }
 }

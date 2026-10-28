@@ -118,6 +118,8 @@ def compare(new, ref):
 def rebake(path, out):
     J = json.load(open(path))
     if J.get('form') == 'lane_c': return rebake_lanec_cmp(J, out)
+    if 'poses' in J and 'trigger' not in J['poses']:	# r12: FlameCannon (owner: no gun hand drawn): nothing to bake, placement only
+        print('no gun hand (%s): nothing to bake' % J.get('gun_hand', 'none')); return {}
     Xt, Xs, ctx, x, Xf = (rebuild_hv if 'poses' in J else rebuild_sg if 'joints' in J else rebuild)(J); Rg, tg = solve.gun_T(ctx, x); to_c = lambda X: solve.gmove(ctx, Rg, tg, X)
     ent = [dict(name=J['cls'] + '_trg', side='R', X=to_c(Xt)), dict(name=J['cls'] + '_sqz', side='R', X=to_c(Xs)), dict(name='PISTOL_chk', side='R', X=to_c(Xf))]
     for e in ent: e['cuff_ref'] = e['X'][ctx.cuff]
@@ -134,6 +136,7 @@ def _port():
     pg.SRC = os.environ.get('RSQ_SRC', os.path.join(REPO, 'src'))
     for d, m in (('shotguns', 'port_sg'), ('heavies', 'port_hv')):	# hv last: its SSG entry is the one the r11 port used
         sys.path.insert(0, os.path.join(HERE, '..', d)); __import__(m)
+    __import__('melee_r12')	# r12: the melee registry (BrutalAxe, Chain_saw, DSweap)
     return pg
 def place_of(J):
     g = J['gun_move']
@@ -173,6 +176,8 @@ def place(cls):
         tx = open(os.path.join(pg.SRC, 'zscript/rsq/gunmoves.zs'), encoding='latin1').read(); row = G['row']
         i0 = tx.index('clearscope static Vector3 Pivot'); i1 = tx.index('};', i0); vals = [float(s.strip()) for s in tx[i0:i1].split('{ ', 1)[1].split(',')]
         if 3 * row + 2 >= len(vals): out['gunmoves'] = 'row %d not in gunmoves.zs (port: nothing moved)' % row; return out
+        if cls in sys.modules['port_hv'].NOGUNMOVES and vals[3 * row:3 * row + 3] == [0.0, 0.0, 0.0]:	# r12: row 27 now exists in Pivot as (0, 0, 0) (= what Pivot returned before)
+            out['gunmoves'] = 'row %d: Pivot (0, 0, 0), no fire rows (port_hv NOGUNMOVES: nothing moved)' % row; return out
         new = pg.pivot(p[:2], p[2]); out['pivot_diff'] = float(np.abs(np.round(new, 3) - np.array(vals[3 * row:3 * row + 3])).max())
         spr = re.findall(r'"([^"]+)"', re.search(r'static const String spr\[\] = \{([^}]*)\}', tx).group(1))
         key = [int(v) for v in re.search(r'static const int key\[\] = \{([^}]*)\}', tx).group(1).split(',')]
@@ -310,7 +315,10 @@ def check(classes):
     verify_sources()
     classes = classes or sorted(os.path.basename(f)[:-5] for f in glob.glob(os.path.join(POSES, '*.json'))); tmp = tempfile.mkdtemp(prefix='rebake_')
     for g in classes:
-        print('== %s' % g); r = rebake(os.path.join(POSES, g + '.json'), os.path.join(tmp, g)); print('placement:', json.dumps(place(g)))
+        print('== %s' % g)
+        if json.load(open(os.path.join(POSES, g + '.json'))).get('gun_move', 1) is None:	# r12: staged, not ported (HandGrenades: not ready)
+            print('not ported (gun_move null): skipped'); continue
+        r = rebake(os.path.join(POSES, g + '.json'), os.path.join(tmp, g)); print('placement:', json.dumps(place(g)))
 if __name__ == '__main__':
     if sys.argv[1] == 'export':
         a = [v for v in sys.argv[2:] if not v.startswith('--')]; kw = dict(v[2:].split('=', 1) for v in sys.argv[2:] if v.startswith('--'))

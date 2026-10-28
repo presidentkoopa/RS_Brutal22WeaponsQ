@@ -230,5 +230,61 @@
   "note": null,
   "minutes": 135.39,
   "batch_dir": "BFG10k"
+ },
+ "port": {
+  "tag": "r12 port (lane B, 2026-10-28)",
+  "how": "reseat_gun.py: re-fit of the gun hand on the already ported gun; the gun moved again by the relative move",
+  "reseated_from": [
+   -0.3443378512669005,
+   -2.492983046930734,
+   -0.7299204923910211,
+   3.8539999999999868,
+   3.362999999999997,
+   10.974000000000004
+  ],
+  "relative_turn_deg": 0.0,
+  "relative_t_cm": [
+   0.16040618638545423,
+   0.4813939811271464,
+   0.4576032421769023
+  ],
+  "support_shipped": "NOT touched by r12 (support lane owns it): handtable row 2 as shipped",
+  "support_shipped_rows": {
+   "GunHook": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "GunRot": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "GunHookTwo": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "GunRotTwo": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "SupportHook": [
+    -3.355,
+    9.356,
+    6.131
+   ],
+   "SupportRot": [
+    -7.927,
+    2.302,
+    10.732
+   ],
+   "SupportPoint": [
+    0.327,
+    0.064,
+    -0.027
+   ]
+  }
  }
 }

@@ -182,7 +182,59 @@
     "cuff_below": 16.840699952458493
    },
    "bake_check_max_cm": 0.011238371895494481,
-   "minutes": 5.07
+   "minutes": 5.07,
+   "shipped": "r12 port (lane B, 2026-10-28): MODELDEF.rsq RQXB (fbx_r4_FlameCannon_under40_L.md3 frame 0), hands.zs FbxSupFC, handtable row 28"
+  }
+ },
+ "port": {
+  "tag": "r12 port (lane B, 2026-10-28)",
+  "how": "flamecannon_r12.py: handtable row 28 added (no gun hand), MODELDEF place, gunmoves Pivot 28, RSQ_Muzzle + flamespout at the nozzle tip",
+  "nozzle_tip_flu": [
+   61.91792466932772,
+   -5.018635811699864,
+   -14.532410925076736
+  ],
+  "barrel_axis_flu": [
+   0.9918933542391523,
+   -0.07220037419819737,
+   -0.10455641865444261
+  ],
+  "handtable": {
+   "GunHook": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "GunRot": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "GunHookTwo": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "GunRotTwo": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "SupportHook": [
+    -3.094,
+    18.392,
+    2.135
+   ],
+   "SupportRot": [
+    3.574,
+    -37.502,
+    -0.526
+   ],
+   "SupportPoint": [
+    0.321,
+    -0.037,
+    -0.232
+   ]
   }
  }
 }

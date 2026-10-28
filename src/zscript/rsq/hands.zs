@@ -123,6 +123,8 @@ class RSQ_GunSide : Inventory
 	FbxSqzF: RQFG D -1; Stop;
 	FbxSupP: RQFS A -1; Stop;
 	FbxSupF: RQFS B -1; Stop;
+	FbxSupDS: RQXD A -1; Stop;	// r12 port: DSweap (row 26) support
+	FbxSupSaw: RQXC A -1; Stop;	// r12 port: Chain_saw (row 25) support
 	FbxSupFC: RQXB A -1; Stop;	// r12 port: FlameCannon (row 28) support
 	FbxSupMini: RQXA A -1; Stop;	// r12 port: Minigun (row 13) support
 	// support192 BEGIN: the FBX support hands fitted from the 1.92 holds (tools/handfit/support192)
@@ -207,6 +209,15 @@ class RSQ_GunSide : Inventory
 	// r12 port: HellishMissileLauncher (row 9)
 	FbxTrgHML: RQVF A -1; Stop;
 	FbxSqzHML: RQVF B -1; Stop;
+	// r12 port: Chain_saw (row 25)
+	FbxTrgSaw: RQVG A -1; Stop;
+	FbxSqzSaw: RQVG B -1; Stop;
+	// r12 port: DSweap (row 26)
+	FbxTrgDS: RQVH A -1; Stop;
+	FbxSqzDS: RQVH B -1; Stop;
+	// r12 port: BrutalAxe (row 24)
+	FbxTrgAxe: RQVI A -1; Stop;
+	FbxSqzAxe: RQVI B -1; Stop;
 	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
 	Nade: RQGN A -1; Stop;	// Ermac's ammo hand round the VR grenade
 	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
@@ -372,7 +383,9 @@ class RSQ_Hands : Weapon
 		// 2026-10-16 (owner): the free off hand is a FIST (it punches: rsq/fists.zs), open only
 		// while the grenade is out, to take its ring
 		bool nade = p.ReadyWeapon && p.ReadyWeapon.GetClassName() == 'HandGrenades';
-		String fh = !on || (hold && !swordTwo) ? "Hidden" : rsr != "" ? rsr : carry == 0 && !nade ? "AmmoH" : ammo[clamp(carry, 0, 7)];
+		// r12 port (owner item 28: "two hands on the hilt"): the two-handed sword now draws the FBX support hand ON the hilt
+		// (FbxSupDS, turned with the sword below), so the free fist is hidden then too
+		String fh = !on || hold || swordTwo ? "Hidden" : rsr != "" ? rsr : carry == 0 && !nade ? "AmmoH" : ammo[clamp(carry, 0, 7)];
 		invoker.freeFist = fh == "AmmoH";
 		invoker.OffPunch(mo);
 		invoker.SetLayer(p, RSQ_Layers.FREEHAND, invoker, fh);
@@ -623,6 +636,39 @@ class RSQ_Hands : Weapon
 			}
 			gl = msq ? "FbxSqzHML" : "FbxTrgHML";
 		}
+		if (i == 25)	// r12 port: Chain_saw squeezes on its fire frames: 1AWF ABCDEFGHIJKLMNOPQRSTUVWXYZ, 1AWG HIJKLMOPQRSTUWXYZ[, 2AWF ABCDEFGHIJKLMNOPQRSTUVWXYZ, 2AWG HIJKLMOPQRSTUWXYZ[, 3AWF ABCDEFGHIJKLMNOPQRSTUVWXYZ, 3AWG HIJKLMOPQRSTUWXYZ[, PAWF ABCDEFGHIJKLMNOPQRSTUVWXYZ, PAWG HIJKLMOPQRSTUW, SAWF ABCDEFGHIJKLMNOPQRSTUVWXYZ, SAWG HIJKLMOPQRSTUWXYZ[ or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || (mgp.Sprite == Actor.GetSpriteIndex('1AWF') && (mf == 0 || mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 6 || mf == 7 || mf == 8 || mf == 9 || mf == 10 || mf == 11 || mf == 12 || mf == 13 || mf == 14 || mf == 15 || mf == 16 || mf == 17 || mf == 18 || mf == 19 || mf == 20 || mf == 21 || mf == 22 || mf == 23 || mf == 24 || mf == 25)) || (mgp.Sprite == Actor.GetSpriteIndex('1AWG') && (mf == 7 || mf == 8 || mf == 9 || mf == 10 || mf == 11 || mf == 12 || mf == 14 || mf == 15 || mf == 16 || mf == 17 || mf == 18 || mf == 19 || mf == 20 || mf == 22 || mf == 23 || mf == 24 || mf == 25 || mf == 26)) || (mgp.Sprite == Actor.GetSpriteIndex('2AWF') && (mf == 0 || mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 6 || mf == 7 || mf == 8 || mf == 9 || mf == 10 || mf == 11 || mf == 12 || mf == 13 || mf == 14 || mf == 15 || mf == 16 || mf == 17 || mf == 18 || mf == 19 || mf == 20 || mf == 21 || mf == 22 || mf == 23 || mf == 24 || mf == 25)) || (mgp.Sprite == Actor.GetSpriteIndex('2AWG') && (mf == 7 || mf == 8 || mf == 9 || mf == 10 || mf == 11 || mf == 12 || mf == 14 || mf == 15 || mf == 16 || mf == 17 || mf == 18 || mf == 19 || mf == 20 || mf == 22 || mf == 23 || mf == 24 || mf == 25 || mf == 26)) || (mgp.Sprite == Actor.GetSpriteIndex('3AWF') && (mf == 0 || mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 6 || mf == 7 || mf == 8 || mf == 9 || mf == 10 || mf == 11 || mf == 12 || mf == 13 || mf == 14 || mf == 15 || mf == 16 || mf == 17 || mf == 18 || mf == 19 || mf == 20 || mf == 21 || mf == 22 || mf == 23 || mf == 24 || mf == 25)) || (mgp.Sprite == Actor.GetSpriteIndex('3AWG') && (mf == 7 || mf == 8 || mf == 9 || mf == 10 || mf == 11 || mf == 12 || mf == 14 || mf == 15 || mf == 16 || mf == 17 || mf == 18 || mf == 19 || mf == 20 || mf == 22 || mf == 23 || mf == 24 || mf == 25 || mf == 26)) || (mgp.Sprite == Actor.GetSpriteIndex('PAWF') && (mf == 0 || mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 6 || mf == 7 || mf == 8 || mf == 9 || mf == 10 || mf == 11 || mf == 12 || mf == 13 || mf == 14 || mf == 15 || mf == 16 || mf == 17 || mf == 18 || mf == 19 || mf == 20 || mf == 21 || mf == 22 || mf == 23 || mf == 24 || mf == 25)) || (mgp.Sprite == Actor.GetSpriteIndex('PAWG') && (mf == 7 || mf == 8 || mf == 9 || mf == 10 || mf == 11 || mf == 12 || mf == 14 || mf == 15 || mf == 16 || mf == 17 || mf == 18 || mf == 19 || mf == 20 || mf == 22)) || (mgp.Sprite == Actor.GetSpriteIndex('SAWF') && (mf == 0 || mf == 1 || mf == 2 || mf == 3 || mf == 4 || mf == 5 || mf == 6 || mf == 7 || mf == 8 || mf == 9 || mf == 10 || mf == 11 || mf == 12 || mf == 13 || mf == 14 || mf == 15 || mf == 16 || mf == 17 || mf == 18 || mf == 19 || mf == 20 || mf == 21 || mf == 22 || mf == 23 || mf == 24 || mf == 25)) || (mgp.Sprite == Actor.GetSpriteIndex('SAWG') && (mf == 7 || mf == 8 || mf == 9 || mf == 10 || mf == 11 || mf == 12 || mf == 14 || mf == 15 || mf == 16 || mf == 17 || mf == 18 || mf == 19 || mf == 20 || mf == 22 || mf == 23 || mf == 24 || mf == 25 || mf == 26));
+			}
+			gl = msq ? "FbxSqzSaw" : "FbxTrgSaw";
+		}
+		if (i == 26)	// r12 port: DSweap squeezes on its never (melee: frame 1 is the saw trigger only); fullbright frames only or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || false && false;
+			}
+			gl = msq ? "FbxSqzDS" : "FbxTrgDS";
+		}
+		if (i == 24)	// r12 port: BrutalAxe squeezes on its never (melee: frame 1 is the saw trigger only); fullbright frames only or fullbright, trigger otherwise
+		{
+			bool msq = false;
+			let mgp = p.FindPSprite(PSP_WEAPON);
+			if (mgp && mgp.CurState)
+			{
+				int mf = mgp.Frame;
+				msq = mgp.CurState.bFullbright || false && false;
+			}
+			gl = msq ? "FbxSqzAxe" : "FbxTrgAxe";
+		}
 		if (i == 18)	// batch 4: Rifle squeezes on its FIRE frames (gunmoves rows 93-95: RIFF / RI2F / 2IFF A-D and the no-tube twins QT09 / QT0A / QT08) or fullbright, trigger otherwise
 		{
 			bool msq = false;
@@ -703,7 +749,11 @@ class RSQ_Hands : Weapon
 			spl = "FbxSupMini";	// r12 port: Minigun, the FBX fist round the side handle (hands r4 support_r4_bar_ref: pen 0.09, wrap I/M/R/P 188/202/198/183 deg; replaces Ermac's pose E; owner-approved 2026-10-28) (handtable SupportHook / SupportRot row 13)
 		if (i == 28)
 			spl = "FbxSupFC";	// r12 port: FlameCannon, the FBX open palm cupped under the barrel 38 cm from the slit (hands r4 FlameCannon_under40: pen 0.33, palm gap 0.30; owner-approved 2026-10-28) (handtable SupportHook / SupportRot row 28)
-		invoker.SetLayer(p, RSQ_Layers.SUPPORT, gs, hold && sp != "" && !swordTwo ? spl : "Hidden");
+		if (i == 25)
+			spl = "FbxSupSaw";	// r12 port: Chain_saw, the FBX L hand on the top handle (melee lane support_top: R fit on the mirrored saw, mirrored back; pen 0.39; owner-approved 2026-10-27) (handtable SupportHook / SupportRot row 25)
+		if (i == 26)
+			spl = "FbxSupDS";	// r12 port: DSweap, the FBX L hand on the hilt below the gun hand (melee lane: the gun hand mirrored, slid 12.5 cm down the handle; pen 0.44; owner-approved 2026-10-27) (handtable SupportHook / SupportRot row 26)
+		invoker.SetLayer(p, RSQ_Layers.SUPPORT, gs, (hold || swordTwo) && sp != "" ? spl : "Hidden");	// r12 port: the two-handed sword shows its FBX support on the hilt
 
 		// 2026-10-23: the VR scope's reticle (rsq/scope.zs). WHETHER the layer is there is this
 		// tic's business; WHERE it sits is ModifyBobLayer3D's, per rendered frame. It exists
@@ -1053,7 +1103,7 @@ class RSQ_Hands : Weapon
 		}
 		Vector3 t, r;
 		[t, r] = RSQ_Turn.Place(hook, hookTurn, gunTurnNow, frameTurn, frameMove, RSQ_GunMoves.Pivot(i));
-		if (gunHand && i == 26 && Owner.CountInv('RSVR_SwordTwo') > 0)
+		if (i == 26 && Owner.CountInv('RSVR_SwordTwo') > 0)	// r12 port: the support hand (FBX L on the hilt) takes the same turn as the gun hand and the sword
 		{
 			// r6b: the two-handed sword block (MODELDEF.bd.txt DSL2) turns the mesh 110 deg
 			// (forward toward up) about the grip, (0, 5, -6) in this layer's space: the sword's
@@ -1198,6 +1248,12 @@ class RSQ_Hands : Weapon
 	DFbxSqzUnm: RQVE B -1; Stop;
 	DFbxTrgHML: RQVF A -1; Stop;	// r12 port: dual wield, HellishMissileLauncher
 	DFbxSqzHML: RQVF B -1; Stop;
+	DFbxTrgSaw: RQVG A -1; Stop;	// r12 port: dual wield, Chain_saw
+	DFbxSqzSaw: RQVG B -1; Stop;
+	DFbxTrgDS: RQVH A -1; Stop;	// r12 port: dual wield, DSweap
+	DFbxSqzDS: RQVH B -1; Stop;
+	DFbxTrgAxe: RQVI A -1; Stop;	// r12 port: dual wield, BrutalAxe
+	DFbxSqzAxe: RQVI B -1; Stop;
 	Hidden: TNT1 A -1; Stop;
 	}
 }

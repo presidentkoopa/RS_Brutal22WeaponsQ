@@ -960,3 +960,109 @@ Model RSQ_Hands
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQXB A 0 0	// FlameCannon support
 }
+
+// r12 port (lane B): Chain_saw (row 25) holds the FBX gun hand fitted from 1.92's Chain_saw hold (frames baked in place, hook 0)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_Chain_saw_rear_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVG A 0 0	// Chain_saw, finger on the trigger
+	FrameIndex RQVG B 0 1	// Chain_saw, squeezed
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_Chain_saw_rear_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVG A 0 0	// Chain_saw, finger on the trigger
+	FrameIndex RQVG B 0 1	// Chain_saw, squeezed
+}
+
+// r12 port (lane B): Chain_saw (row 25) support hand, its own FBX L frame drawn as RQFS B is (handtable SupportHook / SupportRot row 25): the FBX L hand on the top handle (melee lane support_top: R fit on the mirrored saw, mirrored back; pen 0.39; owner-approved 2026-10-27)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_melee_Chain_saw_sup_L.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQXC A 0 0	// Chain_saw support
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_melee_Chain_saw_sup_L.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQXC A 0 0	// Chain_saw support
+}
+
+// r12 port (lane B): DSweap (row 26) holds the FBX gun hand fitted from 1.92's DSweap hold (frames baked in place, hook 0)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_DSweap_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVH A 0 0	// DSweap, finger on the trigger
+	FrameIndex RQVH B 0 1	// DSweap, squeezed
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_DSweap_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVH A 0 0	// DSweap, finger on the trigger
+	FrameIndex RQVH B 0 1	// DSweap, squeezed
+}
+
+// r12 port (lane B): DSweap (row 26) support hand, its own FBX L frame drawn as RQFS B is (handtable SupportHook / SupportRot row 26): the FBX L hand on the hilt below the gun hand (melee lane: the gun hand mirrored, slid 12.5 cm down the handle; pen 0.44; owner-approved 2026-10-27)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_melee_DSweap_sup_L.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQXD A 0 0	// DSweap support
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_melee_DSweap_sup_L.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQXD A 0 0	// DSweap support
+}
+
+// r12 port (lane B): BrutalAxe (row 24) holds the FBX gun hand fitted from 1.92's BrutalAxe hold (frames baked in place, hook 0)
+Model RSQ_GunSide
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_BrutalAxe_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVI A 0 0	// BrutalAxe, finger on the trigger
+	FrameIndex RQVI B 0 1	// BrutalAxe, squeezed
+}
+Model RSQ_Hands
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_BrutalAxe_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVI A 0 0	// BrutalAxe, finger on the trigger
+	FrameIndex RQVI B 0 1	// BrutalAxe, squeezed
+}

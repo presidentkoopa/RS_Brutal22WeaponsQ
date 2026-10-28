@@ -57,7 +57,7 @@ class RSQ_DualHands : EventHandler
 		else
 		{
 			int i = w && gs ? RSQ_HandTable.Index(w) : 0;
-			if (i > 0 && RSQ_HandTable.GunRot(i) == (0, 0, 0))	// not the axe / chainsaw (turned hands)
+			if (i > 0 && (i < 24 || i > 26) && RSQ_HandTable.GunRot(i) == (0, 0, 0))	// not the axe / chainsaw / sword (r12 port: their GunRot is 0 now, FBX hands baked in place; dual wield keeps no hand for them, as before)
 			{
 				String tf = RSQ_HandTable.Trigger(i);
 				label = tf != "" ? (firing ? "DSqz" : "DTrg") .. tf : "DGun" .. RSQ_HandTable.GunOne(i);

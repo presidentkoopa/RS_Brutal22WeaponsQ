@@ -230,5 +230,61 @@
   "note": null,
   "minutes": 125.53,
   "batch_dir": "NukeLauncher"
+ },
+ "port": {
+  "tag": "r12 port (lane B, 2026-10-28)",
+  "how": "reseat_gun.py: re-fit of the gun hand on the already ported gun; the gun moved again by the relative move",
+  "reseated_from": [
+   0.4629591612353631,
+   -2.370471314977193,
+   4.577300500953199,
+   3.8539999999999854,
+   3.3629999999999924,
+   10.974000000000004
+  ],
+  "relative_turn_deg": 3.1945284701301985e-06,
+  "relative_t_cm": [
+   0.02082550092991653,
+   0.34485219834538183,
+   -0.12979633993136552
+  ],
+  "support_shipped": "NOT touched by r12 (support lane owns it): handtable row 14 as shipped",
+  "support_shipped_rows": {
+   "GunHook": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "GunRot": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "GunHookTwo": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "GunRotTwo": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "SupportHook": [
+    -2.653,
+    11.451,
+    9.613
+   ],
+   "SupportRot": [
+    -7.927,
+    2.302,
+    10.732
+   ],
+   "SupportPoint": [
+    0.278,
+    0.06,
+    -0.01
+   ]
+  }
  }
 }

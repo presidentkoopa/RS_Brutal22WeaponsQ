@@ -180,7 +180,8 @@
      10.9818102124904
     ],
     "note": "R hand placement on the MIRRORED weapon (O frame); mirror L->-L for the L hand"
-   }
+   },
+   "shipped": "r12 port (lane B, 2026-10-28): MODELDEF.rsq RQXC FbxSupSaw, handtable row 25 SupportHook / SupportRot = the support row hook / rot, SupportPoint moved with the weapon"
   }
  },
  "wrist": {
@@ -213,8 +214,105 @@
   ],
   "note": "hand placed X = X_pistol R^T + t in the pistol gun frame; the wrist stays pinned, the WEAPON moves by shift"
  },
- "gun_move": null,
- "gun_move_note": "not ported: the melee lane fits and stages only; the port lane writes MODELDEF place / R / t and moves the melee points (melee.zs BladeIn/BladeOut/AxeHead/Place)",
+ "gun_move": {
+  "modeldef_place": [
+   3.195360269029936,
+   9.816642080877461,
+   -13.63965312843059,
+   3.853999999999999,
+   3.3630000000000053,
+   10.974000000000007
+  ],
+  "R": [
+   [
+    0.996020376007257,
+    -0.07712697355505523,
+    -0.04466363765517163
+   ],
+   [
+    0.06709852807028958,
+    0.9787430001988593,
+    -0.19380383663007517
+   ],
+   [
+    0.05866172610105019,
+    0.19003570588701119,
+    0.9800230774726023
+   ]
+  ],
+  "t": [
+   0.024172959412823047,
+   -0.511419146218353,
+   -6.293184084388582
+  ],
+  "note": "r12 port (lane B, 2026-10-28) (melee_r12.py): one method, the weapon moved to the hand (port_gun.place of the fit shift)",
+  "melee_moves_by_poseFrame": {
+   "2": [
+    [
+     0.996020376007257,
+     -0.07712697355505523,
+     -0.04466363765517163,
+     0.024172959412823047
+    ],
+    [
+     0.06709852807028958,
+     0.9787430001988593,
+     -0.19380383663007517,
+     -0.511419146218353
+    ],
+    [
+     0.05866172610105019,
+     0.19003570588701119,
+     0.9800230774726023,
+     -6.293184084388582
+    ],
+    [
+     0.0,
+     0.0,
+     0.0,
+     1.0
+    ]
+   ]
+  },
+  "two_handed": [],
+  "handtable": {
+   "GunHook": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "GunRot": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "GunHookTwo": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "GunRotTwo": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "SupportHook": [
+    5.19,
+    -32.258,
+    -16.986
+   ],
+   "SupportRot": [
+    36.766,
+    -5.49,
+    116.769
+   ],
+   "SupportPoint": [
+    0.316,
+    0.113,
+    0.092
+   ]
+  }
+ },
  "farm": {
   "result": "Chain_saw",
   "job": {
