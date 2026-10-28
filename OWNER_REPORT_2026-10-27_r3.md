@@ -87,3 +87,13 @@ Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning mat
 23. The Purist, Tactical and any other variant of a gun use the same mesh as the Brutal gun, so they use the same pose.
     - Never fit a variant. Copy the Brutal gun's hand, support and dependent rows to it.
     - Farm records so far: no Purist or Tactical fit was ever run. One PuristRifle support job was briefed by mistake on 2026-10-27 at 20:26. The lane was told at 20:30 to drop it and kill it if already queued.
+
+## Open calls answered (owner, 2026-10-27 20:45-20:47)
+24. **Revolvers:**
+    - The Shotvolver stays, with its slug alt fire. No slug revolver ever replaces it.
+    - New option "Moonlight Replaces Pistol" (default Off): the Moonlight replaces the Brutal Pistol at the start, in map pickups and in drops.
+    - New option "Start With Two Moonlights" (default Off): you start dual, with a 72-round cap.
+    - The Moonlight-replaces-Shotvolver option is gone.
+25. **HUD ammo:** shows the magazine and the reserve by default, with a "Reserve only" option.
+26. **Ammo balance:** the loaded magazine counts on top of the max carry; the cap is the reserve only.
+27. **Recoil:** a design session with the owner after the 2.0 headset pass. Not part of 2.0.
