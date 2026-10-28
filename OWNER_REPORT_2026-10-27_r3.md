@@ -121,3 +121,30 @@ Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning mat
     - The RailGun's lens edge is smooth and round.
     - The Ruger's (XM21.md3, glass surface 10) has a jagged, broken inner ring, and the live picture shows square-cut corners inside it (seen in scope_toggle.png).
     - Fix later: rebuild or smooth the Ruger's lens ring and glass surface so the picture fills a clean circle, matching the RailGun. Not part of 2.0.
+
+## Headset pass on 2.0.1 (owner, 2026-10-28 18:24)
+**Now:**
+31. **Every gun pulls to the right** (horizontal), for both true bullets and the Dakka tracers: chaingun, RailGun, Ruger and the rest. The scopes are useless while the shot misses their centre. The scope and the bullet must agree.
+32. **Ruger:** hand poses are bad, it fires skewed right, and it does not reload.
+33. **Rifle:**
+    - The hand inserting a grenade does not take the selected skin tone (same on the over-under MG).
+    - Empty the mag, switch weapons without inserting a new one, switch back: you can no longer grab ammo to insert.
+34. **Moonlight:** the mesh doesn't animate and the reload is missing a lot of frames. Use all the model's animation frames.
+35. **Unmaker:** the skull insert makes a horrid noise; replace it with a click like the rifle's.
+36. **Melee impact flash** is way too large.
+37. **Axe:** no two-handing (or behave like the sword); the owner wants dual-wielded axes and never to two-hand them.
+38. **Sword (DSweap):** fires several attacks all the time; it should respond to a deliberate swing.
+39. **Options:**
+    - "Shot Tracers" should not be its own option. True Bullet On = our rounds with the Dakka look; Off = stock BD22 hitscan and tracers.
+    - "Check the Chamber by Hand" is confusing: explain or rename it.
+    - "Two-Handed Steadying" is confusing (it is the engine's own two-hand cvar).
+    - "Gun Bash (kick key)": the owner asked twice for a pistol whip, not a kick-key bash.
+
+**Good:** Shotvolver, SMG (mostly), axe (awesome), SSG, pump (almost excellent), assault shotgun (lovely), RailGun scope (beautiful), flamethrower reload (good surprise).
+
+**Later:**
+- Revolver hand a little low; Shotvolver hand a tad higher.
+- SMG support fingers should close more.
+- SSG: the off hand closes the breach.
+- Pump: the grip hand's middle finger should close more.
+- Over-under MG: the support thumb's wrap; the MG doesn't rack.
