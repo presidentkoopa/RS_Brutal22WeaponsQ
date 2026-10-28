@@ -1846,3 +1846,53 @@ build.py's skin-tone step catches every lane's FBX hand blocks (100 blocks to sl
 pk3: /home/claude/lane_b_out/int20/BD22_VR-Reloaded_2.0-int.pk3 sha256 c4b609b1fb0b8b6bc1df363b2b84651697587998c6fdcb1858f2b8654ba3a6e8 (not byte-reproducible: build.py writes the MODELDEF lumps with writestr, current time) (src/ as at the branch head; `python build.py 2.0-int`; the VERSION file still says 1.99).
 Sheets: /home/claude/lane_b_out/int20_sweep.png (every gun held), /home/claude/lane_b_out/int20_purist.png (24 Purist guns);
 per-gun frames in /home/claude/lane_b_out/int20/ (hs_*, pu_*). No .ppm left. Test-only tools: tools/int20_rig/ (never in src/).
+
+## scope-3x (2026-10-28, scope lane, branch `lane-scope`): RailGun and Sniper real 3x scope, always on while held. RIG ONLY, NOT HEADSET-CONFIRMED
+Owner 00:05: "Railgun scope does not seem to be zooming see-through ... renders 3x at all times."
+
+### What was wrong (each shown on the rig, QZD 17.3, doom2 > brutal22test6 > BD_VoxelPack > pack)
+1. **RailGun defaulted to Dot (1x)**: `rsq_scope_railgun = 0` in CVARINFO.rsq. Sniper defaulted to Real, but the cvars are
+   archived, so an old saved 0 kept Dot (the rig ini held railgun 0; the owner's menu showed Dot on both).
+2. **Eye gate**: the picture was only swapped onto the glass with an eye within 12 cm behind the eyepiece. Not "at all times".
+3. **Picture tilted ~13 deg** (Sniper and RailGun): the r9 port turned both guns in the hand (AngleOffset 3.854, PitchOffset
+   3.363, RollOffset 10.974) and moved Lens/Axis (checked: port_gun.rigid_move reproduces both rows to 4 decimals), but the
+   camera roll was a fixed 180, so the glass rolled and the picture did not.
+4. **Picture squashed vertically to 0.8**: the engine renders a camera texture at ratio aspectRatio/pixelstretch
+   (hw_entrypoint.cpp:400); a square cameratexture gave 0.833 (target 45 px wide, 43 tall in the lens vs 15 x 18 outside).
+5. **Magnification ~2.8x**: Radius was the disc's outer bound (1.78 / 1.35), not the glass UV half-extent the picture spans.
+The lens rows themselves moved with the gun correctly (Lens, Axis), and the glass still gets the camera texture (MODELDEF per-surface skins intact).
+
+### What changed
+- CVARINFO.rsq: `rsq_scope2_sniper = 1`, `rsq_scope2_railgun = 1` (renamed so no old ini value can hide 3x); MENUDEF labels "Dot (1x)" / "Real (3x)".
+- scope_real.zs: no eye gate; camera + glass skin on for as long as a scoped gun is the ready weapon in VR (off, zero cost, otherwise).
+  FovFor uses the sighting eye's distance (nearer the bore line, either eye; 8 cm if neither is behind the glass; capped 40 cm).
+  Camera roll = 180 + the glass's roll, measured in render space (view matrix scales z by pixelstretch before roll).
+- scope.zs RSQ_ScopeTable: new `Up(i)` (glass up after the port, (-0.0447, -0.1938, 0.98), port_gun.rigid_move @ (0,0,1)),
+  `Radius` from the mesh UV extent (RailGun 1.544, Sniper 1.251 cm), `GlassSurface(i)` moved into the table (all per-gun data in one place).
+- ANIMDEFS.rsq: `cameratexture RSQSCOPE 256 256 fit 240 200` (ratio 1.2 = pixelstretch -> square render).
+- tools/scope3x/: rig driver + probe (two identical 8-unit magenta targets at 256 units: one on the bore, one 0.27*D right), blob/tilt measure, sheet.
+
+### Measured (left eye 8.0 cm behind the eyepiece, 960x960 dumps, default cvars; sheet `/home/claude/lane_b_out/scope_3x.png`)
+| gun | in lens | outside | magnification | picture tilt |
+|---|---|---|---|---|
+| Sniper | 46 x 55 px | 15 x 18 px | 3.07x across, 3.06x up, 2.98x by area | < 0.3 deg |
+| RailGun | 48 x 54 px | 15 x 18 px | 3.2x across, 3.0x up, 2.92x by area | ~1 deg (glass UV axes 89 deg, 2% anisotropic) |
+- Bore target sits in the lens picture centre to ~0.6 deg. Turning 10 deg: lens picture tracks the gun, one frame behind (camera is
+  placed per tic and rendered before the main view; engine limit, ~11-14 ms at 72-90 Hz).
+- Picture is up at rest pose too (probe skinOn=1, eye 33 cm away, fov 1.55).
+- Frame time (rig, llvmpipe CPU render, same gun and view, scope texture on vs taken off by the probe): Sniper 280 vs 242 ms,
+  RailGun 185 vs 155 ms per frame: about +16-19%. Software rendering; NOT a Quest number. On the Quest it is one extra 256x256
+  mono scene render per frame (BSP walk + draw), every frame a scoped gun is held. If the headset shows a drop, the owner's
+  fallback (scope only while alt-fire held / toggled) is a small change in scope_real.zs WorldTick (gate `want` on a button).
+- 0 pack script errors, 0 VM aborts in every run (only BD_VoxelPack voxeldef lines). Fire: RailGun fired in the smoke run.
+- Not shown: right-eye frames (the rig dumps the left eye only; the picture is mono, the same texture for both eyes); a rolled-hand
+  pose (the rig's rolled controller also changed AttackPitch/Angle between runs; the roll path is the same Place() transform as the
+  glass tilt, which is shown). Reload with the always-on scope not exercised this round.
+
+### The scope, file by file (to lift it out as a universal mod)
+zscript/rsq/scope.zs (RSQ_ScopeTable = every per-gun number, RSQ_Scope, RSQ_ScopeLayers), zscript/rsq/scope_real.zs
+(RSQ_ScopeReal handler, RSQ_ScopeCam), ANIMDEFS.rsq (RSQSCOPE), CVARINFO.rsq (rsq_scope2_*), MENUDEF.rsq (RSQ_ScopeMode + 2
+options), MAPINFO.rsvr ("RSQ_ScopeReal" handler), ZSCRIPT.rsvr (2 includes), MODELDEF.rsq (dot quad RQRT A/B, rsq_dot.md3,
+RQRTA0/RQRTB0.png), per-gun MODELDEF SurfaceSkin on the glass (scope_glass.png; never a whole-model Skin), meshes with the glass as
+its own surface. Borrowed: RSVR_VRHand (rsvr/vrhand.zs: InVR/HandPos/HandDir) and the dot layer in rsq/hands.zs (RSQ_GunSide,
+RSQ_Layers.Taken). The manifest is also at the top of scope.zs.
