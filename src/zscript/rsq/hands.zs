@@ -145,6 +145,8 @@ class RSQ_GunSide : Inventory
 	FbxWrapBFG10k: RQWS O -1; Stop;	// BFG10k (row 2)
 	FbxWrapBFG9: RQWS P -1; Stop;	// BIG_FUCKING_GUN (row 3)
 	FbxWrapUnmaker: RQWS Q -1; Stop;	// Unmaker (row 23)
+	FbxWrapHML: RQWS R -1; Stop;	// HellishMissileLauncher (row 9)
+	FbxWrapBrutalAxe: RQWS S -1; Stop;	// BrutalAxe (row 24)
 	// support192 END
 	// batch 2: BrutalSMG (row 5), the pistol's FBX hand with the index on the SMG trigger
 	FbxTrgS: RQFH A -1; Stop;
@@ -762,6 +764,10 @@ class RSQ_Hands : Weapon
 			spl = "FbxSupDS";	// r12 port: DSweap, the FBX L hand on the hilt below the gun hand (melee lane: the gun hand mirrored, slid 12.5 cm down the handle; pen 0.44; owner-approved 2026-10-27) (handtable SupportHook / SupportRot row 26)
 		if (i == 23)
 			spl = "FbxWrapUnmaker";	// support192 batch 5: Unmaker, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 23 = 0: baked in place)
+		if (i == 9)
+			spl = "FbxWrapHML";	// support192 batch 6: HellishMissileLauncher, the FBX support hand fitted from the 1.92 hold (handtable SupportHook / SupportRot row 9 = 0: baked in place)
+		if (i == 24)
+			spl = "FbxWrapBrutalAxe";	// support192 batch 6: BrutalAxe, the FBX L fist on the haft 1 cm below the two-handed gun hand (seed: the FBX gun hand mirrored, axe192.py; the axe has no 1.92 support hold) (handtable SupportHook / SupportRot row 24 = 0: baked in place)
 		invoker.SetLayer(p, RSQ_Layers.SUPPORT, gs, (hold || swordTwo) && sp != "" ? spl : "Hidden");	// r12 port: the two-handed sword shows its FBX support on the hilt
 
 		// 2026-10-23: the VR scope's reticle (rsq/scope.zs). WHETHER the layer is there is this
