@@ -177,14 +177,69 @@ class RSQ_PlayerRounds : EventHandler
 		return cv && cv.GetInt() == 1;
 	}
 
+	// THE OFF-HAND MUZZLE (round 4). muzzle.zs moves only the main hand's shots; a dual-wield copy's hitscan
+	// (LAF_ISOFFHAND) starts at the off controller. The copies are subclasses of their guns with the same
+	// MODELDEF placement (MODELDEF.rsqoff), so RSQ_Muzzle's table holds for them, in the off controller's
+	// frame (OffhandPos, OffhandDir: the engine's mirrored left-hand frame, the one the off layers are drawn
+	// in). Same wall guard as muzzle.zs.
+	static Vector3, bool OffWhere(PlayerPawn mo)
+	{
+		if (!mo || !mo.player || !RSVR_VRHand.InVR(mo))
+			return mo ? mo.OffhandPos : (0, 0, 0), false;
+		Vector3 hp = mo.OffhandPos;
+		Vector3 m = RSQ_Muzzle.Muzzle(mo.player.OffhandWeapon);
+		if (m == (0, 0, 0))
+			return hp, false;
+		double ps = mo.Level.pixelstretch;
+		if (ps <= 0)
+			ps = 1.2;
+		let cv = CVar.FindCVar('vr_vunits_per_meter');
+		double vu = cv ? cv.GetFloat() : 34;
+		if (vu <= 0)
+			vu = 34;
+		Vector3 F = RSVR_VRHand.OffDir(mo, 0, 0, ps);
+		Vector3 L = RSVR_VRHand.OffDir(mo, 90, 0, ps);
+		Vector3 U = RSVR_VRHand.OffDir(mo, 0, 90, ps);
+		Vector3 w3 = (F * m.x + L * m.y + U * m.z) * (vu / 100.0);
+		w3.z /= ps;
+		double len = w3.Length();
+		if (len > 0)
+		{
+			FLineTraceData tr;
+			mo.LineTrace(VectorAngle(w3.x, w3.y), len, -asin(clamp(w3.z / len, -1, 1)),
+				TRF_ABSPOSITION | TRF_THRUACTORS, hp.z, hp.x, hp.y, tr);
+			if (tr.HitType != TRACE_HitNone)
+				return hp, false;
+		}
+		return hp + w3, true;
+	}
+
+	bool offBusy;
+
 	override bool WorldHitscanPreFired(WorldEvent e)
 	{
-		if (delivering || !On())
+		if (delivering || offBusy)
 			return false;
 		let mo = PlayerPawn(e.Thing);
-		if (!mo || !mo.player || e.AttackDistance < MISSILERANGE || !e.AttackPuffType)
+		if (!mo || !mo.player)
 			return false;
 		bool off = (e.AttackLineFlags & LAF_ISOFFHAND) != 0;
+		if (!On())
+		{	// Hitscan mode: an off-hand shot is re-fired from the off-hand muzzle, as muzzle.zs does for the main hand
+			if (!off || (e.AttackLineFlags & LAF_ABSPOSITION) || e.AttackDistance < MISSILERANGE)
+				return false;
+			Vector3 oat; bool ook;
+			[oat, ook] = OffWhere(mo);
+			if (!ook)
+				return false;
+			offBusy = true;
+			mo.LineAttack(e.AttackAngle, e.AttackDistance, e.AttackPitch, e.Damage, e.DamageType, e.AttackPuffType,
+				e.AttackLineFlags | LAF_ABSPOSITION, null, oat.z, oat.x, oat.y);
+			offBusy = false;
+			return true;
+		}
+		if (e.AttackDistance < MISSILERANGE || !e.AttackPuffType)
+			return false;
 
 		// THE START: muzzle.zs's re-fire hands it to us as absolute coordinates; otherwise the
 		// muzzle is worked out here the same way, so the order of the handlers cannot change it.
@@ -196,6 +251,8 @@ class RSQ_PlayerRounds : EventHandler
 			bool ok = false;
 			if (!off)
 				[at, ok] = RSQ_Muzzle.Where(mo);
+			else
+				[at, ok] = OffWhere(mo);
 			if (!ok)
 			{
 				if (mo.OverrideAttackPosDir)

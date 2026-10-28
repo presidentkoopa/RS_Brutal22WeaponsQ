@@ -1719,3 +1719,20 @@ BD_VoxelPack's four voxeldef lines (`clean_load2.log`: no test pk3; Bullet + Dak
     (SSG's Ermac hand as drawn at tone 14; Minigun steadied: FBX gun hand purple, Ermac grip as drawn).
 ### 2. Not done
 - Fists and Ermac's hands are not toned (they are not FBX; by the owner's rule they are never tinted).
+
+## lane-ballistics-skin round 4 (time-boxed 30 min): off-hand (dual-wield) shots. RIG ONLY, NOT HEADSET-CONFIRMED
+- **Fixed:** off-hand shots started at the off CONTROLLER (muzzle.zs moves only the main hand). `RSQ_PlayerRounds.OffWhere`
+  (playerrounds.zs) is RSQ_Muzzle's table in the off controller's frame (OffhandPos, OffhandDir; the RSQ_Off_* copies subclass
+  their guns with the same MODELDEF placement, checked for pistol/SMG/rifle). Hitscan mode re-fires the off-hand hitscan from
+  there (LAF_ISOFFHAND | LAF_ABSPOSITION, like muzzle.zs); Bullet mode launches the round there. Dakka tracers follow (they
+  start at the shot's own start). Wall guard as muzzle.zs.
+- **Shown** (logs `/home/claude/lane_ballskin_out/offhand/`, Dakka on, dummy at 384):
+  - RSQ_Off_BrutalPistol, both modes: controller (-101.1 795.9 97.1) -> off muzzle (-100.4 803.8 98.9); Hitscan re-fire from
+    there (flags 384), Bullet round spawned there; damage 14 Minor WeakPuff = the main pistol's 14 (`offf_{0,1}.log`, `off_{0,1}.log`).
+  - RSQ_Off_Rifle, both modes (`off_{0,1}.log`, first combined run): off muzzle (-99.0 820.1 100.3), main rifle muzzle
+    (-93.0 820.1 100.3): mirrored about the body; damage 20 Bullet HitPuff(DM) = main 20.
+  - Frames `offhand_pistol_dakka_both_modes.png`: the Dakka tracer leaving the LEFT (off-hand) pistol, Hitscan and Bullet.
+- **Not shown:** off-hand SMG and Shotvolver: in fresh runs the scripted dual toggle (`give StartDualWield`) did not put the
+  copy in the off hand for them (off=rsq_hands, and the main gun then did not fire either), so their off-hand shot never
+  happened on the rig. Stopped at the time box; a rig-driver problem or a dual.zs one, not diagnosed.
+  The Moonlight (BrutalRevolver) is not in RSQ_DualTable, so it has no off-hand copy.
