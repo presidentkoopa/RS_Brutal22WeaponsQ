@@ -36,7 +36,8 @@
 // next step with LineTrace -- traced as the SHOOTER, because the drawn muzzle can sit inside the
 // player's own box and the engine's hitscan never hits its shooter either (rig, 2026-10-27: a
 // pistol held out to the right shot its owner until this) -- and moves there if the step is clear.
-// It draws RS_Ballistics' btracer.obj at the calibre bullet.zs already picks per gun.
+// It looks like Dakka's shotgun tracer (owner 2026-10-27 20:09): a DPUF A head and Dakka's dots behind
+// it (shotfx.zs). The btracer.obj streak it first used is gone.
 //
 // ORDER. It must see the shot AFTER RSQ_Recoil and RSQ_FlashHandler (they watch the same event
 // and would never see a cancelled one) and after RSQ_Muzzle (whose re-fire from the muzzle,
@@ -56,7 +57,10 @@ class RSQ_PlayerRound : Actor
 		+NOTELEPORT;
 		Radius 1;
 		Height 1;
-		RenderStyle "Normal";
+		+FORCEXYBILLBOARD;
+		RenderStyle "Add";
+		Alpha 0.5;
+		Scale 0.5;
 	}
 
 	// the hitscan it carries
@@ -69,11 +73,12 @@ class RSQ_PlayerRound : Actor
 	Vector3 dir;
 	double flySpeed;
 	int life;
+	double dotCarry;				// shotfx.zs: where the next Dakka dot falls on the next step
 
 	const MAX_LIFE = 350;			// 10 s: 8192 units at 80 a tic is 103 tics
 
 	void Setup(Actor shooter, Vector3 at, double ang, double pit, double dist, int damage, Name dtype,
-		class<Actor> puff, int flags, double spd, int look)
+		class<Actor> puff, int flags, double spd)
 	{
 		target = shooter;
 		Species = shooter.GetSpecies();	// MTHRUSPECIES puffs compare with the CALLER's species: the round fires the last stretch
@@ -89,7 +94,6 @@ class RSQ_PlayerRound : Actor
 		puffType = puff;
 		laf = flags & ~(LAF_ABSPOSITION | LAF_ABSOFFSET | LAF_ISOFFHAND | LAF_OVERRIDEZ | LAF_TARGETISSOURCE);
 		flySpeed = spd;
-		frame = look;
 	}
 
 	override void Tick()
@@ -117,7 +121,9 @@ class RSQ_PlayerRound : Actor
 			return;
 		}
 		rangeLeft -= step;
+		Vector3 was = pos;
 		SetOrigin(pos + dir * step, true);
+		RSQ_ShotFX.RoundStep(was, pos, flySpeed, dotCarry);	// "Shot Tracers: Dakka": the tracer follows the round
 	}
 
 	// Something is within this tic's step, `dist` ahead: deliver the hitscan from just short of
@@ -142,7 +148,7 @@ class RSQ_PlayerRound : Actor
 	States
 	{
 	Spawn:
-		RSBM A -1;		// the frame is the calibre (Setup); RSBM draws nothing without its model
+		RSDP A -1 Bright;	// Dakka's tracer dot (DPUF A) as the round's head; shotfx.zs lays the trail
 		Stop;
 	}
 }
@@ -211,16 +217,109 @@ class RSQ_PlayerRounds : EventHandler
 			pit = ap.y;
 		}
 
-		Weapon w = off ? mo.player.OffhandWeapon : mo.player.ReadyWeapon;
-		int look = w ? RSQ_Bullet.FrameOf(w.GetClassName()) : -1;
-		if (look < 0)
-			look = 2;	// RSBMC, the intermediate streak, for a gun bullet.zs has no calibre for
-
 		let r = RSQ_PlayerRound(Actor.Spawn('RSQ_PlayerRound', at, ALLOW_REPLACE));
 		if (!r)
 			return false;
 		r.Setup(mo, at, ang, pit, e.AttackDistance, e.Damage, e.DamageType, e.AttackPuffType,
-			e.AttackLineFlags, SPEED, look);
+			e.AttackLineFlags, SPEED);
 		return true;	// the hitscan is not run now: the round carries it
+	}
+
+	// THE RUGER'S PIERCING RAIL in Bullet mode (owner 20:05: "a flying round that pierces"). BD22:
+	// actors/Weapons/Sniper.dec:266 A_RailAttack(30, 0, 0, "none", "None", RGF_SILENT, 0, "sniperpuff",
+	// 0, 0, 500, ...): 30 damage to every shootable thing on the line, 500 units, stopped by walls, damage
+	// type the puff's (SniperPuff: SniperDamage; p_map.cpp P_RailAttack). In Hitscan mode the rail itself
+	// runs: it draws nothing (colour None) and IS the piercing shot. Here a piercing round carries it.
+	override bool WorldRailgunPreFired(WorldEvent e)
+	{
+		if (delivering || !On())
+			return false;
+		let mo = PlayerPawn(e.Thing);
+		if (!mo || !mo.player || e.Damage <= 0 || !RSQ_ShotFX.IsRuger(mo) || (e.RailParams.flags & RGF_ISOFFHAND))
+			return false;
+		Vector3 at; bool ok;
+		[at, ok] = RSQ_Muzzle.Where(mo);
+		if (!ok)
+			at = mo.OverrideAttackPosDir ? mo.AttackPos : mo.pos + (0, 0, mo.Height * 0.5 - mo.Floorclip + mo.AttackZOffset * mo.player.crouchFactor);
+		double ang = e.AttackAngle, pit = e.AttackPitch;
+		if (mo.OverrideAttackPosDir)
+		{
+			Vector3 ap = mo.AttackDir(mo, e.AttackAngle, e.AttackPitch);
+			ang = ap.x;
+			pit = ap.y;
+		}
+		let r = RSQ_PiercingRound(Actor.Spawn('RSQ_PiercingRound', at, ALLOW_REPLACE));
+		if (!r)
+			return false;
+		r.Setup(mo, at, ang, pit, e.AttackDistance, e.Damage, e.DamageType, e.AttackPuffType, 0, SPEED);
+		return true;
+	}
+}
+
+// The Ruger's piercing round. It flies with the Ruger's SniperPuff rounds (whose Dakka look already shows the
+// bullet), so it draws nothing itself. Every shootable thing its step reaches takes the rail's damage once, as a
+// hitscan from 2 units short of it with the rail's puff and damage type, credited to the player; walls stop it.
+class RSQ_PiercingRound : RSQ_PlayerRound
+{
+	Array<Actor> struck;
+
+	Default
+	{
+		RenderStyle "None";
+	}
+
+	override void Tick()
+	{
+		if (isFrozen())
+			return;
+		if (life++ > MAX_LIFE || rangeLeft <= 0)
+		{
+			Destroy();
+			return;
+		}
+		double step = min(flySpeed, rangeLeft);
+		let src = target;
+		Vector3 start = pos;
+		Vector3 p = pos;
+		double done = 0;
+		for (int guard = 0; guard < 32 && done < step; guard++)
+		{
+			FLineTraceData t;
+			Actor tracer = src ? src : Actor(self);
+			tracer.LineTrace(shotAngle, step - done, shotPitch, TRF_ABSPOSITION, p.z, p.x, p.y, t);
+			if (t.HitType == TRACE_HitNone)
+				break;
+			if (t.HitType != TRACE_HitActor)
+			{	// a wall, floor or ceiling ends it: the puff and decal there, as the rail leaves them, no damage
+				Hit(p, t.Distance, 0);
+				Destroy();
+				return;
+			}
+			if (struck.Find(t.HitActor) == struck.Size())
+			{
+				struck.Push(t.HitActor);
+				Hit(p, t.Distance, dmg);
+			}
+			// on through it
+			double past = t.Distance + 1.0;
+			p += dir * past;
+			done += past;
+		}
+		rangeLeft -= step;
+		SetOrigin(start + dir * step, true);
+	}
+
+	// the rail's damage on the first thing ahead, from 2 units short of it, reaching only just past it
+	void Hit(Vector3 p, double dist, int damage)
+	{
+		let src = target;
+		if (!src || !puffType)
+			return;
+		double back = max(0.0, dist - 2.0);
+		Vector3 from = p + dir * back;
+		RSQ_PlayerRounds.SetDelivering(true);
+		LineAttack(shotAngle, 6.0, shotPitch, damage, dmgType, puffType,
+			LAF_ABSPOSITION | LAF_TARGETISSOURCE, null, from.z, from.x, from.y);
+		RSQ_PlayerRounds.SetDelivering(false);
 	}
 }

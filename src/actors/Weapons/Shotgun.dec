@@ -469,10 +469,10 @@ ACTOR Shot_Gun : BrutalWeapon
 		"####" AAAAA 0 A_FireCustomMissile("DecorativeTracer", random(-3,3), 0, 0, -12, 0, random(-3,3))
 		//"####" A 0 A_JumpIfInventory("DMgame", 1, "DM")
 		"####" A 0 A_JumpIf((OverlayID() != 1000000 && CountInv("RSA_Slug") > 0) || (OverlayID() == 1000000 && CountInv("RSA_SlugOff") > 0), "RSA_SlugShot")	// 1.37 rsa
-		"####" A 1 BRIGHT A_FireBullets (5, 1, 4, 13, "ShotgunPuff", FBF_NORANDOM)
-		"####" B 1 BRIGHT A_FireBullets (2.5, 2.5, 5, 13, "ShotgunPuff2", FBF_NORANDOM)
+		"####" A 1 BRIGHT A_FireBullets (GetCVar("rsq_pump_spread") == 1 ? 3.0 : 5, GetCVar("rsq_pump_spread") == 1 ? 2.5 : 1, 4, 13, "ShotgunPuff", FBF_NORANDOM)	// BD 2.0 "Pump Shotgun Spread": Enhanced = Dakka 30_shotgun.dec (3, 2.5)
+		"####" B 1 BRIGHT A_FireBullets (GetCVar("rsq_pump_spread") == 1 ? 3.0 : 2.5, GetCVar("rsq_pump_spread") == 1 ? 2.5 : 2.5, 5, 13, "ShotgunPuff2", FBF_NORANDOM)	// BD 2.0 "Pump Shotgun Spread": Enhanced = Dakka 30_shotgun.dec (3, 2.5)
 		"####" A 0 A_JumpIfInventory("IsNOTTacticalClass", 1, 3)//Tactical Mode deals extra damage
-		"####" A 0 A_FireBullets (6, 3, 5, 13, "ShotgunPuff2", FBF_NORANDOM)
+		"####" A 0 A_FireBullets (GetCVar("rsq_pump_spread") == 1 ? 3.0 : 6, GetCVar("rsq_pump_spread") == 1 ? 2.5 : 3, 5, 13, "ShotgunPuff2", FBF_NORANDOM)	// BD 2.0 "Pump Shotgun Spread": Enhanced = Dakka 30_shotgun.dec (3, 2.5)
 	RSA_SlugKick:	// 1.37 rsa: the slug's kick and pump are the buckshot's own (a label, no state)
 		"####" A 0 A_SetPitch(pitch-10)
 		"####" A 0 A_ZoomFactor(1.0)
@@ -518,10 +518,10 @@ ACTOR Shot_Gun : BrutalWeapon
 		Goto ReadyToFireAgain
 	
 	DM:
-		"####" A 1 BRIGHT A_FireBullets (5, 1, 4, 13, "ShotgunPuffDM", FBF_NORANDOM)
-		"####" B 1 BRIGHT A_FireBullets (2.5, 2.5, 5, 13, "ShotgunPuff2DM", FBF_NORANDOM)
+		"####" A 1 BRIGHT A_FireBullets (GetCVar("rsq_pump_spread") == 1 ? 3.0 : 5, GetCVar("rsq_pump_spread") == 1 ? 2.5 : 1, 4, 13, "ShotgunPuffDM", FBF_NORANDOM)	// BD 2.0 "Pump Shotgun Spread": Enhanced = Dakka 30_shotgun.dec (3, 2.5)
+		"####" B 1 BRIGHT A_FireBullets (GetCVar("rsq_pump_spread") == 1 ? 3.0 : 2.5, GetCVar("rsq_pump_spread") == 1 ? 2.5 : 2.5, 5, 13, "ShotgunPuff2DM", FBF_NORANDOM)	// BD 2.0 "Pump Shotgun Spread": Enhanced = Dakka 30_shotgun.dec (3, 2.5)
 		"####" A 0 A_JumpIfInventory("IsNOTTacticalClass", 1, 3)//Tactical Mode deals extra damage
-		"####" A 0 A_FireBullets (6, 3, 5, 13, "ShotgunPuff2DM", FBF_NORANDOM)
+		"####" A 0 A_FireBullets (GetCVar("rsq_pump_spread") == 1 ? 3.0 : 6, GetCVar("rsq_pump_spread") == 1 ? 2.5 : 3, 5, 13, "ShotgunPuff2DM", FBF_NORANDOM)	// BD 2.0 "Pump Shotgun Spread": Enhanced = Dakka 30_shotgun.dec (3, 2.5)
 		"####" A 0 A_SetPitch(pitch-10)
 		"####" A 0 A_ZoomFactor(1.0)
 		"####" C 1 A_SetPitch(-6.0 + pitch)
@@ -601,10 +601,10 @@ ACTOR Shot_Gun : BrutalWeapon
 		TNT1 AAAAA 0 A_FireCustomMissile("DecorativeTracer", random(-5,5), 0, 0, 0, 0, random(-5,5))
 		"####" "#" 0 A_Quake(4,4,0,12,"")
 		//"####" A 0 A_JumpIfInventory("DMgame", 1, "DM2")
-		SHT8 D 1 BRIGHT A_FireBullets (5, 1, 4, 13, "ShotgunPuff", FBF_NORANDOM)
-		SHTN A 0 A_FireBullets (2.5, 2.5, 5, 13, "ShotgunPuff2", FBF_NORANDOM)
+		SHT8 D 1 BRIGHT A_FireBullets (GetCVar("rsq_pump_spread") == 1 ? 3.0 : 5, GetCVar("rsq_pump_spread") == 1 ? 2.5 : 1, 4, 13, "ShotgunPuff", FBF_NORANDOM)	// BD 2.0 "Pump Shotgun Spread": Enhanced = Dakka 30_shotgun.dec (3, 2.5)
+		SHTN A 0 A_FireBullets (GetCVar("rsq_pump_spread") == 1 ? 3.0 : 2.5, GetCVar("rsq_pump_spread") == 1 ? 2.5 : 2.5, 5, 13, "ShotgunPuff2", FBF_NORANDOM)	// BD 2.0 "Pump Shotgun Spread": Enhanced = Dakka 30_shotgun.dec (3, 2.5)
 		SHTN A 0 A_JumpIfInventory("IsNOTTacticalClass", 1, 3)//Tactical Mode deals extra damage
-		SHTN A 0 A_FireBullets (6, 3, 5, 13, "ShotgunPuff2", FBF_NORANDOM)
+		SHTN A 0 A_FireBullets (GetCVar("rsq_pump_spread") == 1 ? 3.0 : 6, GetCVar("rsq_pump_spread") == 1 ? 2.5 : 3, 5, 13, "ShotgunPuff2", FBF_NORANDOM)	// BD 2.0 "Pump Shotgun Spread": Enhanced = Dakka 30_shotgun.dec (3, 2.5)
 		SHTN A 0 A_SetPitch(pitch-10)
 		SHT8 E 1 A_SetPitch(-8.0 + pitch)
 		SHT8 F 1 A_SetPitch(+2.0 + pitch)
@@ -641,10 +641,10 @@ ACTOR Shot_Gun : BrutalWeapon
 		Goto Ready2
 	
 	DM2:
-		SHT8 D 1 BRIGHT A_FireBullets (5, 1, 4, 13, "ShotgunPuffDM", FBF_NORANDOM)
-		SHTN A 0 A_FireBullets (2.5, 2.5, 5, 13, "ShotgunPuff2DM", FBF_NORANDOM)
+		SHT8 D 1 BRIGHT A_FireBullets (GetCVar("rsq_pump_spread") == 1 ? 3.0 : 5, GetCVar("rsq_pump_spread") == 1 ? 2.5 : 1, 4, 13, "ShotgunPuffDM", FBF_NORANDOM)	// BD 2.0 "Pump Shotgun Spread": Enhanced = Dakka 30_shotgun.dec (3, 2.5)
+		SHTN A 0 A_FireBullets (GetCVar("rsq_pump_spread") == 1 ? 3.0 : 2.5, GetCVar("rsq_pump_spread") == 1 ? 2.5 : 2.5, 5, 13, "ShotgunPuff2DM", FBF_NORANDOM)	// BD 2.0 "Pump Shotgun Spread": Enhanced = Dakka 30_shotgun.dec (3, 2.5)
 		SHTN A 0 A_JumpIfInventory("IsNOTTacticalClass", 1, 3)//Tactical Mode deals extra damage
-		SHTN A 0 A_FireBullets (6, 3, 5, 13, "ShotgunPuff2DM", FBF_NORANDOM)
+		SHTN A 0 A_FireBullets (GetCVar("rsq_pump_spread") == 1 ? 3.0 : 6, GetCVar("rsq_pump_spread") == 1 ? 2.5 : 3, 5, 13, "ShotgunPuff2DM", FBF_NORANDOM)	// BD 2.0 "Pump Shotgun Spread": Enhanced = Dakka 30_shotgun.dec (3, 2.5)
 		SHTN A 0 A_SetPitch(pitch-10)
 		SHT8 E 1 A_SetPitch(-8.0 + pitch)
 		SHT8 F 1 A_SetPitch(+2.0 + pitch)

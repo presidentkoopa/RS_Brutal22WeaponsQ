@@ -78,6 +78,8 @@ OptionMenu "RSQ_Options"
 	Option "Railgun Scope", "rsq_scope_railgun", "RSQ_ScopeMode"
 	Option "Ballistics", "rsq_ballistics", "RSQ_Ballistics"
 	Option "Player Ballistics", "sv_rsq_player_ballistics", "RSQ_PlayerBallistics"	// BD 2.0: zscript/rsq/playerrounds.zs
+	Option "Shot Tracers", "rsq_shot_tracers", "RSQ_ShotTracers"	// BD 2.0: zscript/rsq/shotfx.zs (Dakka by ijon)
+	Option "Pump Shotgun Spread", "rsq_pump_spread", "RSQ_PumpSpread"	// BD 2.0: actors/Weapons/Shotgun.dec
 	StaticText " "
 	Submenu "Voxel Options", "RSQ_VoxelOptions"
 	StaticText " "
