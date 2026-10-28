@@ -1,18 +1,5 @@
-// BD 2.0 (zscript/rsq/playerrounds.zs): "Player Ballistics: Hitscan / Bullet" (owner's labels).
-// The two rows themselves are in RSQ_Options (MENUDEF.rsq).
-OptionValue "RSQ_PlayerBallistics"
-{
-	0, "Hitscan"
-	1, "Bullet"
-}
-
-// "Shot Tracers: Off / Dakka" (zscript/rsq/shotfx.zs) and "Pump Shotgun Spread: Stock / Enhanced" (Shotgun.dec)
-OptionValue "RSQ_ShotTracers"
-{
-	0, "Off"
-	1, "Dakka"
-}
-
+// 2.0.2: "True Bullets" is an On / Off row (RSQ_Options, MENUDEF.rsq); the Hitscan / Bullet and Off / Dakka
+// value lists went with the two rows it replaced. "Pump Shotgun Spread: Stock / Enhanced" (Shotgun.dec):
 OptionValue "RSQ_PumpSpread"
 {
 	0, "Stock"

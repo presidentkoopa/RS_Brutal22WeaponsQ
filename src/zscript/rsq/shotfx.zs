@@ -1,4 +1,5 @@
-// shotfx.zs (BD 2.0, owner 2026-10-27 20:02): "Shot Tracers: Off / Dakka".
+// shotfx.zs (BD 2.0, owner 2026-10-27 20:02): the Dakka look of "True Bullets: On" (2.0.2: was its own
+// option "Shot Tracers: Off / Dakka"; owner r3 item 39: True Bullets On = our rounds with the Dakka look, Off = stock BD22).
 //
 // The shot look of Dakka by ijon (github.com/0dot0repeating/dakka, WTFPL), ported from its DECORATE
 // and ACS to ZScript, with its own sprites (DPUF A-E, renamed RSDP here so the two packs can load
@@ -25,7 +26,7 @@
 // QUEST BUDGET (not in Dakka, which is a PC mod): live dots and sparks are capped. Past the cap a dot
 // or spark is simply not spawned. Melee hitscans (LAF_ISMELEEATTACK, a melee weapon held) draw nothing.
 //
-// rsq_shot_tracers (default 1, Dakka: owner 21:2x) is a server cvar: the sparks are real (bouncing) actors and use playsim random
+// sv_rsq_true_bullets (default On) is a server cvar: the sparks are real (bouncing) actors and use playsim random
 // numbers (stream rsqdk), so every machine must make the same choice.
 
 class RSQ_DakkaDot : Actor
@@ -165,8 +166,8 @@ class RSQ_ShotFX : EventHandler
 
 	static bool On()
 	{
-		let cv = CVar.FindCVar('rsq_shot_tracers');
-		return cv && cv.GetInt() == 1;
+		let cv = CVar.FindCVar('sv_rsq_true_bullets');	// "True Bullets: On / Off": one switch for the rounds and their look
+		return cv && cv.GetBool();
 	}
 
 	static RSQ_ShotFX Get()
@@ -196,8 +197,8 @@ class RSQ_ShotFX : EventHandler
 	}
 
 	// The round's own stretch this tic (playerrounds.zs, Bullet mode): Dakka's dots at the round's speed.
-	// Always, whatever rsq_shot_tracers says: in Bullet mode this IS how the round looks (owner, 20:09:
-	// "dakka has shotgun visuals that [I] want as our bullets"). The cvar governs the hitscan tracers and impacts.
+	// The round only exists with True Bullets On, and this IS how it looks (owner, 20:09:
+	// "dakka has shotgun visuals that [I] want as our bullets").
 	static void RoundStep(Vector3 a, Vector3 b, double speed, out double carry)
 	{
 		Vector3 d = b - a;
@@ -233,8 +234,8 @@ class RSQ_ShotFX : EventHandler
 	// hitscans and two rails on one tic (actors/Weapons/Sniper.dec:261-266): a 50 point-blank ShotgunPuff
 	// (range 500), two 50 SniperPuff "penetration" shots (range 15000), a damage-0 Gray "trail effect only"
 	// rail (now commented out: no beam) and the 30-damage piercing rail (range 500, colour None: invisible).
-	// It is drawn as ONE bullet: the Dakka tracer of the first SniperPuff shot each tic, always, whatever
-	// rsq_shot_tracers says, because it is the only trail that gun has now.
+	// It is drawn as ONE bullet: the Dakka tracer of the first SniperPuff shot each tic (True Bullets On).
+	// With True Bullets Off, Sniper.dec fires BD22's own gray trail rail instead.
 	static bool IsRuger(Actor who)
 	{
 		return who && who.player && who.player.ReadyWeapon && who.player.ReadyWeapon.GetClassName() == 'Sniper';
@@ -242,8 +243,8 @@ class RSQ_ShotFX : EventHandler
 
 	override void WorldHitscanFired(WorldEvent e)
 	{
-		if (!e.Thing)
-			return;
+		if (!e.Thing || !On())
+			return;	// True Bullets Off: BD22's own hitscan look, no Dakka effect at all (the Ruger included)
 		let rnd = RSQ_PlayerRound(e.Thing);
 		Actor shooter = rnd ? rnd.target : e.Thing;
 		if (!shooter || !shooter.player || Melee(shooter, e.AttackLineFlags))
@@ -266,8 +267,6 @@ class RSQ_ShotFX : EventHandler
 			Impact(e.DamagePosition, e.AttackPos);
 			return;
 		}
-		if (!On())
-			return;
 		// a hitscan starts at the muzzle already (muzzle.zs re-fires it from there) or, off the muzzle
 		// table, at the controller; the round's delivery starts at the round
 		RSQ_DakkaLine.Draw(e.AttackPos, e.DamagePosition);

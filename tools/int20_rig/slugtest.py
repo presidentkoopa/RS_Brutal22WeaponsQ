@@ -9,7 +9,7 @@ inis = {'old': pr, 'fresh': ''.join(l for l in pr.splitlines(True) if not l.star
 FWD = '0.25 1.3 -0.3 0 0 0'
 for k, txt in inis.items():
     ini = '%s/ini.%s' % (R, k); open(ini, 'w').write(txt)
-    s = ('wait 100; god; notarget; rsq_extra_weapons 1; sv_rsq_player_ballistics 1; qz_rhand "%s"; give Revolver; give AmmoShell 50; wait 2; use Revolver; wait 150; '
+    s = ('wait 100; god; notarget; rsq_extra_weapons 1; sv_rsq_true_bullets 1; qz_rhand "%s"; give Revolver; give AmmoShell 50; wait 2; use Revolver; wait 150; '
          'netevent int_mark_pre; +altattack; wait 40; -altattack; wait 60; netevent int_mark_alt; wait 2; qz_rtrigger 1; wait 6; qz_rtrigger 0; wait 60; netevent int_mark_fire; wait 3; quit' % FWD)
     name = 'slug_%s' % k
     subprocess.run([R + '/run.sh', name, pk3, '300', s, R + '/int20dump.pk3'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=dict(os.environ, INT20_INI=ini))

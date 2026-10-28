@@ -1,0 +1,223 @@
+// 2.0.2 DUAL AXES (owner r3 item 37). MODELDEF blocks are per class, so the off-hand copy RSQ_Off_BrutalAxe
+// (Axe.dec) needs its own, as RSQ_Off_BrutalRevolver does (MODELDEF.rsqmoondual).
+// Block 1 is MODELDEF.bd.txt's first `Model BrutalAxe` block (the held axe, r12 port placement) COPIED LINE FOR
+// LINE with the class renamed (the engine mirrors the off hand itself). RE-COPY IT whenever that block is refitted:
+// tools/optmelee/axe_dual_modeldef.py writes this file from MODELDEF.bd.txt and MODELDEF.rsq.
+// Blocks 2-3: the dual-wield axe hand (dualhands.zs labels DFbxTrgAxe / DFbxSqzAxe, sprite RQVI), which the axe
+// itself calls, so each class needs it: MODELDEF.rsq's BrutalAxe gun hand (fbx_hv_BrutalAxe_R.md3), unchanged.
+
+Model RSQ_Off_BrutalAxe
+{
+   Path "models/bd/BrutalAxe"
+   Model 0 "BrutalAxe.md3"
+   Skin 0 "BrutalAxe.png"
+   Scale -1.0 1.0 1.0
+   Offset 2.308 -13.113 0.0
+   ZOffset -2.195
+   AngleOffset 3.854
+   PitchOffset 3.363
+   RollOffset 10.974	// r12 port (lane B): gun to the FBX hand fitted from 1.92
+   NoInterpolation
+// Pose: restored 2026-10-10 -- each BD22 sprite frame takes the authored
+// BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
+
+   FrameIndex	4XEG	A	0	5
+   FrameIndex	1XEG	A	0	5
+   FrameIndex	2XEG	A	0	5
+   FrameIndex	3XEG	A	0	5
+   FrameIndex	5XEG	A	0	5
+   FrameIndex	AXEG	A	0	5
+   FrameIndex	AXEG	Q	0	4
+   FrameIndex	AXEG	R	0	4
+   FrameIndex	AXEG	S	0	3
+   FrameIndex	AXEG	T	0	3
+   FrameIndex	AXEG	U	0	3
+   FrameIndex	AXEG	M	0	1
+   FrameIndex	AXEG	N	0	2
+   FrameIndex	AXEG	O	0	3
+   FrameIndex	AXEG	P	0	4
+   FrameIndex	AXEG	B	0	6
+   FrameIndex	AXEG	C	0	8
+   FrameIndex	AXEG	D	0	9
+   FrameIndex	AXEG	E	0	10
+   FrameIndex	AXEG	F	0	11
+   FrameIndex	AXEG	G	0	12
+   FrameIndex	AXEG	H	0	13
+   FrameIndex	AXEG	I	0	13
+   FrameIndex	AXEG	J	0	14
+   FrameIndex	AXEG	K	0	1
+   FrameIndex	AXEG	L	0	0
+   FrameIndex	4XEA	A	0	6
+   FrameIndex	1XEA	A	0	6
+   FrameIndex	2XEA	A	0	6
+   FrameIndex	3XEA	A	0	6
+   FrameIndex	5XEA	A	0	6
+   FrameIndex	AXEA	A	0	6
+   FrameIndex	AXEA	B	0	7
+   FrameIndex	AXEA	C	0	8
+   FrameIndex	AXEA	D	0	9
+   FrameIndex	AXEA	E	0	10
+   FrameIndex	AXEA	F	0	11
+   FrameIndex	AXEA	G	0	12
+   FrameIndex	AXEA	H	0	13
+   FrameIndex	AXEA	I	0	13
+   FrameIndex	AXEA	J	0	14
+   FrameIndex	AXEA	K	0	1
+   FrameIndex	AXEA	L	0	0
+   // v4: frames BD22 shows that had no key (fill_tables.py SIBLING/READY)
+   FrameIndex	1XEA	B	0	7
+   FrameIndex	1XEA	F	0	11
+   FrameIndex	1XEA	G	0	12
+   FrameIndex	1XEA	H	0	13
+   FrameIndex	1XEA	I	0	13
+   FrameIndex	1XEA	J	0	14
+   FrameIndex	1XEA	K	0	1
+   FrameIndex	1XEG	B	0	6
+   FrameIndex	1XEG	C	0	8
+   FrameIndex	1XEG	D	0	9
+   FrameIndex	1XEG	E	0	10
+   FrameIndex	1XEG	F	0	11
+   FrameIndex	1XEG	G	0	12
+   FrameIndex	1XEG	H	0	13
+   FrameIndex	1XEG	I	0	13
+   FrameIndex	1XEG	J	0	14
+   FrameIndex	1XEG	K	0	1
+   FrameIndex	1XEG	L	0	0
+   FrameIndex	1XEG	M	0	1
+   FrameIndex	1XEG	N	0	2
+   FrameIndex	1XEG	O	0	3
+   FrameIndex	1XEG	P	0	4
+   FrameIndex	1XEG	Q	0	4
+   FrameIndex	1XEG	R	0	4
+   FrameIndex	1XEG	S	0	3
+   FrameIndex	1XEG	T	0	3
+   FrameIndex	1XEG	U	0	3
+   FrameIndex	2XEA	B	0	7
+   FrameIndex	2XEA	F	0	11
+   FrameIndex	2XEA	G	0	12
+   FrameIndex	2XEA	H	0	13
+   FrameIndex	2XEA	I	0	13
+   FrameIndex	2XEA	J	0	14
+   FrameIndex	2XEA	K	0	1
+   FrameIndex	2XEG	B	0	6
+   FrameIndex	2XEG	C	0	8
+   FrameIndex	2XEG	D	0	9
+   FrameIndex	2XEG	E	0	10
+   FrameIndex	2XEG	F	0	11
+   FrameIndex	2XEG	G	0	12
+   FrameIndex	2XEG	H	0	13
+   FrameIndex	2XEG	I	0	13
+   FrameIndex	2XEG	J	0	14
+   FrameIndex	2XEG	K	0	1
+   FrameIndex	2XEG	L	0	0
+   FrameIndex	2XEG	M	0	1
+   FrameIndex	2XEG	N	0	2
+   FrameIndex	2XEG	O	0	3
+   FrameIndex	2XEG	P	0	4
+   FrameIndex	2XEG	Q	0	4
+   FrameIndex	2XEG	R	0	4
+   FrameIndex	2XEG	S	0	3
+   FrameIndex	2XEG	T	0	3
+   FrameIndex	2XEG	U	0	3
+   FrameIndex	3XEA	B	0	7
+   FrameIndex	3XEA	F	0	11
+   FrameIndex	3XEA	G	0	12
+   FrameIndex	3XEA	H	0	13
+   FrameIndex	3XEA	I	0	13
+   FrameIndex	3XEA	J	0	14
+   FrameIndex	3XEA	K	0	1
+   FrameIndex	3XEG	B	0	6
+   FrameIndex	3XEG	C	0	8
+   FrameIndex	3XEG	D	0	9
+   FrameIndex	3XEG	E	0	10
+   FrameIndex	3XEG	F	0	11
+   FrameIndex	3XEG	G	0	12
+   FrameIndex	3XEG	H	0	13
+   FrameIndex	3XEG	I	0	13
+   FrameIndex	3XEG	J	0	14
+   FrameIndex	3XEG	K	0	1
+   FrameIndex	3XEG	L	0	0
+   FrameIndex	3XEG	M	0	1
+   FrameIndex	3XEG	N	0	2
+   FrameIndex	3XEG	O	0	3
+   FrameIndex	3XEG	P	0	4
+   FrameIndex	3XEG	Q	0	4
+   FrameIndex	3XEG	R	0	4
+   FrameIndex	3XEG	S	0	3
+   FrameIndex	3XEG	T	0	3
+   FrameIndex	3XEG	U	0	3
+   FrameIndex	4XEA	B	0	7
+   FrameIndex	4XEA	C	0	8
+   FrameIndex	4XEA	D	0	9
+   FrameIndex	4XEA	E	0	10
+   FrameIndex	4XEA	F	0	11
+   FrameIndex	4XEA	G	0	12
+   FrameIndex	4XEA	H	0	13
+   FrameIndex	4XEA	I	0	13
+   FrameIndex	4XEA	J	0	14
+   FrameIndex	4XEA	K	0	1
+   FrameIndex	4XEG	B	0	6
+   FrameIndex	4XEG	C	0	8
+   FrameIndex	4XEG	D	0	9
+   FrameIndex	4XEG	E	0	10
+   FrameIndex	4XEG	F	0	11
+   FrameIndex	4XEG	G	0	12
+   FrameIndex	4XEG	H	0	13
+   FrameIndex	4XEG	I	0	13
+   FrameIndex	4XEG	J	0	14
+   FrameIndex	4XEG	K	0	1
+   FrameIndex	4XEG	L	0	0
+   FrameIndex	4XEG	M	0	1
+   FrameIndex	4XEG	N	0	2
+   FrameIndex	4XEG	O	0	3
+   FrameIndex	4XEG	P	0	4
+   FrameIndex	5XEA	B	0	7
+   FrameIndex	5XEA	F	0	11
+   FrameIndex	5XEA	G	0	12
+   FrameIndex	5XEA	H	0	13
+   FrameIndex	5XEA	I	0	13
+   FrameIndex	5XEA	J	0	14
+   FrameIndex	5XEA	K	0	1
+   FrameIndex	5XEG	B	0	6
+   FrameIndex	5XEG	C	0	8
+   FrameIndex	5XEG	D	0	9
+   FrameIndex	5XEG	E	0	10
+   FrameIndex	5XEG	F	0	11
+   FrameIndex	5XEG	G	0	12
+   FrameIndex	5XEG	H	0	13
+   FrameIndex	5XEG	I	0	13
+   FrameIndex	5XEG	J	0	14
+   FrameIndex	5XEG	K	0	1
+   FrameIndex	5XEG	L	0	0
+   FrameIndex	5XEG	M	0	1
+   FrameIndex	5XEG	N	0	2
+   FrameIndex	5XEG	O	0	3
+   FrameIndex	5XEG	P	0	4
+   FrameIndex	5XEG	Q	0	4
+   FrameIndex	5XEG	R	0	4
+   FrameIndex	5XEG	S	0	3
+   FrameIndex	5XEG	T	0	3
+   FrameIndex	5XEG	U	0	3
+}
+
+Model RSQ_Off_BrutalAxe
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_BrutalAxe_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVI A 0 0	// BrutalAxe, finger on the trigger
+	FrameIndex RQVI B 0 1	// BrutalAxe, squeezed
+}
+
+Model BrutalAxe
+{
+	Path "models/rsq/fbx"
+	Model 0 "fbx_hv_BrutalAxe_R.md3"
+	Skin 0 "fbx_hand.png"
+	Scale -1.0 1.0 1.0
+	Offset 0.0 -24.0 -10.0
+	FrameIndex RQVI A 0 0	// BrutalAxe, finger on the trigger
+	FrameIndex RQVI B 0 1	// BrutalAxe, squeezed
+}

@@ -11,8 +11,11 @@
 // does the same. Either way: BD22's thrown axe (ThrowedAxe, or
 // ThrowedAxeStrong with berserk) leaves the hand with the hand's speed.
 //
-// Two hands on the haft (the engine's own steadying) and the edge leading the swing
-// add a half-strength bite, about 1.5x; a two-handed axe cannot be thrown.
+// 2.0.2 (owner r3 item 37: "I want two dual-wield axes and not have to two-hand them ever"): the axe is
+// NEVER two-handed -- no AXE2 placement, no two-handed bite, no rule against throwing it. It dual-wields
+// instead: RSQ_Off_BrutalAxe (Axe.dec, dual.zs / dualtable.zs index 11) in the off hand swings, cuts and
+// throws from that hand exactly as the main axe does from its own (offHands[] below: the same RSVR_Hand,
+// reading the OFF controller's pose history and the off-hand weapon layer).
 //
 // The trigger keeps BD22's own chop. Outside VR nothing here does anything and
 // the axe's alt-fire is BD22's sideways swing.
@@ -20,6 +23,7 @@
 class RSVR_MeleeHandler : EventHandler
 {
 	RSVR_Hand hands[MAXPLAYERS];
+	RSVR_Hand offHands[MAXPLAYERS];	// 2.0.2: the off-hand axe (RSQ_Off_BrutalAxe)
 
 	// rsvr_axe_keys: the weapon hand's grip arrives as a KEY, not a usercmd button, so its codes
 	// become a synchronised event the same way rsr_grip_keys does in vreload.zs. Every machine
@@ -94,10 +98,20 @@ class RSVR_MeleeHandler : EventHandler
 			hands[n].Unlock();
 			hands[n].kind = 0;	// so the next Tick re-reads the weapon rather than trusting it
 		}
+		for (int n = 0; n < MAXPLAYERS; n++)
+		{
+			if (!offHands[n])
+				continue;
+			offHands[n].Reset();
+			offHands[n].Unlock();
+			offHands[n].kind = 0;
+		}
+		axePickups.Clear();
 	}
 
 	override void WorldTick()
 	{
+		AxePickupTick();
 		for (int i = 0; i < MAXPLAYERS; i++)
 		{
 			if (!playeringame[i] || !players[i].mo)
@@ -106,6 +120,40 @@ class RSVR_MeleeHandler : EventHandler
 				hands[i] = new('RSVR_Hand');
 			let mo = players[i].mo;
 			hands[i].Tick(mo);
+			if (!offHands[i])
+			{
+				offHands[i] = new('RSVR_Hand');
+				offHands[i].off = true;
+			}
+			offHands[i].Tick(mo);
+			// 2.0.2: the off-hand axe's trigger throws it, the grenade's way, with VR throwing on (Axe.dec RSQ_Off_BrutalAxe)
+			mo.SetInventory('RSVR_OffAxeVRThrow', RSVR_VRHand.InVR(mo) && RSR.PlayerInt(mo.player, 'rsg_vr', 1) != 0
+				&& RSVR_Hand.KindOfOff(mo) == RSVR_Hand.AXE ? 1 : 0);
+			// 2.0.2: the off axe was thrown: the off hand goes back to the fist and the copy is put away
+			// until a thrown axe is picked up again (AxePickupTick)
+			if (mo.CountInv('RSVR_OffAxeGone') > 0)
+			{
+				let ow = mo.player.OffhandWeapon;
+				if (ow && ow is 'RSQ_Off_BrutalAxe')
+				{
+					if (mo.player.PendingWeapon == WP_NOCHANGE)
+					{
+						let fist = Weapon(mo.FindInventory('RSQ_Hands'));
+						if (!fist)
+						{
+							mo.GiveInventory('RSQ_Hands', 1);
+							fist = Weapon(mo.FindInventory('RSQ_Hands'));
+						}
+						if (fist)
+							mo.player.PendingWeapon = fist;
+					}
+				}
+				else
+				{
+					mo.TakeInventory(RSVR_MeleeHandler.Inv('RSQ_Off_BrutalAxe'), 1);
+					mo.TakeInventory('RSVR_OffAxeGone', 1);
+				}
+			}
 			// RSVR_AxeHold lets the axe's Ready state enter its hold loop from the grip. The
 			// hold used to be reachable only from alt-fire, so no other button could ever ready
 			// a throw however the cvars were set (owner, 2026-10-13: throwing should be hold and
@@ -117,16 +165,12 @@ class RSVR_MeleeHandler : EventHandler
 			bool trigThrow = RSVR_VRHand.InVR(mo) && RSR.PlayerInt(mo.player, 'rsg_vr', 1) != 0
 				&& mo.player.ReadyWeapon && RSVR_Hand.KindOf(mo) == RSVR_Hand.AXE;
 			mo.SetInventory('RSVR_AxeVRThrow', trigThrow ? 1 : 0);
-			// both hands on the haft: Axe.dec swaps to the shifted placement
-			// F11: the axe and the sword go two-handed on the off grip held near them (the engine's
-			// own steadying is off for them, RSVR_TwoHandSwitch), never by the engine re-aiming them
+			// F11: the sword goes two-handed on the off grip held near it. 2.0.2 (owner r3 item 37): the AXE
+			// never does -- no RSVR_AxeTwo, no AXE2 placement (Axe.dec), no two-handed bite, and it always throws.
 			int mk = mo.player.ReadyWeapon ? RSVR_Hand.KindOf(mo) : 0;
-			bool meleeTwo = RSVR_VRHand.InVR(mo) && (mk == RSVR_Hand.AXE || mk == RSVR_Hand.SWORD)
+			bool meleeTwo = RSVR_VRHand.InVR(mo) && mk == RSVR_Hand.SWORD
 				&& offGrip[i] && RSVR_VRHand.SteadyGap(mo) < 50.0;
 			mo.SetInventory('RSVR_MeleeTwo', meleeTwo ? 1 : 0);
-			bool twoUp = RSVR_VRHand.InVR(mo) && mo.player.ReadyWeapon
-				&& RSVR_Hand.KindOf(mo) == RSVR_Hand.AXE && RSVR_VRHand.TwoHands(mo);
-			mo.SetInventory('RSVR_AxeTwo', twoUp ? 1 : 0);
 			// r6b (owner item 10): the sword under the engine's steadying (WF_TWOHANDSTABILIZED)
 			mo.SetInventory('RSVR_SwordTwo', RSVR_VRHand.InVR(mo) && mk == RSVR_Hand.SWORD && RSVR_VRHand.Steadied(mo) ? 1 : 0);
 			// r6 (item 7): in VR the chainsaw's trigger runs the chain without BD22's swing animation
@@ -136,12 +180,11 @@ class RSVR_MeleeHandler : EventHandler
 	}
 
 	// r6 (owner item 17): THE HIT FLASH ON EVERY MELEE HIT. The gun bash already drew the owner's
-	// RS_CombatFX impact (bash.zs RSQ_BashFX, spawned by DECORATE's RSQ_BashAttack). The punch, the
+	// RS_CombatFX impact (bash.zs RSQ_BashFX; 2.0.2: the gun bash itself is gone). The punch, the
 	// pistol whip and the butt strike land BD22's own strike actors -- MeleeStrike1's family
 	// (MeleeStrikeNormal, MeleeStrike1Berserked) and KickAttack's (KickAttack, SuperKickAttack) --
 	// so the flash goes where one of those, fired by a player, actually damaged something. One
-	// effect and one colour for all of them: the menu's Melee Hit Flash rows. The bash keeps its
-	// own spawn (excluded here, or it would flash twice), and BD22's downed-enemy probe
+	// effect and one colour for all of them: the menu's Melee Hit Flash rows. BD22's downed-enemy probe
 	// (KickAttackDetectDowned, 2 damage) is a probe, not a blow.
 	static bool Descends(Actor a, Name n)
 	{
@@ -158,14 +201,14 @@ class RSVR_MeleeHandler : EventHandler
 			return;
 		if (!Descends(inf, 'MeleeStrike1') && !Descends(inf, 'KickAttack'))
 			return;
-		if (Descends(inf, 'RSQ_BashAttack') || Descends(inf, 'KickAttackDetectDowned'))
+		if (Descends(inf, 'KickAttackDetectDowned'))
 			return;
 		let fx = Actor.Spawn('RSQ_BashFX', inf.pos, ALLOW_REPLACE);
 		if (fx)
 			fx.target = e.DamageSource;
 	}
 
-	static RSVR_Hand HandOf(PlayerPawn mo)
+	static RSVR_Hand HandOf(PlayerPawn mo, bool off = false)
 	{
 		let h = RSVR_MeleeHandler(EventHandler.Find('RSVR_MeleeHandler'));
 		if (!h || !mo || !mo.player)
@@ -173,9 +216,80 @@ class RSVR_MeleeHandler : EventHandler
 		int n = mo.PlayerNumber();
 		if (n < 0 || n >= MAXPLAYERS)
 			return null;
+		if (off)
+		{
+			if (!h.offHands[n])
+			{
+				h.offHands[n] = new('RSVR_Hand');
+				h.offHands[n].off = true;
+			}
+			return h.offHands[n];
+		}
 		if (!h.hands[n])
 			h.hands[n] = new('RSVR_Hand');
 		return h.hands[n];
+	}
+
+	// 2.0.2 DUAL AXES. A second axe: the first time a player has the axe (BD22's pickup, a cheat, a drop) the
+	// off-hand copy comes with it (Dual Options "Axe", rsq_dual_axe) -- the owner wants two, and BD22 maps
+	// seldom hold a second. A thrown off-hand axe is gone until an axe on the floor is picked up again: a
+	// BD22 BrutalAxe pickup is never taken by a player who already has the axe (the engine leaves a weapon
+	// that gives no ammo on the floor), so these few pickups are watched here and give the copy back.
+	Array<Actor> axePickups;
+	bool hadAxe[MAXPLAYERS];
+
+	// DECORATE classes are not known when ZScript compiles: look them up by name at run time
+	static class<Inventory> Inv(Name n)
+	{
+		class<Inventory> c = n;
+		return c;
+	}
+
+	override void WorldThingSpawned(WorldEvent e)
+	{
+		let a = e.Thing;
+		if (a && a.GetClassName() == 'BrutalAxe' && Inventory(a) && !Inventory(a).Owner)
+			axePickups.Push(a);
+	}
+
+	void AxePickupTick()
+	{
+		for (int n = 0; n < MAXPLAYERS; n++)
+		{
+			if (!playeringame[n] || !players[n].mo)
+				continue;
+			let mo = players[n].mo;
+			bool has = mo.FindInventory(Inv('BrutalAxe'), false) != null;	// the axe itself, not its off-hand copy
+			bool want = RSQ.PlayerInt(mo, 'rsq_dual_axe', 1) != 0;
+			if (has && !hadAxe[n] && want && mo.player.playerstate == PST_LIVE)
+				RSQ_Dual.GiveCopy(mo, RSQ_DualTable.AXE);
+			hadAxe[n] = has;
+		}
+		for (int i = axePickups.Size() - 1; i >= 0; i--)
+		{
+			let a = axePickups[i];
+			if (!a || Inventory(a).Owner)
+			{
+				axePickups.Delete(i);
+				continue;
+			}
+			for (int n = 0; n < MAXPLAYERS; n++)
+			{
+				if (!playeringame[n] || !players[n].mo)
+					continue;
+				let mo = players[n].mo;
+				if (mo.health <= 0 || mo.FindInventory(Inv('RSQ_Off_BrutalAxe')) || !mo.FindInventory(Inv('BrutalAxe'), false)
+					|| RSQ.PlayerInt(mo, 'rsq_dual_axe', 1) == 0)
+					continue;
+				if (mo.Distance3D(a) > mo.radius + a.radius + 16)
+					continue;
+				RSQ_Dual.GiveCopy(mo, RSQ_DualTable.AXE);
+				mo.A_StartSound("Axe/Draw", CHAN_ITEM);
+				a.Destroy();
+				axePickups.Delete(i);
+				break;
+			}
+		}
 	}
 }
 
@@ -200,6 +314,17 @@ class RSVR_Hand play
 	// movement) that counts as a blow, and the slowest release that throws
 	const AXE_SWING = 3.0;
 	const SWORD_SWING = 3.5;
+	// 2.0.2 (owner r3 item 38: "it goes bananas executing several attacks all the time, can it be more responsive
+	// to a deliberate swing?"). The speed is taken at the sword's
+	// POINT, 90 map units forward and 159 up of the hand in the model (BladeOut), about 1.8 m from the grip, so a
+	// turn of the wrist alone moves it fast -- the old gate (3.5 m/s x 1.5 at the point) is about a 170 deg/s turn of the wrist,
+	// and the strike list emptied after 3 slow tics, so a wobbling blade struck the same body again and again.
+	// A sword blow now needs all three: the speed (SWORD_SWING x 1.5, as before), SWORD_ARC map units of the
+	// point's travel ABOVE that speed in this one swing before it may cut (a deliberate arc, not a flick or a
+	// wobble), and SWORD_COOL tics after a swing ends before the next may start, so one swing is one attack.
+	const SWORD_ARC = 34.0;		// 1 m of the point's travel (34 units a metre)
+	const SWORD_COOL = 12;		// about a third of a second
+	const SWORD_CALM = 4;		// tics below the speed that end a swing
 	const WHIP_SWING = 3.2;		// 1.97: a pistol is lighter than the axe
 	const BUTT_SWING = 3.6;		// 1.97: a long gun is heavy and swung short
 	// r4 (owner: "enemies back away as you close in, so the range is too short"). The butt strike
@@ -260,6 +385,7 @@ class RSVR_Hand play
 	int head;
 
 	int kind;
+	bool off;			// 2.0.2: this is the OFF hand (the off-hand axe): its pose, its layer, its weapon
 	bool havePrev;
 	Vector3 prevIn;
 	Vector3 prevOut;
@@ -277,6 +403,11 @@ class RSVR_Hand play
 	int calmTics;
 	int whooshWait;
 	int sawWait;		// r6: tics until the bar may cut the same body again
+	// 2.0.2 (owner r3 item 38) THE SWORD'S DELIBERATE SWING: see SWORD_* below and Tick
+	double arc;			// map units the point has travelled in this swing, above the speed threshold
+	bool armed;			// the swing has covered SWORD_ARC: it may cut
+	int coolUntil;		// no new sword swing before this tic (one swing, one attack)
+	int swings;			// sword swings that armed (the rig log reads it)
 	double lastEdge;	// r6: the axe's last edge-vs-motion cosine (logged by the rig driver)
 	int scrapeWait;
 	bool inWall;
@@ -477,11 +608,29 @@ class RSVR_Hand play
 			if (n == 'MG42')
 				return MG42BUTT;
 		}
+		// 2.0.2 (owner r3 item 39): "Pistol Whip" (rsq_pistol_whip, on by default) is its own option row
+		if (RSQ.PlayerInt(mo, 'rsq_pistol_whip', 1) == 0)
+			return 0;
 		if (n == 'BrutalPistol')
 			return PISTOL;
 		if (n == 'Revolver')
 			return REVOLVER;
 		return 0;
+	}
+
+	// 2.0.2: what the OFF hand swings. Only the off-hand axe: the off hand's other weapons are guns, whose
+	// melee is the main hand's (and the fists' own punch, fists.zs).
+	static int KindOfOff(PlayerPawn mo)
+	{
+		let p = mo.player;
+		if (!p || !p.OffhandWeapon || mo.health <= 0)
+			return 0;
+		return p.OffhandWeapon is 'RSQ_Off_BrutalAxe' ? AXE : 0;
+	}
+
+	int KindFor(PlayerPawn mo)
+	{
+		return off ? KindOfOff(mo) : KindOf(mo);
 	}
 
 	// the weapon is in its held pose (AXEG A or a blood-colour copy, DSLA A):
@@ -490,7 +639,7 @@ class RSVR_Hand play
 	{
 		if (!spritesSet)
 			InitSprites();
-		let psp = mo.player.FindPSprite(PSP_WEAPON);
+		let psp = mo.player.FindPSprite(off ? PSP_OFFHANDWEAPON : PSP_WEAPON);
 		if (!psp)
 			return false;
 		SpriteID s = psp.Sprite;
@@ -539,10 +688,8 @@ class RSVR_Hand play
 			return s == sPIST || s == s2IST;
 		if (k == REVOLVER)
 			return s == sREVO || s == s2EVO;
-		// AXE2 is the same axe drawn at the TWO-HANDED placement (MODELDEF, Axe.dec
-		// TwoHand). poseFrame tells Place which transform the blade sits in.
-		poseFrame = s == sAXE2 ? 1 : 0;
-		return s == sAXEG || s == sAXE2 || s == s1XEG || s == s2XEG || s == s3XEG || s == s4XEG || s == s5XEG;
+		// 2.0.2: AXE2 (the two-handed placement) is gone (owner r3 item 37); the axe is always one-handed
+		return s == sAXEG || s == s1XEG || s == s2XEG || s == s3XEG || s == s4XEG || s == s5XEG;
 	}
 
 	static double CVarF(Name n, double def)
@@ -565,7 +712,7 @@ class RSVR_Hand play
 	// Matching each sample to its own body pose removes that at the source.
 	bool Frame(PlayerPawn mo)
 	{
-		let ph = RSQ_PoseHandler.Of(mo, RSQ_Pose.MAIN);
+		let ph = RSQ_PoseHandler.Of(mo, off ? RSQ_Pose.OFF : RSQ_Pose.MAIN);
 		if (!ph || !ph.Fresh(mo.Level.maptime))
 			return false;
 		ps = mo.Level.pixelstretch;
@@ -637,6 +784,8 @@ class RSVR_Hand play
 		prevStamp = 0;
 		swingTics = 0;
 		calmTics = 0;
+		arc = 0;
+		armed = false;
 		inWall = false;
 		struck.Clear();
 	}
@@ -654,7 +803,7 @@ class RSVR_Hand play
 		if (lockKeep > 0 && lockRing && lockTarget)
 			lockRing.SetOrigin(lockTarget.pos + (0, 0, lockTarget.height * 0.5), true);
 
-		int k = KindOf(mo);
+		int k = KindFor(mo);
 		if (k != kind)
 		{
 			Reset();
@@ -796,7 +945,53 @@ class RSVR_Hand play
 				|| velIn.Length() * clamp(Cv(mo, 'rsvr_butt_lead', 1.3), 1.0, 4.0) > speed;
 		}
 
-		if (power >= 1 && !backswing)
+		// 2.0.2 (owner r3 item 38): the sword cuts only on a deliberate swing (SWORD_ARC, SWORD_COOL above)
+		bool fast = power >= 1 && !backswing;
+		if (k == SWORD)
+		{
+			int now = mo.Level.maptime;
+			if (fast && !armed && now < coolUntil)
+				fast = false;			// still cooling down from the last swing: this is not a new one
+			if (fast)
+			{
+				arc += speed * gap;
+				if (!armed && arc >= SWORD_ARC)
+				{
+					armed = true;
+					swings++;
+				}
+			}
+			if (!armed)
+			{
+				if (!fast && ++calmTics > SWORD_CALM)
+					arc = 0;
+				if (fast)
+					calmTics = 0;
+				WallCheck(mo, bout, 0);
+				prevIn = bin;
+				prevOut = bout;
+				prevPos = mo.pos;
+				return;
+			}
+			if (!fast)
+			{
+				if (++calmTics > SWORD_CALM)
+				{
+					// the swing is over: one swing, one attack, then a short rest
+					armed = false;
+					arc = 0;
+					swingTics = 0;
+					struck.Clear();
+					coolUntil = now + SWORD_COOL;
+				}
+				WallCheck(mo, bout, power);
+				prevIn = bin;
+				prevOut = bout;
+				prevPos = mo.pos;
+				return;
+			}
+		}
+		if (fast)
 		{
 			calmTics = 0;
 			swingTics++;
@@ -930,21 +1125,6 @@ class RSVR_Hand play
 		return tr.HitType == TRACE_HitNone || tr.HitType == TRACE_HitActor;
 	}
 
-	// Both hands on the haft AND the cutting edge leading the blow. Two hands alone is
-	// not the reward: the axe has an edge on one side, so what is paid for is landing
-	// it (owner, 2026-10-23, in place of a flat 2x for holding it). Two hands is the
-	// engine's own WF_TWOHANDSTABILIZED, the same flag hands.zs draws the support hand
-	// from, so the damage and the hands the player sees can never disagree.
-	static bool TwoHandedBite(PlayerPawn mo, Vector3 dir, Vector3 edge)
-	{
-		if (!RSVR_VRHand.TwoHands(mo))
-			return false;
-		double el = edge.Length(), dl = dir.Length();
-		if (el <= 0 || dl <= 0)
-			return false;
-		return ((dir / dl) dot (edge / el)) >= clamp(Cv(mo, 'rsvr_axe_edge', 0.5), -1.0, 1.0);
-	}
-
 	void Strike(PlayerPawn mo, int k, Actor t, Vector3 at, Vector3 dir, double power, Vector3 edge)
 	{
 		// start BD22's attack just inside the body, at the height the blade met it
@@ -971,9 +1151,7 @@ class RSVR_Hand play
 				Launch(mo, 'AxeAttackNoDecal', p, dir);
 			if (power >= 2.4)
 				Launch(mo, 'AxeAttack', p, dir);
-			// half an AxeAttack on top when the edge bites with both hands behind it
-			if (TwoHandedBite(mo, dir, edge))
-				Launch(mo, 'RSVR_AxeHalf', p, dir);
+			// 2.0.2: no two-handed bite (RSVR_AxeHalf): the axe is never two-handed (owner r3 item 37)
 		}
 		else if (k == SWORD)
 		{
@@ -1011,7 +1189,8 @@ class RSVR_Hand play
 				Launch(mo, mo.CountInv('PowerStrength') > 0 ? 'SuperKickAttack' : 'KickAttack', p, dir);
 			}
 		}
-		Buzz(mo);
+		if (!off)
+			Buzz(mo);	// the engine buzzes the WEAPON hand only; the off axe goes without
 	}
 
 	// BD22's attack actor, fired by the player from that point
@@ -1081,7 +1260,20 @@ class RSVR_Hand play
 		mo.SetInventory('RSVR_AxeHolding', held ? 1 : 0);
 		if (!held)	// F11: WorldTick sets this AFTER the weapon ticks, so it is still 1 on the release tic,
 			mo.SetInventory('RSVR_AxeHold', 0);	// and Ready would send the axe straight back here: a zero-tic loop
-		let h = RSVR_MeleeHandler.HandOf(mo);
+		HoldOrThrow(mo, RSVR_MeleeHandler.HandOf(mo), held, 'RSVR_AxeThrown');
+	}
+
+	// 2.0.2: the OFF-hand axe (Axe.dec RSQ_Off_BrutalAxe OffTrigGrip): held on the off trigger, thrown on its release
+	static void GripOff(PlayerPawn mo)
+	{
+		mo.SetInventory('RSVR_OffAxeThrown', 0);
+		bool held = (mo.player.cmd.buttons & BT_OFFHANDATTACK) != 0;
+		mo.SetInventory('RSVR_OffAxeHolding', held ? 1 : 0);
+		HoldOrThrow(mo, RSVR_MeleeHandler.HandOf(mo, true), held, 'RSVR_OffAxeThrown');
+	}
+
+	static void HoldOrThrow(PlayerPawn mo, RSVR_Hand h, bool held, class<Inventory> thrown)
+	{
 		if (held)
 		{
 			// winding up: paint what the hand is pointing at
@@ -1094,7 +1286,7 @@ class RSVR_Hand play
 		}
 		if (h && h.Throw(mo))
 		{
-			mo.SetInventory('RSVR_AxeThrown', 1);
+			mo.SetInventory(thrown, 1);
 			h.Unlock();
 		}
 		// F11 (owner): let go without a throw and the paint stays a second, as on the ShieldSaw and the
@@ -1131,7 +1323,7 @@ class RSVR_Hand play
 	// shape as the Quest ShieldSaw's disc locks (ssq/disc.zs).
 	void LockTick(PlayerPawn mo)
 	{
-		if (!Frame(mo) || KindOf(mo) != AXE)
+		if (!Frame(mo) || KindFor(mo) != AXE)
 		{
 			Unlock();
 			return;
@@ -1184,13 +1376,9 @@ class RSVR_Hand play
 
 	bool Throw(PlayerPawn mo)
 	{
-		if (KindOf(mo) != AXE || !Frame(mo))
+		if (KindFor(mo) != AXE || !Frame(mo))
 			return false;
-		// A two-handed axe is not thrown (owner, 2026-10-23). Let go with the off hand and
-		// it is one-handed again, so the throw is back -- the rule follows the grip, and
-		// the same flag that pays the damage withholds the throw.
-		if (RSVR_VRHand.TwoHands(mo))
-			return false;
+		// 2.0.2: the axe is never two-handed, so it always throws (the 2026-10-23 two-handed rule is gone)
 
 		// fastest step of the axe's edge over the last few tics: people slow
 		// down as they let go
@@ -1301,6 +1489,18 @@ class RSVR_AxeGrip : Inventory
 	}
 }
 
+// 2.0.2: the off-hand axe's hold, every tic (Axe.dec RSQ_Off_BrutalAxe OffTrigGrip); never kept
+class RSVR_OffAxeGrip : Inventory
+{
+	override bool TryPickup(in out Actor toucher)
+	{
+		let mo = PlayerPawn(toucher);
+		if (mo)
+			RSVR_Hand.GripOff(mo);
+		return false;
+	}
+}
+
 class RSVR_Token : Inventory
 {
 	Default
@@ -1317,7 +1517,11 @@ class RSVR_AxeThrown : RSVR_Token {}
 class RSVR_AxeTrig : RSVR_Token {}
 class RSVR_AxeVRThrow : RSVR_Token {}
 class RSVR_MeleeTwo : RSVR_Token {}	// F11: the off grip held near the axe or the sword
-class RSVR_AxeTwo : RSVR_Token {}
+class RSVR_AxeTwo : RSVR_Token {}		// 2.0.2: never given (the axe is never two-handed); hands.zs still asks
+class RSVR_OffAxeHolding : RSVR_Token {}	// 2.0.2: the off-hand axe (RSQ_Off_BrutalAxe)
+class RSVR_OffAxeThrown : RSVR_Token {}
+class RSVR_OffAxeVRThrow : RSVR_Token {}
+class RSVR_OffAxeGone : RSVR_Token {}		// thrown: melee.zs WorldTick puts the copy away
 class RSVR_SwordTwo : RSVR_Token {}	// r6b: the engine steadies the sword: the DSL2 placement, 2.0x		// both hands on the haft: the shifted placement
 class RSVR_NotVR : RSVR_Token {}
 class RSVR_SawVR : RSVR_Token {}		// r6: VR with the chainsaw in hand: Saw.dec Fire runs RSVR_SawRun

@@ -20,7 +20,7 @@ def mark(t, n):
                 a1=int(v[10]), a2=int(v[11]), psp=int(v[12]), alt=int(v[13]))
 for g in guns:
     d = '%s/dump_%s_%s' % (R, tag, g); shutil.rmtree(d, ignore_errors=True); os.makedirs(d)
-    s = ('wait 100; god; notarget; rsq_extra_weapons 1; rsr_debug 1; %s sv_rsq_player_ballistics %s; qz_rhand "%s"; give ammo; give %s; wait 2; use %s; '
+    s = ('wait 100; god; notarget; rsq_extra_weapons 1; rsr_debug 1; %s sv_rsq_true_bullets %s; qz_rhand "%s"; give ammo; give %s; wait 2; use %s; '
          'wait 150; netevent int_mark_sel; qz_rhand "%s"; wait 10; netevent int_mark_pre; qz_rtrigger 1; wait 8; qz_rtrigger 0; wait 45; netevent int_mark_fire; '
          '+altattack; wait 8; -altattack; wait 70; netevent int_mark_alt; wait 3; quit' % (os.environ.get('EXTRA', ''), bal, SIDE, g, g, FWD))
     if os.environ.get('ALTFIRST'):	# alt fire before the main shot empties a one-round gun

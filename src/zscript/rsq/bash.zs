@@ -1,51 +1,13 @@
-// bash.zs (1.97) -- the gun bash: BD22's own kick, with a gun in your hands instead of a boot.
-// The trigger is BD22's: +zoom gives Kicking and DEFAULTWEAPON's DoKick runs. Our branch is taken
-// only in VR, only with the option on, and only when what you are holding is not already a melee
-// weapon -- so the axe, the Dragonslayer, the chainsaw and the fists keep BD22's kick exactly.
+// bash.zs: the MELEE HIT FLASH (RSQ_BashFX). It began with the 1.97 kick-key gun bash; the bash itself is gone
+// (2.0.2, owner r3 item 39: "I asked for a pistol whip"), the flash stays on every melee hit (melee.zs).
 //
-// RSQ_BashAsk is the pack's own handshake idiom (rsr_break.zs RSB_Call): Inventory.TryPickup runs
-// SYNCHRONOUSLY inside A_GiveInventory, so a 0-tic DECORATE state can ask ZScript a question and
-// branch on the answer in the same tic. The token is never kept.
+// 2.0.2 (owner r3 item 36: "way, way too large"): a small spark at the contact point. MEASURED on the art
+// (the brightest-channel x alpha > 40 bounding box over every frame, tools/optmelee/fxsize.py): RSS3 206 px,
+// RSU1 60, RSU4 15, RSU5 103, RSH0 79. At 1.97's scales (art drawn at the 96 px standard) that is 79, 96, 96,
+// 88 and 79 MAP UNITS across -- 2.3 to 2.8 m at 34 units a metre. Each is now scaled to SPARK map units
+// (13, about 38 cm: one sixth of what it was), centred where the blow landed.
 
-// play, not the default data context: PlayerInt and InVR are both play functions
-// ("Can't call play function PlayerInt from data context").
-class RSQ_Bash abstract play
-{
-	// not a gun = BD22's kick, untouched
-	static bool IsMelee(Name n)
-	{
-		return n == 'BrutalAxe' || n == 'DSweap' || n == 'Chain_saw' || n == 'Melee_Attacks';
-	}
-
-	static bool Wanted(PlayerPawn mo)
-	{
-		if (!mo || !mo.player || mo.health <= 0)
-			return false;
-		if (RSQ.PlayerInt(mo, 'rsq_bash', 1) == 0)
-			return false;
-		if (!RSVR_VRHand.InVR(mo))
-			return false;			// desktop keeps the boot
-		let w = mo.player.ReadyWeapon;
-		return w && !IsMelee(w.GetClassName());
-	}
-}
-
-class RSQ_BashGo : Inventory { Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET } }
-
-class RSQ_BashAsk : Inventory
-{
-	Default { Inventory.MaxAmount 1; +INVENTORY.UNDROPPABLE; +INVENTORY.UNTOSSABLE; +INVENTORY.QUIET }
-	override bool TryPickup(in out Actor toucher)
-	{
-		let mo = PlayerPawn(toucher);
-		if (mo && RSQ_Bash.Wanted(mo))
-			mo.GiveInventory('RSQ_BashGo', 1);
-		return false;			// never kept
-	}
-}
-
-// the impact: the effect the owner picked, at the point the bash landed. DECORATE's
-// RSQ_BashAttack spawns this, and r6 every other melee hit too (melee.zs WorldThingDamaged);
+// the impact: the effect the owner picked, at the point the blow landed (melee.zs WorldThingDamaged);
 // this picks which of the five to draw, and tints it.
 class RSQ_BashFX : Actor
 {
@@ -81,12 +43,13 @@ class RSQ_BashFX : Actor
 
 class RSQ_FXBase : Actor
 {
+	const SPARK = 13;	// map units across, the visible art (see the head of this file)
 	Default { +NOINTERACTION; +NOBLOCKMAP; +DONTSPLASH;
 		+FORCEXYBILLBOARD; RenderStyle "Add"; Alpha 1.0; }
 }
 class RSQ_FX_RSS3 : RSQ_FXBase
 {
-	Default { Scale 0.384; }	// 250 px art at the 96 px standard
+	Default { Scale 0.0631; }	// 206 px visible -> RSQ_FXBase.SPARK (13) map units (1.97: 0.384)
 	States
 	{
 	Spawn:
@@ -96,7 +59,7 @@ class RSQ_FX_RSS3 : RSQ_FXBase
 }
 class RSQ_FX_RSU1 : RSQ_FXBase
 {
-	Default { Scale 1.600; }	// 60 px art at the 96 px standard
+	Default { Scale 0.2167; }	// 60 px visible -> RSQ_FXBase.SPARK (13) map units (1.97: 1.600)
 	States
 	{
 	Spawn:
@@ -106,7 +69,7 @@ class RSQ_FX_RSU1 : RSQ_FXBase
 }
 class RSQ_FX_RSU4 : RSQ_FXBase
 {
-	Default { Scale 6.400; }	// 15 px art at the 96 px standard
+	Default { Scale 0.8667; }	// 15 px visible -> RSQ_FXBase.SPARK (13) map units (1.97: 6.400)
 	States
 	{
 	Spawn:
@@ -116,7 +79,7 @@ class RSQ_FX_RSU4 : RSQ_FXBase
 }
 class RSQ_FX_RSU5 : RSQ_FXBase
 {
-	Default { Scale 0.857; }	// 112 px art at the 96 px standard
+	Default { Scale 0.1262; }	// 103 px visible -> RSQ_FXBase.SPARK (13) map units (1.97: 0.857)
 	States
 	{
 	Spawn:
@@ -126,7 +89,7 @@ class RSQ_FX_RSU5 : RSQ_FXBase
 }
 class RSQ_FX_RSH0 : RSQ_FXBase
 {
-	Default { Scale 1.000; }	// 96 px art at the 96 px standard
+	Default { Scale 0.1646; }	// 79 px visible -> RSQ_FXBase.SPARK (13) map units (1.97: 1.000)
 	States
 	{
 	Spawn:
