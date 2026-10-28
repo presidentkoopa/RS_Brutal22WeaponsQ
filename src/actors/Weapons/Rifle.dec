@@ -944,7 +944,25 @@ ACTOR Rifle : BrutalWeapon
 	}
 }
 
-ACTOR PuristRifle : Rifle { -WEAPON.NOAUTOAIM +WEAPON.CHEATNOTWEAPON }
+// 2.0 (owner, 2026-10-28): the Purist rifle draws the Rifle's mesh with its M203 (MODELDEF.purist), but it
+// has no launcher: secondary fire does nothing at all (no grenade, no dry click, no purist warning).
+// Each state below holds one tic, because Ready3 / Ready2 jump straight back here while the key is held.
+ACTOR PuristRifle : Rifle
+{
+	-WEAPON.NOAUTOAIM
+	+WEAPON.CHEATNOTWEAPON
+	States
+	{
+	AltFire:
+		"####" "#" 0 A_TakeInventory("RFGrenade", 1)
+		"####" "#" 1 A_WeaponReady(WRF_NOSECONDARY)
+		Goto Ready3
+	FireGrenade:	// BD22's launcher key while aiming (Ready2: TossGrenade)
+		"####" "#" 0 A_TakeInventory("RFGrenade", 1)
+		"####" "#" 1 A_TakeInventory("TossGrenade", 1)
+		Goto Ready3
+	}
+}
 
 ACTOR RifleAmmo : Ammo
 {

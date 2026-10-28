@@ -1529,6 +1529,8 @@ Model PuristRifle
    Path "models/bd/Rifle"
    Model 0 "Rifle.md3"
    Skin 0 "Rifle.png"
+   Model 1 "M203.md3"	// 1.30: the M203 (kitbash/gen_m203.py)
+   Skin 1 "M203.png"
    Scale -1.0 1.0 1.0
    Offset 0.348 -5.912 0.0
    ZOffset -1.812
@@ -1540,165 +1542,324 @@ Model PuristRifle
 // BD21 pose for the same moment (tools/pose_tables.py, fill_tables.py).
 
    FrameIndex	2IFG	A	0	3
+   FrameIndex	2IFG	A	1	3
    FrameIndex	RIFG	J	0	3
+   FrameIndex	RIFG	J	1	3
    FrameIndex	RIFG	K	0	3
+   FrameIndex	RIFG	K	1	3
    FrameIndex	RIFG	L	0	28
+   FrameIndex	RIFG	L	1	28
    FrameIndex	RIFG	M	0	27
+   FrameIndex	RIFG	M	1	27
    FrameIndex	RIFG	N	0	27
+   FrameIndex	RIFG	N	1	27
    FrameIndex	RIFG	A	0	3
+   FrameIndex	RIFG	A	1	3
    FrameIndex	PLAY	A	0	3
+   FrameIndex	PLAY	A	1	3
    FrameIndex	RIFG	I	0	0
+   FrameIndex	RIFG	I	1	0
    FrameIndex	RIFG	H	0	1
+   FrameIndex	RIFG	H	1	1
    FrameIndex	RIFG	G	0	2
+   FrameIndex	RIFG	G	1	2
    FrameIndex	RIFG	F	0	3
+   FrameIndex	RIFG	F	1	3
    FrameIndex	3IFR	A	0	0
+   FrameIndex	3IFR	A	1	0
    FrameIndex	3IFR	B	0	1
+   FrameIndex	3IFR	B	1	1
    FrameIndex	3IFR	C	0	2
+   FrameIndex	3IFR	C	1	2
    FrameIndex	3IFR	D	0	9
+   FrameIndex	3IFR	D	1	9
    FrameIndex	3IFR	E	0	9
+   FrameIndex	3IFR	E	1	9
    FrameIndex	3IFR	F	0	9
+   FrameIndex	3IFR	F	1	9
    FrameIndex	RIFR	G	0	9
+   FrameIndex	RIFR	G	1	9
    FrameIndex	RIFR	H	0	9
+   FrameIndex	RIFR	H	1	9
    FrameIndex	RIFR	I	0	10
+   FrameIndex	RIFR	I	1	10
    FrameIndex	RIFR	J	0	10
+   FrameIndex	RIFR	J	1	10
    FrameIndex	RIFR	K	0	11
+   FrameIndex	RIFR	K	1	11
    FrameIndex	RIFR	L	0	11
+   FrameIndex	RIFR	L	1	11
    FrameIndex	RIFR	M	0	12
+   FrameIndex	RIFR	M	1	12
    FrameIndex	RIFR	N	0	13
+   FrameIndex	RIFR	N	1	13
    FrameIndex	RIFR	O	0	13
+   FrameIndex	RIFR	O	1	13
    FrameIndex	RIFR	A	0	7
+   FrameIndex	RIFR	A	1	7
    FrameIndex	RIFR	P	0	13
+   FrameIndex	RIFR	P	1	13
    FrameIndex	RIFR	Q	0	14
+   FrameIndex	RIFR	Q	1	14
    FrameIndex	RIFR	R	0	15
+   FrameIndex	RIFR	R	1	15
    FrameIndex	RIFR	S	0	15
+   FrameIndex	RIFR	S	1	15
    FrameIndex	RIFR	T	0	15
+   FrameIndex	RIFR	T	1	15
    FrameIndex	RIFR	U	0	16
+   FrameIndex	RIFR	U	1	16
    FrameIndex	RIFR	V	0	16
+   FrameIndex	RIFR	V	1	16
    FrameIndex	RIFR	W	0	16
+   FrameIndex	RIFR	W	1	16
    FrameIndex	RIFR	X	0	16
+   FrameIndex	RIFR	X	1	16
    FrameIndex	RIFR	Y	0	17
+   FrameIndex	RIFR	Y	1	17
    FrameIndex	RIFR	Z	0	18
+   FrameIndex	RIFR	Z	1	18
    FrameIndex	RIFR	[	0	8
+   FrameIndex	RIFR	[	1	8
    FrameIndex	RIFR	B	0	8
+   FrameIndex	RIFR	B	1	8
    FrameIndex	2IFR	A	0	22
+   FrameIndex	2IFR	A	1	22
    FrameIndex	2IFR	B	0	22
+   FrameIndex	2IFR	B	1	22
    FrameIndex	2IFR	C	0	22
+   FrameIndex	2IFR	C	1	22
    FrameIndex	2IFR	D	0	22
+   FrameIndex	2IFR	D	1	22
    FrameIndex	2IFR	E	0	22
+   FrameIndex	2IFR	E	1	22
    FrameIndex	2IFR	F	0	22
+   FrameIndex	2IFR	F	1	22
    FrameIndex	2IFR	G	0	22
+   FrameIndex	2IFR	G	1	22
    FrameIndex	2IFR	H	0	22
+   FrameIndex	2IFR	H	1	22
    FrameIndex	2IFR	I	0	21
+   FrameIndex	2IFR	I	1	21
    FrameIndex	2IFR	J	0	19
+   FrameIndex	2IFR	J	1	19
    FrameIndex	2IFR	K	0	20
+   FrameIndex	2IFR	K	1	20
    FrameIndex	2IFR	L	0	22
+   FrameIndex	2IFR	L	1	22
    FrameIndex	2IFR	M	0	22
+   FrameIndex	2IFR	M	1	22
    FrameIndex	2IFR	N	0	22
+   FrameIndex	2IFR	N	1	22
    FrameIndex	2IFR	O	0	22
+   FrameIndex	2IFR	O	1	22
    FrameIndex	2IFR	P	0	23
+   FrameIndex	2IFR	P	1	23
    FrameIndex	RI2G	A	0	3
+   FrameIndex	RI2G	A	1	3
    FrameIndex	SMGR	A	0	3
+   FrameIndex	SMGR	A	1	3
    FrameIndex	RIFG	E	0	3
+   FrameIndex	RIFG	E	1	3
    FrameIndex	RIFG	D	0	2
+   FrameIndex	RIFG	D	1	2
    FrameIndex	RIFG	C	0	1
+   FrameIndex	RIFG	C	1	1
    FrameIndex	RIFG	B	0	0
+   FrameIndex	RIFG	B	1	0
    FrameIndex	2IFF	A	0	4
+   FrameIndex	2IFF	A	1	4
    FrameIndex	RIFF	A	0	4
+   FrameIndex	RIFF	A	1	4
    FrameIndex	RIFF	D	0	4
+   FrameIndex	RIFF	D	1	4
    FrameIndex	RIFF	B	0	5
+   FrameIndex	RIFF	B	1	5
    FrameIndex	RIFF	C	0	6
+   FrameIndex	RIFF	C	1	6
    FrameIndex	RI2F	A	0	4
+   FrameIndex	RI2F	A	1	4
    FrameIndex	RI2F	D	0	4
+   FrameIndex	RI2F	D	1	4
    FrameIndex	RI2F	B	0	5
+   FrameIndex	RI2F	B	1	5
    FrameIndex	RI2F	C	0	6
+   FrameIndex	RI2F	C	1	6
    FrameIndex	RIFZ	A	0	24
+   FrameIndex	RIFZ	A	1	24
    FrameIndex	RIFZ	B	0	25
+   FrameIndex	RIFZ	B	1	25
    FrameIndex	RIFZ	C	0	26
+   FrameIndex	RIFZ	C	1	26
    FrameIndex	RIFR	C	0	8
+   FrameIndex	RIFR	C	1	8
    FrameIndex	RIFR	D	0	8
+   FrameIndex	RIFR	D	1	8
    FrameIndex	RIFR	E	0	8
+   FrameIndex	RIFR	E	1	8
    FrameIndex	RIFR	F	0	8
+   FrameIndex	RIFR	F	1	8
    FrameIndex	RIFL	A	0	3
+   FrameIndex	RIFL	A	1	3
    // v4: frames BD22 shows that had no key (fill_tables.py SIBLING/READY)
    FrameIndex	1IG2	A	0	16
+   FrameIndex	1IG2	A	1	16
    FrameIndex	1IG2	B	0	16
+   FrameIndex	1IG2	B	1	16
    FrameIndex	1IG2	C	0	16
+   FrameIndex	1IG2	C	1	16
    FrameIndex	1IG2	D	0	16
+   FrameIndex	1IG2	D	1	16
    FrameIndex	1IG2	E	0	16
+   FrameIndex	1IG2	E	1	16
    FrameIndex	1IGL	D	0	18
+   FrameIndex	1IGL	D	1	18
    FrameIndex	1IGL	E	0	17
+   FrameIndex	1IGL	E	1	17
    FrameIndex	1IGL	F	0	16
+   FrameIndex	1IGL	F	1	16
    FrameIndex	1IGL	G	0	16
+   FrameIndex	1IGL	G	1	16
    FrameIndex	1IGL	H	0	16
+   FrameIndex	1IGL	H	1	16
    FrameIndex	1IGL	I	0	16
+   FrameIndex	1IGL	I	1	16
    FrameIndex	1IGL	J	0	16
+   FrameIndex	1IGL	J	1	16
    FrameIndex	1IGL	K	0	16
+   FrameIndex	1IGL	K	1	16
    FrameIndex	1IGL	L	0	16
+   FrameIndex	1IGL	L	1	16
    FrameIndex	1IGL	M	0	16
+   FrameIndex	1IGL	M	1	16
    FrameIndex	1IGL	N	0	16
+   FrameIndex	1IGL	N	1	16
    FrameIndex	1IGL	O	0	16
+   FrameIndex	1IGL	O	1	16
    FrameIndex	1IGL	P	0	16
+   FrameIndex	1IGL	P	1	16
    FrameIndex	1IGL	Q	0	16
+   FrameIndex	1IGL	Q	1	16
    FrameIndex	1IGL	R	0	16
+   FrameIndex	1IGL	R	1	16
    FrameIndex	1IGL	S	0	16
+   FrameIndex	1IGL	S	1	16
    FrameIndex	1IGL	T	0	16
+   FrameIndex	1IGL	T	1	16
    FrameIndex	1IGL	U	0	16
+   FrameIndex	1IGL	U	1	16
    FrameIndex	1IGL	V	0	16
+   FrameIndex	1IGL	V	1	16
    FrameIndex	1IGL	W	0	16
+   FrameIndex	1IGL	W	1	16
    FrameIndex	1IGL	X	0	16
+   FrameIndex	1IGL	X	1	16
    FrameIndex	1IGL	Y	0	16
+   FrameIndex	1IGL	Y	1	16
    FrameIndex	1IGL	Z	0	16
+   FrameIndex	1IGL	Z	1	16
    FrameIndex	2IFF	B	0	5
+   FrameIndex	2IFF	B	1	5
    FrameIndex	2IFF	C	0	6
+   FrameIndex	2IFF	C	1	6
    FrameIndex	2IFF	D	0	4
+   FrameIndex	2IFF	D	1	4
    FrameIndex	DURR	J	0	3
+   FrameIndex	DURR	J	1	3
    FrameIndex	DURR	K	0	3
+   FrameIndex	DURR	K	1	3
    FrameIndex	DURR	L	0	28
+   FrameIndex	DURR	L	1	28
    FrameIndex	DURR	M	0	28
+   FrameIndex	DURR	M	1	28
    FrameIndex	DURR	N	0	28
+   FrameIndex	DURR	N	1	28
    FrameIndex	DURR	O	0	28
+   FrameIndex	DURR	O	1	28
    FrameIndex	DURR	P	0	28
+   FrameIndex	DURR	P	1	28
    FrameIndex	DURR	Q	0	28
+   FrameIndex	DURR	Q	1	28
    FrameIndex	RI2F	E	0	4
+   FrameIndex	RI2F	E	1	4
    FrameIndex	RI2F	F	0	4
+   FrameIndex	RI2F	F	1	4
    FrameIndex	RI2F	G	0	6
+   FrameIndex	RI2F	G	1	6
    FrameIndex	RI2F	H	0	6
+   FrameIndex	RI2F	H	1	6
    FrameIndex	RIFF	E	0	4
+   FrameIndex	RIFF	E	1	4
    FrameIndex	RIFF	F	0	4
+   FrameIndex	RIFF	F	1	4
    FrameIndex	RIFF	G	0	6
+   FrameIndex	RIFF	G	1	6
    FrameIndex	RIFF	H	0	6
+   FrameIndex	RIFF	H	1	6
    FrameIndex	RIFF	I	0	3
+   FrameIndex	RIFF	I	1	3
    FrameIndex	RIG2	A	0	16
+   FrameIndex	RIG2	A	1	16
    FrameIndex	RIG2	B	0	16
+   FrameIndex	RIG2	B	1	16
    FrameIndex	RIG2	C	0	16
+   FrameIndex	RIG2	C	1	16
    FrameIndex	RIG2	D	0	16
+   FrameIndex	RIG2	D	1	16
    FrameIndex	RIG2	E	0	16
+   FrameIndex	RIG2	E	1	16
    FrameIndex	RIGL	A	0	7
+   FrameIndex	RIGL	A	1	7
    FrameIndex	RIGL	B	0	8
+   FrameIndex	RIGL	B	1	8
    FrameIndex	RIGL	C	0	8
+   FrameIndex	RIGL	C	1	8
    FrameIndex	RIGL	D	0	18
+   FrameIndex	RIGL	D	1	18
    FrameIndex	RIGL	E	0	17
+   FrameIndex	RIGL	E	1	17
    FrameIndex	RIGL	F	0	16
+   FrameIndex	RIGL	F	1	16
    FrameIndex	RIGL	G	0	16
+   FrameIndex	RIGL	G	1	16
    FrameIndex	RIGL	H	0	16
+   FrameIndex	RIGL	H	1	16
    FrameIndex	RIGL	I	0	16
+   FrameIndex	RIGL	I	1	16
    FrameIndex	RIGL	J	0	16
+   FrameIndex	RIGL	J	1	16
    FrameIndex	RIGL	K	0	16
+   FrameIndex	RIGL	K	1	16
    FrameIndex	RIGL	L	0	16
+   FrameIndex	RIGL	L	1	16
    FrameIndex	RIGL	M	0	16
+   FrameIndex	RIGL	M	1	16
    FrameIndex	RIGL	N	0	16
+   FrameIndex	RIGL	N	1	16
    FrameIndex	RIGL	O	0	16
+   FrameIndex	RIGL	O	1	16
    FrameIndex	RIGL	P	0	16
+   FrameIndex	RIGL	P	1	16
    FrameIndex	RIGL	Q	0	16
+   FrameIndex	RIGL	Q	1	16
    FrameIndex	RIGL	R	0	16
+   FrameIndex	RIGL	R	1	16
    FrameIndex	RIGL	S	0	16
+   FrameIndex	RIGL	S	1	16
    FrameIndex	RIGL	T	0	16
+   FrameIndex	RIGL	T	1	16
    FrameIndex	RIGL	U	0	16
+   FrameIndex	RIGL	U	1	16
    FrameIndex	RIGL	V	0	16
+   FrameIndex	RIGL	V	1	16
    FrameIndex	RIGL	W	0	16
+   FrameIndex	RIGL	W	1	16
    FrameIndex	RIGL	X	0	16
+   FrameIndex	RIGL	X	1	16
    FrameIndex	RIGL	Y	0	16
+   FrameIndex	RIGL	Y	1	16
    FrameIndex	RIGL	Z	0	16
+   FrameIndex	RIGL	Z	1	16
 }
 
 Model PuristSSG
@@ -10716,6 +10877,11 @@ Model PuristRifle
 	SurfaceSkin 0 3 "rsr_clear.png"
 	SurfaceSkin 0 4 "Rifle.png"
 	SurfaceSkin 0 5 "Rifle.png"
+	Model 1 "M203.md3"	// 1.30: the M203 stays on the gun while the hand reloads it
+	SurfaceSkin 1 0 "M203.png"
+	SurfaceSkin 1 1 "M203.png"
+	SurfaceSkin 1 2 "M203.png"
+	SurfaceSkin 1 3 "M203.png"
 	Scale -1.0000 1.0000 1.0000
 	Offset 0.348 -5.912 0.0
 	ZOffset -1.812
@@ -10724,6 +10890,7 @@ Model PuristRifle
 	RollOffset 10.974	// batch 4 (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQRM A 0 3
+	FrameIndex RQRM A 1 3
 }
 
 Model PuristRifle
@@ -10736,6 +10903,11 @@ Model PuristRifle
 	SurfaceSkin 0 3 "Rifle.png"
 	SurfaceSkin 0 4 "Rifle.png"
 	SurfaceSkin 0 5 "Rifle.png"
+	Model 1 "M203.md3"	// 1.30: the M203 stays on the gun while the hand reloads it
+	SurfaceSkin 1 0 "M203.png"
+	SurfaceSkin 1 1 "M203.png"
+	SurfaceSkin 1 2 "M203.png"
+	SurfaceSkin 1 3 "M203.png"
 	Scale -1.0000 1.0000 1.0000
 	Offset 0.348 -5.912 0.0
 	ZOffset -1.812
@@ -10744,6 +10916,34 @@ Model PuristRifle
 	RollOffset 10.974	// batch 4 (lane B): gun to the FBX hand fitted from 1.92
 	NoInterpolation
 	FrameIndex RQRM B 0 3
+	FrameIndex RQRM B 1 3
+}
+
+// 2.0 (int r2): the Rifle's bolt-locked reload frame (MODELDEF.rsr RQRM C), which the Purist copy was missing
+Model PuristRifle
+{
+	Path "models/bd/Rifle"
+	Model 0 "Rifle.md3"
+	SurfaceSkin 0 0 "rsr_clear.png"
+	SurfaceSkin 0 1 "rsr_clear.png"
+	SurfaceSkin 0 2 "Rifle.png"
+	SurfaceSkin 0 3 "rsr_clear.png"
+	SurfaceSkin 0 4 "Rifle.png"
+	SurfaceSkin 0 5 "Rifle.png"
+	Model 1 "M203.md3"	// 1.30: the M203 stays on the gun while the hand reloads it
+	SurfaceSkin 1 0 "M203.png"
+	SurfaceSkin 1 1 "M203.png"
+	SurfaceSkin 1 2 "M203.png"
+	SurfaceSkin 1 3 "M203.png"
+	Scale -1.0000 1.0000 1.0000
+	Offset 0.348 -5.912 0.0
+	ZOffset -1.812
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// batch 4 (lane B): gun to the FBX hand fitted from 1.92
+	NoInterpolation
+	FrameIndex RQRM C 0 3
+	FrameIndex RQRM C 1 3
 }
 
 Model PuristPistol
