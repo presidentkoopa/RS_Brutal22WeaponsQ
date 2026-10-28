@@ -16,7 +16,9 @@ pistol pose with the solved fingers replaced), `solved_fingers` (those take the 
 hand's per-vertex correction `delta`, exactly as curl3 did), the wrist placement on the gun (R, t: hand -> gun scene frame; `shift`
 d), the gun move (MODELDEF Offset/ZOffset/Angle/Pitch/Roll), and the FBX source + take. `support` (batch 5): the FBX support pose
 (fbx_b1_L.md3 frame) and the hook / rot / point the handtable row holds, with its measurements.
-Needs RSQ_HANDS_TOOL = a full fitter checkout (lane data) and the FBX (fbx_fitter/handmodel.py FBX, or RSQ_FBX)."""
+Needs RSQ_HANDS_TOOL = a full fitter checkout (lane data) and the FBX (fbx_fitter/handmodel.py FBX, or RSQ_FBX). The fit outputs the
+poses came from (lane_c round4_final / squeeze_r5 / gun_modeldef_R3, batch 2 / 3 run outputs, mp40chk) are in poses/sources (SHA256SUMS,
+checked by `check`; RSQ_POSE_SOURCES overrides)."""
 import sys, os, re, json, glob, numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__)); REPO = os.path.abspath(os.path.join(HERE, '..', '..', '..')); POSES = os.path.join(HERE, '..', 'poses')
 sys.path.insert(0, os.path.join(HERE, '..', 'batch2')); sys.path.insert(0, os.environ.get('RSQ_HANDS_TOOL', os.path.join(HERE, '..', 'fbx_fitter')))
@@ -24,9 +26,23 @@ import handmodel
 if os.environ.get('RSQ_FBX'): handmodel.FBX = os.environ['RSQ_FBX']
 import solve, bake, scene, revindex
 BONES_PREFIX = None
+SOURCES = os.environ.get('RSQ_POSE_SOURCES', os.path.join(POSES, 'sources'))	# the fit outputs the poses were exported from (sha256 in SHA256SUMS)
+def _hand_setup():
+    """batch2 revindex.setup(), verbatim, with round4_final.json read from poses/sources/lane_c (revindex hard-codes the cloud lane_c path)."""
+    R4 = json.load(open(_r4()))['BrutalPistol']
+    ctx = solve.Ctx('BrutalPistol', 'R', None, 'gunhand'); x = np.array(R4['x_gun']); Rg, tg = solve.gun_T(ctx, x)
+    to_g = lambda X: (X - ctx.c - tg) @ Rg + ctx.c
+    Xr = to_g(solve.hand_X(ctx, x)[0]); Xf = np.array(R4['Xg']); delta = Xf - Xr
+    return ctx, x, to_g, Xf, delta
 def setup():
     from rigid3 import BONES	# finger -> bone prefix (batch 3)
-    return revindex.setup(), BONES
+    return _hand_setup(), BONES
+def verify_sources():
+    import hashlib; bad = []
+    for l in open(os.path.join(SOURCES, 'SHA256SUMS')):
+        h, f = l.split(None, 1); f = f.strip()
+        if hashlib.sha256(open(os.path.join(SOURCES, f), 'rb').read()).hexdigest() != h: bad.append(f)
+    assert not bad, 'poses/sources changed (sha256): %s' % bad; print('poses/sources: SHA256SUMS ok')
 sys.path.insert(0, os.path.join(HERE, '..', 'batch3'))
 def bake_of(g):	# the newest committed bake of this gun's hand (batch 5, then batch 4)
     for b in ('b5', 'b4', 'r9'):	# r9: the Sniper (sniper_fit.py, the Rifle's hold on the Ruger)
@@ -181,7 +197,7 @@ def place(cls):
 # built the shipped frames. The frames of one md3 are listed in `md3.frames` ([pose class, trigger|squeeze, frame name]).
 INDEX_JOINTS = ['INDEX_BASE_joint', 'INDEX_MID_joint', 'INDEX_TOP_joint', 'INDEX_UP_TOP_joint']	# squeeze.py / revindex.py
 LANEC_GUN = {'BrutalPistol': ('BrutalPistol', 'BrutalPistol'), 'Flamethrower2': ('Flamethrower2@nozzle', 'Flamethrower2')}	# landmarks, round4 key
-def _r4(): return os.path.join(solve.LANE, 'results', 'round4_final.json')
+def _r4(): return os.path.join(SOURCES, 'lane_c', 'round4_final.json')
 def _sha(p):
     import hashlib; return hashlib.sha256(open(p, 'rb').read()).hexdigest()
 def lanec_hand(J):
@@ -196,10 +212,10 @@ def lanec_frame(J, which):
 def export_lanec(g, revindex_json=None):
     lane = solve.LANE; R4 = json.load(open(_r4()))
     if g in LANEC_GUN:
-        lm, key = LANEC_GUN[g]; o = R4[key]; SQ = json.load(open(os.path.join(lane, 'results', 'squeeze_r5.json')))[key]
+        lm, key = LANEC_GUN[g]; o = R4[key]; SQ = json.load(open(os.path.join(SOURCES, 'lane_c', 'squeeze_r5.json')))[key]
         x = list(o['x_gun']); assert list(SQ['q_index_trigger']) == x[6:9], 'squeeze_r5 trigger index != round4 x_gun'
         qs = list(x); qs[6:9] = SQ['q_index_squeeze']
-        MD = json.load(open(os.path.join(lane, 'results', 'gun_modeldef_R3.json')))[g]
+        MD = json.load(open(os.path.join(SOURCES, 'lane_c', 'gun_modeldef_R3.json')))[g]
         out = dict(cls=g, form='lane_c', fbx='hand_final.fbx (DXR models/hands, never shipped)',
                    source=dict(trigger='lane_c results/round4_final.json [%s].x_gun (sha256 %s)' % (key, _sha(_r4())),
                                squeeze='lane_c results/squeeze_r5.json [%s].q_index_squeeze (squeeze.py, round 5)' % key,
@@ -263,7 +279,7 @@ def place_lanec(J):
     import gunplace, gunview, hudrender, scene as sc
     g = J['cls']
     if g in LANEC_GUN:
-        ctx, x, to_g, delta, to_c = lanec_hand(J); it = sc.GUNS[g]; V = np.concatenate([s['xyz'][it['frame']] for s in sc.md3_full(it['path'])])
+        ctx, x, to_g, delta, to_c = lanec_hand(J); it = dict(sc.GUNS[g], path=os.path.join(os.environ.get('RSQ_SRC', os.path.join(REPO, 'src')), 'models', 'bd', g, g + '.md3')); V = np.concatenate([s['xyz'][it['frame']] for s in sc.md3_full(it['path'])])
         r = gunplace.fit(it, to_c(gunview.to_fl(hudrender.to_local(V, it)))); p = r['Offset'] + [r['ZOffset'], r['AngleOffset'], r['PitchOffset'], r['RollOffset']]; names = [os.path.basename(it['path'])]
     else: p = port_place_smg(J['shift_cm']); names = [os.path.basename(SMG['md3'])]
     exp = ['%.3f' % v for v in p]; ok = bad = 0; badl = []; src = os.environ.get('RSQ_SRC', os.path.join(REPO, 'src'))
@@ -291,6 +307,7 @@ def rebake_lanec_cmp(J, out):
 def check(classes):
     """bake every pose (or the named ones) to a temp dir, compare to the committed + shipped md3, and regenerate its placement."""
     import tempfile, glob
+    verify_sources()
     classes = classes or sorted(os.path.basename(f)[:-5] for f in glob.glob(os.path.join(POSES, '*.json'))); tmp = tempfile.mkdtemp(prefix='rebake_')
     for g in classes:
         print('== %s' % g); r = rebake(os.path.join(POSES, g + '.json'), os.path.join(tmp, g)); print('placement:', json.dumps(place(g)))
