@@ -9,7 +9,7 @@ class RSQ_Counters : EventHandler
 {
 	static const Name GUN[] = { 'MG42', 'Flamethrower2', 'IncendiaryLauncher', 'Machinegun', 'Unmaker', 'Devastator', 'NukeLauncher', 'HellishMissileLauncher', 'Minigun' };
 	static const Name MAG[] = { 'RSQ_Mag_MG42', 'RSQ_Mag_Flamethrower2', 'RSQ_Mag_IncendiaryLauncher', 'RSQ_Mag_Machinegun', 'RSQ_Mag_Unmaker', 'RSQ_Mag_Devastator', 'RSQ_Mag_NukeLauncher', 'RSQ_Mag_HellishMissileLauncher', 'RSQ_Mag_Minigun' };
-	static const Name RES[] = { 'Clip2', 'Gas', 'AmmoM202', 'Clip2', 'SoulAmmo', 'DevastatorAmmo', 'Nuke', 'MiniHellRocketAmmo', 'Clip2' };
+	static const Name RES[] = { 'Clip2', 'Gas', 'AmmoM202', 'Clip2', 'SoulAmmo', 'DevastatorAmmo', 'Nuke', 'MiniHellRocketAmmo', 'RSQ_MinigunAmmo' };	// 2.0 (owner 2026-10-28): the Minigun's own pool (Minigun.dec)
 	static const int CAP[] = { 100, 100, 6, 100, 200, 50, 1, 6, 200 };
 	// r6 (owner item 13, 2026-10-27): Flamethrower 100, Machinegun 100, Unmaker 200, chaingun (Minigun) 200, and
 	// those four are REAL magazines (RealTick), not counters: a counter is a share of the reserve, so a
@@ -80,7 +80,7 @@ class RSQ_Counters : EventHandler
 				lastRes[pn][g] = r;
 			}
 			// r5 lane rev-unmaker: every gun's "reserve last tic" is read AFTER all nine ran. Guns share a reserve (Clip2:
-			// MG42, Machinegun, Minigun), and one gun handing its lent rounds back must not read as another one firing
+			// MG42, Machinegun; the Minigun has its own since 2.0), and one gun handing its lent rounds back must not read as another one firing
 			// (seen on the rig: MG42 drawn 100 -> 90 the tic after the Minigun was put away).
 			for (int g = 0; g < GUN.Size(); g++)
 			{
@@ -111,18 +111,13 @@ class RSQ_Counters : EventHandler
 		if (a.GetClassName() == 'AmmoM202')
 			b = max(b, M202_CARRY);
 		// 2.0 (owner, 2026-10-28): a full magazine plus two more magazines' worth in reserve for the guns whose
-		// magazine was the whole reserve. Magazines from CAP[]: NukeLauncher 1, Minigun 200 (IncendiaryLauncher 6 is
-		// already covered by the 48 above). Reserve floor = 2 x magazine: Nuke 2 (BD22 gives Nuke no backpack bonus,
-		// 1/1, so the backpack still adds nothing: 2 either way); Clip2 400, and with a backpack 800 (BD22's x2,
-		// 200 -> 400, kept). Clip2 is shared, so the Rifle, Sniper, MG42 and Machinegun carry the same. The loaded
-		// magazine stays ON TOP of this (RealTick adds the lent rounds above CapBase). BackpackMaxAmount itself is
-		// not touched (see M202Carry: DetachFromOwner); the fields here never equal it, so a backpack leaving
-		// changes nothing.
-		Name an = a.GetClassName();
-		if (an == 'Nuke')
+		// magazine was the whole reserve. Magazines from CAP[]: NukeLauncher 1 -> Nuke 2 (BD22 gives Nuke no backpack
+		// bonus, 1/1, so the backpack still adds nothing: 2 either way). IncendiaryLauncher 6 is covered by the 48 above.
+		// The Minigun has its OWN pool now (RSQ_MinigunAmmo, Minigun.dec: 400 / 800 by its own MaxAmount and
+		// BackpackMaxAmount), so BD22's Clip2 (Rifle, Sniper, MG42, Machinegun) is back at BD22's 200 / 400 (owner
+		// 2026-10-28 05:0x: the earlier shared Clip2 400 / 800 is reverted). The loaded magazine stays ON TOP (RealTick).
+		if (a.GetClassName() == 'Nuke')
 			b = max(b, NUKE_CARRY);
-		else if (an == 'Clip2')
-			b = max(b, mo.FindInventory('BackpackItem', true) ? CLIP2_CARRY_BP : CLIP2_CARRY);
 		return b;
 	}
 	void CapPass(PlayerPawn mo)
@@ -339,8 +334,6 @@ class RSQ_Counters : EventHandler
 	// so the carry is 48 with or without one. The cylinder stays 6 (CAP[]).
 	const M202_CARRY = 48;
 	const NUKE_CARRY = 2;		// 2.0: 2 x NukeLauncher's magazine (1)
-	const CLIP2_CARRY = 400;	// 2.0: 2 x Minigun's magazine (200)
-	const CLIP2_CARRY_BP = 800;	// ... x2 with a backpack, as BD22's Clip2 (200 / 400)
 	static void M202Carry(PlayerPawn mo)
 	{
 		let am = Inventory(mo.FindInventory('AmmoM202'));

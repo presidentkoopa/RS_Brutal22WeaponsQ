@@ -828,7 +828,7 @@ class RSR_Guns abstract
 		case 14:	return "DevastatorAmmo";
 		case 15:	return "Nuke";
 		case 16:	return "MiniHellRocketAmmo";
-		case 17:	return "Clip2";
+		case 17:	return "RSQ_MinigunAmmo";	// 2.0 (owner 2026-10-28): the Minigun's own pool (was Clip2)
 		case 18:	return "Clip2";
 		}
 		return "";

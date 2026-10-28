@@ -2103,3 +2103,62 @@ FBX hand only (DXR hand_final.fbx through the lane_c fitter); never Ermac's glov
   grip): keep lane-b's lines.
 - Still Ermac anywhere: see the lane report (gun-hand RQGS/RQGT/RQGU in MODELDEF.rsq / .rsqdual / .rsqoff / .purist, support RQSP,
   PuristHandGrenades RQGN).
+
+# 2.0 final (2026-10-28, branch `lane-int-2.0`, also fast-forwarded into `lane-b-1.99x`). RIG ONLY, NOT HEADSET-CONFIRMED
+Merged origin/lane-b-1.99x e9640f1 (support192 batches 4-6, FBX fists, FBX free off hand, 25 FBX reload holds) into lane-int-2.0
+aead932. Conflicts: MODELDEF.rsq free-hand ring block (int's ring-first slot order kept with lane-b's `fbx_oh_free_R.md3` +
+`rsq_ring_oh.md3`), rsr_guns.bd.zs rows 12 / 13 (lane-b's moved parts, per its merge note), HANDOFF (both kept). VERSION = 2.0.
+Owner decisions 05:0x applied: heavy C-grip supports (Nuke, BFG10k, BFG9000, HML) accepted; the Minigun gets its own ammo pool.
+
+## Done (measured)
+Rig: QZD 17.3 (Depot rig binary, PINS 9afc750), doom2 > brutal22test6 > BD_VoxelPack > pack, every run `flock -o -x /home/claude/rig.lock`,
+a FRESH default ini (`int20_rig/ini.f20`: written by the engine on a boot with no ini; only `playerclass` set to Rifle Start, as the
+New Game menu does: with the engine default "Fighter" every run got a random class, Purist included, so the sweep's Brutal guns came up
+as Purist guns). Test tools: tools/int20_rig/f20all.sh (all steps), f20held.py, f20sheet.py, f20wrap.py (fresh ini for the Depot-driver
+tools), mini20.py. No .ppm left.
+1. **Pack:** /home/claude/lane_b_out/BD22_VR-Reloaded_2.0.pk3 (`python build.py 2.0`, 134 FBX hand blocks to slot 7; sha256 in the
+   commit / report; not byte-reproducible). mdslots.py: 0 blocks with a slot past their size (no "Too many models").
+2. **Script errors:** none from the pack, 0 VM aborts, in every run. Only BD_VoxelPack's own `voxeldef.txt` lines 66, 72, 77, 892
+   (and BD22's own "Unknown class name 'DeathSphereHealth'", present on the r2 pack too).
+3. **Sweep (31 guns, select / fire / alt):** all select and fire. FAIL rows are the sweep's own limits, the same set as round 1 / 2:
+   alt "nothing seen" on Shot_Gun, SSG, Sniper (alt = scope toggle, shown in 6), Rifle / Machinegun (M203 alt needs a loaded tube: dry
+   click; the M203 hand load is shown in 7), GrenadeLauncher, NukeLauncher; HandGrenades "no shot" (thrown by the off hand's ring pull,
+   not the trigger). Per-gun frames `lane_b_out/final20/f20_<Gun>.png`.
+4. **Hand reloads:** all 18 magazine guns EMPTY>DROP>CARRY>INSERT>SEATED>DONE with the magazine refilled (IncendiaryLauncher, NukeLauncher,
+   Minigun by rl3.py: reserve picked up after the gun). Break guns SSG 0>2, GrenadeLauncher 0>1, Shotvolver 4>6, Moonlight 0>6. Pump
+   (rig_holds pump job, live table): 2 shells through the port, stroke done. M203: round in the breech, shut: loaded.
+   - First pass showed Rocket_Launcher CARRY>EMPTY: the TEST driver's geometry came from a stale boot.log (r2 pack, before the off-hand
+     lane moved the rocket 7.61 cm). Re-booted on 2.0: PASS. Not a pack regression.
+5. **Dual wield (player-style, 11 guns):** every gun gets its RSQ_Off_ copy; off fires once per pull, no self-refire, main fires after:
+   10 PASS. SSG reads FAIL only because its off pull fires both barrels (2>0), so the script's second off pull has nothing; main 2>0 after.
+6. **Scope:** Sniper and RailGun, alt fire held 40 tics: ON > OFF (plain glass, camera off) > ON, `Zoomed` 0. Lens target 50 x 55 px vs 15 x 18
+   outside (3.3x across, 3.06x up), both guns. `lane_b_out/final20/scope_toggle_f20.png`. (Rig note: the scope driver now needs hand
+   pitch 30 to sit 8 cm behind the eyepiece, as rig.lpose assumes; with 0 the gun pointed 30 deg down and the eye missed the lens.)
+7. **Held frames, every weapon** (`lane_b_out/final20_sweep.png`, per gun `final20/held/held_<Gun>.png`; off hand at the gun's
+   SupportPoint with the grip pressed, cup guns / axe / fists / grenade by closeness): **every visible hand is the FBX hand, no Ermac
+   glove in any of the 31 frames**, nor in the dual frames (`final20/dual_MP40.png`, `dual_Rifle.png`, both hands FBX on both guns) or the
+   hold frames. Supports on the gun in all two-handed frames. FlameCannon: the cannon body hides its support palm from this eye point.
+8. **One reload per hold family, FBX hand gripping** (`lane_b_out/final20/holds_f20.png`, frames in `final20/holds/`): magazine (Rifle,
+   Unmaker skull), SSG pair, M79 round, Shotvolver shell, Moonlight speedloader and single round, pump shell, M203 round; each completed.
+   The SSG frame was caught at the breech (hand above the gun), not at the eye pose.
+9. **Minigun own ammo pool (owner 05:0x).** `RSQ_MinigunAmmo` (Minigun.dec): reserve 400, 800 with a backpack, magazine 200 on top
+   (counters.zs RES row 8, rsr row 17 reserve). Clip2 is back at BD22's 200 / 400 (the shared 400 / 800 reverted). Pickup rule (least
+   invasive, the Moonlight-rounds pattern in roster.zs): one Minigun ammo box (50 rounds, BD22's bullet-box art, "Picked up a box of
+   Minigun ammo.") beside EVERY map-placed bullet box (ClipBox2) and 1 in 4 map-placed clips, always on; a backpack gives 50; picking
+   up the Minigun gives 200 (one magazine; BD22 gave 0). The HUD's magazine | reserve reads the new pool (RSQ_Counters.Hud via Ammo1).
+   Rig (mini20.py, f20mini.txt): Rifle Clip2 999 given -> 200 / cap 200; with a backpack 400 / 400. Minigun picked up -> magazine 200,
+   pouch 0; a dropped box walked over -> pouch 50 ("Picked up a box of Minigun ammo."); 999 given -> pouch 400 (cap 400 + 10 lent);
+   burst 200 -> 197, hand reload EMPTY>...>DONE, "RELOAD magazine 197 -> 200, 3 from the pouch, pouch 400 -> 397"; backpack -> 800.
+   HUD mag / reserve = 200 / 400 etc. MAP01: 2 map bullet pickups, 1 Minigun box put beside. Re-swept after the change: Minigun, MG42,
+   Machinegun, Rifle, Sniper fire as before; their hand reloads PASS; 0 pack errors.
+
+## Not done
+- Dual SSG off-hand second pull not shown (the copy fires both barrels on the first pull, by design).
+- Nothing was run on the owner's headset.
+
+## Open
+- Ermac meshes are still REFERENCED in MODELDEF (RQGS / RQGT / RQGU gun-hand frames in MODELDEF.rsq / .rsqdual / .rsqoff / .purist,
+  RQSP supports): not drawn in any rig frame here (every row has an FBX override), but not deleted.
+- Minigun ammo box uses BD22's bullet-box art unchanged: on the floor it looks like a Clip2 box (the pickup message tells them apart).
+- Purist-class guns not re-shot this round (MODELDEF.purist equals the Brutal blocks: variants_all.py, 0 differing).
+- The off-hand RSQ_Off_RailGun still has BD22's zoom alt (scope lane flag, owner call).

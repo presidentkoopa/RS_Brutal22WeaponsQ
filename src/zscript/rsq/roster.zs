@@ -47,6 +47,8 @@ class RSQ_Roster : EventHandler
 	const MOON_SPAWN_IN = 4;	// one RevolverRounds beside 1 in this many map-placed Clip2 (clips and bullet boxes)
 	const MOON_SPAWN_OFS = 14.0;	// map units from the Clip2 (BD22's SMG spawner puts its Clip1 10, 10 off)
 
+	const MINI_SPAWN_IN = 4;	// 2.0: one Minigun ammo box beside every map-placed bullet box and 1 in this many map-placed clips
+	int miniSpawned;		// this map: Minigun ammo boxes put beside the map's Clip2
 	int moonClips, moonSpawned;	// this map: map-placed Clip2 seen, RevolverRounds put beside them
 	int pistolSwaps;		// this map: Brutal Pistols the player got that became the Moonlight
 	bool wantDual[MAXPLAYERS];	// start with two: press the Dual key once the Moonlight is in hand
@@ -97,8 +99,8 @@ class RSQ_Roster : EventHandler
 				rr++;
 		}
 		Console.Printf("RSQ moon: map %s, moonlight_pistol %d two %d: in the world Pistol %d, Shotvolver %d, Moonlight %d, "
-			.. "RevolverRounds %d; pistols swapped for the Moonlight this map %d; map bullet pickups %d, RevolverRounds put beside %d",
-			Level.MapName, MoonPistol(), MoonTwo(), ps, sv, ml, rr, pistolSwaps, moonClips, moonSpawned);
+			.. "RevolverRounds %d; pistols swapped for the Moonlight this map %d; map bullet pickups %d, RevolverRounds put beside %d, Minigun ammo boxes put beside %d",
+			Level.MapName, MoonPistol(), MoonTwo(), ps, sv, ml, rr, pistolSwaps, moonClips, moonSpawned, miniSpawned);
 	}
 
 	override void NetworkProcess(ConsoleEvent e)
@@ -187,19 +189,31 @@ class RSQ_Roster : EventHandler
 		if (Level.maptime > 0 || !(a is 'Clip2') || a.bDropped || Inventory(a).Owner)
 			return;
 		moonClips++;
+		// 2.0 (owner 2026-10-28): the Minigun's own pool (RSQ_MinigunAmmo, Minigun.dec). Its box goes beside the map's own
+		// bullet pickups: EVERY bullet box (ClipBox2) and 1 in MINI_SPAWN_IN clips (Clip2 / EasyClip2). Always on.
+		if (a is 'ClipBox2' || Random[RSQMiniSpawn](1, MINI_SPAWN_IN) == 1)
+		{
+			if (Beside(a, 'RSQ_MinigunAmmo', Random[RSQMiniSpawn](0, 359)))
+				miniSpawned++;
+		}
 		if (!MoonPistol())
 			return;
 		if (Random[RSQMoonSpawn](1, MOON_SPAWN_IN) != 1)
 			return;
-		double ang = Random[RSQMoonSpawn](0, 359);
+		if (Beside(a, 'RevolverRounds', Random[RSQMoonSpawn](0, 359)))
+			moonSpawned++;
+	}
+	// one pickup MOON_SPAWN_OFS map units from the map's Clip2, on the floor (on the Clip2's own spot if there is no room)
+	static bool Beside(Actor a, class<Actor> cls, double ang)
+	{
 		Vector2 at = a.Vec2Angle(MOON_SPAWN_OFS, ang);
-		let r = Actor.Spawn('RevolverRounds', (at, a.pos.z));
+		let r = Actor.Spawn(cls, (at, a.pos.z));
 		if (!r)
-			return;
+			return false;
 		if (!r.TestMobjLocation() || abs(r.floorz - a.floorz) > 24)
 			r.SetOrigin(a.pos, false);		// no room: on the Clip2's own spot
 		r.SetZ(r.floorz);
 		r.bAmbush = a.bAmbush;
-		moonSpawned++;
+		return true;
 	}
 }
