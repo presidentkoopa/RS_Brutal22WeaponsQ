@@ -94,30 +94,34 @@ Model RSQ_GunSide
 }
 
 // the free hand (off controller): open, or a fist
+// r12 port (coordinator 2026-10-28, owner rule: FBX hands, never Ermac's glove): the FBX LEFT hand, baked in place at the off
+// controller (tools/handfit/port/offhand_r12.py: the approved FBX pistol hand's wrist mirrored to the left; frame 0 relaxed open,
+// frame 1 fist). Was Ermac's hand.md3 frames 0 / 1. The off-hand trigger punch draws this same fist.
 Model RSQ_Hands
 {
-	Path "models/rsq"
-	Model 0 "hand.md3"
-	Skin 0 "hand.png"
+	Path "models/rsq/fbx"
+	Model 0 "fbx_r12_free_L.md3"
+	Skin 0 "fbx_hand.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQHN A 0 0
 	FrameIndex RQHN H 0 1
 }
 
-// the VR grenade's ring in the free hand's fingers: Ermac's one-shell pinch (ammo_hand 1)
-// and BD22's ring baked into the hand's own frame (rsq_ring.md3), ONE block: two blocks on
-// the same frame draw only one of them (that hid the hand, 1.1)
+// the VR grenade's ring in the free hand's fingers, BD22's ring baked into the hand's own frame, ONE block: two blocks on
+// the same frame draw only one of them (that hid the hand, 1.1). r12 port: the FBX left hand's pinch (frame 2: index and
+// thumb pads together, offhand_r12.py) and the ring moved to that pinch point (rsq_ring_fbx.md3 = rsq_ring.md3 translated).
+// Was Ermac's ammo_hand.md3 frame 1 (one-shell pinch) with rsq_ring.md3.
 Model RSQ_Hands
 {
-	Path "models/rsq"
-	Model 0 "ammo_hand.md3"
-	Skin 0 "hand.png"
-	Model 1 "rsq_ring.md3"
+	Path "models/rsq/fbx"
+	Model 0 "fbx_r12_free_L.md3"
+	Skin 0 "fbx_hand.png"
+	Model 1 "rsq_ring_fbx.md3"
 	Skin 1 "models/bd/Grenade/nade.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -24.0 -10.0
-	FrameIndex RQHR A 0 1
+	FrameIndex RQHR A 0 2
 	FrameIndex RQHR A 1 0
 }
 

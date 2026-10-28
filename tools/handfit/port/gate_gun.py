@@ -121,7 +121,7 @@ if __name__ == '__main__':
     pk3 = os.path.abspath(sys.argv[2]); res = {}
     for a in sys.argv[3:]:
         if cmd == 'smoke': res[a] = smoke(pk3, a)
-        elif cmd == 'sheet': res[a] = {'%s_%s' % (st, v): sheet(pk3, a, st, v) for st in ('rest', 'steady', 'fire') for v in ('eye', 'side')}
+        elif cmd == 'sheet': res[a] = {'%s_%s' % (st, v): sheet(pk3, a, st, v) for st in os.environ.get('SHEET_STATES', 'rest,steady,fire').split(',') for v in os.environ.get('SHEET_VIEWS', 'eye,side').split(',')}	# r12: SHEET_STATES / SHEET_VIEWS narrow the runs
         elif cmd == 'hands': res[a] = hands(pk3, a)
         print(a, json.dumps(res[a], indent=1), flush=True)
     json.dump(res, open(os.path.join(OUT, '%s_%s.json' % (cmd, '_'.join(sys.argv[3:]).replace(' ', ''))), 'w'), indent=1)

@@ -79,7 +79,8 @@ if __name__ == '__main__':
     for r, a, c in zip(order, r0, r1):
         n = idx[r]; m = rx.match(lines[n]); shipped = np.array([float(v) for v in m.group(2).split(',')])
         assert np.abs(shipped - a).max() < 0.011, ('row %d: p_old does not reproduce the shipped row' % r, shipped, a.round(2))
-        lines[n] = '%s%s,\t// %s: row %d %s, refitted for the re-fitted gun' % (m.group(1), ', '.join('%.2f' % pg.z0(v, 0.005) for v in c), ARGS.tag, r, G['cls'])
+        cm = ',' if lines[n][m.end(2):m.end(2) + 1] == ',' else ''	# the table's last row has no comma
+        lines[n] = '%s%s%s\t// %s: row %d %s, refitted for the re-fitted gun' % (m.group(1), ', '.join('%.2f' % pg.z0(v, 0.005) for v in c), cm, ARGS.tag, r, G['cls'])
         pg.note('gunmoves row %d (%s, md3 frame %d)' % (r, frows[r], frames[order.index(r)]), m.group(2), '->', ', '.join('%.2f' % pg.z0(v, 0.005) for v in c))
     pg.wr('zscript/rsq/gunmoves.zs', head + '\n'.join(lines))
     # 3. rsr case

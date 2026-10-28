@@ -236,7 +236,7 @@ class RSQ_GunMoves abstract play
 			0.61, 3.39, 0.30, -0.44, 1.99, -0.13,	// r12 port: row 179 Chain_saw, refitted for the moved gun
 			4.47, 20.44, 2.44, -1.15, 5.95, -0.10,	// r12 port: row 180 Chain_saw, refitted for the moved gun
 			4.26, 19.85, 2.34, -0.71, 3.15, 0.45,	// r12 port: row 181 Chain_saw, refitted for the moved gun
-			-3.88, -20.34, -0.89, 0.54, -1.81, -3.31,	// r12 port: row 182 Chain_saw, refitted for the moved gun
+			-3.88, -20.34, -0.89, 0.54, -1.81, -3.31	// r12 port: row 182 Chain_saw, refitted for the moved gun
 		};
 		String f = String.Format("%c", 65 + frame);
 		for (int k = 0; k < spr.Size(); k++)
