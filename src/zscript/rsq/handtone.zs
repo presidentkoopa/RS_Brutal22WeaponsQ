@@ -77,6 +77,7 @@ class RSQ_HandTone : EventHandler
 		t.Replace("\r", " ");
 		t.Replace("\n", " ");
 		String want = String.Format("skin %d \"fbx_hand.png\"", SLOT);
+		String wantDir = String.Format("skin %d \"fbx/fbx_hand.png\"", SLOT);	// 2.0.2: the M203 round hold (MODELDEF.rsm)
 		int at = 0;
 		while (true)
 		{
@@ -91,7 +92,7 @@ class RSQ_HandTone : EventHandler
 				break;
 			at = cb + 1;
 			String body = t.Mid(ob + 1, cb - ob - 1);
-			if (body.IndexOf(want) < 0)
+			if (body.IndexOf(want) < 0 && body.IndexOf(wantDir) < 0)
 				continue;
 			String head = t.Mid(m + 6, ob - m - 6);
 			head.Replace(" ", "");

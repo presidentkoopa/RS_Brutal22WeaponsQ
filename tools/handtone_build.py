@@ -15,7 +15,9 @@ import re
 
 HAND_SLOT = 7
 _BLOCK = re.compile(r'(Model\s+\w+\s*\{)(.*?)(\})', re.S | re.I)
-_SKIN = re.compile(r'(\bSkin\s+)0(\s+"fbx_hand\.png")', re.I)
+# 2.0.2 (owner item 33): also a skin named with a folder ("fbx/fbx_hand.png": the M203 round hold, MODELDEF.rsm,
+# keeps Path "models/rsq" so its round loads). It stayed in slot 0 and never took the tone.
+_SKIN = re.compile(r'(\bSkin\s+)0(\s+"(?:[\w./-]*/)?fbx_hand\.png")', re.I)
 
 def transform(text):
     """-> (new text, number of blocks re-indexed). Raises if slot HAND_SLOT is already used."""
@@ -32,5 +34,10 @@ def transform(text):
         body = re.sub(r'(^\s*Model\s+)0(\s)', r'\g<1>%d\2' % HAND_SLOT, body, flags=re.M | re.I)
         body = _SKIN.sub(r'\g<1>%d\2' % HAND_SLOT, body)
         body = re.sub(r'(^\s*FrameIndex\s+\S+\s+\S+\s+)0(\s+\d+)', r'\g<1>%d\2' % HAND_SLOT, body, flags=re.M | re.I)
+        # QZD 17.3 sizes a block by its LAST Model line (min 4): slot 7 must be inside it ("Too many models" otherwise)
+        code = re.sub(r'//[^\n]*', '', body)
+        idx = [int(x) for x in re.findall(r'(?im)^\s*Model\s+(\d+)', code)]
+        if max(idx) >= max(idx[-1] + 1, 4):
+            raise SystemExit('handtone_build: %s: put the FBX hand Model line last (block sized by its last Model line)' % m.group(1).strip())
         return m.group(1) + body + m.group(3)
     return _BLOCK.sub(one, text), n[0]

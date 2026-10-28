@@ -7,7 +7,7 @@
 Model RSQ_Off_BrutalRevolver
 {
 	Path "models/bd/Moonlight"
-	Model 0 "rev.md3"
+	Model 0 "rev_vr.md3"	// 2.0.2: rev.md3 kept in the hand (tools/fix202/moon_bake.py); frame 0 identical
 	Skin 0 "WPN-REV.png"
 	Scale 1.35 1.35 1.35
 	Offset 0.843 -7.091 0.0
@@ -15,7 +15,7 @@ Model RSQ_Off_BrutalRevolver
 	AngleOffset -3.854
 	PitchOffset 3.363
 	RollOffset -10.974	// batch 4 (lane B): gun to the FBX hand fitted from 1.92
-	NoInterpolation
+	// 2.0.2: no NoInterpolation: the mesh's frames blend tic to tic (owner item 34: it did not animate)
 	FrameIndex RVMA A 0 0
 	FrameIndex RVMA B 0 1
 	FrameIndex RVMA C 0 2

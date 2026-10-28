@@ -1,0 +1,24 @@
+version "4.10"
+// TEST ONLY (2.0.2): one line per rendered frame: the weapon layer's sprite and frame, so each dumped frame
+// (QZ_DUMP_EVERY=1) can be labelled with the mesh frame it shows.
+class RSQT_MoonProbe : EventHandler
+{
+	ui int n;
+	int sA, sB, sG;		// sprite indices (GetSpriteIndex is play scope)
+	override void WorldLoaded(WorldEvent e) { sA = Actor.GetSpriteIndex('RVMA'); sB = Actor.GetSpriteIndex('RVMB'); sG = Actor.GetSpriteIndex('RBMG'); }
+	override void RenderOverlay(RenderEvent e)
+	{
+		let p = players[consoleplayer];
+		let psp = p.FindPSprite(PSP_WEAPON);
+		String nm = "other";
+		if (psp)
+		{
+			if (psp.Sprite == sA) nm = "RVMA";
+			else if (psp.Sprite == sB) nm = "RVMB";
+			else if (psp.Sprite == sG) nm = "RBMG";
+		}
+		int mesh = psp ? (nm == "RVMA" ? psp.Frame : nm == "RVMB" ? 26 + psp.Frame : -1) : -1;
+		Console.Printf("MP %d t %d %s %d mesh %d tics %d", n, level.maptime, nm, psp ? psp.Frame : -1, mesh, psp ? psp.Tics : -1);
+		n++;
+	}
+}

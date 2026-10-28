@@ -2203,3 +2203,74 @@ BrutalPistol ammo, consume 3 ammo per shot, reloads after 18 ammo consumption."
 - `tools/moonammo/make_pickup.py`, `rig_rev.py` (workshop tools) still name the removed class; they are history, not shipped.
 - Read of "consume 3 ammo per shot": the pistol reserve does NOT drop on a shot; it drops 3 per chamber loaded. Total pistol
   rounds held (reserve + 3 x cylinder) drop 3 a shot. If the owner wants the reserve itself to tick down per shot, say so.
+
+# fix-guns-202 (2026-10-28, branch `fix-guns-202` off origin/main e6c586b): owner 2.0.1 headset items 32-35 (gameplay only). RIG ONLY, NOT HEADSET-CONFIRMED
+Owner 18:26 (via coordinator): no hand-pose corrections in this update. The Ruger hand / support re-fit was DROPPED before any
+pose was touched (no pose, md3 or hand row changed; rebake check below). Shot direction (muzzle.zs / playerrounds.zs / shotfx.zs /
+scope direction) is another lane's and was not touched.
+Rig: QZD 17.3 (Depot rig, PINS 9afc750), doom2 > brutal22test6 > BD_VoxelPack > pack, every run `flock -o -x /home/claude/rig.lock`
+(Depot int20_rig/run.sh with the fresh default ini, or rig_holds/gate_gun with the ini restored). No .ppm left by this lane.
+Pack `/home/claude/lane_b_out/fix202/BD22_VR-Reloaded_2.0.2-fixguns.pk3` (sha256 9ec318cf8ec6778df9f7422d18c85b11fd0bcf2451aefdaba556a417798baf7d,
+`python build.py 2.0.2-fixguns`, VERSION file left at 2.0.1). Evidence: `/home/claude/lane_b_out/fix202/` (PNG + logs/).
+Test drivers (TEST ONLY, never ship): `tools/fix202/` (rl_switch.py, rl_key.py, tone_m203.py, moon_rig.py + moonprobe/, strip.py);
+mesh tools: `tools/fix202/moon_frames.py` (measure every frame), `moon_bake.py` (makes rev_vr.md3).
+
+## Done (measured)
+1. **Ruger does not reload (item 32): FOUND and FIXED** (`Sniper.dec`). Its Ready loop ended `RSQ_SemiWait: ... A_WeaponReady / Loop`
+   (posefix F11 semi-auto, 1.99). In DECORATE `Loop` goes to the LAST label, RSQ_SemiWait, so after one pass Ready's checks
+   (Reloading, Unload, AltFire, Kicking) never ran again: the reload key / mag release did nothing until a shot's own states ran.
+   Now `Goto Ready`. A scan of every Ready block in the pack finds no other label in front of a Loop.
+   Rig (`rl_key.py`, two single shots, gun resting, reload key): **2.0.1: nothing** (the reload only starts at t642, after the next
+   shot); **fixed: IDLE>EMPTY>DROP at the key (t387)**, pouch > CARRY > INSERT > SEATED > DONE, then fires (`logs/key_Sniper_*.log`).
+   Full empty -> switch -> back -> grab -> insert -> CHARGE > PULL > RELEASED > DONE -> fires 10 > 9 (`logs/sw_Snipert3.log`).
+   Scope toggle still works (alt fire now reaches its swallow state each tic): lens target 50x55 px ON (f90-144), plain glass OFF
+   after alt (f150-168), ON again (f174+), outside target 15x18 (`scope_toggle_fixguns.png`).
+2. **M203 / 40 mm round hand ignored the Hand Skin Tone (item 33): FIXED.** The round-hold block (MODELDEF.rsm, RQ2H A) names its
+   skin `fbx/fbx_hand.png` (Path models/rsq so the round loads), which `tools/handtone_build.py` did not match, so its hand stayed in
+   slot 0. The build regex and `handtone.zs` Parse now accept the folder form (135 hand blocks to slot 7, was 134). The block's hand
+   Model line moved LAST (QZD sizes a block by its last Model line: with the round's line last it was "Too many models in rsq_hands",
+   caught on the first boot); handtone_build.py now refuses to build such a block. `mdslots.py`: 0 bad blocks.
+   Rig (Depot rig_holds M203 job, the round in front of the eye): Rifle tones 0 / 8 / 16 and Machinegun 0 / 8 / 16: the round hand
+   takes each tone like the gun hand; 2.0.1 at tone 8: round hand still the default pink (`tone_rifle.png`, `tone_mg_and_201.png`).
+3. **Reload lost across a weapon switch (item 33), every magazine gun: FIXED** (`vreload.zs` RSR_ReloadHandler.Resume). Switching
+   away aborts the reload, but the gun keeps its no-magazine token (RSR_Guns.NoMag), so it came back empty with no reload to grab
+   into. Now, once per selection, when a magazine gun with no magazine reaches its Ready frame (RSR.IsReadyFrame + WF_WEAPONREADY;
+   earlier the select animation eats the token: Rifle SelectAnimation), its reload restarts the way the mag-release button starts
+   it; RSR_Out sees the token and waits at EMPTY (no second drop). Up to 4 tries, 8 tics apart; off VR / Real reload off: unchanged.
+   Rig (`rl_switch.py`: empty, reload, switch to the pistol, back, pouch, insert, handle, fire; `logs/sw_all.txt`):
+   resumed at EMPTY and completed to DONE: Rifle, BrutalPistol, BrutalSMG, MP40, AssaultShotgun, RailGun, Plasma_Gun, Sniper (t3 run),
+   Rocket_Launcher, MG42, Flamethrower2 (its own empty logic restarts it), Unmaker, Devastator, HellishMissileLauncher, Minigun,
+   Machinegun. Rifle fires after (30 > 29). NOT SHOWN: IncendiaryLauncher and NukeLauncher (this driver never empties them; the
+   same driver limit the 2.0 lanes hit: rl3.py).
+4. **Moonlight (item 34): the mesh animates, every frame used.** Measured (`moon_frames.py`, rev.md3 41 frames, 11 surfaces):
+   1-2 hammer cocks (22, 54 deg) and the cylinder turns (22.5, 45 deg), 3 hammer falls, 4-14 the kick (whole gun 6.6 deg) and
+   recovery, 15 rest; 16-18 latch, 19 break-top snaps open, 20-29 rounds eject, 21-30 speedloader in, 30-33 close, 33-38 loader away,
+   39-40 rest. The mesh moved the WHOLE gun (grip up to 4.6 units in the reload): in VR that tears it from the hand.
+   `rev_vr.md3` (`moon_bake.py`): shot frames keep the kick pivoted at the grip (grip moved 0.93 -> 0.00); reload frames hold the body
+   in the hand (body fitted on its rigid vertices, residual <= 0.08); frame 0 identical. MODELDEF.rsqmoon / .rsqmoondual: rev_vr.md3,
+   NoInterpolation removed (frames blend tic to tic). Fire (main + off-hand copy): frames 1-15 in order: pull B C, shot at D (2 tics
+   after the pull, double action), E-H, then I-P where a new pull may cut in (7 tics a shot at most = 5/s, as before). Stock / flick
+   reload already used 16-40; now on the in-hand mesh. The hand-driven reload (rsb rows 10/11, rev_rsb.md3) is unchanged and still
+   drives the cylinder.
+   Rig: every shot frame 1-15 one per tic, shot at t187 (pull t185) (`moon_fire_strip.png`); stock reload 16-40 with the grip in the
+   hand (`moon_stock_strip.png`, all 25 frames in the states; the rig draws ~1 frame per 1.3 tics, so 18 and 39 fell between frames).
+   Regression (2.0.1's `tools/moonammo/rig_moonpistol.py`): 6 shots 6 > 0; hand reload 0 > 6 (Clip1 60 > 42); stock 60/0 > 42/6 and
+   10/0 > 1/3; dual: off fired empty, flick > 6, main flick > 6, shared Clip1 60 > 42 > 24.
+5. **Unmaker skull insert noise (item 35): FIXED.** rsr row 13 SndIn was `Unmaker/Start` (UNMSTA, the spin-up); now `Rifle/Reload2`
+   (RIFLER2, the Rifle's magazine seat: BD22 Rifle.dec plays it at mag in; rsr row 1 SndIn). Engine sound log (QZ_SNDLOG): seat t488
+   `Rifle/Reload2`; `Unmaker/Start` only on firing (`logs/key_Unmaker_snd.log.out`). The skull-out sound stays `Unmaker/Stop`.
+6. **Gate:** boot of the final pack: 0 pack script errors, 0 VM aborts (only BD_VoxelPack's voxeldef 66/72/77/892), MAP01 started.
+   sweep_f20 (Sniper, Rifle, Machinegun, BrutalRevolver, Unmaker, RailGun): all select and fire; FAIL rows are the sweep's own
+   "alt: nothing seen" on Sniper / Rifle / Machinegun (as in 2.0). Rebake: the Depot's `rebake.py check` with RSQ_SET = this worktree:
+   SHA256SUMS ok, 30 poses, modeldef_mismatch 0 everywhere, 25 bytes identical + rest max 0.0156 md3 units.
+
+## Not done / open
+- Nothing run on the owner's headset.
+- Ruger hand poses: dropped by the owner (18:26). Ruger "fires skewed right": the shot-accuracy lane's.
+- IncendiaryLauncher / NukeLauncher switch-resume: code path is the same as the 16 shown, but not shown on the rig.
+- The Moonlight shot now leaves 2 tics (57 ms) after the pull (the mesh's double action). If the owner wants it on the pull,
+  move the shot block above `RVMA B 1` (frames 1-2 then play after the shot).
+- The Moonlight's mesh kick (frames 4-14, 6.6 deg, pivoted at the grip) is the mesh's own animation, not RECOIL_DESIGN recoil:
+  owner's call to keep it.
+- The BD22 repo's own `tools/handfit/port/rebake.py` fails here (its fbx_fitter wants `tools/handfit/ref192_pistol.json`); the
+  Depot's copy runs. rsr_guns.bd.zs row 13 SndIn edited by hand (its header says generated).

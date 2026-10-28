@@ -211,6 +211,9 @@ class RSR_State play
 	int usedPresses;
 	bool gripPrev;
 	bool relPrev;			// mag-release buttons last tic
+	Weapon resumeWeap;		// 2.0.2: the ready weapon the resume check last looked at (RSR_ReloadHandler.Resume)
+	bool resumeDone;		// ...and whether it has been checked since it was selected
+	int resumeTries, resumeTic;	// ...tries so far (a select animation can eat the token: Rifle SelectAnimation), last try
 
 	// what is drawn (ui interpolates prev -> cur with ticfrac)
 	double d, dPrev;		// the magazine at the well: cm out of home along the axis
@@ -1203,6 +1206,7 @@ class RSR_ReloadHandler : EventHandler
 				}
 			}
 			MagRelease(mo, s);
+			Resume(mo, s);			// 2.0.2: a gun put away without its magazine takes the hand reload back up
 			s.FreeCharge(mo);		// 1.93: the handle outside a reload (a press check)
 			s.Draw(mo);
 		}
@@ -1228,6 +1232,66 @@ class RSR_ReloadHandler : EventHandler
 		if (tc)
 			mo.GiveInventory(tc, 1);		// BD22: its ACS turns reload into this token
 		else if (p.WeaponState & WF_WEAPONRELOADOK)
+		{
+			let rs = w.FindState("Reload");
+			if (rs)
+				p.SetPsprite(PSP_WEAPON, rs);
+		}
+	}
+
+	// 2.0.2 (owner item 33): "empty the mag, switch weapons without inserting a new one, switch back: you can no longer
+	// grab ammo to insert". Switching away aborts the reload (WorldTick, "the gun left the reload") but the gun keeps
+	// its no-magazine token (RSR_Guns.NoMag: HasUnloaded* / RSQ_NoMag_*), so it came back up empty with no reload to
+	// grab into; only a trigger pull (BD22's NoAmmo -> Reload) started one again. Now, once per selection, as soon as a
+	// magazine gun with no magazine is ready, its reload is started the way the mag-release button starts it: the
+	// weapon's Reload -> RSR_Start -> RSR_Out sees the token and waits at EMPTY for the hand (no second magazine drops).
+	// Every magazine gun (rsr 1-18) the same way; nothing changes off VR / with Real reload off (Wanted).
+	void Resume(PlayerPawn mo, RSR_State s)
+	{
+		let p = mo.player;
+		let w = p.ReadyWeapon;
+		int now = mo.Level.maptime;
+		if (w != s.resumeWeap)
+		{
+			s.resumeWeap = w;
+			s.resumeDone = false;
+			s.resumeTries = 0;
+		}
+		if (s.resumeDone || !w)
+			return;
+		if (s.phase != RSR.IDLE)
+		{
+			s.resumeDone = true;	// a reload has the gun (resumed, or the player's own)
+			return;
+		}
+		int i = RSR_Guns.Index(w);
+		if (i <= 0 || !Wanted(mo))
+		{
+			s.resumeDone = true;
+			return;
+		}
+		class<Inventory> nm = RSR_Guns.NoMag(i);
+		if (!nm || mo.CountInv(nm) <= 0 || RSQ_Counters.IsNonStd(w) && !RSQ_Counters.NonStdOn(mo))
+		{
+			s.resumeDone = true;	// it came up with its magazine: nothing to resume
+			return;
+		}
+		// in its Ready loop (the gun's ready frame, A_WeaponReady): earlier, the select animation takes the token away
+		let psp = p.FindPSprite(PSP_WEAPON);
+		if (!(p.WeaponState & WF_WEAPONREADY) || !psp || !RSR.IsReadyFrame(psp, i))
+			return;
+		if (s.resumeTries > 0 && now - s.resumeTic < 8)
+			return;
+		if (++s.resumeTries >= 4)
+			s.resumeDone = true;	// refused (e.g. no reserve: BD22's Reload goes back to Ready): stop asking
+		s.resumeTic = now;
+		if (RSR.Debug(p))
+			Console.Printf("rsr t%d gun %d: selected with no magazine, the reload takes the hand again (try %d)", now, i, s.resumeTries);
+		String tok = RSR_Guns.ReloadToken(i);
+		class<Inventory> tc = tok;
+		if (tc)
+			mo.GiveInventory(tc, 1);
+		else
 		{
 			let rs = w.FindState("Reload");
 			if (rs)
