@@ -246,12 +246,12 @@ Model Unmaker
 	FrameIndex RQGU E 0 19
 }
 
-// 1.4: the fists and the VR grenade, Ermac's own placement (as RSQ_GunSide's RQGF / RQGN)
+// 1.4: the fists and the VR grenade, as RSQ_GunSide's RQGF / RQGN (off-hand FBX lane: the FBX fist in place of Ermac's, fbx_oh_free_R.md3 frame 1)
 Model Melee_Attacks
 {
-	Path "models/rsq"
-	Model 0 "hand.md3"
-	Skin 0 "hand.png"
+	Path "models/rsq/fbx"
+	Model 0 "fbx_oh_free_R.md3"
+	Skin 0 "fbx_hand.png"
 	Scale -1.0 1.0 1.0
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQGF A 0 1

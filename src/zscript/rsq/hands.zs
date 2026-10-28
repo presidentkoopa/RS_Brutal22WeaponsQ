@@ -7,8 +7,8 @@
 // (handtable.zs, one per set).
 //
 //   gun hand      always on the gun (none for melee weapons, two-gun weapons and the flame
-//                 cannon your arm goes into). Fists and punches: Ermac's fist, in both
-//                 hands; the VR grenade: his ammo hand round it (OwnHand)
+//                 cannon your arm goes into). Fists and punches: the FBX fist (2026-10-28,
+//                 was Ermac's), in both hands; the VR grenade: the FBX nade hand round it (OwnHand)
 //   off hand      free on the off controller. When the engine steadies the gun
 //                 with both hands (the off hand brought to the gun and grip
 //                 pressed: vr_two_handed_weapons), it takes hold of the front
@@ -220,7 +220,7 @@ class RSQ_GunSide : Inventory
 	// r12 port: BrutalAxe (row 24)
 	FbxTrgAxe: RQVI A -1; Stop;
 	FbxSqzAxe: RQVI B -1; Stop;
-	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
+	Fist: RQGF A -1; Stop;	// the FBX fist (the free hand's fist too, fbx_oh_free_R.md3 frame 1): fists, punches
 	Nade: RQGN A -1; Stop;	// the FBX hand round the VR grenade (fbx_nade_R.md3, fit_nade.py)
 	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
 	// Its own sprite, so it carries its own flat quad in MODELDEF and nothing about it is tied
@@ -344,7 +344,8 @@ class RSQ_Hands : Weapon
 		if (rsr == "" && mo.CountInv('RSG_RingHand') > 0)
 			rsr = "RsgRing";				// the VR grenade's ring, pinched (rsg/grenade.zs)
 		int i = on ? RSQ_HandTable.Index(p.ReadyWeapon) : 0;
-		// 2026-10-16 (owner): fists are Ermac's, both hands, and the VR grenade sits in his hand
+		// 2026-10-28 (owner, overrides his 2026-10-16 "fists are Ermac's, both hands"): the fists are the FBX hand, both hands
+		// (MODELDEF RQGF / RQHN H: one FBX fist frame fitted in place of Ermac's, tools/handfit/offhand); the VR grenade sits in the FBX nade hand
 		String own = on ? invoker.OwnHand(p) : "";
 		invoker.showOwn = own != "";
 		if (own != "")
