@@ -9,7 +9,8 @@ re-bakes from it in one run).
   - FBX source: hand_final.fbx (DXR, never shipped), approved pistol hand = lane_c r5 round 4 (fbx_b1_R frame 0).
 usage: python3 poses_hv.py <Gun> [...]"""
 import sys, os, json, numpy as np
-for p in ('/home/claude/lane_c/hands_tool', '/home/claude/lane_b_b2run/tools', '/home/claude/lane_b_b3run/tools'): sys.path.insert(0, p)
+import os as _fl_os; FITTER_LIB = _fl_os.environ.get('RS_FITTER_LIB', _fl_os.path.join(_fl_os.path.dirname(_fl_os.path.abspath(__file__)), '..', 'fitter_lib'))	# the batch 1-4 fitter modules (were /home/claude/lane_b_b*run/tools)
+for p in ('/home/claude/lane_c/hands_tool', FITTER_LIB, FITTER_LIB): sys.path.insert(0, p)
 from scipy.optimize import least_squares
 import solve, revindex, handmodel
 HERE = os.path.dirname(os.path.abspath(__file__)); FITS = os.path.join(HERE, '..', 'port', 'fits'); OUT = os.path.join(HERE, '..', 'poses')

@@ -5,9 +5,10 @@ usage: python3 sheet_melee.py <Class> <result_dir> <out.png> [--support <support
   result_dir: a farm job folder (curl3_<C>.json, job.json); the hand drawn is the trigger pose (Xt).
   --support: support_melee.py's json (L hand vertices X_L in the same frame) drawn in a second colour."""
 import os, sys, json, argparse, numpy as np
+import os as _fl_os; FITTER_LIB = _fl_os.environ.get('RS_FITTER_LIB', _fl_os.path.join(_fl_os.path.dirname(_fl_os.path.abspath(__file__)), '..', 'fitter_lib'))	# the batch 1-4 fitter modules (were /home/claude/lane_b_b*run/tools)
 from PIL import Image, ImageDraw, ImageFont
 FH = os.environ.get('MELEE_FITTER_HOME', '/home/claude'); sys.path.insert(0, FH)
-for p in (FH + '/lane_c/hands_tool', FH + '/lane_b_b2run/tools'): sys.path.insert(0, p)
+for p in (FH + '/lane_c/hands_tool', FITTER_LIB): sys.path.insert(0, p)
 import scene, handmodel
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.abspath(os.path.join(HERE, '..', '..', '..', 'src'))
 def weapon(g):

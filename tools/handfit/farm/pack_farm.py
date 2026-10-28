@@ -35,8 +35,8 @@ def main():
     for f in files_from(H + '/lane_b_hvrun', ['st2_*.npy', 'curl3_*.json']): add(f)
     # gun meshes those tools name from the batch worktrees (SRC + '/models/...md3') + the approved FBX hand md3s
     for wt, tool in (('lane_b_b2', 'lane_b_b2run/tools'), ('lane_b_b3', 'lane_b_b3run/tools'), ('lane_b_b4', 'lane_b_b4run/tools')):
-        for py in glob.glob(H + '/' + tool + '/*.py'):
-            for rel in re.findall(r"SRC \+ '(/models/[^']+?\.md3)'", open(py, encoding='latin1').read()) + re.findall(r"/home/claude/%s/src(/models/[^']+?\.md3)" % wt, open(py, encoding='latin1').read()):
+        for py in glob.glob(H + '/' + tool + '/*.py') + glob.glob(os.path.join(HERE, '..', 'fitter_lib', '*.py')):	# run folders deleted 2026-10-27: the modules are in tools/handfit/fitter_lib
+            for rel in re.findall(r"SRC \+ '(/models/[^']+?\.md3)'", open(py, encoding='latin1').read()) + re.findall(r"(?:/home/claude|_HOME \+ ')/%s/src(/models/[^']+?\.md3)" % wt, open(py, encoding='latin1').read()):
                 if os.path.exists(H + '/' + wt + '/src' + rel): add(H + '/' + wt + '/src' + rel)
         for f in files_from(H + '/' + wt, ['src/models/rsq/fbx/*']): add(f)
     add(H + '/dxr/models/hands/hand_final.fbx')

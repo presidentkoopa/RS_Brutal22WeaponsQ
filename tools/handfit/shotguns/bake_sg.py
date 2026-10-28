@@ -5,14 +5,15 @@ models/rsq/fbx/fbx_b2_R.md3 (frames 0 trigger, 1 squeeze), and the support row f
 (fbx_b1_L.md3 frame 1, RQFS B) placed under the SMG forend.  Validation: the same bake of the pistol's own trigger
 pose must reproduce fbx_b1_R.md3 frame 0 (r5, approved) and give hook 0."""
 import sys, json, os, numpy as np
-sys.path.insert(0, '/home/claude/lane_c/hands_tool'); sys.path.insert(0, '/home/claude/lane_b_b2run/tools'); sys.path.insert(0, '/home/claude/lane_b_b1run/tools')
+import os as _fl_os; FITTER_LIB = _fl_os.environ.get('RS_FITTER_LIB', _fl_os.path.join(_fl_os.path.dirname(_fl_os.path.abspath(__file__)), '..', 'fitter_lib'))	# the batch 1-4 fitter modules (were /home/claude/lane_b_b*run/tools)
+sys.path.insert(0, '/home/claude/lane_c/hands_tool'); sys.path.insert(0, FITTER_LIB); sys.path.insert(0, FITTER_LIB)
 import solve, bake, hook, scene, hudrender, exactpen, md3write, handmodel, gunmove, revlm, revindex
 from scipy.spatial.transform import Rotation as Rot
 OUT = '/home/claude/lane_b_sgrun/bake'; os.makedirs(OUT, exist_ok=True)
 B1 = '/home/claude/lane_b_sg/src/models/rsq/fbx/'
 ctx, x, to_g, Xf, delta = revindex.setup(); Rg, tg = solve.gun_T(ctx, x)
 to_c = lambda X: solve.gmove(ctx, Rg, tg, X)
-G = sys.argv[1]; SPX = [float(v) for v in sys.argv[2:5]]; sys.path.insert(0, '/home/claude/lane_b_b3run/tools'); import fit3; sys.path.insert(0, '/home/claude/lane_b_sg/tools/handfit/shotguns'); import fit_sg; scene.merged = fit_sg._merged	# the support bake collides with the whole gun (no crop)
+G = sys.argv[1]; SPX = [float(v) for v in sys.argv[2:5]]; sys.path.insert(0, FITTER_LIB); import fit3; sys.path.insert(0, '/home/claude/lane_b_sg/tools/handfit/shotguns'); import fit_sg; scene.merged = fit_sg._merged	# the support bake collides with the whole gun (no crop)
 J = json.load(open('/home/claude/lane_b_sgrun/curl3_%s.json' % G))
 ent = [dict(name=G + '_trg', side='R', X=to_c(np.array(J['Xt'])), cuff_ref=None),
        dict(name=G + '_sqz', side='R', X=to_c(np.array(J['Xs'])), cuff_ref=None),

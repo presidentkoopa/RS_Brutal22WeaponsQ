@@ -6,8 +6,9 @@ Surfaces (read from the md3 surface boxes at the ready frame, tools/surf.py):
   AssaultShotgun AssaultShotgun.md3 frame 4 (1.92 rows192): trigger = surf 5 (F 3.4..4.4, U -6.6..-4.1), grip/bore = 3 'Frame'
   SSG       SSG.md3 frame 1 (rows192): trigger = surf 5 (F 2.7..5.0, U -7.0..-3.3), grip = 1 'Runko' (stock), bore = 0 'Cube' (barrels)"""
 import sys, json, numpy as np
+import os as _fl_os; FITTER_LIB = _fl_os.environ.get('RS_FITTER_LIB', _fl_os.path.join(_fl_os.path.dirname(_fl_os.path.abspath(__file__)), '..', 'fitter_lib'))	# the batch 1-4 fitter modules (were /home/claude/lane_b_b*run/tools)
 RUN = '/home/claude/lane_b_sgrun'; SRC = '/home/claude/lane_b_sg/src'
-sys.path.insert(0, '/home/claude/lane_b_b3run/tools')
+sys.path.insert(0, FITTER_LIB)
 from rigid3 import *
 import rigid3
 M = SRC + '/models/bd/'

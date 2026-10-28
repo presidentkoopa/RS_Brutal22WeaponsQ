@@ -3,8 +3,9 @@ method). Differences: no gun_move (this lane fits and stages; the port lane move
 hand solved here (support_melee.py), recorded with its own pose vector (the L rig = the R rig mirrored, same parameters).
 usage: python3 poses_melee.py <Class> <result_dir> [--support <support.json> [--support-res <Chain_saw_top result_dir>]] [--pick-note TEXT]"""
 import sys, os, json, argparse, numpy as np
+import os as _fl_os; FITTER_LIB = _fl_os.environ.get('RS_FITTER_LIB', _fl_os.path.join(_fl_os.path.dirname(_fl_os.path.abspath(__file__)), '..', 'fitter_lib'))	# the batch 1-4 fitter modules (were /home/claude/lane_b_b*run/tools)
 FH = os.environ.get('MELEE_FITTER_HOME', '/home/claude'); sys.path.insert(0, FH)
-for p in (FH + '/lane_c/hands_tool', FH + '/lane_b_b2run/tools', FH + '/lane_b_b3run/tools'): sys.path.insert(0, p)
+for p in (FH + '/lane_c/hands_tool', FITTER_LIB, FITTER_LIB): sys.path.insert(0, p)
 from scipy.optimize import least_squares
 import solve, revindex, handmodel
 HERE = os.path.dirname(os.path.abspath(__file__)); OUT = os.path.join(HERE, '..', 'poses')

@@ -8,7 +8,8 @@
    middle/ring/pinky/thumb: no penetration beyond 0.25 cm, pads pulled to within 0.3 cm of the gun, prior = the pistol curl.
    Then the squeeze: index pad 0.6 cm back along the bore (the pistol's rule)."""
 import sys, json, numpy as np
-sys.path.insert(0, '/home/claude/lane_c/hands_tool'); sys.path.insert(0, '/home/claude/lane_b_b2run/tools'); sys.path.insert(0, '/home/claude/lane_b_b3run/tools')
+import os as _fl_os; FITTER_LIB = _fl_os.environ.get('RS_FITTER_LIB', _fl_os.path.join(_fl_os.path.dirname(_fl_os.path.abspath(__file__)), '..', 'fitter_lib'))	# the batch 1-4 fitter modules (were /home/claude/lane_b_b*run/tools)
+sys.path.insert(0, '/home/claude/lane_c/hands_tool'); sys.path.insert(0, FITTER_LIB); sys.path.insert(0, FITTER_LIB)
 from scipy.optimize import least_squares
 import solve, scene, exactpen, evaluate, handmodel, revindex, revlm, m192
 SRC = '/home/claude/lane_b_b3/src'

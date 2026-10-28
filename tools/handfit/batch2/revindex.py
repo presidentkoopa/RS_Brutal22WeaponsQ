@@ -4,7 +4,8 @@ Gun placement (named choice): the revolver keeps the pistol's r5 orientation (sa
 translated so its web point (top of the backstrap under the hammer, revlm.py) sits on the pistol's web point.
 Frame: the pistol's ORIGINAL gun frame (scene.GUNS, Offset 0 0 -5), where round4_final.json's Xg lives."""
 import sys, json, numpy as np
-sys.path.insert(0, '/home/claude/lane_c/hands_tool'); sys.path.insert(0, '/home/claude/lane_b_b2run/tools')
+import os as _fl_os; FITTER_LIB = _fl_os.environ.get('RS_FITTER_LIB', _fl_os.path.join(_fl_os.path.dirname(_fl_os.path.abspath(__file__)), '..', 'fitter_lib'))	# the batch 1-4 fitter modules (were /home/claude/lane_b_b*run/tools)
+sys.path.insert(0, '/home/claude/lane_c/hands_tool'); sys.path.insert(0, FITTER_LIB)
 from scipy.optimize import least_squares
 import solve, scene, exactpen, evaluate, handmodel, revlm
 WEB_U = {'Revolver': -1.25, 'BrutalRevolver': -1.0, 'BrutalSMG': -3.7}	# BrutalSMG: the grip's top, where it meets the receiver (rear profile)	# CHOICE: read from the rear profile (backstrap meets the frame under the hammer)

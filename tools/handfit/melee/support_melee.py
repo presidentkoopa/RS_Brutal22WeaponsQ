@@ -9,8 +9,9 @@ Writes <out>/support_<Class>.json (X_L_ctrl, metrics, hook rows) and <out>/fbx_m
 usage: python3 support_melee.py sword <DSweap_result> <out>
        python3 support_melee.py saw <Chain_saw_result> <Chain_saw_top_result> <out>"""
 import os, sys, json, numpy as np
+import os as _fl_os; FITTER_LIB = _fl_os.environ.get('RS_FITTER_LIB', _fl_os.path.join(_fl_os.path.dirname(_fl_os.path.abspath(__file__)), '..', 'fitter_lib'))	# the batch 1-4 fitter modules (were /home/claude/lane_b_b*run/tools)
 FH = os.environ.get('MELEE_FITTER_HOME', '/home/claude'); sys.path.insert(0, FH)
-for p in (FH + '/lane_c/hands_tool', FH + '/lane_b_b2run/tools'): sys.path.insert(0, p)
+for p in (FH + '/lane_c/hands_tool', FITTER_LIB): sys.path.insert(0, p)
 import scene, exactpen, evaluate, handmodel, revindex, solve, bake
 HERE = os.path.dirname(os.path.abspath(__file__)); SRC = os.path.abspath(os.path.join(HERE, '..', '..', '..', 'src'))
 MIR = np.array([1.0, -1.0, 1.0])

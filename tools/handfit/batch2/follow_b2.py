@@ -4,7 +4,8 @@ conventions), but with the gun drawn through the full QZD 17.3 MODELDEF chain (g
 Angle/Pitch/RollOffsets).  Self-check: the original placement must give the shipped rows; the pistol's r5 placement must
 give b1's refitted rows 15-17."""
 import sys, numpy as np
-sys.path.insert(0, '/home/claude/lane_c/hands_tool'); sys.path.insert(0, '/home/claude/lane_b_b1run/tools')
+import os as _fl_os; FITTER_LIB = _fl_os.environ.get('RS_FITTER_LIB', _fl_os.path.join(_fl_os.path.dirname(_fl_os.path.abspath(__file__)), '..', 'fitter_lib'))	# the batch 1-4 fitter modules (were /home/claude/lane_b_b*run/tools)
+sys.path.insert(0, '/home/claude/lane_c/hands_tool'); sys.path.insert(0, FITTER_LIB)
 sys.path.insert(0, '/home/claude/depot_import/rs_questhands/tools/v9kit/team/hands_work')
 import gunmove, scene
 import kick_measure as km, math, types

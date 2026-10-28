@@ -1,8 +1,9 @@
 """Melee hands lane: where each start hold (Ermac hand, m192 rule) sits on each melee mesh: landmark distances, penetration (measured).
-usage: MELEE_FITTER_HOME=<dir with lane_c, lane_b_b2run, lane_b_b3run> python3 probe_melee.py"""
+usage: [MELEE_FITTER_HOME=<dir with lane_c>] [RS_FITTER_LIB=<fitter modules, default ../fitter_lib>] python3 probe_melee.py"""
 import sys, os, json, numpy as np
+import os as _fl_os; FITTER_LIB = _fl_os.environ.get('RS_FITTER_LIB', _fl_os.path.join(_fl_os.path.dirname(_fl_os.path.abspath(__file__)), '..', 'fitter_lib'))	# the batch 1-4 fitter modules (were /home/claude/lane_b_b*run/tools)
 FH = os.environ.get('MELEE_FITTER_HOME', '/home/claude'); sys.path.insert(0, FH)
-for p in (FH + '/lane_c/hands_tool', FH + '/lane_b_b2run/tools', FH + '/lane_b_b3run/tools'): sys.path.insert(0, p)
+for p in (FH + '/lane_c/hands_tool', FITTER_LIB, FITTER_LIB): sys.path.insert(0, p)
 import scene, ermaclm, evaluate, m192, exactpen
 W=os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'src', 'models', 'bd'))+'/'
 R192=FH+'/lane_c/bd22q_192/models/rsq/'
