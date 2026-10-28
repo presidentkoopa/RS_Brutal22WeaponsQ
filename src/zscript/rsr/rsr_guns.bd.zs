@@ -59,9 +59,9 @@ class RSR_Guns abstract
 		case 9:	return (-8.132, 1.790, 13.686);	// r9 port: moved with the gun to the FBX hand (was (-12.200, 2.200, 6.700))
 		case 10:	return (16.075, 5.448, 14.188);	// r10 port: moved with the gun to the FBX hand (was (13.926, 3.115, 6.593))
 		case 11:	return (36.788, 0.507, -3.364);	// BD 2.0 b1: moved with the gun to the FBX hand (was (28.489, 0.010, -4.540))
-		case 12:	return (14.812, 7.995, -4.216);
+		case 12:	return (20.118, 17.633, -6.253);	// r11 port: moved with the gun to the FBX hand (was (14.812, 7.995, -4.216))
 		case 13:	return (11.026, 0.794, 6.467);
-		case 14:	return (17.879, 11.250, 8.304);
+		case 14:	return (19.198, 13.229, 15.878);	// r11 port: moved with the gun to the FBX hand (was (17.879, 11.250, 8.304))
 		case 15:	return (37.869, 1.059, 27.771);	// r10 port: moved with the gun to the FBX hand (was (36.407, -0.105, 14.610))
 		case 16:	return (-5.105, 12.794, 4.914);
 		case 17:	return (39.627, 5.602, -16.435);	// r9 port: moved with the gun to the FBX hand (was (33.417, -4.333, -22.866))
@@ -86,9 +86,9 @@ class RSR_Guns abstract
 		case 9:	return (-0.056, 0.982, -0.178);	// r9 port: moved with the gun to the FBX hand (was (-0.000, 0.932, -0.362))
 		case 10:	return (0.077, -0.979, -0.190);	// r10 port: moved with the gun to the FBX hand (was (-0.000, -1.000, -0.000))
 		case 11:	return (-0.032, 0.000, 1.000);	// BD 2.0 b1: moved with the gun to the FBX hand (was (-0.000, 0.000, 1.000))
-		case 12:	return (-0.000, 1.000, -0.000);
+		case 12:	return (-0.077, 0.979, 0.190);	// r11 port: moved with the gun to the FBX hand (was (-0.000, 1.000, -0.000))
 		case 13:	return (-0.000, 0.000, -1.000);
-		case 14:	return (-0.000, 1.000, -0.000);
+		case 14:	return (-0.077, 0.979, 0.190);	// r11 port: moved with the gun to the FBX hand (was (-0.000, 1.000, -0.000))
 		case 15:	return (-0.045, -0.194, 0.980);	// r10 port: moved with the gun to the FBX hand (was (-0.000, -0.000, 1.000))
 		case 16:	return (-0.000, 1.000, -0.000);
 		case 17:	return (0.049, -0.067, -0.997);	// r9 port: moved with the gun to the FBX hand (was (-0.014, -0.259, -0.966))
@@ -165,9 +165,9 @@ class RSR_Guns abstract
 		case 9:	return (-7.310, -9.096, 16.355);	// r9 port: moved with the gun to the FBX hand (was (-11.955, -8.010, 11.389))
 		case 10:	return (16.063, 9.873, 13.845);	// r10 port: moved with the gun to the FBX hand (was (14.190, 7.381, 5.400))
 		case 11:	return (36.189, 0.560, -9.220);	// BD 2.0 b1: moved with the gun to the FBX hand (was (27.703, 0.013, -10.374))
-		case 12:	return (14.597, -0.029, -4.035);
+		case 12:	return (20.514, 9.730, -7.613);	// r11 port: moved with the gun to the FBX hand (was (14.597, -0.029, -4.035))
 		case 13:	return (10.481, -0.144, 9.345);
-		case 14:	return (17.879, 9.039, 9.982);
+		case 14:	return (19.293, 10.740, 17.103);	// r11 port: moved with the gun to the FBX hand (was (17.879, 9.039, 9.982))
 		case 15:	return (45.195, 3.579, 18.292);	// r10 port: moved with the gun to the FBX hand (was (43.317, -0.005, 4.505))
 		case 16:	return (-5.884, 0.678, 7.504);
 		case 17:	return (39.474, 5.824, -15.837);	// r9 port: moved with the gun to the FBX hand (was (33.315, -3.990, -22.316))
@@ -246,9 +246,9 @@ class RSR_Guns abstract
 		case 9:	return (-0.982, 0.178, -0.056);	// r9 port: moved with the gun to the FBX hand (was (-0.932, 0.362, -0.000))
 		case 10:	return (0.979, 0.190, 0.077);	// r10 port: moved with the gun to the FBX hand (was (1.000, 0.000, -0.000))
 		case 11:	return (0.000, -1.000, -0.032);	// BD 2.0 b1: moved with the gun to the FBX hand (was (-0.000, -1.000, -0.000))
-		case 12:	return (-1.613, 0.000, -0.000);
+		case 12:	return (-1.579, -0.307, -0.124);	// r11 port: moved with the gun to the FBX hand (was (-1.613, 0.000, -0.000))
 		case 13:	return (-0.000, 1.000, -0.000);
-		case 14:	return (-1.000, 0.000, -0.000);
+		case 14:	return (-0.979, -0.190, -0.077);	// r11 port: moved with the gun to the FBX hand (was (-1.000, 0.000, -0.000))
 		case 15:	return (0.176, -0.891, -0.041);	// r10 port: moved with the gun to the FBX hand (was (0.000, -0.909, -0.000))
 		case 16:	return (-1.000, 0.000, -0.000);
 		case 17:	return (0.067, 0.997, 0.049);	// r9 port: moved with the gun to the FBX hand (was (0.259, 0.966, -0.014))
@@ -299,9 +299,9 @@ class RSR_Guns abstract
 		case 9:	return (4.488, 1.754, 7.417);	// r9 port: moved with the gun to the FBX hand (was (0.000, 0.000, 0.000))
 		case 10:	return (2.740, 2.743, 6.318);	// r10 port: moved with the gun to the FBX hand (was (0.000, 0.000, 0.000))
 		case 11:	return (0.000, 0.000, 0.000);
-		case 12:	return (0.000, 0.000, 0.000);
+		case 12:	return (5.793, 7.997, -4.510);	// r11 port: moved with the gun to the FBX hand (was (0.000, 0.000, 0.000))
 		case 13:	return (0.000, 0.000, 0.000);
-		case 14:	return (0.000, 0.000, 0.000);
+		case 14:	return (2.629, 2.628, 4.553);	// r11 port: moved with the gun to the FBX hand (was (0.000, 0.000, 0.000))
 		case 15:	return (2.251, 1.550, 11.337);	// r10 port: moved with the gun to the FBX hand (was (0.000, 0.000, 0.000))
 		case 16:	return (0.000, 0.000, 0.000);
 		case 17:	return (4.987, 3.169, 4.837);	// r9 port: moved with the gun to the FBX hand (was (0.000, 0.000, 0.000))
@@ -325,9 +325,9 @@ class RSR_Guns abstract
 		case 9:	return (-0.996, -0.067, -0.059);	// r9 port: moved with the gun to the FBX hand (was (-1.000, 0.000, 0.000))
 		case 10:	return (-0.996, -0.067, -0.059);	// r10 port: moved with the gun to the FBX hand (was (-1.000, 0.000, 0.000))
 		case 11:	return (-1.000, 0.000, 0.000);
-		case 12:	return (-1.000, 0.000, 0.000);
+		case 12:	return (-0.996, -0.067, -0.059);	// r11 port: moved with the gun to the FBX hand (was (-1.000, 0.000, 0.000))
 		case 13:	return (-1.000, 0.000, 0.000);
-		case 14:	return (-1.000, 0.000, 0.000);
+		case 14:	return (-0.996, -0.067, -0.059);	// r11 port: moved with the gun to the FBX hand (was (-1.000, 0.000, 0.000))
 		case 15:	return (-0.996, -0.067, -0.059);	// r10 port: moved with the gun to the FBX hand (was (-1.000, 0.000, 0.000))
 		case 16:	return (-1.000, 0.000, 0.000);
 		case 17:	return (-0.996, -0.067, -0.059);	// r9 port: moved with the gun to the FBX hand (was (-1.000, 0.000, 0.000))
@@ -378,9 +378,9 @@ class RSR_Guns abstract
 		case 9:	return (-0.067, -0.059, 0.996);	// r9 port: moved with the gun to the FBX hand (was (0.000, 0.000, 1.000))
 		case 10:	return (-0.067, -0.059, 0.996);	// r10 port: moved with the gun to the FBX hand (was (0.000, 0.000, 1.000))
 		case 11:	return (0.000, 0.000, 1.000);
-		case 12:	return (0.000, 0.000, 1.613);
+		case 12:	return (-0.108, -0.095, 1.607);	// r11 port: moved with the gun to the FBX hand (was (0.000, 0.000, 1.613))
 		case 13:	return (0.000, 0.000, 1.000);
-		case 14:	return (0.000, 0.000, 1.000);
+		case 14:	return (-0.067, -0.059, 0.996);	// r11 port: moved with the gun to the FBX hand (was (0.000, 0.000, 1.000))
 		case 15:	return (-0.061, -0.053, 0.905);	// r10 port: moved with the gun to the FBX hand (was (0.000, 0.000, 0.909))
 		case 16:	return (0.000, 0.000, 1.000);
 		case 17:	return (-0.067, -0.059, 0.996);	// r9 port: moved with the gun to the FBX hand (was (0.000, 0.000, 1.000))
@@ -563,9 +563,9 @@ class RSR_Guns abstract
 		case 9:	return (0.259, -4.608, 0.657);	// r9 port: moved with the gun to the FBX hand (was (0.000, 0.000, -5.000))
 		case 10:	return (-0.730, -2.859, -0.442);	// r10 port: moved with the gun to the FBX hand (was (0.000, 0.000, -5.000))
 		case 11:	return (-4.371, -8.313, -5.669);	// BD 2.0 b1: moved with the gun to the FBX hand (was (0.000, 0.000, -5.000))
-		case 12:	return (0.000, -30.000, -8.000);
+		case 12:	return (-8.579, -35.927, -12.450);	// r11 port: moved with the gun to the FBX hand (was (0.000, -30.000, -8.000))
 		case 13:	return (0.000, 0.000, -5.000);
-		case 14:	return (0.000, -13.000, 0.000);
+		case 14:	return (-0.518, -15.473, 3.456);	// r11 port: moved with the gun to the FBX hand (was (0.000, -13.000, 0.000))
 		case 15:	return (0.463, -2.370, 4.577);	// r10 port: moved with the gun to the FBX hand (was (0.000, 0.000, -5.000))
 		case 16:	return (0.000, 0.000, -5.000);
 		case 17:	return (-1.156, -5.106, -1.923);	// r9 port: moved with the gun to the FBX hand (was (0.000, 0.000, -5.000))
