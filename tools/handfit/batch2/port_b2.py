@@ -3,7 +3,8 @@ re-solved to this trigger: revindex.py) and the existing FBX palm-under support 
 Every edit asserts the exact text it replaces.  Numbers: revindex_BrutalSMG.json (index), move_b2.py (placement),
 bake_b2.json (frames + support row), follow_b2.py (gunmoves rows, self-checked against shipped and b1 rows)."""
 import os, re, sys, json, shutil, numpy as np
-sys.path.insert(0, '/home/claude/lane_b_b1run/tools'); sys.path.insert(0, '/home/claude/lane_c/hands_tool')
+import os as _fl_os; FITTER_LIB = _fl_os.environ.get('RS_FITTER_LIB', _fl_os.path.join(_fl_os.path.dirname(_fl_os.path.abspath(__file__)), '..', 'fitter_lib'))	# the batch 1-4 fitter modules (were /home/claude/lane_b_b*run/tools)
+sys.path.insert(0, FITTER_LIB); sys.path.insert(0, '/home/claude/lane_c/hands_tool')
 import gunmove
 SRC = '/home/claude/lane_b_b2/src'
 RUN = '/home/claude/lane_b_b2run'

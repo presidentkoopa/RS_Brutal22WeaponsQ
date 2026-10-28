@@ -1,6 +1,7 @@
 """Batch 3, stage 1 (cheap): metrics of the FBX pistol hand placed by 1.92's relative hand transform (fit3 steps 1-3), no curl change."""
 import sys, json, time, numpy as np
-sys.path.insert(0, '/home/claude/lane_b_b3run/tools')
+import os as _fl_os; FITTER_LIB = _fl_os.environ.get('RS_FITTER_LIB', _fl_os.path.join(_fl_os.path.dirname(_fl_os.path.abspath(__file__)), '..', 'fitter_lib'))	# the batch 1-4 fitter modules (were /home/claude/lane_b_b*run/tools)
+sys.path.insert(0, FITTER_LIB)
 import fit3
 from fit3 import *
 def stage1(g):

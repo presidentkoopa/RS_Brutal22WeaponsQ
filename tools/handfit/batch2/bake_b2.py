@@ -3,7 +3,8 @@ models/rsq/fbx/fbx_b2_R.md3 (frames 0 trigger, 1 squeeze), and the support row f
 (fbx_b1_L.md3 frame 1, RQFS B) placed under the SMG forend.  Validation: the same bake of the pistol's own trigger
 pose must reproduce fbx_b1_R.md3 frame 0 (r5, approved) and give hook 0."""
 import sys, json, os, numpy as np
-sys.path.insert(0, '/home/claude/lane_c/hands_tool'); sys.path.insert(0, '/home/claude/lane_b_b2run/tools'); sys.path.insert(0, '/home/claude/lane_b_b1run/tools')
+import os as _fl_os; FITTER_LIB = _fl_os.environ.get('RS_FITTER_LIB', _fl_os.path.join(_fl_os.path.dirname(_fl_os.path.abspath(__file__)), '..', 'fitter_lib'))	# the batch 1-4 fitter modules (were /home/claude/lane_b_b*run/tools)
+sys.path.insert(0, '/home/claude/lane_c/hands_tool'); sys.path.insert(0, FITTER_LIB); sys.path.insert(0, FITTER_LIB)
 import solve, bake, hook, scene, hudrender, exactpen, md3write, handmodel, gunmove, revlm, revindex
 from scipy.spatial.transform import Rotation as Rot
 OUT = '/home/claude/lane_b_b2run/bake'; os.makedirs(OUT, exist_ok=True)

@@ -1,6 +1,7 @@
 """Side view (F right, U up, |L|<3) of gun meshes at their 1.99 MODELDEF placement, surfaces coloured, 1 cm ticks."""
 import sys, numpy as np
-sys.path.insert(0, '/home/claude/lane_c/hands_tool'); sys.path.insert(0, '/home/claude/lane_b_b2run/tools')
+import os as _fl_os; FITTER_LIB = _fl_os.environ.get('RS_FITTER_LIB', _fl_os.path.join(_fl_os.path.dirname(_fl_os.path.abspath(__file__)), '..', 'fitter_lib'))	# the batch 1-4 fitter modules (were /home/claude/lane_b_b*run/tools)
+sys.path.insert(0, '/home/claude/lane_c/hands_tool'); sys.path.insert(0, FITTER_LIB)
 from PIL import Image, ImageDraw
 import revlm, scene
 SRC = '/home/claude/lane_b_b2/src/models/bd/'
