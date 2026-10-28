@@ -14,9 +14,9 @@
 // holds two (the off-hand copy below, given by dual.zs when a second one is picked up; zscript/rsq/roster.zs
 // sets the cap every tic, so the backpack does not raise it: owner 19:40). The pickup is six rounds in a
 // ring (models/rsq/moonammo, tools/moonammo/make_pickup.py: the pack's 12 ga shell cut down, nosed,
-// recoloured from the Moonlight's texture). On maps (roster.zs, option "Moonlight Revolver" rsq_moonlight):
-// the gun takes half / all of the Shotvolver's RevolverSpawner spawns; its rounds sit beside 1 in 4 of the
-// map's bullet pickups (the Clip2 family) unless the option is Off.
+// recoloured from the Moonlight's texture). On maps (roster.zs, option "Moonlight Replaces Pistol",
+// rsq_moonlight_pistol, owner 20:45): the gun takes the Brutal Pistol's place (start, map pistols, the pistol
+// zombie's drop); its rounds sit beside 1 in 4 of the map's bullet pickups while that option is on.
 // (Revolver2.dec, quoted above for the firing rules, was removed 2026-10-27; it is in git history.)
 // DUAL (owner 2026-10-27 19:40, "Dual Revolvers, of course"): RSQ_Off_BrutalRevolver at the end of this
 // file is the off-hand copy (dual.zs / dualtable.zs index 10), written by hand on the pattern of

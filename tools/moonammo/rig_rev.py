@@ -6,8 +6,14 @@ Load order doom2 -> brutal22test6 -> BD_VoxelPack -> pack (+ the rig's probe). R
   roster : idkfa, then which revolvers the player holds (printinv); give / summon Revolver2 (gone)
   cap    : Revolver + 100 rounds (cap 36); a second Revolver picked up off the floor (dual.zs gives the off-hand
            copy: cap 72); 100 more; then a backpack (cap stays 72)
-  spawn  : MAP01/03/07/11 with rsq_moonlight 0 and then 1: the map's Clip2 and the rounds put beside them
-  modes  : rsq_moonlight 0 / 1 / 2: 20 RevolverSpawner summoned on MAP01, then the counts in the world
+  spawn  : MAP01/03/07/11 with rsq_moonlight_pistol 0 and then 1: the map's Clip2 and the rounds put beside them
+  combos : a new game (map map01) for each of Moonlight Replaces Pistol x Start With Two: the weapons, cylinders
+           and the RevolverRounds cap (printinv), the counts
+  drops  : with Moonlight Replaces Pistol 0 and 1: 10 PistolSpawner summoned (a map pistol), 5 PistolZombie summoned
+           and killed (their PistolDrop flies and lands as a PistolSpawner), then what is in the world
+  slug   : the Shotvolver (BD22 Revolver) with rsa_rev_magnum 1: alt fire, then fire; the test-only slugprobe.pk3
+           (tools/moonammo/slugprobe) counts the bullets' puffs per tic: the slug is one bullet, the shell 35
+  menu   : the BD22 VR WEAPONS menu opened, frames dumped
   dual   : one Moonlight, a second picked up, the Dual key: both held; fire main, off, both; flick the off hand,
            then the main hand (reloads); printinv after each; frames dumped
   frame  : MAP07, the player warped onto open floor by one of its bullet pickups (-1090 -1138, where a run put
@@ -63,8 +69,8 @@ if 'cap' in JOBS:
     show('cap rc %d' % rc, t, r'REV |RSQ moon|RevolverRounds|BrutalRevolver|Backpack|AmmoSuply')
 
 if 'spawn' in JOBS:
-    s = PRE + ''.join('rsq_moonlight %d; echo REV MOONLIGHT %d; map map01; wait 40; map map03; wait 40; map map07; wait 40; map map11; wait 40; ' % (m, m)
-                      for m in (0, 1)) + 'rsq_moonlight 1; echo REV END; quit'
+    s = PRE + ''.join('rsq_moonlight_pistol %d; echo REV MOONLIGHT_PISTOL %d; map map01; wait 40; map map03; wait 40; map map07; wait 40; map map11; wait 40; ' % (m, m)
+                      for m in (0, 1)) + 'rsq_moonlight_pistol 0; echo REV END; quit'
     rc, t = rig.run('rev_spawn', s, 200); restore_ini()
     show('spawn rc %d' % rc, t, r'REV |RSQ moon')
 
@@ -80,11 +86,43 @@ if 'frame' in JOBS:
     show('frame rc %d' % rc, t, r'REV ')
     print('    frames:', len(glob.glob(fr + '/*')), fr)
 
-if 'modes' in JOBS:
-    s = PRE + ''.join('rsq_moonlight %d; map map01; wait 30; echo REV MODE %d; %s wait 10; netevent rsq_moon_count; wait 5; '
-                      % (m, m, 'summon RevolverSpawner; ' * 20) for m in (0, 1, 2)) + 'rsq_moonlight 1; quit'
-    rc, t = rig.run('rev_modes', s, 300); restore_ini()
-    show('modes rc %d' % rc, t, r'REV MODE|RSQ moon: map MAP01, rsq_moonlight \d: in the world Shotvolver \d+, Moonlight [1-9]|in the world Shotvolver [1-9]')
+if 'combos' in JOBS:
+    # the rig's ini plays the Rifle class (starts with the Rifle); the pistol start is BD22's Pistol class (Doomer2)
+    s = PRE + 'playerclass "$TAGBD_CLASS_PISTOL"; ' + ''.join('rsq_moonlight_pistol %d; rsq_moonlight_two %d; map map01; wait 120; echo REV COMBO pistol %d two %d; printinv; '
+                      'netevent rsq_moon_count; wait 5; ' % (a, b, a, b) for a, b in ((0, 0), (0, 1), (1, 0), (1, 1)))
+    s += 'rsq_moonlight_pistol 0; rsq_moonlight_two 0; playerclass "$TAGBD_CLASS_RIFLE"; quit'
+    rc, t = rig.run('rev_combos', s, 300); restore_ini()
+    log = OUT + '/build/logs/rev_combos.log'
+    show('combos rc %d (from %s)' % (rc, log), open(log, errors='replace').read(),
+         r'REV COMBO|RSQ moon|BrutalPistol|RSQ_Off_BrutalPistol|BrutalRevolver|RSQ_Off_BrutalRevolver|Cylinder|RevolverRounds|Clip1 ')
+
+if 'drops' in JOBS:
+    s = PRE + ''.join('rsq_moonlight_pistol %d; map map01; wait 30; echo REV DROPS pistol %d; %s %s wait 5; kill monsters; wait 200; '
+                      'netevent rsq_moon_count; wait 5; ' % (a, a, 'summon PistolSpawner; ' * 10, 'summon PistolZombie; ' * 5) for a in (0, 1))
+    s += 'rsq_moonlight_pistol 0; quit'
+    rc, t = rig.run('rev_drops', s, 300); restore_ini()
+    log = OUT + '/build/logs/rev_drops.log'
+    show('drops rc %d (from %s)' % (rc, log), open(log, errors='replace').read(), r'REV DROPS|RSQ moon: map|monsters')
+
+if 'slug' in JOBS:
+    probe = os.environ.get('SLUGPROBE', os.path.join(OUT, '..', 'slugprobe.pk3'))
+    s = PRE + ('rsa_rev_magnum 1; give Revolver; give AmmoShell 50; use Revolver; wait 150; echo REV ALTFIRE; +altattack; wait 40; '
+               '-altattack; wait 60; echo REV FIRE; +attack; wait 4; -attack; wait 60; echo REV ALTFIRE2; +altattack; wait 40; -altattack; '
+               'wait 60; echo REV END; quit')
+    rc, t = rig.run('rev_slug', s, 240, [os.path.abspath(probe)]); restore_ini()
+    log = OUT + '/build/logs/rev_slug.log'
+    show('slug rc %d (from %s)' % (rc, log), open(log, errors='replace').read(), r'REV |SLUGPROBE|rsa_rev_magnum')
+
+if 'menu' in JOBS:
+    fr = OUT + '/frames_menu'
+    shutil.rmtree(fr, ignore_errors=True); os.makedirs(fr)
+    os.environ.update(QZ_RES='480', QZ_DUMP_EVERY='10', QZ_DUMP_DIR=fr)
+    s = PRE + 'wait 20; openmenu RSQ_Options; wait 60; echo REV MENU; wait 20; quit'
+    rc, t = rig.run('rev_menu', s, 200); restore_ini()
+    for k in ('QZ_DUMP_EVERY', 'QZ_DUMP_DIR'):
+        os.environ.pop(k)
+    show('menu rc %d' % rc, t, r'REV |Unknown menu|openmenu')
+    print('    frames:', len(glob.glob(fr + '/*')), fr)
 
 if 'dual' in JOBS:
     fr = OUT + '/frames_dual'

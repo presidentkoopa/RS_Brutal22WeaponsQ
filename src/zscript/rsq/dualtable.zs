@@ -46,7 +46,7 @@ class RSQ_DualTable play
 		if (n == 'SSGSpawner') return 7;
 		if (n == 'ASGSpawner') return 8;
 		if (n == 'RailgunSpawner') return 9;
-		if (n == 'BrutalRevolver') return 10;	// the Moonlight's pickup is the gun itself (roster.zs puts it where a RevolverSpawner would be)
+		if (n == 'BrutalRevolver') return 10;	// the Moonlight's pickup is the gun itself (roster.zs puts it where BD22's PistolSpawner would be, with Moonlight Replaces Pistol)
 		return -1;
 	}
 }
