@@ -1,7 +1,7 @@
 // RS VR (1.8, owner): BD22's PURIST mode uses its own copy of every gun (PuristShot_Gun :
 // Shot_Gun and so on), and a model is only ever drawn for the exact class it is defined for, so
 // purist showed no guns at all. These are the same blocks, copied to each purist name.
-// Generated from the pack's MODELDEF files; edit those, then copy again. Sniper stays out.
+// Generated from the pack's MODELDEF files; edit those, then copy again. Sniper: in since 1.93 (below).
 
 Model PuristAssaultShotgun
 {
@@ -11241,4 +11241,516 @@ Model PuristSSG
 	Offset 0.0 -24.0 -10.0
 	FrameIndex RQVD A 0 0	// SSG, finger on the trigger
 	FrameIndex RQVD B 0 1	// SSG, squeezed
+}
+
+// 2026-10-27 (2.0 integration): PuristSniper. The Sniper came back in 1.93 but its purist copy was never made,
+// so a Purist player held an empty FBX hand (rig frame pu_PuristSniper). Owner rule (r3 item 23): variants copy
+// the Brutal gun's rows, never their own fit. These are Sniper's blocks, renamed.
+// copied from MODELDEF.bd.txt (Sniper)
+Model PuristSniper
+{
+   Path "models/bd/Grenade"
+   Model 0 "nade.md3"
+   Skin 0 "nade.png"
+   Scale -1.0 1.0 1.0
+   Offset 0.0 0.0 0.0
+   NoInterpolation
+   ZOffset -5
+
+   FrameIndex	GRTH	A	0	3
+   FrameIndex	GRTH	B	0	4
+   FrameIndex	GRTH	C	0	5
+   FrameIndex	GRTH	D	0	6
+   FrameIndex	GRTH	E	0	7
+   FrameIndex	GRTH	F	0	8
+   FrameIndex	GRTH	G	0	9
+   FrameIndex	GRTH	H	0	10
+   FrameIndex	GRTH	I	0	11
+   FrameIndex	GRTH	J	0	12
+   FrameIndex	GRTH	K	0	13
+   FrameIndex	GRTH	L	0	14
+   FrameIndex	GRTH	M	0	15
+   FrameIndex	GRTH	N	0	15
+   FrameIndex	GRTH	O	0	15
+   FrameIndex	GRTH	P	0	15
+}
+// copied from MODELDEF.bd.txt (Sniper)
+Model PuristSniper
+{
+   Path "models/bd/Boot"
+   Model 0 "Boot.md3"
+   Skin 0 "Boot.png"
+   Scale -1.0 1.0 1.0
+   Offset 0.0 0.0 0.0
+   NoInterpolation
+   ZOffset -5
+
+   FrameIndex	1ICK	A	0	10
+   FrameIndex	1ICK	B	0	11
+   FrameIndex	1ICK	C	0	12
+   FrameIndex	1ICK	D	0	13
+   FrameIndex	1ICK	E	0	14
+   FrameIndex	1ICK	F	0	15
+   FrameIndex	1ICK	G	0	16
+   FrameIndex	1ICK	H	0	17
+   FrameIndex	1ICK	I	0	18
+   FrameIndex	1ICK	J	0	19
+   FrameIndex	1ICK	K	0	20
+   FrameIndex	1ICK	L	0	21
+   FrameIndex	1ICK	M	0	22
+   FrameIndex	1ICK	N	0	23
+   FrameIndex	1ICK	O	0	24
+   FrameIndex	1ICK	P	0	25
+   FrameIndex	1ICK	Q	0	26
+   FrameIndex	1ICK	R	0	27
+   FrameIndex	1ICK	S	0	28
+   FrameIndex	1ICK	T	0	29
+   FrameIndex	1ICK	U	0	30
+   FrameIndex	1ICK	V	0	30
+   FrameIndex	1ICK	W	0	30
+   FrameIndex	1ICK	X	0	30
+   FrameIndex	1ICK	Y	0	30
+   FrameIndex	1ICK	Z	0	30
+   FrameIndex	1ICK	[	0	30
+   FrameIndex	1ICK	]	0	30
+   FrameIndex	1LID	A	0	14
+   FrameIndex	1LID	B	0	14
+   FrameIndex	1LID	C	0	14
+   FrameIndex	1LID	D	0	14
+   FrameIndex	1LID	E	0	14
+   FrameIndex	1LID	F	0	14
+   FrameIndex	1LID	G	0	14
+   FrameIndex	1LID	H	0	14
+   FrameIndex	1LID	I	0	14
+   FrameIndex	1LID	J	0	14
+   FrameIndex	1LID	K	0	14
+   FrameIndex	1LID	L	0	14
+   FrameIndex	1LID	M	0	14
+   FrameIndex	1LID	N	0	14
+   FrameIndex	1TOM	A	0	31
+   FrameIndex	2ICK	A	0	10
+   FrameIndex	2ICK	B	0	11
+   FrameIndex	2ICK	C	0	12
+   FrameIndex	2ICK	D	0	13
+   FrameIndex	2ICK	E	0	14
+   FrameIndex	2ICK	F	0	15
+   FrameIndex	2ICK	G	0	16
+   FrameIndex	2ICK	H	0	17
+   FrameIndex	2ICK	I	0	18
+   FrameIndex	2ICK	J	0	19
+   FrameIndex	2ICK	K	0	20
+   FrameIndex	2ICK	L	0	21
+   FrameIndex	2ICK	M	0	22
+   FrameIndex	2ICK	N	0	23
+   FrameIndex	2ICK	O	0	24
+   FrameIndex	2ICK	P	0	25
+   FrameIndex	2ICK	Q	0	26
+   FrameIndex	2ICK	R	0	27
+   FrameIndex	2ICK	S	0	28
+   FrameIndex	2ICK	T	0	29
+   FrameIndex	2ICK	U	0	30
+   FrameIndex	2ICK	V	0	30
+   FrameIndex	2ICK	W	0	30
+   FrameIndex	2ICK	X	0	30
+   FrameIndex	2ICK	Y	0	30
+   FrameIndex	2ICK	Z	0	30
+   FrameIndex	2ICK	[	0	30
+   FrameIndex	2ICK	]	0	30
+   FrameIndex	2LID	A	0	14
+   FrameIndex	2LID	B	0	14
+   FrameIndex	2LID	C	0	14
+   FrameIndex	2LID	D	0	14
+   FrameIndex	2LID	E	0	14
+   FrameIndex	2LID	F	0	14
+   FrameIndex	2LID	G	0	14
+   FrameIndex	2LID	H	0	14
+   FrameIndex	2LID	I	0	14
+   FrameIndex	2LID	J	0	14
+   FrameIndex	2LID	K	0	14
+   FrameIndex	2LID	L	0	14
+   FrameIndex	2LID	M	0	14
+   FrameIndex	2LID	N	0	14
+   FrameIndex	2TOM	A	0	31
+   FrameIndex	3ICK	A	0	10
+   FrameIndex	3ICK	B	0	11
+   FrameIndex	3ICK	C	0	12
+   FrameIndex	3ICK	D	0	13
+   FrameIndex	3ICK	E	0	14
+   FrameIndex	3ICK	F	0	15
+   FrameIndex	3ICK	G	0	16
+   FrameIndex	3ICK	H	0	17
+   FrameIndex	3ICK	I	0	18
+   FrameIndex	3ICK	J	0	19
+   FrameIndex	3ICK	K	0	20
+   FrameIndex	3ICK	L	0	21
+   FrameIndex	3ICK	M	0	22
+   FrameIndex	3ICK	N	0	23
+   FrameIndex	3ICK	O	0	24
+   FrameIndex	3ICK	P	0	25
+   FrameIndex	3ICK	Q	0	26
+   FrameIndex	3ICK	R	0	27
+   FrameIndex	3ICK	S	0	28
+   FrameIndex	3ICK	T	0	29
+   FrameIndex	3ICK	U	0	30
+   FrameIndex	3ICK	V	0	30
+   FrameIndex	3ICK	W	0	30
+   FrameIndex	3ICK	X	0	30
+   FrameIndex	3ICK	Y	0	30
+   FrameIndex	3ICK	Z	0	30
+   FrameIndex	3ICK	[	0	30
+   FrameIndex	3ICK	]	0	30
+   FrameIndex	3LID	A	0	14
+   FrameIndex	3LID	B	0	14
+   FrameIndex	3LID	C	0	14
+   FrameIndex	3LID	D	0	14
+   FrameIndex	3LID	E	0	14
+   FrameIndex	3LID	F	0	14
+   FrameIndex	3LID	G	0	14
+   FrameIndex	3LID	H	0	14
+   FrameIndex	3LID	I	0	14
+   FrameIndex	3LID	J	0	14
+   FrameIndex	3LID	K	0	14
+   FrameIndex	3LID	L	0	14
+   FrameIndex	3LID	M	0	14
+   FrameIndex	3LID	N	0	14
+   FrameIndex	3TOM	A	0	31
+   FrameIndex	KICK	A	0	10
+   FrameIndex	KICK	B	0	11
+   FrameIndex	KICK	C	0	12
+   FrameIndex	KICK	D	0	13
+   FrameIndex	KICK	E	0	14
+   FrameIndex	KICK	F	0	15
+   FrameIndex	KICK	G	0	16
+   FrameIndex	KICK	H	0	17
+   FrameIndex	KICK	I	0	18
+   FrameIndex	KICK	J	0	19
+   FrameIndex	KICK	K	0	20
+   FrameIndex	KICK	L	0	21
+   FrameIndex	KICK	M	0	22
+   FrameIndex	KICK	N	0	23
+   FrameIndex	KICK	O	0	24
+   FrameIndex	KICK	P	0	25
+   FrameIndex	KICK	Q	0	26
+   FrameIndex	KICK	R	0	27
+   FrameIndex	KICK	S	0	28
+   FrameIndex	KICK	T	0	29
+   FrameIndex	KICK	U	0	30
+   FrameIndex	KICK	V	0	30
+   FrameIndex	KICK	W	0	30
+   FrameIndex	KICK	X	0	30
+   FrameIndex	KICK	Y	0	30
+   FrameIndex	KICK	Z	0	30
+   FrameIndex	KICK	[	0	30
+   FrameIndex	KICK	]	0	30
+   FrameIndex	KIK1	A	0	0
+   FrameIndex	KIK1	B	0	1
+   FrameIndex	KIK1	C	0	2
+   FrameIndex	KIK1	D	0	3
+   FrameIndex	KIK1	E	0	4
+   FrameIndex	KIK2	A	0	5
+   FrameIndex	KIK2	B	0	6
+   FrameIndex	KIK2	C	0	7
+   FrameIndex	KIK2	D	0	8
+   FrameIndex	KIK2	E	0	9
+   FrameIndex	SLID	A	0	14
+   FrameIndex	SLID	B	0	14
+   FrameIndex	SLID	C	0	14
+   FrameIndex	SLID	D	0	14
+   FrameIndex	SLID	E	0	14
+   FrameIndex	SLID	F	0	14
+   FrameIndex	SLID	G	0	14
+   FrameIndex	SLID	H	0	14
+   FrameIndex	SLID	I	0	14
+   FrameIndex	SLID	J	0	14
+   FrameIndex	SLID	K	0	14
+   FrameIndex	SLID	L	0	14
+   FrameIndex	SLID	M	0	14
+   FrameIndex	SLID	N	0	14
+   FrameIndex	STOM	A	0	31
+   FrameIndex	STOM	B	0	32
+   FrameIndex	STOM	C	0	33
+   FrameIndex	STOM	D	0	34
+   FrameIndex	STOM	E	0	35
+}
+// copied from MODELDEF.bd.txt (Sniper)
+Model PuristSniper
+{
+   Path "models/bd/FIST"
+   Model 0 "fistclosed.md3"
+   Skin 0 "fist.png"
+   Scale -1.0 1.0 1.0
+   Offset 0.0 0.0 0.0
+   ZOffset -5
+   FrameIndex	FUCK	A	0	41
+   FrameIndex	FUCK	B	0	42
+   FrameIndex	FUCK	C	0	43
+   FrameIndex	FUCK	D	0	44
+   FrameIndex	FUCK	E	0	44
+   FrameIndex	FUCK	F	0	45
+   FrameIndex	FUCK	G	0	46
+   FrameIndex	FUCK	H	0	47
+   FrameIndex	FUCK	I	0	48
+   FrameIndex	FUCK	J	0	48
+   FrameIndex	FUCK	K	0	50
+   FrameIndex	FUCK	L	0	51
+   FrameIndex	FUCK	M	0	52
+   FrameIndex	FUCK	N	0	53
+   FrameIndex	FUCK	O	0	53
+   FrameIndex	IEHW	A	0	39
+   FrameIndex	IEHW	B	0	39
+   FrameIndex	IEHW	C	0	39
+   FrameIndex	IEHW	D	0	39
+   FrameIndex	IEHW	E	0	39
+   FrameIndex	IEHW	F	0	39
+   FrameIndex	IEHW	G	0	39
+   FrameIndex	IEHW	H	0	39
+   FrameIndex	IEHW	I	0	39
+   FrameIndex	IEHW	J	0	39
+   FrameIndex	IEHW	K	0	39
+   FrameIndex	IEHW	L	0	40
+   FrameIndex	IEHW	M	0	40
+   FrameIndex	IEHW	N	0	40
+   FrameIndex	IEHW	O	0	40
+   FrameIndex	IEHW	P	0	40
+   FrameIndex	IEHW	Q	0	40
+   FrameIndex	IEHW	R	0	40
+   FrameIndex	IEHW	S	0	40
+   FrameIndex	IEHW	T	0	40
+   FrameIndex	SALU	A	0	18
+   FrameIndex	SALU	B	0	19
+   FrameIndex	SALU	C	0	20
+   FrameIndex	SALU	D	0	21
+   FrameIndex	SALU	E	0	22
+   FrameIndex	VUCK	A	0	41
+   FrameIndex	VUCK	B	0	42
+   FrameIndex	VUCK	C	0	43
+   FrameIndex	VUCK	D	0	44
+   FrameIndex	VUCK	E	0	44
+   FrameIndex	VUCK	F	0	45
+   FrameIndex	VUCK	G	0	46
+   FrameIndex	VUCK	H	0	47
+   FrameIndex	VUCK	I	0	48
+}
+// copied from MODELDEF.bd.txt (Sniper)
+Model PuristSniper
+{
+   Path "models/bd/FIST"
+   Model 0 "fistclosed.md3"
+   Skin 0 "rsr_clear.png"
+   Scale -1.0 1.0 1.0
+   Offset 0.0 0.0 0.0
+   ZOffset -5
+   FrameIndex	1UNG	D	0	10
+   FrameIndex	1UNG	E	0	11
+   FrameIndex	1UNG	F	0	12
+   FrameIndex	1UNG	G	0	12
+   FrameIndex	1UNG	H	0	12
+   FrameIndex	1UNG	I	0	12
+   FrameIndex	1UNG	J	0	12
+   FrameIndex	4ONG	B	0	1
+   FrameIndex	4ONG	C	0	2
+   FrameIndex	4ONG	D	0	3
+   FrameIndex	4ONG	E	0	4
+   FrameIndex	4ONG	F	0	5
+   FrameIndex	4ONG	G	0	7
+   FrameIndex	4ONG	V	0	1
+   FrameIndex	4ONG	W	0	2
+   FrameIndex	4ONG	X	0	3
+   FrameIndex	4ONG	Y	0	4
+   FrameIndex	4ONG	Z	0	5
+   FrameIndex	4ONG	[	0	6
+   FrameIndex	4UNG	A	0	1
+   FrameIndex	4UNG	D	0	10
+   FrameIndex	4UNG	E	0	11
+   FrameIndex	4UNG	F	0	12
+   FrameIndex	4UNG	G	0	12
+   FrameIndex	4UNG	H	0	12
+   FrameIndex	4UNG	I	0	12
+   FrameIndex	4UNG	J	0	12
+   FrameIndex	PONG	B	0	1
+   FrameIndex	PONG	C	0	2
+   FrameIndex	PONG	D	0	3
+   FrameIndex	PONG	E	0	4
+   FrameIndex	PONG	F	0	5
+   FrameIndex	PONG	G	0	7
+   FrameIndex	PONG	V	0	1
+   FrameIndex	PONG	W	0	2
+   FrameIndex	PONG	X	0	3
+   FrameIndex	PONG	Y	0	4
+   FrameIndex	PONG	Z	0	5
+   FrameIndex	PONG	[	0	6
+   FrameIndex	PUNG	A	0	1
+   FrameIndex	PUNG	B	0	8
+   FrameIndex	PUNG	C	0	9
+}
+// copied from MODELDEF.rsr (Sniper)
+Model PuristSniper
+{
+	Path "models/bd/XM21"
+	Model 0 "XM21.md3"
+	SurfaceSkin 0 0 "223_rem.png"
+	SurfaceSkin 0 1 "mini14.png"
+	SurfaceSkin 0 2 "mini14.png"
+	SurfaceSkin 0 3 "leupold_vx1.png"
+	SurfaceSkin 0 4 "mini14.png"
+	SurfaceSkin 0 5 "mini14.png"
+	SurfaceSkin 0 6 "mini14.png"
+	SurfaceSkin 0 7 "leupold_vx1.png"
+	SurfaceSkin 0 8 "mini14.png"
+	SurfaceSkin 0 9 "mini14.png"
+	// The lens wears its own glass tile, not the gun atlas: both scope lenses were
+	// reprojected to 0..1 (tool/md3_carve_surface.py --project-only) so REAL mode can
+	// render a camera texture through them, which means they no longer sample the
+	// authored skin at all. scope_real.zs swaps this for the camera texture when REAL.
+	SurfaceSkin 0 10 "scope_glass.png"
+	Scale -10.4850 10.4850 10.4850
+	Offset -4.310 -51.099 0.0
+	ZOffset -4.224
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
+	NoInterpolation
+	FrameIndex X21G A 0 0
+	// X21F / P21F: the FIRING pose, same single mesh frame as the ready pose. Without
+	// these the model silently stops drawing the instant the gun fires and the 2D sprite
+	// shows for the whole rest of the sequence, because every state after it is "####"
+	// and inherits X21F. gen_rsr.py knows ready_sprites only; it needs the fire sprites
+	// too or a regenerate drops this.
+	FrameIndex	X21F	A	0	0
+	FrameIndex	P21F	A	0	0
+	// F11: Fire's "####" B 1 and "####" C 2 inherit X21F (and P21F zoomed), so B and C too.
+	FrameIndex	X21F	B	0	0
+	FrameIndex	X21F	C	0	0
+	FrameIndex	P21F	B	0	0
+	FrameIndex	P21F	C	0	0
+	FrameIndex X21G B 0 0
+	FrameIndex X21G C 0 0
+	FrameIndex X21G D 0 0
+	FrameIndex X21G E 0 0
+	FrameIndex X21G F 0 0
+	FrameIndex X21R A 0 0
+	FrameIndex X21R B 0 0
+	FrameIndex X21R C 0 0
+	FrameIndex X21R D 0 0
+	FrameIndex X21R E 0 0
+	FrameIndex X21R F 0 0
+	FrameIndex X21R G 0 0
+	FrameIndex X21R H 0 0
+	FrameIndex X21R I 0 0
+	FrameIndex X21R J 0 0
+	FrameIndex X21R K 0 0
+	FrameIndex X21R L 0 0
+	FrameIndex X21R M 0 0
+	FrameIndex X21R N 0 0
+	FrameIndex X21R O 0 0
+	FrameIndex X21R P 0 0
+	FrameIndex X21R Q 0 0
+	FrameIndex X21R R 0 0
+	FrameIndex X21R S 0 0
+	FrameIndex X21R T 0 0
+	FrameIndex X21R U 0 0
+	FrameIndex X21R V 0 0
+	FrameIndex X21R W 0 0
+	FrameIndex X22R A 0 0
+	FrameIndex X22R B 0 0
+	FrameIndex X22R C 0 0
+	FrameIndex X22R D 0 0
+	FrameIndex X22R E 0 0
+	FrameIndex X22R F 0 0
+	FrameIndex X22R G 0 0
+	FrameIndex X22R H 0 0
+	FrameIndex X22R I 0 0
+	FrameIndex X22R J 0 0
+	FrameIndex X22R K 0 0
+	FrameIndex X22R L 0 0
+	FrameIndex X22R M 0 0
+	FrameIndex X22R N 0 0
+	FrameIndex X22R O 0 0
+	FrameIndex X22R P 0 0
+	FrameIndex X22R Q 0 0
+	FrameIndex X22R R 0 0
+	FrameIndex X22R S 0 0
+	FrameIndex X23R A 0 0
+	FrameIndex X23R B 0 0
+	FrameIndex X23R C 0 0
+	FrameIndex X23R D 0 0
+	FrameIndex X23R E 0 0
+	FrameIndex X23R F 0 0
+	FrameIndex X23R G 0 0
+	FrameIndex X23R H 0 0
+	FrameIndex X23R I 0 0
+	FrameIndex X23R J 0 0
+	FrameIndex X23R K 0 0
+	FrameIndex X23R L 0 0
+	FrameIndex X23R M 0 0
+	FrameIndex X21S A 0 0
+	FrameIndex X21S B 0 0
+	FrameIndex X21S C 0 0
+	FrameIndex X21S D 0 0
+	FrameIndex X21S E 0 0
+	FrameIndex X21S F 0 0
+	FrameIndex X21S G 0 0
+	FrameIndex X21S H 0 0
+	FrameIndex X21A A 0 0
+	FrameIndex X21A B 0 0
+	FrameIndex X21A C 0 0
+	FrameIndex P21G A 0 0
+}
+// copied from MODELDEF.rsr (Sniper)
+Model PuristSniper
+{
+	Path "models/bd/XM21"
+	Model 0 "XM21.md3"
+	SurfaceSkin 0 0 "223_rem.png"
+	SurfaceSkin 0 1 "mini14.png"
+	SurfaceSkin 0 2 "mini14.png"
+	SurfaceSkin 0 3 "leupold_vx1.png"
+	SurfaceSkin 0 4 "mini14.png"
+	SurfaceSkin 0 5 "rsr_clear.png"
+	SurfaceSkin 0 6 "mini14.png"
+	SurfaceSkin 0 7 "leupold_vx1.png"
+	SurfaceSkin 0 8 "mini14.png"
+	SurfaceSkin 0 9 "mini14.png"
+	// The lens wears its own glass tile, not the gun atlas: both scope lenses were
+	// reprojected to 0..1 (tool/md3_carve_surface.py --project-only) so REAL mode can
+	// render a camera texture through them, which means they no longer sample the
+	// authored skin at all. scope_real.zs swaps this for the camera texture when REAL.
+	SurfaceSkin 0 10 "scope_glass.png"
+	Scale -10.4850 10.4850 10.4850
+	Offset -4.310 -51.099 0.0
+	ZOffset -4.224
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
+	NoInterpolation
+	FrameIndex RQKM A 0 0
+}
+// copied from MODELDEF.rsr (Sniper)
+Model PuristSniper
+{
+	Path "models/bd/XM21"
+	Model 0 "XM21.md3"
+	SurfaceSkin 0 0 "223_rem.png"
+	SurfaceSkin 0 1 "rsr_clear.png"
+	SurfaceSkin 0 2 "rsr_clear.png"
+	SurfaceSkin 0 3 "leupold_vx1.png"
+	SurfaceSkin 0 4 "mini14.png"
+	SurfaceSkin 0 5 "mini14.png"
+	SurfaceSkin 0 6 "mini14.png"
+	SurfaceSkin 0 7 "leupold_vx1.png"
+	SurfaceSkin 0 8 "mini14.png"
+	SurfaceSkin 0 9 "mini14.png"
+	// The lens wears its own glass tile, not the gun atlas: both scope lenses were
+	// reprojected to 0..1 (tool/md3_carve_surface.py --project-only) so REAL mode can
+	// render a camera texture through them, which means they no longer sample the
+	// authored skin at all. scope_real.zs swaps this for the camera texture when REAL.
+	SurfaceSkin 0 10 "scope_glass.png"
+	Scale -10.4850 10.4850 10.4850
+	Offset -4.310 -51.099 0.0
+	ZOffset -4.224
+	AngleOffset 3.854
+	PitchOffset 3.363
+	RollOffset 10.974	// r9 port (lane B): gun to the FBX hand fitted from 1.92
+	NoInterpolation
+	FrameIndex RQKM B 0 0
 }
