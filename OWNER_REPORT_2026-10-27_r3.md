@@ -82,3 +82,8 @@ Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning mat
     - The Ruger fires a piercing sniper bullet, with the rail's damage and piercing; the Railgun stays a rail.
     - Round speed is fixed at 80. Skin tone gets 16+ steps, from human tones to blue, purple and green.
     - **Later:** more bullet styles for Player Ballistics, added over time. Each one is the owner's pick; none is built by default.
+
+## Variants share fits (owner, 2026-10-27 20:30, standing rule)
+23. The Purist, Tactical and any other variant of a gun use the same mesh as the Brutal gun, so they use the same pose.
+    - Never fit a variant. Copy the Brutal gun's hand, support and dependent rows to it.
+    - Farm records so far: no Purist or Tactical fit was ever run. One PuristRifle support job was briefed by mistake on 2026-10-27 at 20:26 and cancelled before it ran.
