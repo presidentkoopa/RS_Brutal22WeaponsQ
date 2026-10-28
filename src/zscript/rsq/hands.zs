@@ -200,7 +200,7 @@ class RSQ_GunSide : Inventory
 	FbxTrgSSG: RQVD A -1; Stop;
 	FbxSqzSSG: RQVD B -1; Stop;
 	Fist: RQGF A -1; Stop;	// Ermac's fist (the free hand's fist): fists, punches
-	Nade: RQGN A -1; Stop;	// Ermac's ammo hand round the VR grenade
+	Nade: RQGN A -1; Stop;	// the FBX hand round the VR grenade (fbx_nade_R.md3, fit_nade.py)
 	// 2026-10-23: the VR scope's collimated reticle (rsq/scope.zs, layer RSQ_ScopeLayers.RETICLE).
 	// Its own sprite, so it carries its own flat quad in MODELDEF and nothing about it is tied
 	// to the hand meshes; ModifyBobLayer3D puts it on the glass every rendered frame. Bright,
