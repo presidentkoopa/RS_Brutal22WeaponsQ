@@ -60,6 +60,7 @@ OptionMenu "RSQ_Options"
 {
 	Title "BD22 VR WEAPONS"
 	Option "VR Hands", "rsq_hands", "OnOff"
+	Option "Hand Skin Tone", "rsq_hand_tone", "RSQ_HandTone"	// BD 2.0: zscript/rsq/handtone.zs
 	Option "Reloading", "rsr_reload", "RSR_ReloadMode"
 	Option "Reload Non-Standard Guns", "rsq_reload_nonstd", "OnOff"
 	Option "Grab ammo with", "rsr_grab_with", "RSR_GrabWith"

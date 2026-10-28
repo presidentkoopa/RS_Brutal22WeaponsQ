@@ -12,3 +12,7 @@ server int rsq_shot_tracers = 0;
 // Enhanced = Dakka's shotgun pattern, 3 deg across x 2.5 deg up/down, same pellets and damage
 // (actors/Weapons/Shotgun.dec). Server: it decides where shots go.
 server int rsq_pump_spread = 0;
+
+// "Hand Skin Tone" (owner, 2026-10-27 20:05): 0 = the FBX hands as drawn, 1..17 = tools/handtones.py's tones
+// (zscript/rsq/handtone.zs). Local: your own hands.
+user int rsq_hand_tone = 0;
