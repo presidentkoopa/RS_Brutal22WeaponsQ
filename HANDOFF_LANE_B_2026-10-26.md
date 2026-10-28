@@ -1791,7 +1791,7 @@ sup_pen / gap, support_gun.py's check). r10's four pose JSONs still lack `suppor
 # 2.0 integration (2026-10-27, branch `lane-int-2.0` cut from origin/lane-b-1.99x 9238187). RIG ONLY, NOT HEADSET-CONFIRMED
 
 Merged, in order: lane-rev-unmaker db5156f, lane-ballistics-skin 8c1c268 then its final head f41b04c (off-hand muzzle
-shots), lane-b-1.99x after r11 + rebake, then support192 batches 1 and 2 (931aedf). Final-pk3 rerun: boot, Devastator / IncendiaryLauncher / GrenadeLauncher / Rocket_Launcher / SSG / Shot_Gun / AssaultShotgun / Rifle fire + held, Purist held: all as below. Conflicts were only this HANDOFF (both sides
+shots), lane-b-1.99x after r11 + rebake, then support192 batches 1, 2 and 3 (d9aa0ea). Final-pk3 reruns: boot, Rocket_Launcher / Plasma_Gun / RailGun / Machinegun, Devastator / IncendiaryLauncher / GrenadeLauncher / Rocket_Launcher / SSG / Shot_Gun / AssaultShotgun / Rifle fire + held, Purist held: all as below. Conflicts were only this HANDOFF (both sides
 kept) and the src/README.txt credits (the slug revolver line dropped per owner item 20; the Dakka credit kept).
 build.py's skin-tone step catches every lane's FBX hand blocks (100 blocks to slot 7, including rev-unmaker's dual Moonlight).
 
@@ -1843,6 +1843,6 @@ build.py's skin-tone step catches every lane's FBX hand blocks (100 blocks to sl
   mistake (my rig now lives in its own dir). If that lane runs again, re-make its pristine ini.
 
 ## 3. Files
-pk3: /home/claude/lane_b_out/int20/BD22_VR-Reloaded_2.0-int.pk3 sha256 6225ca2125d30dc3727ee5a3e99b6389f9890c786bc4362872cc3c183cb741b5 (src/ as at the branch head; `python build.py 2.0-int`; the VERSION file still says 1.99).
+pk3: /home/claude/lane_b_out/int20/BD22_VR-Reloaded_2.0-int.pk3 sha256 c4b609b1fb0b8b6bc1df363b2b84651697587998c6fdcb1858f2b8654ba3a6e8 (not byte-reproducible: build.py writes the MODELDEF lumps with writestr, current time) (src/ as at the branch head; `python build.py 2.0-int`; the VERSION file still says 1.99).
 Sheets: /home/claude/lane_b_out/int20_sweep.png (every gun held), /home/claude/lane_b_out/int20_purist.png (24 Purist guns);
 per-gun frames in /home/claude/lane_b_out/int20/ (hs_*, pu_*). No .ppm left. Test-only tools: tools/int20_rig/ (never in src/).
