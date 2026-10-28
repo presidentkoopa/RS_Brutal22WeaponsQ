@@ -1828,13 +1828,13 @@ build.py's skin-tone step catches every lane's FBX hand blocks (100 blocks to sl
     empty FBX hand. Sniper's 7 blocks are now copied to it. Rig frame: the XM21 is in the hand.
 
 ## 2. Not done / flagged
-- **Shotvolver slug alt fire is OFF by default** (`rsa_rev_magnum`, server, default false), while owner item 24 says the
+- (round 2: done, default ON as `rsa_rev_slug`, see round 2 below) **Shotvolver slug alt fire is OFF by default** (`rsa_rev_magnum`, server, default false), while owner item 24 says the
   Shotvolver keeps its slug alt. With it on, the rig shows the slug (470 Dakka dots, 2 hits for 88 damage). Owner call: default on?
 - **M203 alt fire (Rifle, Machinegun) not shown.** It needs a hand-loaded tube (RFGLoaded). The Depot's m203.py opens the tube
   and takes a round, but the round never seats (stale driver geometry, not refit here). An empty-tube alt is a dry click, as designed.
-- **IncendiaryLauncher, NukeLauncher hand reload never starts.** The counters show the whole reserve sitting in the magazine
+- (round 2: shown starting and completing, see round 2 below) **IncendiaryLauncher, NukeLauncher hand reload never starts.** The counters show the whole reserve sitting in the magazine
   (pouch 4>0, 1>0), even with a backpack. This is the cap issue the r6 reloads lane already noted; owner call on caps.
-- **Minigun reload needs a backpack** (magazine 200 = Clip2 cap 200), as the r6 lane says.
+- (round 2: no longer, Clip2 cap 400, see round 2 below) **Minigun reload needs a backpack** (magazine 200 = Clip2 cap 200), as the r6 lane says.
 - **MP40 dual:** the MP40 is cheat-only (maps spawn the SMG instead), so no in-play pickup gives its copy. Tested with BD22's own
   HasDualMP40 token: works.
 - **Moonlight:** a picked-up or given Moonlight arrives with an empty cylinder (BrutalRevolverCylinder 0); the first trigger opens it for the hand reload.
@@ -1846,3 +1846,60 @@ build.py's skin-tone step catches every lane's FBX hand blocks (100 blocks to sl
 pk3: /home/claude/lane_b_out/int20/BD22_VR-Reloaded_2.0-int.pk3 sha256 c4b609b1fb0b8b6bc1df363b2b84651697587998c6fdcb1858f2b8654ba3a6e8 (not byte-reproducible: build.py writes the MODELDEF lumps with writestr, current time) (src/ as at the branch head; `python build.py 2.0-int`; the VERSION file still says 1.99).
 Sheets: /home/claude/lane_b_out/int20_sweep.png (every gun held), /home/claude/lane_b_out/int20_purist.png (24 Purist guns);
 per-gun frames in /home/claude/lane_b_out/int20/ (hs_*, pu_*). No .ppm left. Test-only tools: tools/int20_rig/ (never in src/).
+
+## Round 2 (2026-10-28, worktree branch `lane-int-2.0-r2`, pushed to origin `lane-int-2.0`). RIG ONLY, NOT HEADSET-CONFIRMED
+Rig: QZD 17.3 Depot rig, doom2 > brutal22test6 > BD_VoxelPack > pack, every run `flock -o -x /home/claude/rig.lock` with a 4 s
+yield (tools/int20_rig/run.sh), the lane's pristine ini. No .ppm left. The old agent's uncommitted work (slug default, caps)
+was kept and finished.
+
+### Done (measured)
+1. **Giant shell casing (owner HIGH).** What it was: BD22's own casing SPRITE drawn at scale 1.0. RSA_Casings lends the real
+   12 ga hull / rifle case (casemodels.zs) and sets the actor to scale 1.0 (the mesh is real-size); RSQ_Voxels, the next handler,
+   then called `A_ChangeModel('None')` on every fresh casing because Spent casings voxels are off by default, which took the mesh
+   back and left C4S2 / C4S3 at 1.0: 4x the hull (BD 0.25, a 21 x 10 px sprite), 6.7x the rifle brass (BD 0.15). Not our
+   casings.zs port, not BD_VoxelPack's voxel, not the spawn point. **All of AssaultShotgun, Shot_Gun (its pump hull), SSG,
+   Shotvolver and Rifle did it** (rig before frames); Minigun / Machinegun / MG42 share EmptyBrass and the same path.
+   Fix (voxels.zs): only an option CHANGE takes a model back, and casings are left as thrown when the option changes. Nothing in
+   BD_VoxelPack touched. Rig after: normal-size hull / brass leaving each gun, eye + side.
+   Frames: /home/claude/lane_b_out/int20/casings_r2/ (before_<Gun>_<view>.png + before_*_maxred.png = the giant; after_* on the
+   r2test2 build, final_AssaultShotgun_* / final_Shot_Gun_* on the final pk3; each strip = 8 consecutive frames from the casing's
+   spawn, the bottom row a 3x zoom box).
+2. **Shotvolver slug alt fire ON by default.** The cvar is renamed `rsa_rev_slug` (default true): an ini saved by any older
+   build holds `rsa_rev_magnum=false`, which would have kept the new default from the owner. **Real bug found and fixed:** the
+   main hand's AltFire used a numeric +2 jump that ran past `Goto Fire` into `DM:` (Revolver.dec and the RSQ_Off_Revolver copy),
+   so every secondary press fired BD22's DM 7 + 2 pellet shot without taking a shell, went through kick + hammer, and only then
+   the slug (trace: 9 rounds at t262, slug at t284). Named jumps now. Rig, the old ini (rsa_rev_magnum=false in it), Player
+   Ballistics Bullet: one press = 1 round, 1 shell (6>5); a summoned Baron in front: 1 hit for 300 damage. Fresh ini: same.
+   The sweep's Revolver alt: RevolverAmmo 5>4. (tools/int20_rig/slugtest.py, logs slughit2 / slugtrace3.)
+3. **Reserve caps (parsed: magazines from counters.zs CAP[], BD22 caps from brutal22test6 Ammo.dec / IncendiaryLauncher.dec).**
+   Reserve = 2 magazines on top of the loaded one: NukeLauncher magazine 1 -> Nuke cap 2 (BD22 1/1, its backpack adds nothing, so 2
+   with one too); Minigun magazine 200 -> Clip2 cap 400, 800 with a backpack (BD22 200/400: x2 kept); IncendiaryLauncher magazine 6
+   -> 12 needed, already 48 (AmmoM202, 2026-10-26 owner call), unchanged. Ammo on top kept (RealTick lends above CapBase).
+   **Clip2 is shared: the Rifle, Sniper, MG42 and Machinegun carry 400 / 800 too** (owner: say if the rifle must stay at 200).
+   Rig, no backpack, gun then a 400 pickup (tools/int20_rig/rl3.py): every one EMPTY>DROP>CARRY>INSERT>SEATED>DONE;
+   Incendiary magazine 0>6 (pouch 48>42), reload 5>6 (pouch 42>41), a pickup refills the pouch to 48; Nuke 0>1 (pouch 2>1), reload
+   0>1 (1>0), pickup back to 2; Minigun 0>200 (pouch 400>200), reload 197>200 (200>197), pickup to 400. No errors.
+4. **PuristRifle.** MODELDEF.purist: the three PuristRifle blocks that draw Rifle.md3 now carry the M203 (model 1) exactly as the
+   Rifle's matching blocks (bd.txt main block, rsr RQRM A, RQRM B; tools/int20_rig/purist_m203.py matches each by text), plus the
+   Rifle's RQRM C reload block, which the copy was missing. No fitting. Rifle.dec: PuristRifle's AltFire and FireGrenade hold one
+   tic and return (no grenade, no dry click, no purist warning). Rig (eye + side, off hand gripped at the Rifle's SupportPoint):
+   before = no tube, support hand under the handguard, alt plays Weapon/Empty; after = tube drawn with the hand on it, the same
+   frame as the Rifle's; alt: no sound, no projectile, ammo and inventory unchanged.
+   /home/claude/lane_b_out/int20/purist_r2/purist_before_after.png (top before, bottom after), r2_Rifle.png (reference).
+5. **Merges:** origin/lane-b-1.99x f3674cf (owner approvals) and b1225c4 (FBX grenade hand), no conflicts. origin/lane-scope
+   does not exist (the local lane-scope branch is still at 74417cd), so nothing was merged from it.
+   Final pk3, boot: no script errors from the pack (only BD_VoxelPack's own voxeldef.txt lines 66, 72, 77, 892). Sweep, all 31
+   guns held and fired, no errors: /home/claude/lane_b_out/int20_sweep.png (frames r2_*.png). Alt "nothing seen" on SSG, Rifle,
+   Machinegun, GrenadeLauncher and the HandGrenades row are the same as the round-1 sweep (one-round guns / hand-loaded M203 /
+   the throw needs the real VR swing), not regressions.
+
+### Not done / open
+- Clip2 400 applies to every Clip2 gun (shared reserve): owner call.
+- The Shotvolver slug refires while the secondary stays held through the hammer (designed in 1.37: held 40 tics = 2 slugs).
+- The pump driver constants in the Depot's pump.py are still stale (casecap.py uses the live table, as rsweep.py).
+
+### Files
+pk3: /home/claude/lane_b_out/int20/BD22_VR-Reloaded_2.0-int-r2.pk3 (`python build.py 2.0-int-r2`, 102 FBX hand blocks to slot 7;
+sha256 in the lane report; not byte-reproducible). Test-only tools: tools/int20_rig/ casecap.py, slugtest.py, rl3.py,
+puristcap.py, purist_m203.py, final.sh, logger/ (INT CASE / INT SPAWN / per-frame B22 FRAME lines added).
+
