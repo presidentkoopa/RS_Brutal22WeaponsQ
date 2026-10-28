@@ -1375,6 +1375,27 @@ class RSVR_MeleeMove abstract
 {
 	static Vector3 Apply(int k, int pf, Vector3 p)
 	{
+		// 2.0 int r2: the butt strike / pistol whip guns, moved to the FBX hand by the r9..r12 ports (tools/int20_rig/butt_move.py)
+		if (k == RSVR_Hand.RIFLEBUTT && pf == 0)	// Rifle (gun_move, tools/handfit/poses/Rifle.json)
+			return (0.996020 * p.x + -0.077127 * p.y + -0.044664 * p.z + 5.7921, 0.067099 * p.x + 0.978743 * p.y + -0.193804 * p.z + 1.6646, 0.058662 * p.x + 0.190036 * p.y + 0.980023 * p.z + 4.9479);
+		if (k == RSVR_Hand.SGBUTT && pf == 0)	// Shot_Gun (gun_move, tools/handfit/poses/Shot_Gun.json)
+			return (0.996020 * p.x + -0.077127 * p.y + -0.044664 * p.z + 4.1373, 0.067099 * p.x + 0.978743 * p.y + -0.193804 * p.z + 5.5150, 0.058662 * p.x + 0.190036 * p.y + 0.980023 * p.z + -2.2130);
+		if (k == RSVR_Hand.SSGBUTT && pf == 0)	// SSG (gun_move, tools/handfit/poses/SSG.json)
+			return (0.996020 * p.x + -0.077127 * p.y + -0.044664 * p.z + 3.8398, 0.067099 * p.x + 0.978743 * p.y + -0.193804 * p.z + 5.8258, 0.058662 * p.x + 0.190036 * p.y + 0.980023 * p.z + -6.0133);
+		if (k == RSVR_Hand.ASGBUTT && pf == 0)	// AssaultShotgun (gun_move, tools/handfit/poses/AssaultShotgun.json)
+			return (0.996020 * p.x + -0.077127 * p.y + -0.044664 * p.z + 4.6856, 0.067099 * p.x + 0.978743 * p.y + -0.193804 * p.z + 6.7137, 0.058662 * p.x + 0.190036 * p.y + 0.980023 * p.z + -5.2711);
+		if (k == RSVR_Hand.MP40BUTT && pf == 0)	// MP40 (gun_move, tools/handfit/poses/MP40.json)
+			return (0.996020 * p.x + -0.077127 * p.y + -0.044664 * p.z + 4.3510, 0.067099 * p.x + 0.978743 * p.y + -0.193804 * p.z + 2.9954, 0.058662 * p.x + 0.190036 * p.y + 0.980023 * p.z + 4.5470);
+		if (k == RSVR_Hand.SMGBUTT && pf == 0)	// BrutalSMG (gun_move, tools/handfit/poses/BrutalSMG.json)
+			return (0.996020 * p.x + -0.077127 * p.y + -0.044664 * p.z + 4.4405, 0.067099 * p.x + 0.978743 * p.y + -0.193804 * p.z + 1.1050, 0.058662 * p.x + 0.190036 * p.y + 0.980023 * p.z + 3.3465);
+		if (k == RSVR_Hand.MGBUTT && pf == 0)	// Machinegun (gun_move, tools/handfit/poses/Machinegun.json)
+			return (0.996020 * p.x + -0.077127 * p.y + -0.044664 * p.z + 3.8472, 0.067099 * p.x + 0.978743 * p.y + -0.193804 * p.z + 2.6254, 0.058662 * p.x + 0.190036 * p.y + 0.980023 * p.z + 4.7226);
+		if (k == RSVR_Hand.MG42BUTT && pf == 0)	// MG42 (gun_move, tools/handfit/poses/MG42.json)
+			return (0.996020 * p.x + -0.077127 * p.y + -0.044664 * p.z + 2.7396, 0.067099 * p.x + 0.978743 * p.y + -0.193804 * p.z + 2.7430, 0.058662 * p.x + 0.190036 * p.y + 0.980023 * p.z + 6.3178);
+		if (k == RSVR_Hand.PISTOL && pf == 0)	// BrutalPistol (gun_move, tools/handfit/poses/BrutalPistol.json)
+			return (0.996020 * p.x + -0.077127 * p.y + -0.044664 * p.z + 8.2136, 0.067099 * p.x + 0.978743 * p.y + -0.193804 * p.z + 1.1930, 0.058662 * p.x + 0.190036 * p.y + 0.980023 * p.z + 5.3519);
+		if (k == RSVR_Hand.REVOLVER && pf == 0)	// Revolver (gun_move, tools/handfit/poses/Revolver.json)
+			return (0.996020 * p.x + -0.077127 * p.y + -0.044664 * p.z + 5.2965, 0.067099 * p.x + 0.978743 * p.y + -0.193804 * p.z + 1.5468, 0.058662 * p.x + 0.190036 * p.y + 0.980023 * p.z + 3.9587);
 		// r12 port: BrutalAxe
 		if (k == RSVR_Hand.AXE && pf == 0)	// BrutalAxe one-handed
 			return (0.996020 * p.x + -0.077127 * p.y + -0.044664 * p.z + 12.9934, 0.067099 * p.x + 0.978743 * p.y + -0.193804 * p.z + -0.2948, 0.058662 * p.x + 0.190036 * p.y + 0.980023 * p.z + 4.5647);
