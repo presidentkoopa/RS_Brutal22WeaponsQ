@@ -56,9 +56,9 @@ Model RSR_GunParts
 
 Model RSQ_Hands
 {
-	Path "models/rsq/fbx"
-	Model 0 "fbx_oh_hold_R.md3"
-	Skin 0 "fbx_hand.png"
+	Path "models/rsq"	// one Path for both models: the round stays in models/rsq
+	Model 0 "fbx/fbx_oh_hold_R.md3"
+	Skin 0 "fbx/fbx_hand.png"
 	Model 1 "m203_round_hand.md3"
 	Skin 1 "models/bd/Rifle/m203_round.png"
 	Scale -1.0 1.0 1.0

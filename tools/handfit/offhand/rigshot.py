@@ -24,6 +24,18 @@ def shot(pk3, name, script, picks=None, res='480', every='2', secs=300, probe=Tr
             else: os.environ[k] = v
     fr = sorted(glob.glob(d + '/*.ppm')); out = {}
     if callable(picks): picks = picks(text)	# {png: tics before quit} worked out from the log (e.g. a logged hit's tic)
+    tic_picks = {k: v[1] for k, v in (picks or {}).items() if isinstance(v, tuple) and v[0] == 'tic'}
+    if fr and tic_picks:	# by game tic: the probe's 'B22 FRAME <n> t <tic>' lines give the drawn frame of each tic (the dump file fNNNNN counts
+        import re, numpy as np	# the same frames from the engine's start: one offset, set at the end of the run)
+        F = np.array([(int(a), int(b)) for a, b in re.findall(r'B22 FRAME (\d+) t (\d+)', text)], float)
+        F = F[np.unique(F[:, 0], return_index=True)[1]]
+        q = [int(x) for x in re.findall(r'OHT MARK t (\d+)', text)]; t_end = q[-1] + 5 if q else F[-1, 1]
+        rate = (F[-1, 0] - F[-4, 0]) / max(1.0, F[-1, 1] - F[-4, 1]); pf_end = F[-1, 0] + (t_end - F[-1, 1]) * rate
+        nums = np.array([int(os.path.basename(f)[1:6]) for f in fr]); off = nums[-1] - pf_end
+        for png, T in tic_picks.items():
+            n = np.interp(T, F[:, 1], F[:, 0]) + off; k = int(np.argmin(np.abs(nums - n)))
+            Image.open(fr[k]).save(os.path.join(SHOTS, png)); out[png] = (k, len(fr), 'tic %d' % T)
+        picks = {k: v for k, v in picks.items() if k not in tic_picks}
     if fr and picks:
         mt = [os.path.getmtime(f) for f in fr]; last = mt[-1]
         for png, tics in picks.items():

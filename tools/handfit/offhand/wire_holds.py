@@ -57,7 +57,7 @@ repoint('MODELDEF.rsb', E + '\tScale -1.0 1.0 1.0\n\tOffset 0.0 -24.0 -10.0\n\tF
 repoint('MODELDEF.rsrpump', E + '\tScale -1.0 1.0 1.0\n\tOffset 0.0 -24.0 -10.0\n\tFrameIndex RQUN A 0 1\n',
         H() + '\tScale -1.0 1.0 1.0\n\tOffset 0.0 -24.0 -10.0\n\tFrameIndex RQUN A 0 %d\t// off-hand FBX lane: the FBX hand round the shell (RQHF X); was Ermac ammo_hand 1\n' % ix['X'])
 t = rd('MODELDEF.rsm')
-t = sub1(t, E + '\tModel 1 "m203_round_hand.md3"\n', H() + '\tModel 1 "m203_round_hand.md3"\n')
+t = sub1(t, E + '\tModel 1 "m203_round_hand.md3"\n', '\tPath "models/rsq"\t// one Path for both models: the round stays in models/rsq\n\tModel 0 "fbx/fbx_oh_hold_R.md3"\n\tSkin 0 "fbx/fbx_hand.png"\n\tModel 1 "m203_round_hand.md3"\n')
 t = sub1(t, '\tFrameIndex RQ2H A 0 5\n', '\tFrameIndex RQ2H A 0 %d\t// off-hand FBX lane: the FBX hand round the 40 mm round (RQHF Y); was Ermac ammo_hand 5\n' % ix['Y'])
 t = sub1(t, E + '\tScale -1.0 1.0 1.0\n\tOffset 0.0 -24.0 -10.0\n\tFrameIndex RQ2H B 0 5\n', H() + '\tScale -1.0 1.0 1.0\n\tOffset 0.0 -24.0 -10.0\n\tFrameIndex RQ2H B 0 %d\t// the same FBX grip, the round on the gun\n' % ix['Y'])
 wr('MODELDEF.rsm', t)

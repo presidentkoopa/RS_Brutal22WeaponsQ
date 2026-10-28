@@ -189,15 +189,15 @@ class RSR_Guns abstract
 		case 6:	return (-0.419, 3.857, 5.100);
 		case 7:	return (-5.958, 3.656, 5.045);
 		case 8:	return (-0.703, 3.900, 7.946);	// 1.93 Ruger (was (-1.428, 4.182, 9.594))
-		case 9:	return (-0.911, 18.899, -9.154);
-		case 10:	return (-0.590, -5.238, -1.178);
+		case 9:	return (0.861, 25.727, -12.016);	// off-hand FBX lane: the part moved 7.61 cm (1.77 6.83 -2.86 F L U) so the FBX hand grips it (wire_holds.py) (was (-0.911, 18.899, -9.154))
+		case 10:	return (-3.048, -1.440, 3.163);	// off-hand FBX lane: the part moved 6.27 cm (-2.46 3.80 4.34 F L U) so the FBX hand grips it (wire_holds.py) (was (-0.590, -5.238, -1.178))
 		case 11:	return (10.500, 3.518, -1.909);	// 1.99x item 10: Ermac ammo_hand 3 fitted to the canister (was under it)
-		case 12:	return (-0.700, 21.467, -2.274);
-		case 13:	return (-2.231, 14.300, -5.902);	// 2026-10-27 r3: the NORMAL-size skull's top, turned as RS VR Reload holds it, at the 1.4x carried skull's centre (skull_turn.py SKULL_SCALE=1.4) (was (3.464, 8.784, -11.859))
+		case 12:	return (1.910, 20.464, -1.190);	// off-hand FBX lane: the part moved 3.00 cm (2.61 -1.00 1.08 F L U) so the FBX hand grips it (wire_holds.py) (was (-0.700, 21.467, -2.274))
+		case 13:	return (-3.433, 12.510, -6.607);	// off-hand FBX lane: the part moved 2.27 cm (-1.20 -1.79 -0.70 F L U) so the FBX hand grips it (wire_holds.py) (was (-2.231, 14.300, -5.902))
 		case 14:	return (-0.700, 10.899, -3.672);
 		case 15:	return (4.299, 15.519, 3.125);	// 1.99x item 10: Ermac ammo_hand 6 (BFG pod hold) fitted to the block (was 18 cm above the palm)
-		case 16:	return (3.989, 29.117, -10.283);	// 1.99x item 10: Ermac ammo_hand 6 fitted to the drum (was 28 cm off)
-		case 17:	return (-0.327, -0.077, -7.170);
+		case 16:	return (1.121, 27.337, -11.852);	// off-hand FBX lane: the part moved 3.72 cm (-2.87 -1.78 -1.57 F L U) so the FBX hand grips it (wire_holds.py) (was (3.989, 29.117, -10.283))
+		case 17:	return (0.730, 4.938, -1.662);	// off-hand FBX lane: the part moved 7.52 cm (1.06 5.01 5.51 F L U) so the FBX hand grips it (wire_holds.py) (was (-0.327, -0.077, -7.170))
 		case 18:	return (-0.696, 3.710, -14.212);
 		}
 		return (0, 0, 0);
@@ -216,15 +216,15 @@ class RSR_Guns abstract
 		case 6:	return (3.857, 8.600, 22.519);
 		case 7:	return (3.656, 15.045, 18.558);
 		case 8:	return (0.349, 0.134, 1.301);	// 1.93 Ruger (was (2.653, 4.736, 9.650))
-		case 9:	return (16.699, -15.854, -11.289);
-		case 10:	return (-8.353, -7.771, 14.516);
+		case 9:	return (23.527, -18.716, -13.061);	// off-hand FBX lane: the part moved 7.61 cm (1.77 6.83 -2.86 F L U) so the FBX hand grips it (wire_holds.py) (was (16.699, -15.854, -11.289))
+		case 10:	return (-4.555, -3.430, 16.974);	// off-hand FBX lane: the part moved 6.27 cm (-2.46 3.80 4.34 F L U) so the FBX hand grips it (wire_holds.py) (was (-8.353, -7.771, 14.516))
 		case 11:	return (3.508, 2.631, 17.989);	// 1.99x item 10: Ermac ammo_hand 3 fitted to the canister (was under it)
-		case 12:	return (21.730, 3.133, 25.019);
-		case 13:	return (21.277, -12.586, 44.350);	// 2026-10-27 r3: the hook of the turned, 1.4x carried skull (skull_turn.py SKULL_SCALE=1.4, shift -6 6 6; with RSR.HandRot (75, -15, 0); MODELDEF.rsr RSQ_Hands Scale 1.4) (was (7.990, -18.326, 7.562))
+		case 12:	return (20.112, 4.882, 20.809);	// off-hand FBX lane: the part moved 3.00 cm (2.61 -1.00 1.08 F L U) so the FBX hand grips it (wire_holds.py) (was (21.730, 3.133, 25.019))
+		case 13:	return (20.117, -12.810, 43.241);	// off-hand FBX lane: the part moved 2.27 cm (-1.20 -1.79 -0.70 F L U) so the FBX hand grips it (wire_holds.py) (was (21.277, -12.586, 44.350))
 		case 14:	return (-0.351, -11.976, 18.579);
 		case 15:	return (14.203, -10.441, 29.189);	// 1.99x item 10: Ermac ammo_hand 6 (BFG pod hold) fitted to the block (was 18 cm above the palm)
-		case 16:	return (16.323, -15.197, -9.094);	// 1.99x item 10: Ermac ammo_hand 6 fitted to the drum (was 28 cm off)
-		case 17:	return (4.256, 15.696, 33.744);
+		case 16:	return (14.543, -16.766, -6.226);	// off-hand FBX lane: the part moved 3.72 cm (-2.87 -1.78 -1.57 F L U) so the FBX hand grips it (wire_holds.py) (was (16.323, -15.197, -9.094))
+		case 17:	return (9.271, 21.204, 32.687);	// off-hand FBX lane: the part moved 7.52 cm (1.06 5.01 5.51 F L U) so the FBX hand grips it (wire_holds.py) (was (4.256, 15.696, 33.744))
 		case 18:	return (3.991, -1.917, 15.035);
 		}
 		return (0, 0, 0);

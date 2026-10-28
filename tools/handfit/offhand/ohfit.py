@@ -69,7 +69,7 @@ class Obj:
     def __init__(s, V, F, pad=8.0, h=0.3):
         s.V = np.asarray(V, float); s.F = np.asarray(F); lo = s.V.min(0) - pad; hi = s.V.max(0) + pad
         s.f = gunfield.Field(s.V, s.F, lo, hi, h=h, band=1.0); s.ex = exactpen.Exact(s.V, s.F); s.lo, s.hi = lo, hi
-def grip(z0, O, cuff_ref=None, W=None, nfev=150, move=False, fingers='IMRPT', palm=True):
+def grip(z0, O, cuff_ref=None, W=None, nfev=150, move=False, fingers='IMRPT', palm=True, y_init=None):
     """the hand round object O, from z0 (seed). Unknowns: rotvec, t, q (+ object translation y if move). Returns z, y, metrics."""
     w = dict(pen=6.0, tol_pen=0.15, con=1.5, tol_con=0.25, palm=1.0, cuff=1.0, cuff_free=1.0, q=0.3, move=0.6, move_free=0.5); w.update(W or {})
     X0 = hand(zp(z0)); C = cuff_idx(); cref = X0[C] if cuff_ref is None else cuff_ref; sub = np.arange(0, len(X0), 2)
@@ -86,7 +86,15 @@ def grip(z0, O, cuff_ref=None, W=None, nfev=150, move=False, fingers='IMRPT', pa
         r.append(w['q'] * (z[6:] - z0[6:]) / qs)
         if move: r.append([w['move'] * max(0.0, float(np.linalg.norm(y)) - w['move_free'])])
         return np.concatenate([np.atleast_1d(np.asarray(a, float)).ravel() for a in r])
-    v0 = np.r_[z0, np.zeros(3)] if move else z0.copy()
+    y0 = np.zeros(3)
+    if move:	# a seed deep in the object traps the solve (its field is flat more than 1 cm in): first slide the object straight out,
+        # away from the palm, 2.5 mm steps, until the hand is <= 0.5 cm into it (exact), at most 6 cm (fit192's 'lower the seed first')
+        yi = np.zeros(3) if y_init is None else np.asarray(y_init, float)
+        pc = X0[reg('palm')].mean(0); dv = (O.V.min(0) + O.V.max(0)) / 2 + yi - pc; dv /= np.linalg.norm(dv)
+        for dd in np.arange(0.0, 6.01, 0.25):
+            if O.ex.depth(X0[::3] - yi - dd * dv).max() <= 0.5: break
+        y0 = yi + dd * dv; w['move_free'] = max(w['move_free'], float(np.linalg.norm(y0)))
+    v0 = np.r_[z0, y0] if move else z0.copy()
     lo = np.r_[LO, [-np.inf] * 3] if move else LO; hi = np.r_[HI, [np.inf] * 3] if move else HI
     xs = np.r_[XS, [1, 1, 1]] if move else XS
     sol = least_squares(res, np.clip(v0, lo + 1e-9, hi - 1e-9), bounds=(lo, hi), max_nfev=nfev, x_scale=xs)

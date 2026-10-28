@@ -13,11 +13,11 @@ END = 'netevent oht_mark; wait 5; quit'
 def at_hit(png, k=0, lead=0):
     def f(text):
         h = [int(x) for x in re.findall(r'OHT DMG t (\d+)', text)]; q = re.findall(r'OHT MARK t (\d+)', text)
-        hk = [x for x in h if x > 230]; return {png: int(q[-1]) + 5 - hk[k] + lead} if hk and q else {}
+        hk = [x for x in h if x > 230]; return {png: ('tic', hk[k] + lead)} if hk else {}
     return f
 def hits(t): return [l for l in t.splitlines() if l.startswith('OHT ')]
 if __name__ == '__main__':
-    t, o = R.shot(pk3, 'fists_idle_' + tag, base + 'wait 60; ' + END, {'fists_idle_%s.png' % tag: 20}, extra=[DMG]); print('idle', o, R.errors(t))
+    t, o = R.shot(pk3, 'fists_idle_' + tag, base + 'wait 60; ' + END, lambda text: {'fists_idle_%s.png' % tag: ('tic', int(re.findall(r'OHT MARK t (\d+)', text)[-1]) - 20)}, extra=[DMG]); print('idle', o, R.errors(t))
     s2 = base + 'netevent oht_spawn 34; wait 30; ' + '+attack; wait 8; -attack; wait 22; ' * 4 + END
     t2, o2 = R.shot(pk3, 'fists_main_' + tag, s2, at_hit('fists_main_%s.png' % tag), extra=[DMG]); print('main', o2, R.errors(t2)); print('\n'.join(hits(t2)))
     s3 = base + 'netevent oht_spawn 34; wait 30; ' + 'qz_ltrigger 1; wait 4; qz_ltrigger 0; wait 26; ' * 4 + END

@@ -19,17 +19,21 @@ END = 'netevent oht_mark; wait 5; quit'
 def pick(png):
     def f(text):
         q = [int(x) for x in re.findall(r'OHT MARK t (\d+)', text)]
-        return {png: q[-1] + 5 - (q[0] + 20)} if len(q) >= 2 else {}
+        return {png: ('tic', q[0] + 20)} if q else {}	# the SHOW pose's middle, by game tic (rigshot: the probe's frame lines)
     return f
 SET = G.SET + 'screenblocks 12; crosshair 0; rsr_grab_with 0; rsr_debug 1; rsq_reload_nonstd 1; qz_hmd "%s"; ' % HMD
 BOOT = {}
 def boot(pk3):
     if BOOT.get('pk3') != pk3:
-        G.setpk3(pk3); G.locked(rig.run, 'boot', 'wait 60; quit', 120); BOOT['pk3'] = pk3
+        G.setpk3(pk3); G.locked(rig.run, 'boot', 'wait 100; quit', 150); BOOT['pk3'] = pk3
 def job_mag(i):
     g = mags.tables()[i]; c = mags.CLS[i]
-    s = ('wait 100; ' + SET + 'give %s; give %s 400; use %s; wait 150; +attack; wait 12; -attack; wait 25; +reload; wait 4; -reload; wait 30; '
-         'qz_lhand "%s"; wait 10; qz_ltrigger 1; wait 12; ' % (c, g['reserve'], c, rig.lpose(0, 40, -30)) + show() +
+    # most guns: a burst, then the reload button
+    start = '+attack; wait 12; -attack; wait 25; +reload; wait 4; -reload; wait 30; '
+    if i == 15: start = '+attack; wait 20; -attack; wait 40; +attack; wait 30; -attack; wait 40; '	# the Nuker: one shot, then the trigger on empty
+    if i == 17: start = 'take RSQ_Mag_Minigun 150; wait 10; +reload; wait 4; -reload; wait 30; '	# the Minigun: its magazine (RSQ_Mag_Minigun, counters.zs) part spent, then the button
+    s = ('wait 100; ' + SET + 'give %s; give %s 400; use %s; wait 150; ' % (c, g['reserve'], c) + start +
+         'qz_lhand "%s"; wait 10; qz_ltrigger 1; wait 12; ' % rig.lpose(0, 40, -30) + show() +
          'qz_lhand "%s"; wait 15; qz_lhand "%s"; wait 15; qz_lhand "%s"; wait 25; qz_ltrigger 0; wait 40; ' % (mags.at(g, g['M'] + 3), mags.at(g, g['M'] * 0.5), mags.at(g, 0)) + END)
     return s, r'rsr t\d+ gun %d: (\w+) -> (\w+)' % i
 def job_brk(spec):
@@ -81,7 +85,7 @@ def run(pk3, tag, job):
     elif job.startswith('brk'): s, pat = job_brk(job[3:])
     elif job == 'pump': s, pat = job_pump()
     elif job == 'm203': s, pat = job_m203()
-    nm = 'hold_%s_%s' % (job.split(':')[0], tag); text, o = R.shot(pk3, nm, s, pick(nm + '.png'), extra=[DMG], secs=400)
+    nm = 'hold_%s_%s' % (job.replace(':', '_') if job.startswith('brk') else job, tag); text, o = R.shot(pk3, nm, s, pick(nm + '.png'), extra=[DMG], secs=400)
     ph = re.findall(pat, text); errs, vm = R.errors(text)
     return dict(job=job, frame=o, errors=errs, vm=vm, log=[(x if isinstance(x, str) else ' -> '.join(x)) for x in ph][-14:])
 if __name__ == '__main__':
