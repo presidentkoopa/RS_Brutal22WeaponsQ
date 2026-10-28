@@ -26,4 +26,9 @@ Rig only, not headset-confirmed. Depot rig, QZD 17.3, doom2 -> brutal22test6 -> 
 Mean impact from the bore line, both modes, 256 and 1024: within BD22's own spread (|mean| <= ~1 deg, most < 0.3 deg);
 shots start at the drawn muzzle (start_cm 0.0). Plasma 0.00/0.00. Ruger at 1024: 0.01 right 0.03 up of the scope
 centre; RailGun 0.00 / 0.20. At 256 (inside the 30 m zero) scoped shots land 0.8 (Ruger) / 2.3-3.3 (RailGun) units low.
-Scope frames: scratch only so far (being added).
+Scope frames (tools/accuracy/results/frames, left eye 8 cm behind the lens, wall 1024 units, 4x lens crops):
+green dot = drawn bore meets the wall, red = scope camera centre line, blue = where the shot landed (probe).
+- before Ruger: green and red in the lens, the impact (63 right, 53 low) out of the lens. after Ruger: the impact sits on them.
+- before RailGun: red 19 units above / 12 left of green, impact out of the lens. after: red, green and the impact together
+  (log: 0.00 right, 0.20 up of the scope centre).
+Known gap: the Ruger lens ring is rough (item 30, unchanged).
