@@ -930,6 +930,18 @@ ACTOR RSQ_Off_Revolver : Revolver
 		"####" K 2 A_WEAPONREADY(WRF_NOBOB|WRF_NOFIRE|WRF_ALLOWZOOM|WRF_ALLOWRELOAD)
 		"####" A 0 A_JumpIfInventory("RevolverAmmoOff",1,2)
 		Goto Ready3
+	// 2026-10-27 (2.0 integration): Hammering MUST follow here, as in Revolver.dec since 1.92. The jump above is
+	// BD22's numeric "+2" into Hammering's second frame; with the slug in between, every off-hand shot fell into
+	// RSA_MagnumShot and re-fired forever (rig: off hand B..K every 12 tics, trigger up), NeedToHammer was never
+	// taken, and the main Shotvolver then waited at its hammer frame and never fired again.
+	Hammering:
+		"####" LMNOP 1 A_WEAPONREADY(WRF_NOBOB|WRF_NOFIRE|WRF_ALLOWZOOM|WRF_ALLOWRELOAD)
+		"####" A 0 A_PlaySound("Revolver/Hammer", 5)
+		"####" QRSTUVW 1 A_WEAPONREADY(WRF_NOBOB|WRF_NOFIRE|WRF_ALLOWZOOM)
+		"####" A 0 A_Takeinventory("NeedToHammer",1)
+		"####" A 0 A_JumpIf(((OverlayID() != 1000000 && CountInv("RSA_Magnum") > 0) || (OverlayID() == 1000000 && CountInv("RSA_MagnumOff") > 0)) && ((OverlayID() != 1000000 && ((GetPlayerInput(INPUT_BUTTONS) & 32) != 0 || CountInv("FiredSecondary") > 0)) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 134217728) != 0)), "Fire")	// 1.37 rsa: cocked for the slug, secondary still held: fire it
+		"####" A 0 A_Refire
+		Goto Ready3
 
 	// 1.37 rsa (owner: "a Dirty Harry"): secondary fire is a slug: one heavy round where the
 	// shotvolver throws its pellets, the same cartridge (its pellets' whole damage, on one point)
@@ -959,15 +971,6 @@ ACTOR RSQ_Off_Revolver : Revolver
 		"####" "#" 0 A_JumpIf(OverlayID() != 1000000, 2)
 		"####" "#" 0 A_GiveInventory("RSA_MagnumOff", 1)
 		Goto Fire
-
-	Hammering:
-		"####" LMNOP 1 A_WEAPONREADY(WRF_NOBOB|WRF_NOFIRE|WRF_ALLOWZOOM|WRF_ALLOWRELOAD)
-		"####" A 0 A_PlaySound("Revolver/Hammer", 5)
-		"####" QRSTUVW 1 A_WEAPONREADY(WRF_NOBOB|WRF_NOFIRE|WRF_ALLOWZOOM)
-		"####" A 0 A_Takeinventory("NeedToHammer",1)
-		"####" A 0 A_JumpIf(((OverlayID() != 1000000 && CountInv("RSA_Magnum") > 0) || (OverlayID() == 1000000 && CountInv("RSA_MagnumOff") > 0)) && ((OverlayID() != 1000000 && ((GetPlayerInput(INPUT_BUTTONS) & 32) != 0 || CountInv("FiredSecondary") > 0)) || (OverlayID() == 1000000 && (GetPlayerInput(INPUT_BUTTONS) & 134217728) != 0)), "Fire")	// 1.37 rsa: cocked for the slug, secondary still held: fire it
-		"####" A 0 A_Refire
-		Goto Ready3
 	
 	DM:
 		"####" B 1 BRIGHT A_FireBullets (20, 7, 7, 22, "ShotgunPuffDM", FBF_NORANDOM)  //Revopuff is the og
