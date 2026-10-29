@@ -162,4 +162,6 @@ Shown on the rig:
 - Booted on the load order: only BD_VoxelPack's 4 errors.
 Built, not shown: grenade pin by off trigger only; axe lock (8 deg pick, mark above the head, the thrown
 axe homes on the lock); the Unmaker skull-out click.
-Not done: SSG flick reload with one gun. The flick was seen, but the empty SSG did not reload (flick4); it is in 2.0.3.
+- SSG flick reload (owner 20:22, rebuilt as 2.0.2a): every SSG flick goes to SSG.dec RSQ_FlickReload, from ready or while
+  it waits open for the hand reload. Rig flick5: empty, flicked, 2 shells in and 2 taken from the reserve, shut, fired again.
+  One SSG shown; dual SSGs use the same path, not shown.

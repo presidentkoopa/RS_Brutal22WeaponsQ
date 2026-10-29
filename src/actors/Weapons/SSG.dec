@@ -53,6 +53,37 @@ ACTOR SSG : BrutalWeapon
 	RSB_Done:		// shut (weapons/sshotc, SSG/Lever1): BD22's own end of a reload
 		SHTZ A 0 A_TakeInventory("RSB_Done", 1)
 		Goto Ready
+	// 2.0.2a (owner 20:09 / 20:22, "ssg should always flick down to reload ... change the weapon code if you
+	// have to"): the flick's own reload (zscript/rsq/flick.zs). Reload cannot be used: in VR it goes back into
+	// the hand reload (RSB_Start -> RSB_Open -> RSB_Wait) and an empty SSG just sat open (rig flick4). This
+	// loads every empty barrel from the reserve, one casing per fired barrel, then shuts: BD22's own items
+	// and sounds (Reload2's SSGAmmo / AmmoShell / SSGLoaded, weapons/sshotl, sshotc, SSG/Lever1).
+	RSQ_FlickReload:
+		SHTZ A 0 A_TakeInventory("Reloading", 1)
+		SHTZ A 0 A_JumpIfInventory("SSGAmmo", 2, "Ready")
+		SHTZ A 0 A_JumpIfInventory("AmmoShell", 1, 1)
+		Goto Ready
+		SHTZ A 0 A_GiveInventory("Pumping", 1)
+		SHTZ A 0 A_PlaySound("weapons/sshoto", 5)
+	RSQ_FlickLoadOne:
+		SHTZ A 0 A_JumpIfInventory("SSGAmmo", 2, "RSQ_FlickShut")
+		SHTZ A 0 A_JumpIfInventory("AmmoShell", 1, 1)
+		Goto RSQ_FlickShut
+		SHTZ A 0 A_JumpIfInventory("HasUnloadedSSG", 1, 2)
+		SHTZ A 0 A_FireCustomMissile("SSGCaseSpawner", 0, 0, -10, -20)
+		SHTZ A 0 A_GiveInventory("SSGAmmo", 1)
+		SHTZ A 0 A_JumpIfInventory("NoReloading", 1, 2)
+		SHTZ A 0 A_TakeInventory("AmmoShell", 1, TIF_NOTAKEINFINITE)
+		SHTZ A 0 A_PlaySound("weapons/sshotl", 5)
+		SHTZ A 4
+		Goto RSQ_FlickLoadOne
+	RSQ_FlickShut:
+		SHTZ A 0 A_TakeInventory("HasUnloadedSSG", 1)
+		SHTZ A 0 A_TakeInventory("SSGAlt", 1)
+		SHTZ A 0 A_GiveInventory("SSGLoaded", 1)
+		SHTZ A 0 A_PlaySound("weapons/sshotc", 5)
+		SHTZ A 4 A_PlaySound("SSG/Lever1")
+		Goto Ready
 	Inspect:
 		VSSG A 0 A_JumpIfInventory("IsPlayingAsPurist", 1,"PuristWarningManual")
 		SHT2 A 0 A_JumpIfInventory("DoInspect",1,"ContinueInspect")

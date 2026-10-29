@@ -53,13 +53,16 @@ class RSQ_Flick : EventHandler
 			// common case. A single rifle now flicks for its LAUNCHER ONLY: the magazine stays
 			// the hand reload's, exactly as the header says, and the flick gets the M203.
 			bool loneM203 = live && !on && RSM.IsAnyRifle(p.ReadyWeapon);
+			// 2.0.2a (owner 20:09): "ssg should always flick down to reload even if we allow for our vr
+			// reload". A lone SSG flicks too (SSG.dec RSQ_FlickReload); the hand reload is still there.
+			bool loneSSG = live && !on && p.ReadyWeapon is 'SSG';
 			double ps = mo.Level.pixelstretch;
 			if (ps <= 0)
 				ps = 1.2;
 			for (int h = 0; h < 2; h++)
 			{
 				// the main gun flicks only when the off hand has a gun too (one gun alone: VR reload)
-				bool run = on && (h != 0 || IsGun(p.ReadyWeapon));
+				bool run = on && (h != 0 || IsGun(p.ReadyWeapon)) || h == 0 && loneSSG;
 				bool m203Only = !run && h == 0 && loneM203;	// a lone rifle: the launcher only
 				if (!run && !m203Only)
 				{
@@ -93,7 +96,27 @@ class RSQ_Flick : EventHandler
 	{
 		Weapon w = h == 0 ? p.ReadyWeapon : p.OffhandWeapon;
 		int ready = h == 0 ? WF_WEAPONREADY : WF_OFFHANDREADY;
-		if (!w || !(p.WeaponState & ready))
+		if (!w)
+			return;
+		// 2.0.2a: an SSG (either hand, dual or alone) flicks into its own reload, SSG.dec RSQ_FlickReload,
+		// from its ready loop OR while it waits open for the hand reload (RSB_Wait): an empty SSG sits there
+		// (rig flick3: ready 0). The hand reload is closed first.
+		State fl = w is 'SSG' ? w.FindState("RSQ_FlickReload") : null;
+		if (fl)
+		{
+			let psp = p.GetPSprite(h == 0 ? PSP_WEAPON : PSP_OFFHANDWEAPON);
+			bool open = psp && psp.CurState == w.FindState("RSB_Wait");
+			if (!(p.WeaponState & ready) && !open)
+				return;
+			let bs = p.mo ? RSB_Handler.StateOf(p.mo) : null;
+			if (bs && bs.weap == w && bs.phase != RSB.IDLE)
+				bs.Abort(p.mo);
+			p.SetPsprite(h == 0 ? PSP_WEAPON : PSP_OFFHANDWEAPON, fl, false, w);
+			if (CVar.GetCVar('rsq_switch_log', p).GetInt() > 0)
+				Console.Printf("RSQ flick t%d: %s hand %d flick reload (%s)", level.maptime, w.GetClassName(), h, open ? "was open" : "was ready");
+			return;
+		}
+		if (!(p.WeaponState & ready))
 			return;
 		State st = w.FindState("Reload");
 		if (!st)
