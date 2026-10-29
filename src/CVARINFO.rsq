@@ -37,6 +37,7 @@ user int rsq_hud_ammo = 0;
 // The 1.97 kick-key gun bash (rsq_bash) is removed: the kick key is BD22's boot again.
 user bool rsq_pistol_whip = true;
 // the melee hit flash (zscript/rsq/bash.zs RSQ_BashFX), drawn on every melee hit
+user bool rsq_bash_flash = true;	// 2.0.3d (owner 21:53): the melee hit flash On / Off
 user int rsq_bash_fx = 0;		// which RS_CombatFX impact
 user int rsq_bash_tint = 0;		// recolours the RSH0 flash only; 0 is the art as drawn
 

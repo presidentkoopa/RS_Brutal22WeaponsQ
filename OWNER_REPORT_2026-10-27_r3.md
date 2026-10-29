@@ -172,3 +172,4 @@ axe homes on the lock); the Unmaker skull-out click.
   Rig: the hold loop and the search run (rl2-rl10: no ammo used, no misfire). Lock + salvo NOT shown: the rig
   could not put an enemy in front of the gun (summon made none). Headset check.
 - 2.0.3c (owner 20:59, "both"): the salvo is always 3 rockets, shared round the locks (3 locks: one each; 2: A B A; 1: all three). Booted on the load order: only BD_VoxelPack's 4 errors. Rocket lock-on is still to be checked in the headset.
+- 2.0.3d (owner 21:53): "Melee Hit Flash" On/Off (rsq_bash_flash, default On); the old picker is now "Melee Hit Flash Style". Booted with only the 4 BD_VoxelPack errors. Not run on the rig (an option: owner checks).

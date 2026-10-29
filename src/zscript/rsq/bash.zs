@@ -16,6 +16,12 @@ class RSQ_BashFX : Actor
 	override void PostBeginPlay()
 	{
 		Super.PostBeginPlay();
+		// 2.0.3d (owner 21:53, "add option for melee hit flash on off"): Off draws nothing
+		if (RSQ.PlayerInt(PlayerPawn(target), 'rsq_bash_flash', 1) == 0)
+		{
+			Destroy();
+			return;
+		}
 		int n = RSQ.PlayerInt(PlayerPawn(target), 'rsq_bash_fx', 0);
 		static const Name FXC[] = { 'RSQ_FX_RSS3', 'RSQ_FX_RSU1', 'RSQ_FX_RSU4', 'RSQ_FX_RSU5', 'RSQ_FX_RSH0' };
 		if (n < 0 || n >= 5)
