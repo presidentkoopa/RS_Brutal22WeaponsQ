@@ -173,3 +173,4 @@ axe homes on the lock); the Unmaker skull-out click.
   could not put an enemy in front of the gun (summon made none). Headset check.
 - 2.0.3c (owner 20:59, "both"): the salvo is always 3 rockets, shared round the locks (3 locks: one each; 2: A B A; 1: all three). Booted on the load order: only BD_VoxelPack's 4 errors. Rocket lock-on is still to be checked in the headset.
 - 2.0.3d (owner 21:53): "Melee Hit Flash" On/Off (rsq_bash_flash, default On); the old picker is now "Melee Hit Flash Style". Booted with only the 4 BD_VoxelPack errors. Not run on the rig (an option: owner checks).
+- 2.0.3e (owner 22:23): the axe TAGS an enemy. A tag stays wherever the hand points (it was dropped beyond 12 deg, so winding up lost it). It goes when the enemy dies, leaves range, or is out of sight for 2 s; it is kept 3 s after a let-go that was not a throw. Boot only; headset check.

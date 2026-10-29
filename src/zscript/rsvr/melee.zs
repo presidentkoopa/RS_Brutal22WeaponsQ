@@ -396,6 +396,7 @@ class RSVR_Hand play
 	Vector3 prevRelIn;		// 1.97: and the inner end, so a butt strike can be asked to lead
 	int prevStamp;		// 1.97 F7: the stamp of the sample prevRel was taken from
 	Actor lockTarget;	// the monster painted while a throw is readied
+	int lockSeen;		// 2.0.3e: the last tic the tagged monster was in sight
 	Actor lockRing;
 	int lockKeep;		// F11: a release that was not a throw keeps the paint until this tic
 	int poseFrame;
@@ -1300,7 +1301,7 @@ class RSVR_Hand play
 		// F11 (owner): let go without a throw and the paint stays a second, as on the ShieldSaw and the
 		// saber -- pick the hold back up and it is still there; otherwise Tick takes it down
 		else if (h && h.lockTarget && h.lockKeep == 0)
-			h.lockKeep = mo.Level.maptime + 35;
+			h.lockKeep = mo.Level.maptime + 105;	// 2.0.3e: a tag kept 3 s after a let-go that was not a throw (was 1 s)
 	}
 
 	// a world point in the body's own frame: forward, left, up (map units)
@@ -1346,9 +1347,14 @@ class RSVR_Hand play
 		{
 			Vector3 to = lockTarget.pos + (0, 0, lockTarget.height * 0.5) - from;
 			double dist = to.Length();
+			// 2.0.3e (owner 22:23, "the axe needs to TAG an enemy ... our lock is lost when I raise my arm to
+			// throw, so I always miss"): a tag is NOT a lock. Once tagged it stays, wherever the hand points
+			// (winding up swings the hand far off the line). It goes only when the monster dies, gets out of
+			// range, or is out of sight for 2 seconds.
+			if (mo.CheckSight(lockTarget))
+				lockSeen = mo.Level.maptime;
 			bool keep = lockTarget.health > 0 && dist > 1 && dist <= range * 1.5
-				&& acos(clamp((to / dist) dot aim, -1, 1)) <= cone * 1.5
-				&& mo.CheckSight(lockTarget);
+				&& mo.Level.maptime - lockSeen <= 70;
 			if (!keep)
 				Unlock();
 		}
@@ -1376,6 +1382,7 @@ class RSVR_Hand play
 			if (best)
 			{
 				lockTarget = best;
+				lockSeen = mo.Level.maptime;
 				lockRing = Actor.Spawn('RSVR_AxeLock', RSVR_AxeLock.Above(best), ALLOW_REPLACE);
 				Buzz(mo);	// the hand says the paint landed
 			}
