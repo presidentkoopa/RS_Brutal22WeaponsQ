@@ -798,7 +798,7 @@ class RSR_Guns abstract
 		case 10:	return "rsr/bigdrop";
 		case 11:	return "rsr/bigdrop";
 		case 12:	return "rsr/bigdrop";
-		case 13:	return "rsr/bigdrop";
+		case 13:	return "";	// 2.0.3h (owner 02:06, "I should only hear the click when it drops and goes back in, no other sounds"): was "rsr/bigdrop" (the skull hitting the floor)
 		case 14:	return "rsr/bigdrop";
 		case 15:	return "rsr/bigdrop";
 		case 16:	return "rsr/bigdrop";
