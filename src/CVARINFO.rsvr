@@ -34,3 +34,10 @@ user int rsvr_axe_seek_log = 0;
 user float rsvr_axe_lock_range = 1200.0;
 // F11: the throw's direction, 1 all the arm's motion, 0 all where the hand points (ShieldSaw: 0.7)
 user float rsvr_axe_throw_blend = 0.7;
+// 2.0.3f (owner 2026-10-29 00:24): doors lifted by hand, ported from RSQ_DistanceGrab (zscript/rsvr/door.zs)
+user bool  rsq_door        = true;	// take hold of a door and lift it
+user bool  rsq_door_grip   = true;	// the off grip takes hold
+user bool  rsq_door_use    = true;	// Use takes hold
+user bool  rsq_door_palm   = true;	// a palm turned out against the door takes hold
+user float rsq_door_commit = 0.40;	// let go past this much open and the door finishes opening
+user float rsq_door_gain   = 2.5;	// door travel per unit of hand travel
