@@ -694,7 +694,7 @@ class RSR_Guns abstract
 		case 10:	return "rsr/drumout";
 		case 11:	return "rsr/canout";
 		case 12:	return "rsr/canout";
-		case 13:	return "Unmaker/Stop";
+		case 13:	return "Rifle/Reload1";	// 2.0.2a (owner 19:52, "click sound when skull falls out too"): the Rifle's magazine-out click (BD22 RIFLER1), was "Unmaker/Stop" (the spin-down)
 		case 14:	return "rsr/canout";
 		case 15:	return "rsr/canout";
 		case 16:	return "rsr/drumout";

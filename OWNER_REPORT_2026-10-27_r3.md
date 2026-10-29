@@ -153,3 +153,13 @@ Worked in this repo (lane-b-1.99x). Owner's words are kept where the meaning mat
 40. **Ruger scope glass.** Its glass texture is round but the scope housing is octagonal, so the picture isn't centred and looks rough. Fit the glass and picture to the octagon (see item 30).
 41. **Scope alt fire on the Ruger and the RailGun cycles 1x, 2x, 3x, off, then repeats.**
 42. **Assault Shotgun:** add a slugshot as its secondary fire.
+
+## 2.0.2a (owner 2026-10-28 19:47-20:11)
+Shown on the rig:
+- Instant Weapon Switch (option, default On): every switch is ready the tic it is asked (log sw5).
+- Pump slug alt fire now takes a shell and needs the pump (log slug6). The main-hand jump skipped the Fire path.
+- The Moonlight is renamed Silvergun (pickup, tag, menus). Settings keep their names, so saved options carry over.
+- Booted on the load order: only BD_VoxelPack's 4 errors.
+Built, not shown: grenade pin by off trigger only; axe lock (8 deg pick, mark above the head, the thrown
+axe homes on the lock); the Unmaker skull-out click.
+Not done: SSG flick reload with one gun. The flick was seen, but the empty SSG did not reload (flick4); it is in 2.0.3.

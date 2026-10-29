@@ -62,3 +62,6 @@ user float rsq_round_speed = 1.0;
 // really is 19.2 mm, which is about 0.63 map units and may be small to see.
 user bool rsq_casing_models = true;
 user float rsq_casing_size = 1.0;
+// 2.0.2a (owner 2026-10-28 19:47): Instant Weapon Switch (zscript/rsq/switch.zs). Off = BD22's raise / lower.
+user bool rsq_instant_switch = true;
+user int rsq_switch_log = 0;

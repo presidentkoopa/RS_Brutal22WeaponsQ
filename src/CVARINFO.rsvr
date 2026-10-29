@@ -29,7 +29,8 @@ user float rsvr_axe_edge = 0.5;
 // hand is pointing at; release into the throw and it goes there. The cone is how far
 // off your aim a target may be to be picked up; a lock already made is kept out to
 // a little over twice that before it drops, so it does not flicker as you wind up.
-user float rsvr_axe_lock_cone = 16.0;
+user float rsvr_axe_pick_cone = 8.0;	// 2.0.2a: was rsvr_axe_lock_cone 16 (owner: "sloppy")
+user int rsvr_axe_seek_log = 0;
 user float rsvr_axe_lock_range = 1200.0;
 // F11: the throw's direction, 1 all the arm's motion, 0 all where the hand points (ShieldSaw: 0.7)
 user float rsvr_axe_throw_blend = 0.7;

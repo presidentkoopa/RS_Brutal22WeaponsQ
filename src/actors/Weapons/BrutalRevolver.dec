@@ -53,7 +53,7 @@ ACTOR BrutalRevolver : BrutalWeapon
 	Weapon.AmmoGive2 0
 	Weapon.AmmoType1 "Clip1"	// BD22's Brutal Pistol's reserve (header)
 	Weapon.AmmoType2 "BrutalRevolverCylinder"
-	Inventory.PickupMessage "You got the Moonlight Revolver!"
+	Inventory.PickupMessage "You got the Silvergun!"
 	Inventory.PickupSound "Revolver/Hammer"
 	Obituary "$OBBD_REVOLVER"
 	AttackSound "None"
@@ -62,7 +62,7 @@ ACTOR BrutalRevolver : BrutalWeapon
 	+WEAPON.NOAUTOFIRE
 	+INVENTORY.ALWAYSPICKUP		// a second Revolver is taken even with the pistol reserve full, so dual.zs can make it the off-hand copy
 	Scale 0.9
-	Tag "Revolver"
+	Tag "Silvergun"
 	States
 	{
 	Spawn:
@@ -258,7 +258,7 @@ ACTOR BrutalRevolverCylinderOff : Ammo
 
 ACTOR RSQ_Off_BrutalRevolver : BrutalRevolver
 {
-	Tag "Off-hand Revolver"
+	Tag "Off-hand Silvergun"
 	Weapon.AmmoGive1 0
 	Weapon.AmmoGive2 0
 	Weapon.SelectionOrder 99999

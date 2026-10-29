@@ -158,9 +158,9 @@ class RSG_State play
 		// grip press near a GUN does not fight the engine's two-hand steadying, and the ring sits
 		// 7.6 cm from the gun hand -- well inside the 50 cm steadying range -- so the guard would
 		// make the grip mode structurally unable to ever reach the ring. There is no gun to steady.
-		let rs = RSR_ReloadHandler.StateOf(mo);
-		int mask = RSR.GrabMask(mo.player);
-		bool grab = (mo.player.cmd.buttons & mask) != 0 || rs && (rs.netGrip || rs.netUse);
+		// 2.0.2a (owner 2026-10-28 19:50): "pulling pin with grenade always has to be done with offhand
+		// trigger". The ring is taken by the OFF-HAND TRIGGER only, whatever "Grab ammo with" is set to.
+		bool grab = (mo.player.cmd.buttons & BT_OFFHANDATTACK) != 0;
 		bool grabPress = grab && !grabPrev;
 		grabPrev = grab;
 		if (!grab)

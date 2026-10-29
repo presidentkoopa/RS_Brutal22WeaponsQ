@@ -809,7 +809,7 @@ class RSVR_Hand play
 		if (lockKeep > 0 && (mo.Level.maptime > lockKeep || !lockTarget || lockTarget.health <= 0))
 			Unlock();
 		if (lockKeep > 0 && lockRing && lockTarget)
-			lockRing.SetOrigin(lockTarget.pos + (0, 0, lockTarget.height * 0.5), true);
+			lockRing.SetOrigin(RSVR_AxeLock.Above(lockTarget), true);
 
 		int k = KindFor(mo);
 		if (k != kind)
@@ -1336,7 +1336,9 @@ class RSVR_Hand play
 			Unlock();
 			return;
 		}
-		double cone = clamp(Cv(mo, 'rsvr_axe_lock_cone', 16.0), 1.0, 90.0);
+		// 2.0.2a (owner 19:51, "lock on was sloppy, tighten and refine"): picked inside 8 degrees of the hand's
+		// line (was 16), kept to 1.5x that (was 2.2x: 35 degrees, so the ring hung on whatever it first touched)
+		double cone = clamp(Cv(mo, 'rsvr_axe_pick_cone', 8.0), 1.0, 90.0);
 		double range = clamp(Cv(mo, 'rsvr_axe_lock_range', 1200.0), 64.0, 8192.0);
 		Vector3 from = fH;
 		Vector3 aim = fF;
@@ -1345,7 +1347,7 @@ class RSVR_Hand play
 			Vector3 to = lockTarget.pos + (0, 0, lockTarget.height * 0.5) - from;
 			double dist = to.Length();
 			bool keep = lockTarget.health > 0 && dist > 1 && dist <= range * 1.5
-				&& acos(clamp((to / dist) dot aim, -1, 1)) <= cone * 2.2
+				&& acos(clamp((to / dist) dot aim, -1, 1)) <= cone * 1.5
 				&& mo.CheckSight(lockTarget);
 			if (!keep)
 				Unlock();
@@ -1374,12 +1376,12 @@ class RSVR_Hand play
 			if (best)
 			{
 				lockTarget = best;
-				lockRing = Actor.Spawn('RSVR_AxeLock', best.pos + (0, 0, best.height * 0.5), ALLOW_REPLACE);
+				lockRing = Actor.Spawn('RSVR_AxeLock', RSVR_AxeLock.Above(best), ALLOW_REPLACE);
 				Buzz(mo);	// the hand says the paint landed
 			}
 		}
 		if (lockRing && lockTarget)
-			lockRing.SetOrigin(lockTarget.pos + (0, 0, lockTarget.height * 0.5), true);
+			lockRing.SetOrigin(RSVR_AxeLock.Above(lockTarget), true);
 	}
 
 	bool Throw(PlayerPawn mo)
@@ -1425,13 +1427,16 @@ class RSVR_Hand play
 		if (!Clear(mo, fH, from))
 			from = fH;
 		// a painted target takes the throw; with nothing painted, the old 8-degree assist
+		Actor seek = null;
 		if (lockTarget && lockTarget.health > 0)
 		{
+			// 2.0.2a: a locked throw flies straight and is steered onto the monster (RSVR_AxeSeek):
+			// no drop to guess, and a monster that moves is still hit
 			Vector3 to = lockTarget.pos + (0, 0, lockTarget.height * 0.5) - from;
-			double tt = to.Length() / spd;
-			to.z += 0.5 * mo.GetGravity() * tt * tt;
 			if (to.Length() > 0)
 				dir = to.Unit();
+			spd = max(spd, 30);
+			seek = lockTarget;
 		}
 		else
 			dir = AimAssist(mo, from, dir, spd);
@@ -1449,6 +1454,8 @@ class RSVR_Hand play
 		axe.vel = dir * spd;
 		mo.A_StartSound("Axe/Throw", CHAN_WEAPON, CHANF_OVERLAP);
 		Buzz(mo);
+		if (seek)
+			RSVR_AxeSeek.Start(axe, seek);
 		axe.CheckMissileSpawn(mo.radius);
 		Reset();
 		return true;
@@ -1556,6 +1563,61 @@ class RSVR_Buzz : Actor
 	}
 }
 
+// 2.0.2a: a locked axe throw homes on its monster: weightless, turned up to 12 degrees a tic toward the
+// monster's middle, at its throw speed. It lets go (gravity back) on its first bounce, when the monster
+// dies, or after 3 seconds. Logs with rsvr_axe_seek_log 1.
+class RSVR_AxeSeek : Thinker
+{
+	Actor axe, tgt;
+	int bounces, endTic;
+	double spd;
+
+	static void Start(Actor axe, Actor tgt)
+	{
+		let s = new('RSVR_AxeSeek');
+		s.axe = axe;
+		s.tgt = tgt;
+		s.bounces = axe.bouncecount;
+		s.spd = axe.vel.Length();
+		s.endTic = axe.Level.maptime + 105;
+		axe.tracer = tgt;
+		axe.bNoGravity = true;
+	}
+
+	override void Tick()
+	{
+		if (!axe)
+		{
+			Destroy();
+			return;
+		}
+		if (!tgt || tgt.health <= 0 || axe.bouncecount != bounces || axe.Level.maptime > endTic || spd <= 0)
+		{
+			axe.bNoGravity = false;
+			Destroy();
+			return;
+		}
+		Vector3 to = tgt.pos + (0, 0, tgt.height * 0.5) - axe.pos;
+		double d = to.Length();
+		if (d < 1)
+			return;
+		Vector3 want = to / d;
+		Vector3 cur = axe.vel.Length() > 0 ? axe.vel.Unit() : want;
+		double ang = acos(clamp(cur dot want, -1, 1));
+		Vector3 nd = want;
+		if (ang > 12)
+		{
+			double t = 12 / ang;
+			nd = (cur * (1 - t) + want * t).Unit();
+		}
+		axe.vel = nd * spd;
+		axe.angle = VectorAngle(nd.x, nd.y);
+		axe.pitch = -asin(clamp(nd.z, -1, 1));
+		if (CVar.FindCVar('rsvr_axe_seek_log') && CVar.FindCVar('rsvr_axe_seek_log').GetInt())
+			Console.Printf("RSVR axe seek t%d: %.0f units to %s, turned %.1f deg", axe.Level.maptime, d, tgt.GetClassName(), ang);
+	}
+}
+
 // The ring painted on the monster the axe is aimed at while a throw is readied. The art is
 // the Quest ShieldSaw's own lock mark (ssq/disc.zs SSQ_LockMark), carried here under our
 // own sprite name so the two mods never share a lump -- which is what ShieldSaw did with
@@ -1573,6 +1635,8 @@ class RSVR_AxeLock : Actor
 		Alpha 0.95;
 		Scale 0.35;
 	}
+	// 2.0.2a: above the head, where QuestSaber puts its mark (UBQS_LockMark: height + 8), not in the body
+	static Vector3 Above(Actor t) { return t.pos + (0, 0, t.height + 8); }
 	States
 	{
 	Spawn:

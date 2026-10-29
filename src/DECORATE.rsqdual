@@ -4911,10 +4911,14 @@ ACTOR RSQ_Off_Shot_Gun : Shot_Gun
 
 	// 1.37 rsa (owner): secondary fire is a slug: the same shell, one heavy round on one point (more
 	// than the buckshot's whole load), then the pump as after any shot
+	// 2.0.2a (owner 20:00, "slugshot alt fire does not consume ammo"): named jumps. On the MAIN hand the
+	// numeric "+2" past the off hand's give counted the Goto as no state and landed on RSA_SlugShot itself:
+	// the slug fired with no ammo check, no shell taken and no pump (rig slug5 trace). The Shotvolver's fix.
 	RSA_SlugGo:
-		"####" "#" 0 A_JumpIf(OverlayID() == 1000000, 2)
+		"####" "#" 0 A_JumpIf(OverlayID() == 1000000, "RSA_SlugGoOff")
 		"####" "#" 0 A_GiveInventory("RSA_Slug", 1)
-		"####" "#" 0 A_JumpIf(OverlayID() != 1000000, 2)
+		Goto Fire
+	RSA_SlugGoOff:
 		"####" "#" 0 A_GiveInventory("RSA_SlugOff", 1)
 		Goto Fire
 	RSA_SlugShot:

@@ -30,7 +30,7 @@ class RSQ_DualTable play
 	}
 	static String Nice(int i)
 	{
-		static const String v[] = { "Pistol", "Shotvolver", "SMG", "MP40", "Rifle", "Plasma rifle", "Shotgun", "Super shotgun", "Assault shotgun", "Railgun", "Revolver (Moonlight)", "Axe" };
+		static const String v[] = { "Pistol", "Shotvolver", "SMG", "MP40", "Rifle", "Plasma rifle", "Shotgun", "Super shotgun", "Assault shotgun", "Railgun", "Silvergun", "Axe" };
 		return v[i];
 	}
 	static int PickupGun(Name n)
