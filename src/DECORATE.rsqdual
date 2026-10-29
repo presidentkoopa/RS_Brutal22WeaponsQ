@@ -6090,6 +6090,7 @@ ACTOR RSQ_Off_AssaultShotgun : AssaultShotgun
 		"####" AAAA 0
 		2SAS A 0 A_JumpIfInventory("IsPlayingAsPurist", 1,2)
 		USAS A 0
+		"####" A 0 A_JumpIf((OverlayID() != 1000000 && CountInv("RSA_ASlug") > 0) || (OverlayID() == 1000000 && CountInv("RSA_ASlugOff") > 0), "RSA_ASlugShot")	// 2.0.2a: the slug alt fire (option)
 		"####" A 0 A_PlaySound("ASG/Fire", 1)
 		"####" A 0 A_FireCustomMissile("DistantFireSoundShotgun", random(-1,1), 0, 0, -12, 0, random(-1,1))
 		"####" AAAAAAAAAAAA 0 A_FireCustomMissile("ShotgunParticles", random(-12,12), 0, -1, 0, 0, random(-9,9))
@@ -6102,6 +6103,7 @@ ACTOR RSQ_Off_AssaultShotgun : AssaultShotgun
 		"####" B 1 BRIGHT A_FireBullets (5, 5, 9, 11, "MachineGunBulletPuff", FBF_NORANDOM)
 		"####" A 0 A_JumpIfInventory("IsNOTTacticalClass", 1, 3)//Tactical Mode deals extra damage
 		"####" A 0 A_FireBullets (12, 4, 5, 13, "ShotgunPuff2", FBF_NORANDOM)
+	RSA_ASlugKick:	// 2.0.2a: the slug's kick and casing are the buckshot's own (a label, no state)
 		"####" A 0 A_SetPitch(pitch-6)
 		"####" A 0
 		"####" A 0 A_Quake(3,4,0,4,"")
@@ -6191,7 +6193,32 @@ ACTOR RSQ_Off_AssaultShotgun : AssaultShotgun
 		USAS A 0
 		Goto Fire2+18
 
+	// 2.0.2a (owner 20:27, "slugshot alt fire for assault shotgun, make sure it uses ammo, same sounds as
+	// pump alt fire"): with the option on, alt fire is one slug down the normal Fire path, so the ammo
+	// check and the shell taken are the buckshot's own. The slug is the pump's (one round, 150, ShotgunPuff,
+	// its "Shotgun/Fire" sound). Named jumps only (the pump's numeric jump is what fired it free).
+	RSA_ASlugGo:
+		"####" "#" 0 A_JumpIf(OverlayID() == 1000000, "RSA_ASlugGoOff")
+		"####" "#" 0 A_GiveInventory("RSA_ASlug", 1)
+		Goto Fire
+	RSA_ASlugGoOff:
+		"####" "#" 0 A_GiveInventory("RSA_ASlugOff", 1)
+		Goto Fire
+	RSA_ASlugShot:
+		"####" A 0 A_JumpIf(OverlayID() == 1000000, "RSA_ASlugShotOff")
+		"####" A 0 A_TakeInventory("RSA_ASlug", 1)
+		Goto RSA_ASlugBang
+	RSA_ASlugShotOff:
+		"####" A 0 A_TakeInventory("RSA_ASlugOff", 1)
+	RSA_ASlugBang:
+		"####" A 0 A_PlaySound("Shotgun/Fire", 1)
+		"####" A 0 A_FireCustomMissile("DistantFireSoundShotgun", random(-1,1), 0, 0, -12, 0, random(-1,1))
+		"####" A 0 A_AlertMonsters
+		"####" A 0 A_SpawnItemEx("PlayerMuzzle1",30,5,30)
+		"####" B 1 BRIGHT A_FireBullets (0, 0, 1, 150, "ShotgunPuff", FBF_NORANDOM)
+		Goto RSA_ASlugKick
 	AltFire:
+		"####" "#" 0 A_JumpIfInventory("RSA_Opt_ASlug", 1, "RSA_ASlugGo")	// 2.0.2a: secondary fires a slug (option)
 		"####" A 0 A_JumpIfInventory("IsPlayingAsPurist", 1,"PuristWarning")
 		USAS A 0 A_JumpIfInventory("Zoomed",1,"NoAim")
 		USAS A 0 A_Giveinventory("GoSpecial",1)

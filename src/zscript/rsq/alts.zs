@@ -11,14 +11,18 @@ class RSA_BurstCntOff : RSVR_Token { Default { Inventory.MaxAmount 9; } }	// ...
 class RSA_Magnum : RSVR_Token {}		// the next revolver shot is a slug, main hand
 class RSA_MagnumOff : RSVR_Token {}		// ...off hand
 class RSA_Slug : RSVR_Token {}			// the next shotgun shot is a slug, main hand
-class RSA_SlugOff : RSVR_Token {}		// ...off hand
+class RSA_SlugOff : RSVR_Token {}
+class RSA_Opt_RLLock : RSVR_Token {}	// 2.0.2a: the rocket launcher's lock-on alt fire is on
+class RSA_Opt_ASlug : RSVR_Token {}	// 2.0.2a: the assault shotgun's slug alt fire is on
+class RSA_ASlug : RSVR_Token {}		// the next assault shotgun shot is a slug, main hand
+class RSA_ASlugOff : RSVR_Token {}	// ...off hand		// ...off hand
 
 class RSA_Handler : EventHandler
 {
 	override void WorldTick()
 	{
-		static const Name cv[] = { 'rsa_rev_slug', 'rsa_sg_slug', 'rsa_pistol_semi' };
-		static const Name tok[] = { 'RSA_Opt_Rev', 'RSA_Opt_Slug', 'RSA_Opt_Semi' };
+		static const Name cv[] = { 'rsa_rev_slug', 'rsa_sg_slug', 'rsa_pistol_semi', 'rsa_asg_slug', 'rsa_rl_lock' };
+		static const Name tok[] = { 'RSA_Opt_Rev', 'RSA_Opt_Slug', 'RSA_Opt_Semi', 'RSA_Opt_ASlug', 'RSA_Opt_RLLock' };
 		// F11: every gun fires at BD22's own rate (semiauto.zs RSQ_TriggerHeld)
 		for (int n = 0; n < MAXPLAYERS; n++)
 			if (playeringame[n] && players[n].mo && players[n].mo.CountInv('RSQ_TriggerHeld') <= 0)

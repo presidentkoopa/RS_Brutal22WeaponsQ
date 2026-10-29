@@ -29,3 +29,6 @@ server int rsm_ammo = 0;
 server bool rsa_pistol_semi = false;	// pistol: one shot per trigger pull
 server bool rsa_rev_slug = true;	// Shotvolver: secondary fires a slug. 2.0 (owner 2026-10-28): on by default (r3 item 24). Renamed from rsa_rev_magnum: an ini saved by an older build holds rsa_rev_magnum=false, which would keep the new default from ever reaching it
 server bool rsa_sg_slug = false;		// pump shotgun: secondary fires a slug
+server bool rsa_asg_slug = true;		// 2.0.2a (owner 20:27): assault shotgun: secondary fires a slug
+user bool rsa_rl_lock = true;		// 2.0.2a (owner 20:27): rocket launcher: hold alt to lock up to three enemies, let go to fire (zscript/rsq/rlock.zs)
+user float rsa_rl_lock_cone = 10.0;	// degrees off the barrel a lock is taken

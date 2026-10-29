@@ -8,6 +8,7 @@ version "4.14"	// 1.97 F5: WorldHitscanPreFired is 4.13+; qzd17.3 is 4.14.3
 // RS VR hands and ballistics (zscript/rsq): options in RSQ_Options (MENUDEF.rsq)
 #include "zscript/rsq/handler.zs"
 #include "zscript/rsq/switch.zs"
+#include "zscript/rsq/rlock.zs"
 #include "zscript/rsq/handtable.zs"
 #include "zscript/rsq/gunmoves.zs"
 #include "zscript/rsq/hands.zs"

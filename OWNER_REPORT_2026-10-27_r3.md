@@ -165,3 +165,9 @@ axe homes on the lock); the Unmaker skull-out click.
 - SSG flick reload (owner 20:22, rebuilt as 2.0.2a): every SSG flick goes to SSG.dec RSQ_FlickReload, from ready or while
   it waits open for the hand reload. Rig flick5: empty, flicked, 2 shells in and 2 taken from the reserve, shut, fired again.
   One SSG shown; dual SSGs use the same path, not shown.
+- Assault Shotgun slug alt fire (option, default On): one slug per pull of alt fire, down the Fire path. It takes
+  a shell from the gun and uses the pump's slug sound (rig rl1: 20 -> 18 for two slugs).
+- Rocket Launcher lock-on alt fire (option, default On): hold alt and up to 3 DIFFERENT enemies within 10 deg of the
+  barrel are locked (QuestSaber mark); let go and one rocket per lock goes down Fire, each homing on its lock.
+  Rig: the hold loop and the search run (rl2-rl10: no ammo used, no misfire). Lock + salvo NOT shown: the rig
+  could not put an enemy in front of the gun (summon made none). Headset check.

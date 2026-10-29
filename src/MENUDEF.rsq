@@ -69,6 +69,8 @@ OptionMenu "RSQ_Options"
 	Slider "Reload assist", "rsr_assist", 0.5, 3.0, 0.1
 	Option "Pistol Semi Auto", "rsa_pistol_semi", "OnOff"
 	Option "Shotgun Slugshot Alt Fire", "rsa_sg_slug", "OnOff"
+	Option "Assault Shotgun Slugshot Alt Fire", "rsa_asg_slug", "OnOff"
+	Option "Rocket Launcher Lock-On Alt Fire", "rsa_rl_lock", "OnOff"
 	Option "Shotvolver Slugshot Alt Fire", "rsa_rev_slug", "OnOff"
 	Option "Shot/Revolver Reload", "rsb_revolver_feed", "RSB_RevFeed"
 	Option "Rifle Underbarrel Ammo", "rsm_ammo", "RSM_Ammo"
