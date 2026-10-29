@@ -7,3 +7,7 @@ addslotdefault 1 RSQ_Hands
 // 1.97: the Machinegun on slot 4 with the MG42 (BD22 KEYCONF setslot 4 ... MG42)
 addslotdefault 4 Machinegun
 
+
+// 2.0.3i (owner 2026-10-29 07:00): the off-hand axe cycles in the off hand with the off fist (slot 1)
+weaponsection "Brutal_Doom"
+addslotdefault 1 RSQ_Off_BrutalAxe

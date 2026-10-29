@@ -324,7 +324,9 @@ class RSQ_Hands : Weapon
 		let off = p.OffhandWeapon;
 		// 2026-10-27: only OUR leftover Dual copy is stale. Any other off-hand weapon (QZD's
 		// switchhand, the QuestSaber, the ShieldSaw, a holstered gun) is left alone.
-		bool stale = off && RSQ_Dual.CopyIndex(off) >= 0
+		// 2.0.3i (owner 07:00): the off-hand AXE is an off-hand weapon of its own, never stale: it may be
+		// cycled into the off hand whatever the main hand holds (melee.zs puts it away once on a switch)
+		bool stale = off && RSQ_Dual.CopyIndex(off) >= 0 && RSQ_Dual.CopyIndex(off) != RSQ_DualTable.AXE
 			&& RSQ_Dual.CopyIndex(off) != RSQ_Dual.GunIndex(p.ReadyWeapon);
 		if (h && (!off || stale) && p.PendingWeapon == WP_NOCHANGE)
 			p.PendingWeapon = h;

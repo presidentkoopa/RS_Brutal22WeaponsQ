@@ -239,6 +239,7 @@ class RSVR_MeleeHandler : EventHandler
 	// that gives no ammo on the floor), so these few pickups are watched here and give the copy back.
 	Array<Actor> axePickups;
 	bool hadAxe[MAXPLAYERS];
+	Weapon mainPrev[MAXPLAYERS];	// 2.0.3i: the main hand's weapon last tic
 
 	// DECORATE classes are not known when ZScript compiles: look them up by name at run time
 	static class<Inventory> Inv(Name n)
@@ -263,9 +264,34 @@ class RSVR_MeleeHandler : EventHandler
 			let mo = players[n].mo;
 			bool has = mo.FindInventory(Inv('BrutalAxe'), false) != null;	// the axe itself, not its off-hand copy
 			bool want = RSQ.PlayerInt(mo, 'rsq_dual_axe', 1) != 0;
-			if (has && !hadAxe[n] && want && mo.player.playerstate == PST_LIVE)
-				RSQ_Dual.GiveCopy(mo, RSQ_DualTable.AXE);
+			// 2.0.3i (owner 2026-10-29 07:00, "player gets max one axe in each hand at a time"): no free second
+			// axe with the first. The off-hand axe comes only from picking up a second axe (below).
 			hadAxe[n] = has;
+			// a thrown MAIN axe is gone until an axe is picked up: once the throw has put the fists up
+			// (Axe.dec AxeThrown, FistSelect), the axe leaves the inventory, so the axe on the floor can be
+			// taken again by BD22's own pickup
+			if (mo.CountInv('RSVR_MainAxeGone') > 0 && !(mo.player.ReadyWeapon && mo.player.ReadyWeapon.GetClassName() == 'BrutalAxe'))
+			{
+				mo.TakeInventory(Inv('BrutalAxe'), 1);
+				mo.TakeInventory('RSVR_MainAxeGone', 999);
+			}
+			// the off-hand axe is put away (off hand to the fist) when the main hand switches to a GUN (owner:
+			// "when you switch to a gun in mainhand"); fists or the axe leave it; it can be cycled back (slot 1, KEYCONF.rsq) or put there with the Dual key
+			let rw = mo.player.ReadyWeapon;
+			let ow = mo.player.OffhandWeapon;
+			if (rw != mainPrev[n] && RSQ_Flick.IsGun(rw) && ow && ow is 'RSQ_Off_BrutalAxe'
+				&& mo.player.PendingWeapon == WP_NOCHANGE)
+			{
+				let fist = Weapon(mo.FindInventory('RSQ_Hands'));
+				if (!fist)
+				{
+					mo.GiveInventory('RSQ_Hands', 1);
+					fist = Weapon(mo.FindInventory('RSQ_Hands'));
+				}
+				if (fist)
+					mo.player.PendingWeapon = fist;
+			}
+			mainPrev[n] = rw;
 		}
 		for (int i = axePickups.Size() - 1; i >= 0; i--)
 		{
@@ -390,6 +416,7 @@ class RSVR_Hand play
 	bool off;			// 2.0.2: this is the OFF hand (the off-hand axe): its pose, its layer, its weapon
 	bool havePrev;
 	Vector3 prevIn;
+	Vector3 prevH;		// 2.0.3i
 	Vector3 prevOut;
 	Vector3 prevPos;
 	Vector3 prevRel;		// 1.11: the blade tip in the BODY's frame last tic (forward, left, up)
@@ -846,7 +873,7 @@ class RSVR_Hand play
 		Push(bout, mo.pos);
 		if (!havePrev)
 		{
-			prevIn = bin;
+			prevIn = bin; prevH = fH;
 			prevOut = bout;
 			prevPos = mo.pos;
 			prevRel = BodyFrame(mo, bout);
@@ -876,7 +903,7 @@ class RSVR_Hand play
 				struck.Clear();
 				sawWait = 0;
 			}
-			prevIn = bin;
+			prevIn = bin; prevH = fH;
 			prevOut = bout;
 			prevPos = mo.pos;
 			prevRel = BodyFrame(mo, bout);
@@ -977,7 +1004,7 @@ class RSVR_Hand play
 				if (fast)
 					calmTics = 0;
 				WallCheck(mo, bout, 0);
-				prevIn = bin;
+				prevIn = bin; prevH = fH;
 				prevOut = bout;
 				prevPos = mo.pos;
 				return;
@@ -994,7 +1021,7 @@ class RSVR_Hand play
 					coolUntil = now + SWORD_COOL;
 				}
 				WallCheck(mo, bout, power);
-				prevIn = bin;
+				prevIn = bin; prevH = fH;
 				prevOut = bout;
 				prevPos = mo.pos;
 				return;
@@ -1012,7 +1039,16 @@ class RSVR_Hand play
 					mo.A_StartSound("Melee/SwingStrong", CHAN_WEAPON, CHANF_OVERLAP);
 				whooshWait = 12;
 			}
-			Sweep(mo, k, prevIn, prevOut, bin, bout, power);
+			if (k == AXE)
+			{
+				// 2.0.3i (owner 2026-10-29 07:04, "increase axe slashing range by 33%"): the blade's swept points
+				// are pushed out from the hand by a third (each tic's points from that tic's hand)
+				double AXE_RANGE = 1.33;
+				Sweep(mo, k, prevH + (prevIn - prevH) * AXE_RANGE, prevH + (prevOut - prevH) * AXE_RANGE,
+					fH + (bin - fH) * AXE_RANGE, fH + (bout - fH) * AXE_RANGE, power);
+			}
+			else
+				Sweep(mo, k, prevIn, prevOut, bin, bout, power);
 			if (isButt)
 			{
 				// r4: the reach ahead of the stock (BUTT_REACH above)
@@ -1032,7 +1068,7 @@ class RSVR_Hand play
 		}
 		WallCheck(mo, bout, power);
 
-		prevIn = bin;
+		prevIn = bin; prevH = fH;
 		prevOut = bout;
 		prevPos = mo.pos;
 	}
@@ -1296,6 +1332,8 @@ class RSVR_Hand play
 		if (h && h.Throw(mo))
 		{
 			mo.SetInventory(thrown, 1);
+			if (thrown == 'RSVR_AxeThrown')
+				mo.SetInventory('RSVR_MainAxeGone', 1);	// 2.0.3i: gone until picked up (AxePickupTick)
 			h.Unlock();
 		}
 		// F11 (owner): let go without a throw and the paint stays a second, as on the ShieldSaw and the
@@ -1534,6 +1572,7 @@ class RSVR_Token : Inventory
 }
 
 class RSVR_AxeHolding : RSVR_Token {}
+class RSVR_MainAxeGone : RSVR_Token {}	// 2.0.3i: the main axe was thrown; it leaves the inventory once the fists are up
 class RSVR_AxeHold : RSVR_Token {}		// the hold input is down: Ready enters the hold loop
 class RSVR_AxeThrown : RSVR_Token {}
 class RSVR_AxeTrig : RSVR_Token {}
