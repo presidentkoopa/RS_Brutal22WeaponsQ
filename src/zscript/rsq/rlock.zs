@@ -109,8 +109,10 @@ class RSQ_RocketLock : EventHandler
 			// let go: the salvo, one rocket per lock
 			if (altPrev[n] && !alt && locks[n].Size() > 0 && salvo[n].Size() == 0)
 			{
-				for (int k = 0; k < locks[n].Size(); k++)
-					salvo[n].Push(locks[n][k]);
+				// 2.0.3c (owner 20:59, "both"): always a salvo of MAXLOCK rockets, dealt round the locks in turn:
+				// three locks get one each, two get A B A, one gets all three
+				for (int k = 0; k < MAXLOCK; k++)
+					salvo[n].Push(locks[n][k % locks[n].Size()]);
 				if (Logs(p))
 					Console.Printf("RSQ rlock t%d: released, %d locked: firing", now, salvo[n].Size());
 			}
@@ -214,7 +216,8 @@ class RSQ_RocketLock : EventHandler
 		aimed[n] = null;
 		if (salvo[n].Size())
 			salvo[n].Delete(0);
-		Unmark(n, t);
+		if (salvo[n].Find(t) >= salvo[n].Size())
+			Unmark(n, t);	// its last rocket is away
 		if (!t || t.health <= 0)
 			return;
 		RSQ_RocketSeek.Start(r, t);
