@@ -41,3 +41,4 @@ user bool  rsq_door_use    = true;	// Use takes hold
 user bool  rsq_door_palm   = true;	// a palm turned out against the door takes hold
 user float rsq_door_commit = 0.40;	// let go past this much open and the door finishes opening
 user float rsq_door_gain   = 2.5;	// door travel per unit of hand travel
+user float rsq_whip_speed = 5.0;	// 2.0.3g (owner 00:42): how hard a pistol whip must be swung (was 3.2, "too sensitive")

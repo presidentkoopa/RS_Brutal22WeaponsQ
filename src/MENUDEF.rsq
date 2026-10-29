@@ -94,6 +94,7 @@ OptionMenu "RSQ_Options"
 	Option "VR Punching", "rsq_punch", "OnOff"
 	Option "Punch Switches Open", "rsq_punch_use", "OnOff"
 	Option "Pistol Whip", "rsq_pistol_whip", "OnOff"	// 2.0.2 (owner r3 item 39): swing a pistol or revolver into something (zscript/rsvr/melee.zs); the kick-key gun bash is gone
+	Slider "Pistol Whip: Swing Needed", "rsq_whip_speed", 2.0, 10.0, 0.5, 1	// 2.0.3g: higher = whip harder (was 3.2)
 	Option "Instant Weapon Switch", "rsq_instant_switch", "OnOff"	// 2.0.2a (owner 19:47): no raise / lower (zscript/rsq/switch.zs)
 	Option "Lift Doors by Hand", "rsq_door", "OnOff"	// 2.0.3f: from RSQ_DistanceGrab (zscript/rsvr/door.zs)
 	Option "Two-Handed Butt Strike", "rsq_butt", "OnOff"

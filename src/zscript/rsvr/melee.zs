@@ -887,7 +887,7 @@ class RSVR_Hand play
 
 		bool isButt = k == RIFLEBUTT || k == SGBUTT || k == SSGBUTT || k == ASGBUTT || k == MP40BUTT || k == SMGBUTT || k == MGBUTT || k == MG42BUTT;
 		double thr = (k == AXE ? AXE_SWING : k == SWORD ? SWORD_SWING
-			: isButt ? BUTT_SWING : WHIP_SWING) * vu / 35.
+			: isButt ? BUTT_SWING : clamp(Cv(mo, 'rsq_whip_speed', 5.0), 1.0, 12.0)) * vu / 35.	// 2.0.3g (owner 00:42, "pistol whip is too sensitive, make me whip harder"): was WHIP_SWING 3.2
 			* max(0.2, Cv(mo, 'rsvr_melee_swing', 1.0))
 			* ((k == AXE || k == SWORD) ? 1.5 : 1.0);	// F11 (owner): "swing sensitivity seems too high"
 		// 1.11 (owner: "goes insane with attacks just when I move around"). The blade is measured
